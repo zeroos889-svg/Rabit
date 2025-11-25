@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { trpc } from "@/lib/trpc";
-import type { AppRouter } from "../../../server/routers";
+import type { AppRouter } from "@/types/trpc";
 import type { inferRouterOutputs } from "@trpc/server";
 
 const dayFormatter = new Intl.DateTimeFormat("ar-SA", {
@@ -212,8 +212,11 @@ export function useAccountAudit(options?: { limit?: number; enabled?: boolean })
   const topActions = useMemo(() => {
     const byAction = statsQuery.data?.stats.byAction;
     if (!byAction) return [];
-    return Object.entries(byAction)
-      .sort((a, b) => b[1] - a[1])
+    const actionEntries = Object.entries(byAction as Record<string, number>);
+    const sortedActionEntries = [...actionEntries].sort(
+      ([, countA], [, countB]) => (countB ?? 0) - (countA ?? 0)
+    );
+    return sortedActionEntries
       .slice(0, 4)
       .map(([action, count]) => ({
         action: action as AuditAction,

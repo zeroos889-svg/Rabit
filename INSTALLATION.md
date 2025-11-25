@@ -149,8 +149,23 @@ npm run dev
 
 سيظهر الرابط:
 
-```
+```text
 Server running on http://localhost:3000
+```
+
+### ⚡️ تشغيل الواجهة الأمامية بسرعة
+
+> إذا كنت تحتاج فقط لتجربة واجهة المستخدم أو التأكد من جاهزية بيئة البناء الجديدة، اتبع الخطوات المختصرة التالية من جذر المستودع:
+
+```bash
+# تثبيت الحزم (يعتمد على package.json الجديد)
+npm install
+
+# تشغيل خادم Vite على http://localhost:5173
+npm run dev
+
+# تنفيذ اختبارات الواجهة (Vitest)
+npm run test
 ```
 
 ---
@@ -177,7 +192,7 @@ mysql -u rabit_user -p -h localhost rabit_hr_platform -e "SHOW TABLES;"
 
 ### 3. فتح الموقع في المتصفح
 
-```
+```text
 http://localhost:3000
 ```
 
@@ -247,7 +262,7 @@ pnpm db:studio
 
 **الأعراض:**
 
-```
+```text
 Error: connect ECONNREFUSED 127.0.0.1:3306
 ```
 
@@ -268,7 +283,7 @@ cat .env | grep DATABASE_URL
 
 **الأعراض:**
 
-```
+```text
 Error: listen EADDRINUSE: address already in use :::3000
 ```
 
@@ -289,7 +304,7 @@ PORT=3001 pnpm dev
 
 **الأعراض:**
 
-```
+```text
 npm ERR! code ERESOLVE
 ```
 
@@ -307,7 +322,7 @@ pnpm install
 
 **الأعراض:**
 
-```
+```text
 error TS2307: Cannot find module
 ```
 
@@ -323,7 +338,7 @@ pnpm dev
 
 **الأعراض:**
 
-```
+```text
 Translation key not found
 ```
 
@@ -340,7 +355,7 @@ cat client/src/lib/i18n.ts | grep "your-key"
 
 ## 📊 هيكل الملفات بعد التثبيت
 
-```
+```text
 rabit-hr-platform/
 ├── node_modules/              # الحزم المثبتة
 ├── client/                    # الواجهة الأمامية
@@ -406,8 +421,9 @@ rabit-hr-platform/
    - ابحث في GitHub Issues
 
 3. **اطلب المساعدة**
-   - البريد الإلكتروني: support@rabit.com
-   - الدردشة: https://rabit.com/chat
+
+   - البريد الإلكتروني: [support@rabit.com](mailto:support@rabit.com)
+   - الدردشة: <https://rabit.com/chat>
 
 ---
 
@@ -452,7 +468,7 @@ pnpm update package-name
 
 ---
 
-## 🎉 تم التثبيت بنجاح!
+## 🎉 تم التثبيت بنجاح
 
 الآن يمكنك:
 
