@@ -1,0 +1,2 @@
+import React from 'react';
+export default function LegalCheck() {return <div className="p-6"><h1 className="text-xl font-bold mb-3">الفحص القانوني</h1><p className="text-sm text-muted-foreground">أداة مؤقتة لفحص الامتثال القانوني.</p></div>;}

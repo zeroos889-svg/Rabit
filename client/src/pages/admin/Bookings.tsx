@@ -1,0 +1,2 @@
+import React from 'react';
+export default function AdminBookings() {return <div className="p-6"><h1 className="text-xl font-bold mb-3">الحجوزات (لوحة الإدارة)</h1><p className="text-sm text-muted-foreground">إدارة الحجوزات (مؤقت).</p></div>;}

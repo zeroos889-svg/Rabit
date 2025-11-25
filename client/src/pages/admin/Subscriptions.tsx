@@ -1,0 +1,2 @@
+import React from 'react';
+export default function AdminSubscriptions() {return <div className="p-6"><h1 className="text-xl font-bold mb-3">الاشتراكات (لوحة الإدارة)</h1><p className="text-sm text-muted-foreground">إدارة الاشتراكات (مؤقت).</p></div>;}

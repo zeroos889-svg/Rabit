@@ -1,0 +1,2 @@
+import React from 'react';
+export default function VerifyDecision() {return <div className="p-6"><h1 className="text-2xl font-bold mb-3">تحقق من القرار</h1><p className="text-sm text-muted-foreground">أداة مؤقتة للتحقق من صحة قرار إداري.</p></div>;}

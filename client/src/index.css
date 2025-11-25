@@ -1,0 +1,47 @@
+/* الأساسيات */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* تخصيصات بسيطة */
+html { font-feature-settings: "kern"; }
+body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 antialiased; }
+
+/* متغيرات الألوان الأساسية للعلامة */
+:root {
+	--brand-gradient: linear-gradient(135deg,#7c3aed,#8b5cf6 40%,#ec4899 80%);
+	--brand-color: #7c3aed;
+	--brand-accent: #ec4899;
+}
+
+:root.reduce-motion *,
+:root.reduce-motion *::before,
+:root.reduce-motion *::after {
+	animation-duration: 0.001ms !important;
+	animation-iteration-count: 1 !important;
+	transition-duration: 0.001ms !important;
+	scroll-behavior: auto !important;
+}
+
+/* Skip link visibility */
+.skip-link {
+  position: fixed;
+}
+
+/* مظاهر العلامة */
+.bg-gradient-primary { background-image: var(--brand-gradient); }
+.brand-gradient-text { @apply bg-gradient-primary bg-clip-text text-transparent; }
+.brand-section { @apply relative overflow-hidden; }
+.brand-section::before { content:''; @apply absolute inset-0 bg-gradient-radial opacity-10; }
+
+/* رأس الموقع */
+.brand-header { @apply bg-white/60 dark:bg-gray-900/60; }
+
+/* حاويات مقطع البطل (Hero) */
+.hero { @apply py-16 md:py-24; }
+.hero-title { @apply text-3xl md:text-5xl font-bold mb-6 brand-gradient-text; }
+.hero-subtitle { @apply text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl; }
+
+/* انتقالات عامة */
+.fade-in { animation: fade-in 0.3s ease-in-out; }
+@keyframes fade-in { from { opacity:0 } to { opacity:1 } }

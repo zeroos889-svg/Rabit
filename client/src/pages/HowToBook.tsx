@@ -1,0 +1,2 @@
+import React from 'react';
+export default function HowToBook() {return <div className="p-6"><h1 className="text-2xl font-bold mb-3">كيفية الحجز</h1><p className="text-sm text-muted-foreground">خطوات إرشادية لحجز الاستشارة (مؤقت).</p></div>;}

@@ -1,0 +1,1 @@
+import{j as e}from"./ui-vendor-C96WIwkg.js";import"./react-vendor-DDxydHEc.js";function r(){return e.jsxs("div",{className:"p-6",children:[e.jsx("h1",{className:"text-2xl font-bold mb-3",children:"معاينة الهوية"}),e.jsx("p",{className:"text-sm text-muted-foreground",children:"صفحة مؤقتة لمعاينة ألوان وشعار العلامة."})]})}export{r as default};

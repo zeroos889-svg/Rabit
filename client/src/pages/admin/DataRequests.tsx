@@ -1,0 +1,2 @@
+import React from 'react';
+export default function AdminDataRequests() {return <div className="p-6"><h1 className="text-xl font-bold mb-3">طلبات البيانات</h1><p className="text-sm text-muted-foreground">إدارة طلبات الوصول أو الحذف (مؤقت).</p></div>;}

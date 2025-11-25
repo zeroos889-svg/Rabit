@@ -1,0 +1,1 @@
+import{j as s}from"./ui-vendor-C96WIwkg.js";import"./react-vendor-DDxydHEc.js";function e(){return s.jsxs("div",{className:"p-6",children:[s.jsx("h1",{className:"text-xl font-bold mb-3",children:"معالجة دفع Moyasar"}),s.jsx("p",{className:"text-sm text-muted-foreground",children:"صفحة مؤقتة لمعالجة رد مزود الدفع."})]})}export{e as default};
