@@ -1,1 +1,0 @@
-import{j as e}from"./ui-vendor-C96WIwkg.js";import"./react-vendor-DDxydHEc.js";function o(){return e.jsxs("div",{className:"p-6",children:[e.jsx("h1",{className:"text-2xl font-bold mb-3",children:"الكوكيز"}),e.jsx("p",{className:"text-sm text-muted-foreground",children:"شرح بسيط حول استخدام الكوكيز."})]})}export{o as default};

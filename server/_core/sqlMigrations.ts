@@ -1,9 +1,9 @@
 import fs from "fs";
 import path from "path";
-import { Pool } from "pg";
+import mysql from "mysql2/promise";
 
 /**
- * Run SQL migrations directly without drizzle-kit CLI (compatible مع PostgreSQL)
+ * Run SQL migrations directly without drizzle-kit CLI (compatible مع MySQL)
  */
 export async function runSQLMigrations() {
   if (!process.env.DATABASE_URL) {
@@ -12,19 +12,12 @@ export async function runSQLMigrations() {
   }
 
   const url = new URL(process.env.DATABASE_URL);
-  const sslMode = url.searchParams.get("sslmode");
-  const shouldUseSsl =
-    (sslMode && ["require", "required", "verify-full", "verify-ca"].includes(sslMode.toLowerCase())) ||
-    url.searchParams.get("ssl") === "true" ||
-    url.hostname.includes("railway");
+  const shouldUseSsl = url.hostname.includes("railway") || url.searchParams.get("ssl") === "true";
 
-  const pool: any = new (Pool as any)({
-    connectionString: process.env.DATABASE_URL,
+  const connection = await mysql.createConnection({
+    uri: process.env.DATABASE_URL,
     ssl: shouldUseSsl ? { rejectUnauthorized: false } : undefined,
-    max: 1,
   });
-
-  const client: any = await pool.connect();
 
   try {
     const migrationsDir = path.join(process.cwd(), "drizzle");
@@ -38,16 +31,16 @@ export async function runSQLMigrations() {
       return false;
     }
 
-    await client.query(`
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS __drizzle_migrations (
-        id SERIAL PRIMARY KEY,
-        name TEXT NOT NULL UNIQUE,
-        executed_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL UNIQUE,
+        executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
-    const executed = await client.query("SELECT name FROM __drizzle_migrations");
-    const executedNames = new Set(executed.rows.map((r: { name: string }) => r.name));
+    const [rows] = await connection.query("SELECT name FROM __drizzle_migrations");
+    const executedNames = new Set((rows as any[]).map((r: { name: string }) => r.name));
 
     let executedCount = 0;
     for (const file of files) {
@@ -59,17 +52,17 @@ export async function runSQLMigrations() {
       const sql = fs.readFileSync(path.join(migrationsDir, file), "utf-8");
 
       try {
-        await client.query("BEGIN");
-        await client.query(sql);
-        await client.query(
-          "INSERT INTO __drizzle_migrations (name) VALUES ($1)",
+        await connection.query("START TRANSACTION");
+        await connection.query(sql);
+        await connection.query(
+          "INSERT INTO __drizzle_migrations (name) VALUES (?)",
           [file]
         );
-        await client.query("COMMIT");
+        await connection.query("COMMIT");
         console.log(`[SQL Migrations] ✓ Executed: ${file}`);
         executedCount++;
       } catch (error) {
-        await client.query("ROLLBACK");
+        await connection.query("ROLLBACK");
         console.error(`[SQL Migrations] ✗ Failed to execute ${file}:`, error);
         throw error;
       }
@@ -83,7 +76,6 @@ export async function runSQLMigrations() {
     console.error("[SQL Migrations] ✗ Failed to run migrations:", error);
     return false;
   } finally {
-    client.release();
-    await pool.end();
+    await connection.end();
   }
 }

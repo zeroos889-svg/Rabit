@@ -1,1 +1,0 @@
-import{j as e}from"./ui-vendor-C96WIwkg.js";import"./react-vendor-DDxydHEc.js";function r(){return e.jsxs("div",{className:"p-6",children:[e.jsx("h1",{className:"text-xl font-bold mb-3",children:"الفحص القانوني"}),e.jsx("p",{className:"text-sm text-muted-foreground",children:"أداة مؤقتة لفحص الامتثال القانوني."})]})}export{r as default};

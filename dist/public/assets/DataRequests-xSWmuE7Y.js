@@ -1,1 +1,0 @@
-import{j as t}from"./ui-vendor-C96WIwkg.js";import"./react-vendor-DDxydHEc.js";function r(){return t.jsxs("div",{className:"p-6",children:[t.jsx("h1",{className:"text-xl font-bold mb-3",children:"طلبات البيانات"}),t.jsx("p",{className:"text-sm text-muted-foreground",children:"إدارة طلبات الوصول أو الحذف (مؤقت)."})]})}export{r as default};

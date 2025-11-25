@@ -1,1 +1,0 @@
-import{j as s}from"./ui-vendor-C96WIwkg.js";import"./react-vendor-DDxydHEc.js";function o(){return s.jsxs("div",{className:"p-6",children:[s.jsx("h1",{className:"text-xl font-bold mb-3",children:"الحجوزات (لوحة الإدارة)"}),s.jsx("p",{className:"text-sm text-muted-foreground",children:"إدارة الحجوزات (مؤقت)."})]})}export{o as default};

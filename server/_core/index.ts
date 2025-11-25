@@ -21,6 +21,8 @@ import { logger } from "./logger";
 import type { Request, Response, NextFunction } from "express";
 import { verifyMoyasarWebhook, verifyTapWebhook } from "./payment";
 
+console.log("🚀 Starting server initialization...");
+
 /**
  * Get port from environment or use default
  * Railway and other cloud platforms set PORT environment variable
@@ -37,6 +39,7 @@ function getPort(): number {
 }
 
 async function startServer() {
+  console.log("📝 Checking environment variables...");
   // Check environment variables
   checkEnv();
 
@@ -59,6 +62,7 @@ async function startServer() {
   // Run database migrations on startup
   try {
     if (process.env.DATABASE_URL) {
+      console.log("🔄 Running SQL Migrations...");
       await runSQLMigrations();
     }
   } catch (error) {
@@ -297,6 +301,7 @@ async function startServer() {
   registerAuthRoutes(app, authLimiter);
 
   // tRPC API
+  console.log("🔌 Setting up tRPC middleware...");
   app.use(
     "/api/trpc",
     createExpressMiddleware({
@@ -304,11 +309,20 @@ async function startServer() {
       createContext,
     })
   );
+  console.log("✅ tRPC middleware set up successfully");
+  
   // development mode uses Vite, production mode uses static files
-  if (process.env.NODE_ENV === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
+  console.log("🎨 Setting up Vite/Static serving...");
+  try {
+    if (process.env.NODE_ENV === "development") {
+      await setupVite(app, server);
+    } else {
+      serveStatic(app);
+    }
+    console.log("✅ Vite/Static serving set up successfully");
+  } catch (error) {
+    console.error("❌ Error setting up Vite/Static:", error);
+    throw error;
   }
 
   // Global Error Handler Middleware (must be last)

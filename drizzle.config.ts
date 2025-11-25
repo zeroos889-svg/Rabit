@@ -8,8 +8,8 @@ if (!connectionString) {
 export default {
   schema: "./drizzle/schema.ts",
   out: "./drizzle",
-  driver: "mysql2",
+  dialect: "mysql",
   dbCredentials: {
-    uri: connectionString,
+    url: connectionString,
   },
 } satisfies Config;

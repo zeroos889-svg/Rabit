@@ -1,1 +1,0 @@
-import{j as t}from"./ui-vendor-C96WIwkg.js";import"./react-vendor-DDxydHEc.js";function o(){return t.jsxs("div",{className:"p-6",children:[t.jsx("h1",{className:"text-2xl font-bold mb-3",children:"التواصل لحماية البيانات"}),t.jsx("p",{className:"text-sm text-muted-foreground",children:"نموذج مؤقت للتواصل بخصوص حماية البيانات."})]})}export{o as default};
