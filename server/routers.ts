@@ -1340,7 +1340,7 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
         if (code.maxUses && code.usedCount >= code.maxUses) {
           return {
             valid: false,
-            message: "الكود وصل للحد الأقصى من الاستخدام",
+            message: "الكود وصل إلى الحد الأقصى من الاستخدام",
           };
         }
 
@@ -1375,6 +1375,18 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
       .query(async ({ input }) => {
         const code = await db.getDiscountCodeByCode(input.code);
         if (!code || !code.isActive) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid code" });
+        }
+
+        if (code.maxUses && code.usedCount >= code.maxUses) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid code" });
+        }
+
+        const now = new Date();
+        if (code.validFrom && now < new Date(code.validFrom)) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid code" });
+        }
+        if (code.validUntil && now > new Date(code.validUntil)) {
           throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid code" });
         }
 

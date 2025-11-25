@@ -1,33 +1,34 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
-import { Skeleton, SkeletonCard } from '@/components/ui/skeleton';
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { Skeleton, SkeletonCard } from "@/components/ui/skeleton";
 
 describe('Skeleton Components', () => {
   describe('Skeleton', () => {
     it('renders with default props', () => {
       render(<Skeleton />);
-      const skeleton = screen.getByRole('presentation', { hidden: true });
+      const skeleton = screen.getByTestId("skeleton");
       expect(skeleton).toBeInTheDocument();
     });
 
     it('applies custom className', () => {
       render(<Skeleton className="custom-class" />);
-      const skeleton = screen.getByRole('presentation', { hidden: true });
+      const skeleton = screen.getByTestId("skeleton");
       expect(skeleton).toHaveClass('custom-class');
     });
 
     it('has shimmer animation', () => {
-      const { container } = render(<Skeleton />);
-      const skeleton = container.firstChild as HTMLElement;
-      expect(skeleton).toHaveClass('animate-shimmer');
+  const { container } = render(<Skeleton />);
+  const skeleton = container.firstChild;
+  expect(skeleton).not.toBeNull();
+  expect(skeleton).toHaveClass('animate-pulse');
+  expect(skeleton).toHaveClass('before:animate-[shimmer_2s_infinite]');
     });
   });
 
   describe('SkeletonCard', () => {
     it('renders card skeleton structure', () => {
       const { container } = render(<SkeletonCard />);
-      const skeletons = container.querySelectorAll('[role="presentation"]');
+      const skeletons = container.querySelectorAll('[data-testid="skeleton"]');
       expect(skeletons.length).toBeGreaterThan(0);
     });
 

@@ -19,14 +19,9 @@ import { connectRedis, testRedisConnection } from "./redisClient";
 import { logger } from "./logger";
 import type { Request, Response, NextFunction } from "express";
 import { verifyMoyasarWebhook, verifyTapWebhook } from "./payment";
-import {
-  initializeSentry,
-  getRequestHandler,
-  getTracingHandler,
-  getErrorHandler,
-} from "../sentry";
+import { initializeSentry, registerSentryMiddleware } from "../sentry";
 
-console.log("🚀 Starting server initialization...");
+logger.info("🚀 Starting server initialization...", { context: "Server" });
 
 // Initialize Sentry as early as possible
 initializeSentry();
@@ -47,7 +42,7 @@ function getPort(): number {
 }
 
 async function startServer() {
-  console.log("📝 Checking environment variables...");
+  logger.info("📝 Checking environment variables...", { context: "Server" });
   // Check environment variables
   checkEnv();
 
@@ -83,12 +78,6 @@ async function startServer() {
 
   // Trust reverse proxy headers for secure cookies/CSRF
   app.set("trust proxy", 1);
-
-  // Sentry request handler - must be first middleware
-  app.use(getRequestHandler());
-  
-  // Sentry tracing middleware
-  app.use(getTracingHandler());
 
   // Minimal CORS allowlist based on ALLOWED_ORIGINS (comma separated)
   const allowedOriginsEnv = process.env.ALLOWED_ORIGINS;
@@ -322,7 +311,7 @@ async function startServer() {
   registerAuthRoutes(app, authLimiter);
 
   // tRPC API
-  console.log("🔌 Setting up tRPC middleware...");
+  logger.info("🔌 Setting up tRPC middleware...", { context: "Server" });
   app.use(
     "/api/trpc",
     createExpressMiddleware({
@@ -330,24 +319,24 @@ async function startServer() {
       createContext,
     })
   );
-  console.log("✅ tRPC middleware set up successfully");
+  logger.info("✅ tRPC middleware set up successfully", { context: "Server" });
   
   // development mode uses Vite, production mode uses static files
-  console.log("🎨 Setting up Vite/Static serving...");
+  logger.info("🎨 Setting up Vite/Static serving...", { context: "Server" });
   try {
     if (process.env.NODE_ENV === "development") {
       await setupVite(app, server);
     } else {
       serveStatic(app);
     }
-    console.log("✅ Vite/Static serving set up successfully");
+  logger.info("✅ Vite/Static serving set up successfully", { context: "Server" });
   } catch (error) {
-    console.error("❌ Error setting up Vite/Static:", error);
+  logger.error("❌ Error setting up Vite/Static:", { context: "Server", error: error as Error });
     throw error;
   }
 
-  // Sentry error handler - must be before global error handler
-  app.use(getErrorHandler());
+  // Register Sentry error middleware before the global error handler
+  registerSentryMiddleware(app);
 
   // Global Error Handler Middleware (must be last)
   app.use(errorHandler);

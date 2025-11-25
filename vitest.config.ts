@@ -6,7 +6,9 @@ export default defineConfig({
   root: path.resolve(import.meta.dirname),
   plugins: [react()],
   test: {
-    environment: "node",
+    environment: "jsdom",
+    // استخدم بيئة node لاختبارات الخادم وكائناته
+    environmentMatchGlobs: [["server/**", "node"]],
     // Run unit tests only (integration tests require external services)
     include: [
       "server/**/*.test.{ts,tsx}",
@@ -18,6 +20,7 @@ export default defineConfig({
     // - server/_core/__tests__/cache.test.ts
     // These tests conflict with vite-plugin-manus-runtime
     globals: true,
+  setupFiles: ["./client/src/test/setup.ts"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
@@ -30,7 +33,7 @@ export default defineConfig({
       ],
     },
     testTimeout: 15000,
-  },
+  } as any,
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),

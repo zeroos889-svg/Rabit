@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import type React from "react";
 
 interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
@@ -7,10 +8,11 @@ interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
 /**
  * Enhanced Skeleton component with shimmer effect
  */
-function Skeleton({ className, ...props }: SkeletonProps) {
+function Skeleton({ className, ...props }: Readonly<SkeletonProps>) {
   return (
     <div
       data-slot="skeleton"
+      data-testid="skeleton"
       className={cn(
         "animate-pulse rounded-md bg-muted relative overflow-hidden",
         "before:absolute before:inset-0",
@@ -26,9 +28,9 @@ function Skeleton({ className, ...props }: SkeletonProps) {
 /**
  * Card Skeleton for dashboard cards
  */
-function CardSkeleton() {
+function SkeletonCard({ className, ...props }: Readonly<SkeletonProps>) {
   return (
-    <div className="rounded-lg border bg-card p-6 space-y-4">
+    <div className={cn("rounded-lg border bg-card p-6 space-y-4", className)} {...props}>
       <div className="flex items-center justify-between">
         <Skeleton className="h-6 w-32" />
         <Skeleton className="h-10 w-10 rounded-full" />
@@ -76,5 +78,7 @@ function ConsultationCardSkeleton() {
   );
 }
 
-export { Skeleton, CardSkeleton, TableRowSkeleton, ConsultationCardSkeleton };
+const CardSkeleton = SkeletonCard;
+
+export { Skeleton, SkeletonCard, CardSkeleton, TableRowSkeleton, ConsultationCardSkeleton };
 

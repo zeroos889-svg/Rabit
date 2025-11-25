@@ -627,28 +627,47 @@ const testUserSeeds: TestUserSeed[] = [
 ];
 
 // Minimal stub DB object used by health check/tests
-/* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars */
 const fakeDb = {
   delete(_table?: unknown) {
+    void _table;
     return {
-      where: async (_condition?: unknown) => undefined,
+      where: async (_condition?: unknown) => {
+        void _condition;
+        return undefined;
+      },
     };
   },
   select(_fields?: unknown) {
+    void _fields;
     return {
-      from: (_table: unknown) => ({
-        where: (_condition: unknown) => ({
-          limit: async (_count: number) => [],
-        }),
-        limit: async (_count: number) => [],
-      }),
+      from: (_table: unknown) => {
+        void _table;
+        return {
+          where: (_condition: unknown) => {
+            void _condition;
+            return {
+              limit: async (_count: number) => {
+                void _count;
+                return [];
+              },
+            };
+          },
+          limit: async (_count: number) => {
+            void _count;
+            return [];
+          },
+        };
+      },
+      limit: async (_count: number) => {
+        void _count;
+        return [];
+      },
     };
   },
   async execute() {
     return [];
   },
 };
-/* eslint-enable @typescript-eslint/no-unused-vars, no-unused-vars */
 
 // تجمع أخطاء التهيئة أثناء التطوير بدون استخدام console مباشرة لتجاوز قاعدة اللينت
 // (معلق) يمكن تفعيل تجميع أخطاء البذور لاحقاً إذا لزم
@@ -1303,7 +1322,8 @@ export async function deleteGeneratedDocument(documentId: number, userId?: numbe
     const condition = userId
       ? and(eq(generatedDocumentsTable.id, documentId), eq(generatedDocumentsTable.userId, userId))
       : eq(generatedDocumentsTable.id, documentId);
-    await db.delete(generatedDocumentsTable).where(condition);
+    const deleteQuery = db.delete(generatedDocumentsTable).where(condition);
+    await deleteQuery;
     return;
   }
   const idx = documents.findIndex(d => d.id === documentId && (!userId || d.userId === userId));
@@ -1526,9 +1546,15 @@ export async function deleteDiscountCode(id: number) {
   }
 }
 
-export async function getDiscountCodeUsageHistory(_codeId: number) {
-  // Return empty array as usage tracking not implemented in memory store
-  return [];
+export async function getDiscountCodeUsageHistory(codeId: number) {
+  // In-memory implementation returns recorded usages (if any) filtered by code
+  return discountUsages.filter(usage => usage.codeId === codeId);
+}
+
+// Test helpers
+export function __resetDiscountData() {
+  discountCodes.length = 0;
+  discountUsages.length = 0;
 }
 
 // Notifications DB flag (skip during tests)
@@ -1645,10 +1671,11 @@ export async function getUnreadNotificationsCount(userId: number) {
 export async function markNotificationAsRead(id: number) {
   if (useNotificationsDb) {
     const db = await getDrizzleDb();
-    await db
+    const markAsReadQuery = db
       .update(notificationsTable)
       .set({ isRead: true, readAt: new Date() })
       .where(eq(notificationsTable.id, id));
+    await markAsReadQuery;
     return;
   }
   const note = notifications.find(n => n.id === id);
@@ -1660,10 +1687,11 @@ export async function markNotificationAsRead(id: number) {
 export async function markAllNotificationsAsRead(userId: number) {
   if (useNotificationsDb) {
     const db = await getDrizzleDb();
-    await db
+    const markAllQuery = db
       .update(notificationsTable)
       .set({ isRead: true, readAt: new Date() })
       .where(or(eq(notificationsTable.userId, userId), isNull(notificationsTable.userId)));
+    await markAllQuery;
     return;
   }
   for (const n of notifications) {
@@ -1674,7 +1702,10 @@ export async function markAllNotificationsAsRead(userId: number) {
 export async function deleteNotification(id: number) {
   if (useNotificationsDb) {
     const db = await getDrizzleDb();
-    await db.delete(notificationsTable).where(eq(notificationsTable.id, id));
+    const deleteNotificationQuery = db
+      .delete(notificationsTable)
+      .where(eq(notificationsTable.id, id));
+    await deleteNotificationQuery;
     return;
   }
   const idx = notifications.findIndex(n => n.id === id);
@@ -1684,9 +1715,10 @@ export async function deleteNotification(id: number) {
 export async function deleteAllNotifications(userId: number) {
   if (useNotificationsDb) {
     const db = await getDrizzleDb();
-    await db
+    const deleteAllQuery = db
       .delete(notificationsTable)
       .where(or(eq(notificationsTable.userId, userId), isNull(notificationsTable.userId)));
+    await deleteAllQuery;
     return;
   }
   for (let i = notifications.length - 1; i >= 0; i--) {

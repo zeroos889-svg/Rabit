@@ -4,6 +4,7 @@
  */
 
 import * as Sentry from "@sentry/node";
+import type { Application } from "express";
 
 let sentryInitialized = false;
 
@@ -151,44 +152,16 @@ export function addBreadcrumb(
  * Get Sentry request handler middleware (should be first)
  * @deprecated Use setupExpressErrorHandler instead
  */
-export function getRequestHandler() {
-  // In Sentry v8+, this is handled automatically by setupExpressErrorHandler
-  // Return a no-op middleware for backward compatibility
-  return (req: any, res: any, next: any) => next();
-}
-
 /**
- * Get Sentry tracing middleware (after request handler)
- * @deprecated Use setupExpressErrorHandler instead
+ * Register Sentry middleware using the modern Express helpers.
+ * This should be called after all routes but before custom error handlers.
  */
-export function getTracingHandler() {
-  // In Sentry v8+, this is handled automatically by setupExpressErrorHandler
-  // Return a no-op middleware for backward compatibility
-  return (req: any, res: any, next: any) => next();
-}
+export function registerSentryMiddleware(app: Application) {
+  if (!sentryInitialized) {
+    return;
+  }
 
-/**
- * Setup Express error handler (should be called after all routes)
- * This is the new way in Sentry v8+
- */
-export function setupExpressErrorHandler(app: any) {
   Sentry.setupExpressErrorHandler(app);
-}
-
-/**
- * Get Sentry error handler middleware (should be last)
- * @deprecated Use setupExpressErrorHandler instead
- */
-export function getErrorHandler() {
-  // Return a custom error handler for backward compatibility
-  return (error: any, req: any, res: any, next: any) => {
-    // Capture all errors with status >= 500
-    const statusCode = error.statusCode || error.status;
-    if (!statusCode || statusCode >= 500) {
-      Sentry.captureException(error);
-    }
-    next(error);
-  };
 }
 
 // Re-export Sentry for convenience
