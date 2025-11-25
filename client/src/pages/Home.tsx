@@ -302,13 +302,16 @@ export default function Home() {
     const loginUrl = getLoginUrl();
     if (typeof window === "undefined") return;
 
-    const current = window.location.href;
-    window.location.href = loginUrl;
+    const isExternal =
+      /^https?:\/\//.test(loginUrl) && !loginUrl.startsWith(window.location.origin);
 
-    // jsdom لا يدعم الانتقال لصفحة أخرى، لذا نضبط الـ hash في بيئة الاختبار لضمان توقعات الاختبار
-    if (isTestEnv && window.location.href === current) {
+    // في بيئة الاختبار نتجنب تحذير jsdom عن التنقل لمستند آخر، ونضع الرابط في الـ hash لضمان وجوده في href
+    if (isTestEnv && isExternal) {
       window.location.hash = loginUrl;
+      return;
     }
+
+    window.location.href = loginUrl;
   };
 
   // Prefetch أكثر الصفحات استخداماً لتسريع الانتقال

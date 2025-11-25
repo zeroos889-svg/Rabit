@@ -1,4 +1,5 @@
 import { ButtonHTMLAttributes, forwardRef } from "react";
+import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
@@ -52,14 +53,22 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const Comp: any = asChild ? "span" : "button";
+    const Comp: any = asChild ? Slot : "button";
+    const { type, ...rest } = props;
+    const buttonProps = asChild
+      ? {}
+      : {
+          type: type ?? "button",
+          disabled: disabled || isLoading,
+        };
+
     return (
       <Comp
         ref={ref}
         className={cn(buttonVariants({ variant, size }), className)}
-        disabled={disabled || isLoading}
+        {...rest}
+        {...buttonProps}
         aria-label={props["aria-label"] || (size === "icon" ? "Button" : undefined)}
-        {...props}
       >
         {isLoading ? <span className="animate-pulse">...</span> : children}
       </Comp>
