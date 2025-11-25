@@ -27,6 +27,7 @@ const PageLoader = () => (
 // Lazy load pages - Public pages (loaded first)
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
 const AccountType = lazy(() => import("./pages/AccountType"));
 const GuidedTour = lazy(() => import("./pages/GuidedTour"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
@@ -44,7 +45,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const CompanyDashboard = lazy(
   () => import("./pages/dashboard/CompanyDashboard")
 );
-const EmployeeDashboard = lazy(() => import("./pages/EmployeeDashboard"));
+const EmployeeDashboard = lazy(() => import("./pages/EmployeeDashboardNew"));
 const ConsultantDashboard = lazy(() => import("./pages/ConsultantDashboard"));
 const AdminDashboard = lazy(() => import("./pages/dashboard/AdminDashboard"));
 const AdminDashboardNew = lazy(() => import("./pages/admin/Dashboard"));
@@ -166,6 +167,7 @@ function Router() {
         <Route path={"/signup/consultant"} component={SignupConsultant} />
         <Route path={"/signup/company"} component={SignupCompany} />
         <Route path={"/login"} component={withPublicOnly(Login)} />
+        <Route path={"/register"} component={withPublicOnly(Register)} />
         <Route
           path={"/forgot-password"}
           component={withPublicOnly(ForgotPassword)}

@@ -1,80 +1,90 @@
-# Dependencies
+# Dependencies & package managers
 node_modules/
 .pnp
 .pnp.js
-
-# Testing
-coverage/
-.nyc_output
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # Build outputs
 dist/
+dist-ssr/
 build/
 .next/
 out/
+*.local
 
-# Environment variables
+# Environment files
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
+# Testing artifacts
+coverage/
+*.lcov
+.nyc_output
+
 # Logs
 logs/
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
 
-# OS files
+# Editor & OS files
+.vscode/
+!.vscode/extensions.json
+.idea/
 .DS_Store
 .DS_Store?
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 ._*
 .Spotlight-V100
 .Trashes
 ehthumbs.db
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.project
-.classpath
-.settings/
 
 # Temporary files
 tmp/
 temp/
+.tmp
+.temp
 *.tmp
+*.temp
+*~
+*.swp
+*.swo
+.project
+.classpath
+.settings/
 
-# Database
+# Databases & storage
 *.db
 *.sqlite
 *.sqlite3
-
-# Redis
 dump.rdb
 
-# Uploads
+# Uploads & generated assets
 uploads/
 public/uploads/
 
-# Drizzle
+# Drizzle artifacts
 drizzle/
 
 # Backups
 backups/
 *.backup
 
-# Cache
+# Cache directories
 .cache/
 .parcel-cache/
-
-# Other
-.vercel
 .turbo
+
+# Deployment
+.vercel
+

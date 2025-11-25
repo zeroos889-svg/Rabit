@@ -1,6 +1,7 @@
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import { COOKIE_NAME } from "@shared/const";
 import { verifySessionToken } from "./jwt";
+import { verifyToken } from "../utils/jwt";
 import * as db from "../db";
 
 export type TrpcContext = {
@@ -9,28 +10,46 @@ export type TrpcContext = {
   user: any | null;
 };
 
+export type Context = TrpcContext;
+
+async function resolveUser(userId?: number | null) {
+  if (!userId) return null;
+  try {
+    const fetchedUser = await db.getUserById(userId);
+    return fetchedUser || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function createContext(
   opts: CreateExpressContextOptions
 ): Promise<TrpcContext> {
+  const { req, res } = opts;
   let user: any | null = null;
 
   try {
-    const token = opts.req.cookies?.[COOKIE_NAME];
-    if (token) {
-      const payload = await verifySessionToken(token);
-      if (payload) {
-        const fetchedUser = await db.getUserById(payload.userId);
-        user = fetchedUser || null;
+    const cookieToken = req.cookies?.[COOKIE_NAME];
+    if (cookieToken) {
+      const payload = await verifySessionToken(cookieToken);
+      user = await resolveUser(payload?.userId);
+    }
+
+    if (!user) {
+      const authHeader = req.headers.authorization;
+      if (authHeader?.startsWith("Bearer ")) {
+        const bearer = authHeader.substring(7);
+        const payload = verifyToken(bearer);
+        user = await resolveUser(payload?.userId);
       }
     }
-  } catch (error) {
-    // Authentication is optional for public procedures.
+  } catch {
     user = null;
   }
 
   return {
-    req: opts.req,
-    res: opts.res,
+    req,
+    res,
     user,
   };
 }

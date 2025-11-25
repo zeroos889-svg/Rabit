@@ -1,20 +1,15 @@
 import {
-  pgTable,
+  mysqlTable,
   serial,
-  integer,
+  int,
   text,
   timestamp,
   varchar,
   boolean,
   date,
-  jsonb,
-} from "drizzle-orm/pg-core";
-
-// Aliases to ease migration from mysql-core
-const int = integer;
-const json = jsonb;
-const mysqlEnum = <T extends readonly string[]>(name: string, values: T) =>
-  varchar(name, { length: 255 }).$type<T[number]>();
+  json,
+  mysqlEnum,
+} from "drizzle-orm/mysql-core";
 
 /**
  * قاعدة بيانات منصة رابِط - 21 جدول
@@ -22,7 +17,7 @@ const mysqlEnum = <T extends readonly string[]>(name: string, values: T) =>
  */
 
 // 1. المستخدمون
-export const users = pgTable("users", {
+export const users = mysqlTable("users", {
   id: serial("id").primaryKey(),
   openId: varchar("openId", { length: 64 }).unique(), // nullable for email/password users
   name: text("name"),
@@ -47,7 +42,7 @@ export const users = pgTable("users", {
 });
 
 // 1.1 كلمات المرور (للتسجيل بالبريد)
-export const passwords = pgTable("passwords", {
+export const passwords = mysqlTable("passwords", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull().unique(),
   passwordHash: varchar("passwordHash", { length: 255 }).notNull(),
@@ -58,7 +53,7 @@ export const passwords = pgTable("passwords", {
 });
 
 // 2. الشركات
-export const companies = pgTable("companies", {
+export const companies = mysqlTable("companies", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull(),
   nameAr: varchar("nameAr", { length: 255 }),
@@ -93,7 +88,7 @@ export const companies = pgTable("companies", {
 });
 
 // 3. مستقلو الموارد البشرية
-export const individualHRs = pgTable("individualHRs", {
+export const individualHRs = mysqlTable("individualHRs", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull(),
   fullName: varchar("fullName", { length: 255 }),
@@ -113,7 +108,7 @@ export const individualHRs = pgTable("individualHRs", {
 });
 
 // 4. الموظفون
-export const employees = pgTable("employees", {
+export const employees = mysqlTable("employees", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull(),
   fullName: varchar("fullName", { length: 255 }),
@@ -125,7 +120,7 @@ export const employees = pgTable("employees", {
 });
 
 // 5. الاشتراكات
-export const subscriptions = pgTable("subscriptions", {
+export const subscriptions = mysqlTable("subscriptions", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull(),
   planType: mysqlEnum("planType", [
@@ -147,7 +142,7 @@ export const subscriptions = pgTable("subscriptions", {
 });
 
 // 6. الصلاحيات
-export const permissions = pgTable("permissions", {
+export const permissions = mysqlTable("permissions", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull(),
   permissionLevel: mysqlEnum("permissionLevel", [
@@ -169,7 +164,7 @@ export const permissions = pgTable("permissions", {
 });
 
 // 7. الوظائف
-export const jobs = pgTable("jobs", {
+export const jobs = mysqlTable("jobs", {
   id: serial("id").primaryKey(),
   companyId: int("companyId").notNull(),
   title: varchar("title", { length: 255 }),
@@ -204,7 +199,7 @@ export const jobs = pgTable("jobs", {
 });
 
 // 8. طلبات التوظيف
-export const jobApplications = pgTable("jobApplications", {
+export const jobApplications = mysqlTable("jobApplications", {
   id: serial("id").primaryKey(),
   jobId: int("jobId").notNull(),
   candidateId: int("candidateId").notNull(),
@@ -224,7 +219,7 @@ export const jobApplications = pgTable("jobApplications", {
 });
 
 // 9. المرشحون
-export const candidates = pgTable("candidates", {
+export const candidates = mysqlTable("candidates", {
   id: serial("id").primaryKey(),
   fullName: varchar("fullName", { length: 255 }),
   email: varchar("email", { length: 320 }),
@@ -244,7 +239,7 @@ export const candidates = pgTable("candidates", {
 });
 
 // 10. مراحل التوظيف
-export const pipelineStages = pgTable("pipelineStages", {
+export const pipelineStages = mysqlTable("pipelineStages", {
   id: serial("id").primaryKey(),
   companyId: int("companyId").notNull(),
   name: varchar("name", { length: 100 }),
@@ -257,7 +252,7 @@ export const pipelineStages = pgTable("pipelineStages", {
 });
 
 // 11. تقييمات المرشحين
-export const candidateEvaluations = pgTable("candidateEvaluations", {
+export const candidateEvaluations = mysqlTable("candidateEvaluations", {
   id: serial("id").primaryKey(),
   applicationId: int("applicationId").notNull(),
   evaluatorId: int("evaluatorId").notNull(),
@@ -277,7 +272,7 @@ export const candidateEvaluations = pgTable("candidateEvaluations", {
 });
 
 // 12. أنشطة المرشحين
-export const candidateActivities = pgTable("candidateActivities", {
+export const candidateActivities = mysqlTable("candidateActivities", {
   id: serial("id").primaryKey(),
   applicationId: int("applicationId").notNull(),
   userId: int("userId").notNull(),
@@ -294,7 +289,7 @@ export const candidateActivities = pgTable("candidateActivities", {
 });
 
 // 13. جدولة المقابلات
-export const interviewSchedules = pgTable("interviewSchedules", {
+export const interviewSchedules = mysqlTable("interviewSchedules", {
   id: serial("id").primaryKey(),
   applicationId: int("applicationId").notNull(),
   interviewType: mysqlEnum("interviewType", [
@@ -321,7 +316,7 @@ export const interviewSchedules = pgTable("interviewSchedules", {
 });
 
 // 14. حالات الموارد البشرية
-export const hrCases = pgTable("hrCases", {
+export const hrCases = mysqlTable("hrCases", {
   id: serial("id").primaryKey(),
   companyId: int("companyId").notNull(),
   createdBy: int("createdBy").notNull(),
@@ -353,7 +348,7 @@ export const hrCases = pgTable("hrCases", {
 });
 
 // 15. المهام
-export const tasks = pgTable("tasks", {
+export const tasks = mysqlTable("tasks", {
   id: serial("id").primaryKey(),
   caseId: int("caseId"),
   createdBy: int("createdBy").notNull(),
@@ -374,7 +369,7 @@ export const tasks = pgTable("tasks", {
 });
 
 // 16. تعليقات الحالات
-export const caseComments = pgTable("caseComments", {
+export const caseComments = mysqlTable("caseComments", {
   id: serial("id").primaryKey(),
   caseId: int("caseId").notNull(),
   userId: int("userId").notNull(),
@@ -385,7 +380,7 @@ export const caseComments = pgTable("caseComments", {
 });
 
 // 17. المستندات
-export const documents = pgTable("documents", {
+export const documents = mysqlTable("documents", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull(),
   companyId: int("companyId"),
@@ -398,7 +393,7 @@ export const documents = pgTable("documents", {
 });
 
 // 18. سجل الحسابات
-export const calculationHistory = pgTable("calculationHistory", {
+export const calculationHistory = mysqlTable("calculationHistory", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull(),
   calculationType: mysqlEnum("calculationType", [
@@ -413,7 +408,7 @@ export const calculationHistory = pgTable("calculationHistory", {
 });
 
 // 19. الخطابات المولدة
-export const generatedLetters = pgTable("generatedLetters", {
+export const generatedLetters = mysqlTable("generatedLetters", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull(),
   letterType: varchar("letterType", { length: 100 }),
@@ -423,7 +418,7 @@ export const generatedLetters = pgTable("generatedLetters", {
 });
 
 // 20. سجل الدردشة
-export const chatHistory = pgTable("chatHistory", {
+export const chatHistory = mysqlTable("chatHistory", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull(),
   message: text("message"),
@@ -432,7 +427,7 @@ export const chatHistory = pgTable("chatHistory", {
 });
 
 // 21. سجل التدقيق
-export const auditLogs = pgTable("auditLogs", {
+export const auditLogs = mysqlTable("auditLogs", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull(),
   action: varchar("action", { length: 255 }),
@@ -445,7 +440,7 @@ export const auditLogs = pgTable("auditLogs", {
 });
 
 // 22. قوالب النماذج (Templates)
-export const templates = pgTable("templates", {
+export const templates = mysqlTable("templates", {
   id: serial("id").primaryKey(),
   code: varchar("code", { length: 100 }).notNull().unique(),
   titleAr: varchar("titleAr", { length: 255 }).notNull(),
@@ -460,7 +455,7 @@ export const templates = pgTable("templates", {
 });
 
 // 23. المستندات المولدة (Generated Documents)
-export const generatedDocuments = pgTable("generatedDocuments", {
+export const generatedDocuments = mysqlTable("generatedDocuments", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull(),
   templateCode: varchar("templateCode", { length: 100 }).notNull(),
@@ -476,7 +471,7 @@ export const generatedDocuments = pgTable("generatedDocuments", {
 });
 
 // 24. باقات الاستشارات (Consulting Packages)
-export const consultingPackages = pgTable("consultingPackages", {
+export const consultingPackages = mysqlTable("consultingPackages", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   nameEn: varchar("nameEn", { length: 255 }),
@@ -493,7 +488,7 @@ export const consultingPackages = pgTable("consultingPackages", {
 });
 
 // 25. تذاكر الاستشارات (Consulting Tickets)
-export const consultingTickets = pgTable("consultingTickets", {
+export const consultingTickets = mysqlTable("consultingTickets", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull(),
   packageId: int("packageId").notNull(),
@@ -523,7 +518,7 @@ export const consultingTickets = pgTable("consultingTickets", {
 });
 
 // 26. ردود الاستشارات (Consulting Responses)
-export const consultingResponses = pgTable("consultingResponses", {
+export const consultingResponses = mysqlTable("consultingResponses", {
   id: serial("id").primaryKey(),
   ticketId: int("ticketId").notNull(),
   userId: int("userId").notNull(),
@@ -535,7 +530,7 @@ export const consultingResponses = pgTable("consultingResponses", {
 });
 
 // 27. تتبع الاستخدام (Usage Events)
-export const usageEvents = pgTable("usageEvents", {
+export const usageEvents = mysqlTable("usageEvents", {
   id: serial("id").primaryKey(),
   userId: int("userId"),
   eventType: varchar("eventType", { length: 100 }).notNull(),
@@ -546,7 +541,7 @@ export const usageEvents = pgTable("usageEvents", {
 });
 
 // 28. أكواد الخصم (Discount Codes)
-export const discountCodes = pgTable("discountCodes", {
+export const discountCodes = mysqlTable("discountCodes", {
   id: serial("id").primaryKey(),
   code: varchar("code", { length: 50 }).notNull().unique(),
   description: text("description"),
@@ -563,7 +558,7 @@ export const discountCodes = pgTable("discountCodes", {
 });
 
 // 29. استخدام أكواد الخصم (Discount Code Usage)
-export const discountCodeUsage = pgTable("discountCodeUsage", {
+export const discountCodeUsage = mysqlTable("discountCodeUsage", {
   id: serial("id").primaryKey(),
   codeId: int("codeId").notNull(),
   userId: int("userId").notNull(),
@@ -575,7 +570,7 @@ export const discountCodeUsage = pgTable("discountCodeUsage", {
 });
 
 // 30. الإشعارات (Notifications)
-export const notifications = pgTable("notifications", {
+export const notifications = mysqlTable("notifications", {
   id: serial("id").primaryKey(),
   userId: int("userId"),
   type: mysqlEnum("type", [
@@ -602,7 +597,7 @@ export const notifications = pgTable("notifications", {
 });
 
 // 31. تفضيلات الإشعارات (Notification Preferences)
-export const notificationPreferences = pgTable("notificationPreferences", {
+export const notificationPreferences = mysqlTable("notificationPreferences", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull().unique(),
   inAppEnabled: boolean("inAppEnabled").default(true).notNull(),
@@ -619,7 +614,7 @@ export const notificationPreferences = pgTable("notificationPreferences", {
 });
 
 // 32. سجل البريد الإلكتروني (Email Logs)
-export const emailLogs = pgTable("emailLogs", {
+export const emailLogs = mysqlTable("emailLogs", {
   id: serial("id").primaryKey(),
   userId: int("userId"),
   toEmail: varchar("toEmail", { length: 320 }).notNull(),
@@ -634,7 +629,7 @@ export const emailLogs = pgTable("emailLogs", {
 });
 
 // 33. سجل الرسائل النصية (SMS Logs)
-export const smsLogs = pgTable("smsLogs", {
+export const smsLogs = mysqlTable("smsLogs", {
   id: serial("id").primaryKey(),
   userId: int("userId"),
   toPhone: varchar("toPhone", { length: 20 }).notNull(),
@@ -648,7 +643,7 @@ export const smsLogs = pgTable("smsLogs", {
 });
 
 // 34. طلبات التواصل (Contact Requests)
-export const contactRequests = pgTable("contactRequests", {
+export const contactRequests = mysqlTable("contactRequests", {
   id: serial("id").primaryKey(),
   fullName: varchar("fullName", { length: 255 }).notNull(),
   email: varchar("email", { length: 320 }).notNull(),
@@ -688,7 +683,7 @@ export const contactRequests = pgTable("contactRequests", {
 });
 
 // Payment table
-export const payments = pgTable("payments", {
+export const payments = mysqlTable("payments", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull(),
   amount: int("amount").notNull(), // in halalas (SAR * 100)
@@ -764,7 +759,7 @@ export type ContactRequest = typeof contactRequests.$inferSelect;
 export type InsertContactRequest = typeof contactRequests.$inferInsert;
 
 // 22. محادثات الدردشة المباشرة
-export const chatConversations = pgTable("chatConversations", {
+export const chatConversations = mysqlTable("chatConversations", {
   id: serial("id").primaryKey(),
   userId: int("userId"), // null للزوار غير المسجلين
   visitorName: varchar("visitorName", { length: 255 }),
@@ -777,7 +772,7 @@ export const chatConversations = pgTable("chatConversations", {
 });
 
 // 23. رسائل الدردشة
-export const chatMessages = pgTable("chatMessages", {
+export const chatMessages = mysqlTable("chatMessages", {
   id: serial("id").primaryKey(),
   conversationId: int("conversationId").notNull(),
   senderType: mysqlEnum("senderType", ["visitor", "admin", "assistant"]).notNull(),
@@ -797,7 +792,7 @@ export type InsertChatMessage = typeof chatMessages.$inferInsert;
 // ==========================================
 
 // 24. المستشارون
-export const consultants = pgTable("consultants", {
+export const consultants = mysqlTable("consultants", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull().unique(), // ربط مع جدول users
 
@@ -847,7 +842,7 @@ export const consultants = pgTable("consultants", {
 });
 
 // 25. مستندات المستشارين
-export const consultantDocuments = pgTable("consultantDocuments", {
+export const consultantDocuments = mysqlTable("consultantDocuments", {
   id: serial("id").primaryKey(),
   consultantId: int("consultantId").notNull(),
 
@@ -880,7 +875,7 @@ export const consultantDocuments = pgTable("consultantDocuments", {
 });
 
 // 26. التخصصات
-export const specializations = pgTable("specializations", {
+export const specializations = mysqlTable("specializations", {
   id: serial("id").primaryKey(),
   code: varchar("code", { length: 50 }).notNull().unique(),
 
@@ -901,7 +896,7 @@ export const specializations = pgTable("specializations", {
 });
 
 // 27. أنواع الاستشارات
-export const consultationTypes = pgTable("consultationTypes", {
+export const consultationTypes = mysqlTable("consultationTypes", {
   id: serial("id").primaryKey(),
   code: varchar("code", { length: 50 }).notNull().unique(),
 
@@ -935,7 +930,7 @@ export const consultationTypes = pgTable("consultationTypes", {
 });
 
 // 28. حجوزات الاستشارات
-export const consultationBookings = pgTable("consultationBookings", {
+export const consultationBookings = mysqlTable("consultationBookings", {
   id: serial("id").primaryKey(),
   bookingNumber: varchar("bookingNumber", { length: 50 }).notNull().unique(),
 
@@ -998,7 +993,7 @@ export const consultationBookings = pgTable("consultationBookings", {
 });
 
 // 29. أرباح المستشارين
-export const consultantEarnings = pgTable("consultantEarnings", {
+export const consultantEarnings = mysqlTable("consultantEarnings", {
   id: serial("id").primaryKey(),
   consultantId: int("consultantId").notNull(),
   bookingId: int("bookingId").notNull(),
@@ -1029,7 +1024,7 @@ export const consultantEarnings = pgTable("consultantEarnings", {
 });
 
 // 30. توفر المستشارين (جدول الأوقات)
-export const consultantAvailability = pgTable("consultantAvailability", {
+export const consultantAvailability = mysqlTable("consultantAvailability", {
   id: serial("id").primaryKey(),
   consultantId: int("consultantId").notNull(),
 
@@ -1052,7 +1047,7 @@ export const consultantAvailability = pgTable("consultantAvailability", {
 });
 
 // 31. الأيام المحظورة (إجازات المستشارين)
-export const consultantBlockedDates = pgTable("consultantBlockedDates", {
+export const consultantBlockedDates = mysqlTable("consultantBlockedDates", {
   id: serial("id").primaryKey(),
   consultantId: int("consultantId").notNull(),
 
@@ -1063,7 +1058,7 @@ export const consultantBlockedDates = pgTable("consultantBlockedDates", {
 });
 
 // 32. تقييمات المستشارين
-export const consultantReviews = pgTable("consultantReviews", {
+export const consultantReviews = mysqlTable("consultantReviews", {
   id: serial("id").primaryKey(),
   consultantId: int("consultantId").notNull(),
   bookingId: int("bookingId").notNull().unique(),
@@ -1112,7 +1107,7 @@ export type ConsultantReview = typeof consultantReviews.$inferSelect;
 export type InsertConsultantReview = typeof consultantReviews.$inferInsert;
 
 // 33. رسائل الاستشارات (Consultation Messages)
-export const consultationMessages = pgTable("consultationMessages", {
+export const consultationMessages = mysqlTable("consultationMessages", {
   id: serial("id").primaryKey(),
   bookingId: int("bookingId").notNull(), // ربط مع consultationBookings
 
@@ -1144,7 +1139,7 @@ export type InsertConsultationMessage =
 // ============================================
 
 // 34. الموافقات (User Consents)
-export const userConsents = pgTable("userConsents", {
+export const userConsents = mysqlTable("userConsents", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull(),
   policyVersion: varchar("policyVersion", { length: 50 }).notNull(), // مثال: "PP-1.0-2025"
@@ -1158,7 +1153,7 @@ export type UserConsent = typeof userConsents.$inferSelect;
 export type InsertUserConsent = typeof userConsents.$inferInsert;
 
 // 35. طلبات حقوق صاحب البيانات (Data Subject Requests)
-export const dataSubjectRequests = pgTable("dataSubjectRequests", {
+export const dataSubjectRequests = mysqlTable("dataSubjectRequests", {
   id: serial("id").primaryKey(),
   userId: int("userId").notNull(),
   type: mysqlEnum("type", [
@@ -1181,7 +1176,7 @@ export type DataSubjectRequest = typeof dataSubjectRequests.$inferSelect;
 export type InsertDataSubjectRequest = typeof dataSubjectRequests.$inferInsert;
 
 // 36. سياسات الاحتفاظ (Retention Policies)
-export const retentionPolicies = pgTable("retentionPolicies", {
+export const retentionPolicies = mysqlTable("retentionPolicies", {
   id: serial("id").primaryKey(),
   resource: varchar("resource", { length: 100 }).notNull().unique(), // users, uploads, logs, analytics
   retentionDays: int("retentionDays").notNull(),
@@ -1194,7 +1189,7 @@ export type RetentionPolicy = typeof retentionPolicies.$inferSelect;
 export type InsertRetentionPolicy = typeof retentionPolicies.$inferInsert;
 
 // 37. سجلات الاحتفاظ (Retention Logs)
-export const retentionLogs = pgTable("retentionLogs", {
+export const retentionLogs = mysqlTable("retentionLogs", {
   id: serial("id").primaryKey(),
   resource: varchar("resource", { length: 100 }).notNull(),
   recordsDeleted: int("recordsDeleted").notNull(),
@@ -1205,7 +1200,7 @@ export type RetentionLog = typeof retentionLogs.$inferSelect;
 export type InsertRetentionLog = typeof retentionLogs.$inferInsert;
 
 // 38. حوادث الأمن (Security Incidents)
-export const securityIncidents = pgTable("securityIncidents", {
+export const securityIncidents = mysqlTable("securityIncidents", {
   id: serial("id").primaryKey(),
   detectedAt: timestamp("detectedAt").notNull(),
   reportedToSdaiaAt: timestamp("reportedToSdaiaAt"),
@@ -1227,7 +1222,7 @@ export type SecurityIncident = typeof securityIncidents.$inferSelect;
 export type InsertSecurityIncident = typeof securityIncidents.$inferInsert;
 
 // 39. نقل البيانات (Data Transfers)
-export const dataTransfers = pgTable("dataTransfers", {
+export const dataTransfers = mysqlTable("dataTransfers", {
   id: serial("id").primaryKey(),
   customerId: int("customerId"), // null = platform-level
   legalBasis: mysqlEnum("legalBasis", [
@@ -1247,7 +1242,7 @@ export type DataTransfer = typeof dataTransfers.$inferSelect;
 export type InsertDataTransfer = typeof dataTransfers.$inferInsert;
 
 // 40. أنشطة المعالجة (Processing Activities - ROPA)
-export const processingActivities = pgTable("processingActivities", {
+export const processingActivities = mysqlTable("processingActivities", {
   id: serial("id").primaryKey(),
   controllerId: int("controllerId"), // userId أو null للمنصة
   purpose: varchar("purpose", { length: 255 }).notNull(), // consulting, doc_generation, kb_upload
@@ -1265,7 +1260,7 @@ export type InsertProcessingActivity = typeof processingActivities.$inferInsert;
 // (سيتم تحديثه في migration منفصل)
 
 // 42. إعدادات PDPL للعملاء
-export const customerPdplSettings = pgTable("customerPdplSettings", {
+export const customerPdplSettings = mysqlTable("customerPdplSettings", {
   id: serial("id").primaryKey(),
   customerId: int("customerId").notNull().unique(),
   processingRole: mysqlEnum("processingRole", ["controller", "processor"])
@@ -1282,3 +1277,65 @@ export const customerPdplSettings = pgTable("customerPdplSettings", {
 export type CustomerPdplSetting = typeof customerPdplSettings.$inferSelect;
 export type InsertCustomerPdplSetting =
   typeof customerPdplSettings.$inferInsert;
+
+// 43. أنواع الإجازات (Leave Types)
+export const leaveTypes = mysqlTable("leaveTypes", {
+  id: serial("id").primaryKey(),
+  code: varchar("code", { length: 50 }).notNull().unique(), // annual, sick, maternity, etc.
+  nameAr: varchar("nameAr", { length: 100 }).notNull(),
+  nameEn: varchar("nameEn", { length: 100 }).notNull(),
+  descriptionAr: text("descriptionAr"),
+  descriptionEn: text("descriptionEn"),
+  defaultDays: int("defaultDays").notNull(), // عدد الأيام الافتراضية سنوياً
+  requiresApproval: boolean("requiresApproval").default(true).notNull(),
+  isPaid: boolean("isPaid").default(true).notNull(),
+  carryForward: boolean("carryForward").default(false).notNull(), // ترحيل للسنة القادمة
+  maxCarryForwardDays: int("maxCarryForwardDays"),
+  active: boolean("active").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+});
+
+export type LeaveType = typeof leaveTypes.$inferSelect;
+export type InsertLeaveType = typeof leaveTypes.$inferInsert;
+
+// 44. طلبات الإجازات (Leave Requests)
+export const leaves = mysqlTable("leaves", {
+  id: serial("id").primaryKey(),
+  userId: int("userId").notNull(),
+  leaveTypeId: int("leaveTypeId").notNull(),
+  startDate: date("startDate").notNull(),
+  endDate: date("endDate").notNull(),
+  totalDays: int("totalDays").notNull(),
+  reason: text("reason"),
+  status: mysqlEnum("status", ["pending", "approved", "rejected", "cancelled"])
+    .default("pending")
+    .notNull(),
+  requestDate: timestamp("requestDate").defaultNow().notNull(),
+  reviewedBy: int("reviewedBy"), // المسؤول الذي راجع الطلب
+  reviewedAt: timestamp("reviewedAt"),
+  reviewNotes: text("reviewNotes"),
+  attachments: json("attachments"), // مرفقات (تقارير طبية، إلخ)
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+});
+
+export type Leave = typeof leaves.$inferSelect;
+export type InsertLeave = typeof leaves.$inferInsert;
+
+// 45. أرصدة الإجازات (Leave Balances)
+export const leaveBalances = mysqlTable("leaveBalances", {
+  id: serial("id").primaryKey(),
+  userId: int("userId").notNull(),
+  leaveTypeId: int("leaveTypeId").notNull(),
+  year: int("year").notNull(),
+  totalDays: int("totalDays").notNull(), // الرصيد الكلي
+  usedDays: int("usedDays").default(0).notNull(),
+  remainingDays: int("remainingDays").notNull(),
+  carriedForward: int("carriedForward").default(0).notNull(), // المرحل من السنة السابقة
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+});
+
+export type LeaveBalance = typeof leaveBalances.$inferSelect;
+export type InsertLeaveBalance = typeof leaveBalances.$inferInsert;

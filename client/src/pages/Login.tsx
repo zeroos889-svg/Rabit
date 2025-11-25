@@ -38,15 +38,21 @@ export default function Login() {
 
   const loginMutation = trpc.auth.login.useMutation({
     onSuccess: (data: any) => {
-      toast.success(t("login.success"));
-      // Save lightweight user profile (session relies on cookies)
+      toast.success(data.message || t("login.success"));
+      
+      // Save JWT token
+      if (data.token) {
+        localStorage.setItem("authToken", data.token);
+      }
+      
+      // Save user profile
       if (data.user) {
         localStorage.setItem("user", JSON.stringify(data.user));
       }
 
       // Redirect based on user type
       setTimeout(() => {
-        switch (data.user.userType) {
+        switch (data.user?.userType) {
           case "company":
             setLocation("/dashboard/company");
             break;
