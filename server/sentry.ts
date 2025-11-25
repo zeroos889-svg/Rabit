@@ -149,10 +149,6 @@ export function addBreadcrumb(
 }
 
 /**
- * Get Sentry request handler middleware (should be first)
- * @deprecated Use setupExpressErrorHandler instead
- */
-/**
  * Register Sentry middleware using the modern Express helpers.
  * This should be called after all routes but before custom error handlers.
  */

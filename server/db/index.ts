@@ -523,6 +523,7 @@ interface SecurityIncident {
   updatedAt?: Date;
   isLate?: boolean;
 }
+// In-memory storage
 const emailLogs: GenericLogEntry[] = [];
 const smsLogs: GenericLogEntry[] = [];
 const dataRequests: DataSubjectRequest[] = [];
@@ -628,38 +629,38 @@ const testUserSeeds: TestUserSeed[] = [
 
 // Minimal stub DB object used by health check/tests
 const fakeDb = {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   delete(_table?: unknown) {
-    void _table;
     return {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       where: async (_condition?: unknown) => {
-        void _condition;
         return undefined;
       },
     };
   },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   select(_fields?: unknown) {
-    void _fields;
     return {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       from: (_table: unknown) => {
-        void _table;
         return {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           where: (_condition: unknown) => {
-            void _condition;
             return {
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               limit: async (_count: number) => {
-                void _count;
                 return [];
               },
             };
           },
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           limit: async (_count: number) => {
-            void _count;
             return [];
           },
         };
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       limit: async (_count: number) => {
-        void _count;
         return [];
       },
     };
@@ -1850,7 +1851,7 @@ export async function createChatConversation(input: {
         visitorName: row.visitorName ?? null,
         visitorEmail: row.visitorEmail ?? null,
         visitorToken: row.visitorToken ?? visitorToken,
-        status: (row.status || "open") as "open" | "closed",
+        status: (row.status || "open"),
         lastMessageAt: row.lastMessageAt ?? new Date(),
       };
     }
@@ -1901,7 +1902,7 @@ export async function upsertChatConversation(input: {
           visitorName: existing.visitorName ?? input.visitorName ?? null,
           visitorEmail: existing.visitorEmail ?? input.visitorEmail ?? null,
           visitorToken,
-          status: existing.status as "open" | "closed",
+          status: existing.status,
           lastMessageAt: existing.lastMessageAt ?? new Date(),
         };
       }
@@ -1937,7 +1938,7 @@ export async function getChatConversation(id: number) {
       visitorName: row.visitorName ?? null,
       visitorEmail: row.visitorEmail ?? null,
       visitorToken: row.visitorToken ?? null,
-      status: row.status as "open" | "closed",
+      status: row.status,
       lastMessageAt: row.lastMessageAt ?? new Date(),
     } as ChatConversation;
   }
