@@ -200,6 +200,22 @@ type Notification = {
   icon?: string | null;
 };
 
+type InsertResult = {
+  insertId?: number | bigint | null;
+};
+
+function extractInsertId(result: unknown): number {
+  if (!result) return 0;
+  const insertId = (result as InsertResult).insertId;
+  if (typeof insertId === "bigint") {
+    return Number(insertId);
+  }
+  if (typeof insertId === "number") {
+    return insertId;
+  }
+  return 0;
+}
+
 type NotificationPreferences = {
   userId: number;
   emailEnabled: boolean;
@@ -677,11 +693,32 @@ export async function createContactRequest(input: CreateContactRequestInput) {
 
   if (process.env.DATABASE_URL) {
     const db = await getDrizzleDb();
-    const [row] = await db
-      .insert(contactRequestsTable)
-      .values(payload)
-      .returning();
-    return row;
+    const result = await db.insert(contactRequestsTable).values(payload);
+    const insertedId = extractInsertId(result);
+    if (insertedId) {
+      const [row] = await db
+        .select()
+        .from(contactRequestsTable)
+        .where(eq(contactRequestsTable.id, insertedId))
+        .limit(1);
+      if (row) {
+        return row;
+      }
+    }
+    const [latest] = await db
+      .select()
+      .from(contactRequestsTable)
+      .orderBy(desc(contactRequestsTable.createdAt))
+      .limit(1);
+    if (latest) {
+      return latest;
+    }
+    return {
+      id: insertedId || 0,
+      ...payload,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as ContactRequestRecord;
   }
 
   const record: ContactRequestRecord = {
@@ -722,7 +759,7 @@ export async function createUser(input: {
     const db = await getDrizzleDb();
     // ملاحظة: المخطط الحالي لا يحتوي نوع "consultant" في userType، سنضعه null لتفادي خطأ الإدراج
     const userTypeValue = input.userType === "consultant" ? null : input.userType ?? null;
-    const [row] = await db
+    const result = await db
       .insert(usersTable)
       .values({
         email: input.email ?? null,
@@ -730,10 +767,10 @@ export async function createUser(input: {
         role: input.role || "user",
         userType: userTypeValue as DrizzleUserType,
         openId: input.openId ?? null,
-      })
-      .returning({ id: usersTable.id });
-    if (row?.id) {
-      return row.id;
+      });
+    const insertedId = extractInsertId(result);
+    if (insertedId) {
+      return insertedId;
     }
     // Fallback: استرجاع السجل عن طريق البريد بعد الإدراج
     if (input.email) {
@@ -1147,7 +1184,7 @@ export async function createGeneratedDocument(input: {
   if (process.env.DATABASE_URL) {
     const db = await getDrizzleDb();
     const langValue: "ar" | "en" | "both" = isValidDocumentLang(input.lang) ? input.lang : "ar";
-    const [row] = await db
+    const result = await db
       .insert(generatedDocumentsTable)
       .values({
         userId: input.userId,
@@ -1159,9 +1196,17 @@ export async function createGeneratedDocument(input: {
         companyLogo: input.companyLogo ?? null,
         companyName: input.companyName ?? null,
         isSaved: input.isSaved ?? input.saved ?? false,
-      })
-      .returning({ id: generatedDocumentsTable.id });
-    return row?.id ?? 0;
+      });
+    const insertedId = extractInsertId(result);
+    if (insertedId) {
+      return insertedId;
+    }
+    const [latest] = await db
+      .select({ id: generatedDocumentsTable.id })
+      .from(generatedDocumentsTable)
+      .orderBy(desc(generatedDocumentsTable.createdAt))
+      .limit(1);
+    return latest?.id ?? 0;
   }
   const id = nextId();
   documents.push({
@@ -1505,7 +1550,7 @@ export async function createNotification(
 ) {
   if (useNotificationsDb) {
     const db = await getDrizzleDb();
-    const [row] = await db
+    const insertResult = await db
       .insert(notificationsTable)
       .values({
         userId: input.userId ?? null,
@@ -1517,10 +1562,25 @@ export async function createNotification(
         metadata: input.metadata ?? null,
         isRead: false,
         createdAt: new Date(),
-      })
-      .returning();
-    if (row) {
-      return mapNotificationRow(row);
+      });
+    const insertedId = extractInsertId(insertResult);
+    if (insertedId) {
+      const [row] = await db
+        .select()
+        .from(notificationsTable)
+        .where(eq(notificationsTable.id, insertedId))
+        .limit(1);
+      if (row) {
+        return mapNotificationRow(row);
+      }
+    }
+    const [latest] = await db
+      .select()
+      .from(notificationsTable)
+      .orderBy(desc(notificationsTable.createdAt))
+      .limit(1);
+    if (latest) {
+      return mapNotificationRow(latest);
     }
   }
 
@@ -1647,22 +1707,24 @@ export async function getNotificationPreferences(userId: number) {
       return mapNotificationPrefsRow(row);
     }
 
+    await db.insert(notificationPreferencesTable).values({
+      userId,
+      inAppEnabled: true,
+      emailEnabled: true,
+      pushEnabled: false,
+      smsEnabled: false,
+      notifyOnBooking: true,
+      notifyOnResponse: true,
+      notifyOnReminder: true,
+      notifyOnPromotion: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
     const [created] = await db
-      .insert(notificationPreferencesTable)
-      .values({
-        userId,
-        inAppEnabled: true,
-        emailEnabled: true,
-        pushEnabled: false,
-        smsEnabled: false,
-        notifyOnBooking: true,
-        notifyOnResponse: true,
-        notifyOnReminder: true,
-        notifyOnPromotion: false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .returning();
+      .select()
+      .from(notificationPreferencesTable)
+      .where(eq(notificationPreferencesTable.userId, userId))
+      .limit(1);
     if (created) return mapNotificationPrefsRow(created);
   }
   let prefs = notificationPreferences.find(p => p.userId === userId);
@@ -1716,7 +1778,7 @@ export async function createChatConversation(input: {
   const visitorToken = generateVisitorToken();
   if (useChatDb) {
     const db = await getDrizzleDb();
-    const [row] = await db
+    const insertResult = await db
       .insert(chatConversationsTable)
       .values({
         userId: input.userId ?? null,
@@ -1725,8 +1787,18 @@ export async function createChatConversation(input: {
         visitorToken,
         status: "open",
         lastMessageAt: new Date(),
-      })
-      .returning();
+      });
+    const insertedId = extractInsertId(insertResult);
+    const [row] = await db
+      .select()
+      .from(chatConversationsTable)
+      .where(
+        insertedId
+          ? eq(chatConversationsTable.id, insertedId)
+          : eq(chatConversationsTable.visitorToken, visitorToken)
+      )
+      .orderBy(desc(chatConversationsTable.createdAt))
+      .limit(1);
     if (row) {
       return {
         id: row.id,
@@ -1894,7 +1966,7 @@ export async function addChatMessage(input: {
 }) {
   if (useChatDb) {
     const db = await getDrizzleDb();
-    const [row] = await db
+    const insertResult = await db
       .insert(chatMessagesTable)
       .values({
         conversationId: input.conversationId,
@@ -1903,19 +1975,29 @@ export async function addChatMessage(input: {
         message: input.message,
         isRead: input.read ?? false,
         createdAt: new Date(),
-      })
-      .returning({ id: chatMessagesTable.id });
+      });
+    const insertedId = extractInsertId(insertResult);
     await db
       .update(chatConversationsTable)
       .set({ lastMessageAt: new Date() })
       .where(eq(chatConversationsTable.id, input.conversationId));
+    const [row] = await db
+      .select()
+      .from(chatMessagesTable)
+      .where(
+        insertedId
+          ? eq(chatMessagesTable.id, insertedId)
+          : eq(chatMessagesTable.conversationId, input.conversationId)
+      )
+      .orderBy(desc(chatMessagesTable.createdAt))
+      .limit(1);
     return {
-      id: row?.id || nextId(),
+      id: row?.id || insertedId || nextId(),
       conversationId: input.conversationId,
       senderType: input.senderType,
       senderName: input.senderName,
       message: input.message,
-      createdAt: new Date(),
+      createdAt: row?.createdAt ?? new Date(),
       read: input.read ?? false,
     } as ChatMessage;
   }
@@ -2209,7 +2291,7 @@ export async function createConsultantDocument(input: {
       input.documentType === "other"
         ? input.documentType
         : "other";
-    const [row] = await db
+    const result = await db
       .insert(consultantDocumentsTable)
       .values({
         consultantId: input.consultantId,
@@ -2218,9 +2300,18 @@ export async function createConsultantDocument(input: {
         documentUrl: input.documentUrl || input.url || "",
         fileSize: input.fileSize ?? null,
         mimeType: input.mimeType ?? null,
-      })
-      .returning({ id: consultantDocumentsTable.id });
-    return row?.id ?? 0;
+      });
+    const insertedId = extractInsertId(result);
+    if (insertedId) {
+      return insertedId;
+    }
+    const [latest] = await db
+      .select({ id: consultantDocumentsTable.id })
+      .from(consultantDocumentsTable)
+      .where(eq(consultantDocumentsTable.consultantId, input.consultantId))
+      .orderBy(desc(consultantDocumentsTable.createdAt))
+      .limit(1);
+    return latest?.id ?? 0;
   }
   const id = nextId();
   consultantDocs.push({

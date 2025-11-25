@@ -115,11 +115,25 @@ function parseResultHeader(result: unknown): { affectedRows?: number } | null {
   return null;
 }
 
+function extractInsertId(result: unknown): number | undefined {
+  if (!result) return undefined;
+  if (typeof result === "object" && result !== null && "insertId" in result) {
+    return Number((result as any).insertId);
+  }
+  if (Array.isArray(result) && result.length > 0) {
+    const maybeHeader = result[0];
+    if (maybeHeader && typeof maybeHeader === "object" && "insertId" in maybeHeader) {
+      return Number((maybeHeader as any).insertId);
+    }
+  }
+  return undefined;
+}
+
 export async function createNotificationRecord(input: z.infer<typeof notificationInputSchema>) {
   if (hasDatabaseUrl) {
     try {
       const db = await getDrizzleDb();
-      const [row] = await db
+      const insertResult = await db
         .insert(notifications)
         .values({
           userId: input.userId ?? null,
@@ -129,11 +143,25 @@ export async function createNotificationRecord(input: z.infer<typeof notificatio
           metadata: input.metadata ?? null,
           isRead: false,
           createdAt: new Date(),
-        })
-        .returning();
-
-      if (row) {
-        return toApiNotification(row);
+        });
+      const insertedId = extractInsertId(insertResult);
+      if (insertedId) {
+        const [row] = await db
+          .select()
+          .from(notifications)
+          .where(eq(notifications.id, insertedId))
+          .limit(1);
+        if (row) {
+          return toApiNotification(row);
+        }
+      }
+      const [latest] = await db
+        .select()
+        .from(notifications)
+        .orderBy(desc(notifications.createdAt))
+        .limit(1);
+      if (latest) {
+        return toApiNotification(latest);
       }
     } catch (error) {
       if (process.env.NODE_ENV !== "test") {

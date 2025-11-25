@@ -1,13 +1,14 @@
 import "dotenv/config";
-import { Pool } from "pg";
-import { drizzle } from "drizzle-orm/node-postgres";
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+import mysql from "mysql2/promise";
+import type { Pool, PoolOptions } from "mysql2/promise";
+import { drizzle } from "drizzle-orm/mysql2";
+import type { MySql2Database } from "drizzle-orm/mysql2";
 import * as schema from "../../drizzle/schema";
 
-let pool: any = null;
-let db: NodePgDatabase<typeof schema> | null = null;
+let pool: Pool | null = null;
+let db: MySql2Database<typeof schema> | null = null;
 
-function parseDatabaseUrl() {
+function buildPoolOptions(): PoolOptions {
   const url = process.env.DATABASE_URL;
   if (!url) {
     throw new Error(
@@ -16,17 +17,25 @@ function parseDatabaseUrl() {
   }
 
   const parsed = new URL(url);
-  const sslMode =
-    parsed.searchParams.get("sslmode") || parsed.searchParams.get("ssl-mode");
+  const shouldUseSslParam = parsed.searchParams.get("ssl") ?? parsed.searchParams.get("sslmode");
   const shouldUseSsl =
-    (sslMode && ["require", "required", "verify-full", "verify-ca"].includes((sslMode || "").toLowerCase())) ||
-    parsed.searchParams.get("ssl") === "true" ||
-    parsed.hostname.includes("railway");
+    (shouldUseSslParam &&
+      ["true", "1", "require", "required", "verify-full", "verify-ca"].includes(
+        (shouldUseSslParam || "").toLowerCase()
+      )) || parsed.hostname.includes("tidb") || parsed.hostname.includes("planetscale");
+
+  const database = parsed.pathname.replace(/^\//, "");
 
   return {
-    connectionString: url,
+    host: parsed.hostname,
+    port: parsed.port ? Number(parsed.port) : 3306,
+    user: decodeURIComponent(parsed.username || ""),
+    password: decodeURIComponent(parsed.password || ""),
+    database,
+    waitForConnections: true,
+    connectionLimit: 10,
     ssl: shouldUseSsl ? { rejectUnauthorized: false } : undefined,
-  };
+  } satisfies PoolOptions;
 }
 
 export async function getDrizzleDb() {
@@ -34,13 +43,9 @@ export async function getDrizzleDb() {
     return db;
   }
 
-  const config = parseDatabaseUrl();
-  pool = new (Pool as any)({
-    connectionString: config.connectionString,
-    ssl: config.ssl,
-  });
-
-  db = drizzle(pool as any, { schema });
+  const options = buildPoolOptions();
+  pool = mysql.createPool(options);
+  db = drizzle(pool, { schema, mode: "default" });
   return db;
 }
 

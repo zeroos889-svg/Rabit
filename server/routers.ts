@@ -2008,7 +2008,7 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
           }
 
           try {
-            const summaryParts = [];
+            const summaryParts: string[] = [];
             if (consultationType?.nameAr) {
               summaryParts.push(consultationType.nameAr);
             }
