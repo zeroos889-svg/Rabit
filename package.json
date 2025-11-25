@@ -63,6 +63,7 @@
     "@trpc/client": "^11.0.0",
     "@trpc/react-query": "^11.0.0",
     "@trpc/server": "^11.7.2",
+    "@vercel/node": "^5.5.12",
     "bcryptjs": "^2.4.3",
     "body-parser": "^2.2.1",
     "canvas-confetti": "^1.9.3",
