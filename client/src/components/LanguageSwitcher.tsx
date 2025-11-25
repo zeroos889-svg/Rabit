@@ -30,14 +30,12 @@ export function LanguageSwitcher() {
   useEffect(() => {
     const stored =
       typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
-    const browserLang =
-      typeof navigator !== "undefined" ? navigator.language : undefined;
-    const normalizedBrowser =
-      browserLang?.startsWith("ar") ? "ar" : browserLang?.startsWith("en") ? "en" : undefined;
-    const initialLang = stored || normalizedBrowser || i18n.language || "ar";
+    const initialLang = stored || i18n.language || "ar";
+
     if (initialLang !== i18n.language) {
       i18n.changeLanguage(initialLang);
     }
+
     document.documentElement.dir = initialLang === "ar" ? "rtl" : "ltr";
     document.documentElement.lang = initialLang;
   }, [i18n]);
