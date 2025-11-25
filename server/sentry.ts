@@ -4,7 +4,6 @@
  */
 
 import * as Sentry from "@sentry/node";
-import { nodeProfilingIntegration } from "@sentry/profiling-node";
 
 let sentryInitialized = false;
 
@@ -33,16 +32,11 @@ export function initializeSentry() {
       // Performance Monitoring
       tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
       
-      // Profiling
-      profilesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
-      
       integrations: [
         // Enable HTTP calls tracing
         Sentry.httpIntegration(),
         // Enable Express.js middleware tracing
         Sentry.expressIntegration(),
-        // Enable profiling
-        nodeProfilingIntegration(),
       ],
       
       // Release tracking
@@ -155,29 +149,46 @@ export function addBreadcrumb(
 
 /**
  * Get Sentry request handler middleware (should be first)
+ * @deprecated Use setupExpressErrorHandler instead
  */
 export function getRequestHandler() {
-  return Sentry.Handlers.requestHandler();
+  // In Sentry v8+, this is handled automatically by setupExpressErrorHandler
+  // Return a no-op middleware for backward compatibility
+  return (req: any, res: any, next: any) => next();
 }
 
 /**
  * Get Sentry tracing middleware (after request handler)
+ * @deprecated Use setupExpressErrorHandler instead
  */
 export function getTracingHandler() {
-  return Sentry.Handlers.tracingHandler();
+  // In Sentry v8+, this is handled automatically by setupExpressErrorHandler
+  // Return a no-op middleware for backward compatibility
+  return (req: any, res: any, next: any) => next();
+}
+
+/**
+ * Setup Express error handler (should be called after all routes)
+ * This is the new way in Sentry v8+
+ */
+export function setupExpressErrorHandler(app: any) {
+  Sentry.setupExpressErrorHandler(app);
 }
 
 /**
  * Get Sentry error handler middleware (should be last)
+ * @deprecated Use setupExpressErrorHandler instead
  */
 export function getErrorHandler() {
-  return Sentry.Handlers.errorHandler({
-    shouldHandleError(error) {
-      // Capture all errors with status >= 500
-      const statusCode = (error as any).statusCode || (error as any).status;
-      return !statusCode || statusCode >= 500;
-    },
-  });
+  // Return a custom error handler for backward compatibility
+  return (error: any, req: any, res: any, next: any) => {
+    // Capture all errors with status >= 500
+    const statusCode = error.statusCode || error.status;
+    if (!statusCode || statusCode >= 500) {
+      Sentry.captureException(error);
+    }
+    next(error);
+  };
 }
 
 export { Sentry };

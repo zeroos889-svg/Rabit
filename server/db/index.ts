@@ -4,6 +4,8 @@
  */
 
 import { hashPassword, verifyPassword } from "../_core/password";
+// Re-export password utilities for tests
+export { hashPassword, verifyPassword };
 import crypto from "crypto";
 // Drizzle integration imports (conditional usage when DATABASE_URL موجود)
 import { getDrizzleDb } from "./drizzle";
@@ -626,13 +628,20 @@ const testUserSeeds: TestUserSeed[] = [
 
 // Minimal stub DB object used by health check/tests
 const fakeDb = {
-  async delete() {
+  delete(_table?: unknown) {
     return {
-      where: async () => undefined,
+      where: async (_condition?: unknown) => undefined,
     };
   },
-  async select() {
-    return [];
+  select(_fields?: unknown) {
+    return {
+      from: (_table: unknown) => ({
+        where: (_condition: unknown) => ({
+          limit: async (_count: number) => [],
+        }),
+        limit: async (_count: number) => [],
+      }),
+    };
   },
   async execute() {
     return [];
