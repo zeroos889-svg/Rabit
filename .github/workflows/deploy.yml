@@ -1,0 +1,49 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build:all
+
+      - name: Create deployment artifact
+        run: |
+          tar -czf deployment.tar.gz \
+            dist/ \
+            server/ \
+            drizzle/ \
+            package.json \
+            package-lock.json \
+            drizzle.config.ts \
+            --exclude=node_modules
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-${{ github.sha }}
+          path: deployment.tar.gz
+          retention-days: 7
+
+      - name: Notify deployment ready
+        run: echo "✅ Deployment artifact ready for production"

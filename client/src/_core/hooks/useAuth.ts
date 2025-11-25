@@ -36,8 +36,16 @@ export function useAuth(options?: UseAuthOptions) {
       }
       throw error;
     } finally {
+      // Clear authentication tokens from localStorage
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("user");
+      localStorage.removeItem("manus-runtime-user-info");
+      
       utils.auth.me.setData(undefined, null);
       await utils.auth.me.invalidate();
+      
+      // Redirect to login page
+      globalThis.location.href = getLoginUrl();
     }
   }, [logoutMutation, utils]);
 
