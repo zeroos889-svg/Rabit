@@ -25,11 +25,11 @@ import {
   EyeOff,
   User,
   Phone,
-  Sparkles,
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import { APP_LOGO } from "@/const";
 
 export default function Register() {
   const { t } = useTranslation();
@@ -108,8 +108,8 @@ export default function Register() {
       <div className="max-w-md mx-auto">
         {/* Logo & Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl mb-4 shadow-lg">
-            <Sparkles className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center mb-4">
+            <img src={APP_LOGO} alt="رابِط | Rabit" className="h-20 w-auto" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             {t("register.title", "إنشاء حساب جديد")}
