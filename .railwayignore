@@ -1,0 +1,49 @@
+# Railway Ignore File
+# Files and directories to exclude from Railway deployments
+
+# Documentation
+*.md
+docs/
+.github/
+
+# Development files
+.vscode/
+.idea/
+*.log
+*.swp
+*.swo
+*~
+
+# Test files
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+e2e/
+coverage/
+.vitest/
+
+# Example and template files
+*.example
+.env.example
+.env.production.example
+
+# Local environment files (use Railway environment variables instead)
+.env.local
+.env.development
+
+# Build artifacts that will be regenerated
+node_modules/
+dist/
+.cache/
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# Editor configs
+.editorconfig
+.eslintrc*
+.prettierrc*
+tsconfig.tsbuildinfo
