@@ -116,6 +116,7 @@ const DataProtectionContact = lazy(
   () => import("./pages/DataProtectionContact")
 );
 const Compliance = lazy(() => import("./pages/Compliance"));
+const ComponentShowcase = lazy(() => import("./pages/ComponentShowcase"));
 
 // Admin pages
 const AdminUsers = lazy(() => import("./pages/admin/Users"));
@@ -539,6 +540,9 @@ function Router() {
         <Route path="/verify-decision" component={VerifyDecision} />
         <Route path="/services" component={Services} />
         <Route path="/brand-preview" component={BrandPreview} />
+        {import.meta.env.DEV && (
+          <Route path="/dev/showcase" component={ComponentShowcase} />
+        )}
         <Route path={"/404"} component={NotFound} />
         {/* Final fallback route */}
         <Route component={NotFound} />
