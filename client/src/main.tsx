@@ -10,6 +10,8 @@ import { getLoginUrl } from "./const";
 import "./index.css";
 import "./lib/i18n";
 
+const LOCALE_STORAGE_KEY = "rabithr:locale";
+
 // Register Service Worker for PWA support
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
@@ -51,7 +53,10 @@ if (import.meta.env.VITE_SENTRY_DSN) {
 }
 
 // تعيين الاتجاه الافتراضي
-const defaultLang = localStorage.getItem("i18nextLng") || "ar";
+const defaultLang =
+  localStorage.getItem(LOCALE_STORAGE_KEY) ||
+  localStorage.getItem("i18nextLng") ||
+  "ar";
 document.documentElement.dir = defaultLang === "ar" ? "rtl" : "ltr";
 document.documentElement.lang = defaultLang;
 
