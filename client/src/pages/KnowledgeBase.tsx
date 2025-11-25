@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import {
   ClipboardList,
   ArrowLeft,
   Calculator,
+  Tag,
 } from "lucide-react";
 
 type Article = {
@@ -30,6 +31,16 @@ type Article = {
   readTime: string;
   updatedAt: string;
   featured?: boolean;
+};
+
+type Suggestion = {
+  id: string;
+  label: string;
+  value: string;
+  description?: string;
+  type: "article" | "tag" | "prompt";
+  link?: string;
+  badge?: string;
 };
 
 const categories = [
@@ -148,11 +159,143 @@ const articles: Article[] = [
     updatedAt: "مايو 2024",
     featured: true,
   },
+  {
+    id: "wage-protection-jan-2025",
+    title: "تعديلات برنامج حماية الأجور 2025",
+    summary: "متطلبات رفع ملفات WPS شهرياً ونسب التوافق الجديدة للمنشآت المتوسطة.",
+    category: "labor-law",
+    categoryName: "نظام العمل",
+    tags: ["حماية الأجور", "WPS", "تقارير"],
+    readTime: "11 دقيقة",
+    updatedAt: "أكتوبر 2025",
+    featured: true,
+  },
+  {
+    id: "remote-work-inspection-2025",
+    title: "دليل التفتيش للعمل عن بُعد 2025",
+    summary: "قائمة تحقق جديدة من وزارة الموارد البشرية لضمان تتبع ساعات العمل والسرية.",
+    category: "hr-ops",
+    categoryName: "تشغيل HR",
+    tags: ["عمل عن بُعد", "تفتيش", "ساعات العمل"],
+    readTime: "9 دقائق",
+    updatedAt: "سبتمبر 2025",
+    featured: false,
+  },
+  {
+    id: "nitaqat-2025-updates",
+    title: "كيف تستبق تحديثات نطاقات الخضراء 2025",
+    summary: "تحليل نسب التوطين المطلوبة حسب حجم المنشأة وخطة عمل 90 يوماً.",
+    category: "recruitment",
+    categoryName: "التوظيف",
+    tags: ["نطاقات", "توطين", "تخطيط القوى"],
+    readTime: "8 دقائق",
+    updatedAt: "يوليو 2025",
+    featured: false,
+  },
 ];
+
+const tagIndex = Array.from(new Set(articles.flatMap(article => article.tags)));
+
+const quickPrompts: Suggestion[] = [
+  {
+    id: "prompt-eos",
+    label: "كيف أحسب مكافأة نهاية الخدمة؟",
+    value: "مكافأة نهاية الخدمة",
+    description: "تعلّم المادة 84 وخطوات الحسبة الصحيحة",
+    type: "prompt",
+  },
+  {
+    id: "prompt-leaves",
+    label: "ما هي أنواع الإجازات الرسمية؟",
+    value: "دليل الإجازات",
+    description: "إجازة سنوية، مرضية، أمومة، حج",
+    type: "prompt",
+  },
+  {
+    id: "prompt-hybrid",
+    label: "صياغة سياسة عمل هجين",
+    value: "سياسة عمل هجين",
+    description: "التزامات ساعات العمل وتتبع الحضور",
+    type: "prompt",
+  },
+  {
+    id: "prompt-wps",
+    label: "ما المطلوب لتوافق حماية الأجور؟",
+    value: "تعديلات برنامج حماية الأجور 2025",
+    description: "نِسَب الالتزام ونموذج المتابعة",
+    type: "prompt",
+  },
+  {
+    id: "prompt-nitaqat",
+    label: "كيف أرفع نسبة التوطين سريعاً؟",
+    value: "تحديثات نطاقات 2025",
+    description: "خطوات تنفيذية لـ 90 يوماً",
+    type: "prompt",
+  },
+];
+
+const regulatoryUpdate = {
+  title: "تنبيه تشريعي: دخول تعديلات حماية الأجور حيز التنفيذ",
+  effectiveDate: "20 أكتوبر 2025",
+  summary:
+    "ألزمت وزارة الموارد البشرية المنشآت المتوسطة (40-99 موظفاً) برفع ملف حماية الأجور شهرياً بنسبة التزام لا تقل عن 95%، مع غرامات تصاعدية للمنشآت المتأخرة.",
+  highlights: [
+    "رفع ملف WPS خلال 7 أيام من نهاية كل شهر ميلادي",
+    "تفعيل تنبيهات آلية لأي اختلاف يفوق 10% في صافي الرواتب",
+    "توثيق جميع اتفاقيات العمل المرن في منصة قوى",
+  ],
+  articleLink: "/knowledge-base/wage-protection-jan-2025",
+};
 
 export default function KnowledgeBase() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const suggestions = useMemo<Suggestion[]>(() => {
+    const term = search.trim().toLowerCase();
+    if (term.length < 2) {
+      return quickPrompts;
+    }
+
+    const articleMatches: Suggestion[] = articles
+      .filter(article =>
+        article.title.toLowerCase().includes(term) ||
+        article.summary.toLowerCase().includes(term)
+      )
+      .map(article => ({
+        id: article.id,
+        label: article.title,
+        value: article.title,
+        description: `${article.categoryName} • ${article.readTime}`,
+        type: "article",
+        link: `/knowledge-base/${article.id}`,
+        badge: article.categoryName,
+      }));
+
+    const tagMatches: Suggestion[] = tagIndex
+      .filter(tag => tag.toLowerCase().includes(term))
+      .map(tag => ({
+        id: `tag-${tag}`,
+        label: `وسم: ${tag}`,
+        value: tag,
+        description: "اعرض المقالات المرتبطة بهذا الوسم",
+        type: "tag",
+      }));
+
+    const merged = [...articleMatches, ...tagMatches];
+    if (merged.length === 0) {
+      return quickPrompts;
+    }
+
+    return merged.slice(0, 6);
+  }, [search]);
+
+  const helperText =
+    search.trim().length === 0
+      ? "جرّب كلمات مثل: حماية الأجور، نطاقات، إنهاء الخدمة، ساعات العمل المرنة"
+      : `تم العثور على ${suggestions.length} اقتراح${suggestions.length === 1 ? "" : "ات"}`;
 
   const filteredArticles = useMemo(() => {
     return articles.filter(article => {
@@ -201,11 +344,109 @@ export default function KnowledgeBase() {
           <div className="relative max-w-2xl mx-auto mt-8">
             <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
-              placeholder="ابحث عن موضوع: مكافأة نهاية الخدمة، الإجازات، العمل الهجين..."
+              ref={inputRef}
+              placeholder="ابحث بصيغة سؤال محدد أو استخدم الاقتراحات المباشرة"
               value={search}
               onChange={e => setSearch(e.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setTimeout(() => setIsSearchFocused(false), 120)}
               className="pr-12 h-12 text-base shadow-sm"
             />
+            {isSearchFocused && suggestions.length > 0 && (
+              <div className="absolute left-0 right-0 top-full mt-2 bg-white border border-muted rounded-2xl shadow-xl z-20 overflow-hidden text-right">
+                <div className="px-4 py-2 text-xs text-muted-foreground border-b">
+                  اختر اقتراحاً أو اضغط Enter للبحث
+                </div>
+                <ul>
+                  {suggestions.map(suggestion => {
+                    const iconClass = "h-4 w-4";
+                    const icon =
+                      suggestion.type === "article" ? (
+                        <FileText className={`${iconClass} text-primary`} />
+                      ) : suggestion.type === "tag" ? (
+                        <Tag className={`${iconClass} text-amber-600`} />
+                      ) : (
+                        <Sparkles className={`${iconClass} text-pink-600`} />
+                      );
+
+                    return (
+                      <li key={suggestion.id} className="border-t first:border-t-0 border-muted/60">
+                        <div className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-muted/30">
+                          <button
+                            type="button"
+                            className="flex flex-1 items-center gap-3 text-right"
+                            onMouseDown={event => {
+                              event.preventDefault();
+                              setSearch(suggestion.value);
+                              requestAnimationFrame(() => {
+                                inputRef.current?.focus();
+                              });
+                            }}
+                          >
+                            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
+                              {icon}
+                            </span>
+                            <span className="flex flex-col">
+                              <span className="text-sm font-medium text-foreground">
+                                {suggestion.label}
+                              </span>
+                              {suggestion.description && (
+                                <span className="text-xs text-muted-foreground">
+                                  {suggestion.description}
+                                </span>
+                              )}
+                            </span>
+                          </button>
+                          {suggestion.type === "article" && suggestion.link && (
+                            <Link href={suggestion.link}>
+                              <Button variant="ghost" size="sm" className="text-primary">
+                                افتح
+                              </Button>
+                            </Link>
+                          )}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground mt-3">{helperText}</p>
+        </div>
+
+        {/* Regulatory update */}
+        <div className="max-w-4xl mx-auto mb-10">
+          <div className="bg-white rounded-2xl border shadow-sm p-6 md:p-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-4">
+              <div>
+                <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-primary mb-2">
+                  <ShieldCheck className="h-4 w-4" />
+                  تنبيه تشريعي
+                </div>
+                <h3 className="text-2xl font-bold mb-2">{regulatoryUpdate.title}</h3>
+                <p className="text-muted-foreground text-sm flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-amber-600" />
+                  يسري من {regulatoryUpdate.effectiveDate}
+                </p>
+              </div>
+              <Link href={regulatoryUpdate.articleLink}>
+                <Button size="lg" className="bg-gradient-to-r from-primary to-purple-600 text-white">
+                  اقرأ الدليل الكامل
+                </Button>
+              </Link>
+            </div>
+            <p className="text-muted-foreground mb-4 text-base">{regulatoryUpdate.summary}</p>
+            <div className="space-y-3">
+              {regulatoryUpdate.highlights.map(point => (
+                <div key={point} className="flex items-start gap-3 text-sm">
+                  <span className="mt-0.5 text-emerald-600">
+                    <Sparkles className="h-4 w-4" />
+                  </span>
+                  <p>{point}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

@@ -1,5 +1,4 @@
-import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
+import CTAButton from "@/components/CTAButton";
 import {
   Card,
   CardContent,
@@ -18,7 +17,6 @@ import {
   Clock,
   CheckCircle2,
   Star,
-  ArrowRight,
   Shield,
 } from "lucide-react";
 import { Footer } from "@/components/Footer";
@@ -146,15 +144,13 @@ export default function Consulting() {
               جاهزون لمساعدتك
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Button size="lg" asChild>
-                <Link href="/consulting/book">
-                  احجز استشارة الآن
-                  <ArrowRight className="mr-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/consulting/experts">تصفح المستشارين</Link>
-              </Button>
+              <CTAButton label="احجز استشارة الآن" href="/consulting/book" />
+              <CTAButton
+                label="تصفح المستشارين"
+                href="/consulting/experts"
+                tone="secondary"
+                showIcon={false}
+              />
             </div>
           </div>
         </div>
@@ -164,8 +160,8 @@ export default function Consulting() {
       <section className="py-12 border-y bg-muted/30">
         <div className="container">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
+            {stats.map((stat) => (
+              <div key={stat.label} className="text-center">
                 <div className="text-3xl md:text-4xl font-bold text-primary mb-2">
                   {stat.value}
                 </div>
@@ -191,9 +187,9 @@ export default function Consulting() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {consultationTypes.map((type, index) => (
+            {consultationTypes.map((type) => (
               <Card
-                key={index}
+                key={type.title}
                 className={`relative ${type.popular ? "border-primary shadow-lg" : ""}`}
               >
                 {type.popular && (
@@ -216,20 +212,20 @@ export default function Consulting() {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3">
-                    {type.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
+                    {type.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-2">
                         <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                         <span className="text-sm">{feature}</span>
                       </li>
                     ))}
                   </ul>
-                  <Button
-                    className="w-full mt-6"
-                    variant={type.popular ? "default" : "outline"}
-                    asChild
-                  >
-                    <Link href="/consulting/book">احجز الآن</Link>
-                  </Button>
+                  <CTAButton
+                    label="احجز الآن"
+                    href="/consulting/book"
+                    fullWidth
+                    showIcon={false}
+                    tone={type.popular ? "primary" : "secondary"}
+                  />
                 </CardContent>
               </Card>
             ))}
@@ -250,8 +246,8 @@ export default function Consulting() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {specializedServices.map((service, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
+            {specializedServices.map((service) => (
+              <Card key={service.title} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                     <service.icon className="h-6 w-6 text-primary" />
@@ -261,8 +257,8 @@ export default function Consulting() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {service.packages.map((pkg, idx) => (
-                      <div key={idx} className="border rounded-lg p-4">
+                    {service.packages.map((pkg) => (
+                      <div key={pkg.name} className="border rounded-lg p-4">
                         <div className="flex justify-between items-start mb-2">
                           <div className="font-semibold">{pkg.name}</div>
                           <div className="text-primary font-bold">
@@ -276,9 +272,13 @@ export default function Consulting() {
                       </div>
                     ))}
                   </div>
-                  <Button className="w-full mt-4" variant="outline" asChild>
-                    <Link href="/consulting/book">اطلب الخدمة</Link>
-                  </Button>
+                  <CTAButton
+                    label="اطلب الخدمة"
+                    href="/consulting/book"
+                    fullWidth
+                    showIcon={false}
+                    tone="secondary"
+                  />
                 </CardContent>
               </Card>
             ))}
@@ -296,8 +296,8 @@ export default function Consulting() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="text-center">
+            {features.map((feature) => (
+              <Card key={feature.title} className="text-center">
                 <CardHeader>
                   <div className="mx-auto w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                     <feature.icon className="h-7 w-7 text-primary" />
@@ -319,20 +319,18 @@ export default function Consulting() {
             احجز استشارتك الآن واحصل على المشورة القانونية التي تحتاجها
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <Button size="lg" variant="secondary" asChild>
-              <Link href="/consulting/book">
-                احجز استشارة الآن
-                <ArrowRight className="mr-2 h-5 w-5" />
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
-              asChild
-            >
-              <Link href="/consulting/experts">تصفح المستشارين</Link>
-            </Button>
+            <CTAButton
+              label="احجز استشارة الآن"
+              href="/consulting/book"
+              tone="secondary"
+              className="min-w-[220px]"
+            />
+            <CTAButton
+              label="تصفح المستشارين"
+              href="/consulting/experts"
+              showIcon={false}
+              className="bg-transparent border border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+            />
           </div>
         </div>
       </section>

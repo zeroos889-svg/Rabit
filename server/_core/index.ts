@@ -60,14 +60,15 @@ async function startServer() {
   }
 
   // Run database migrations on startup
-  try {
-    if (process.env.DATABASE_URL) {
-      console.log("🔄 Running SQL Migrations...");
-      await runSQLMigrations();
-    }
-  } catch (error) {
-    logger.error("[Server] Failed to run migrations:", { context: "Server", error: error as Error });
-  }
+  // Disabled: Schema already pushed via db:push
+  // try {
+  //   if (process.env.DATABASE_URL) {
+  //     console.log("🔄 Running SQL Migrations...");
+  //     await runSQLMigrations();
+  //   }
+  // } catch (error) {
+  //   logger.error("[Server] Failed to run migrations:", { context: "Server", error: error as Error });
+  // }
 
   const app = express();
   const server = createServer(app);

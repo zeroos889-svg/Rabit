@@ -1,5 +1,6 @@
 import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CTAButton } from "@/components/CTAButton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -71,9 +72,12 @@ export default function ConsultingBook() {
                     <div className="text-lg font-bold text-primary">
                       {type.price || type.basePriceSAR} ريال
                     </div>
-                    <Button size="sm" variant="outline" asChild className="mt-2">
-                      <Link href={`/consulting/book-new?typeId=${type.id}`}>احجز</Link>
-                    </Button>
+                    <CTAButton
+                      href={`/consulting/book-new?typeId=${type.id}`}
+                      label="احجز"
+                      fullWidth
+                      className="mt-2"
+                    />
                   </div>
                 </div>
               ))

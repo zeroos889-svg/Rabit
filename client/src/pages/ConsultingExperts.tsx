@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "wouter";
+import { CTAButton } from "@/components/CTAButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,8 +15,6 @@ import {
   Award,
   Calendar,
   MessageSquare,
-  Video,
-  Phone,
 } from "lucide-react";
 import { Footer } from "@/components/Footer";
 
@@ -47,6 +46,15 @@ export default function ConsultingExperts() {
       (expert.subSpecializations || []).includes(selectedSpecialty);
     return matchesSearch && matchesSpecialty;
   });
+
+  const skeletonPlaceholders = [
+    "skeleton-1",
+    "skeleton-2",
+    "skeleton-3",
+    "skeleton-4",
+    "skeleton-5",
+    "skeleton-6",
+  ];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -100,8 +108,8 @@ export default function ConsultingExperts() {
         <div className="container">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {isLoading
-              ? Array.from({ length: 6 }).map((_, idx) => (
-                  <Card key={idx} className="p-4 space-y-4">
+              ? skeletonPlaceholders.map(placeholderId => (
+                  <Card key={placeholderId} className="p-4 space-y-4">
                     <div className="flex items-center gap-3">
                       <Skeleton className="h-16 w-16 rounded-full" />
                       <div className="flex-1 space-y-2">
@@ -215,9 +223,11 @@ export default function ConsultingExperts() {
                               عرض الملف
                             </Button>
                           </Link>
-                          <Link href={`/consulting/book-new?consultantId=${expert.id}`}>
-                            <Button className="w-full">احجز الآن</Button>
-                          </Link>
+                          <CTAButton
+                            href={`/consulting/book-new?consultantId=${expert.id}`}
+                            label="احجز الآن"
+                            fullWidth
+                          />
                         </div>
                       </div>
                     </CardContent>

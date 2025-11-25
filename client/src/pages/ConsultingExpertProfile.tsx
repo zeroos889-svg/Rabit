@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import { useParams, Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CTAButton } from "@/components/CTAButton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -174,11 +175,11 @@ export default function ConsultingExpertProfile() {
                 <Phone className="h-4 w-4" />
                 <span>متاح للمكالمات الهاتفية</span>
               </div>
-              <Link href={`/consulting/book-new?consultantId=${expert.id}`}>
-                <Button className="w-full gradient-primary text-white">
-                  احجز الآن
-                </Button>
-              </Link>
+              <CTAButton
+                href={`/consulting/book-new?consultantId=${expert.id}`}
+                label="احجز الآن"
+                fullWidth
+              />
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/consulting">العودة للاستشارات</Link>
               </Button>
@@ -192,7 +193,9 @@ export default function ConsultingExpertProfile() {
   );
 }
 
-function InfoChip({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
+type InfoChipProps = Readonly<{ icon: ReactNode; children: ReactNode }>;
+
+function InfoChip({ icon, children }: InfoChipProps) {
   return (
     <div className="flex items-center gap-2 rounded-md bg-slate-50 border p-3 text-sm">
       {icon}

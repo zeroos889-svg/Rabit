@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, PlayCircle, Shield, Sparkles, Star, Users } from "lucide-react";
 import { Link } from "wouter";
+import CTAButton from "@/components/CTAButton";
 
 const services = [
   {
@@ -16,36 +17,42 @@ const services = [
     description: "ردود موثوقة خلال 24 ساعة مع ملخص تنفيذي وخطوات تنفيذ واضحة.",
     badge: "قانون العمل السعودي",
     price: "ابتداءً من 99 ريال",
+    scenario: "مثال: استفسار سريع حول مادة 77 أو إنهاء عقد",
   },
   {
     title: "مراجعة العقود",
     description: "تدقيق عقود العمل واللوائح الداخلية وضمان التوافق مع لوائح الوزارة.",
     badge: "توافق وتشريعات",
     price: "ابتداءً من 249 ريال",
+    scenario: "مثال: مراجعة عقد موظف أجنبي قبل التوقيع",
   },
   {
     title: "تدقيق قرارات الفصل",
     description: "تحليل المخاطر القانونية قبل الفصل مع توصيات بديلة وسيناريوهات تعويض.",
     badge: "مؤشر قانوني",
     price: "تسليم خلال 48 ساعة",
+    scenario: "مثال: تقييم قرار فصل أثناء فترة التجربة",
   },
   {
     title: "التوظيف الذكي (ATS)",
     description: "إدارة الرحلة الكاملة للمرشح من التقديم حتى العرض مع توصيات AI.",
     badge: "ذكاء اصطناعي",
     price: "مدمج في الباقة",
+    scenario: "مثال: تشغيل حملات توظيف لعدة فروع في وقت واحد",
   },
   {
     title: "الأدوات الذكية HR",
     description: "حاسبات نهاية الخدمة والإجازات والرواتب مع حفظ السجلات والتقارير.",
     badge: "أتمتة",
     price: "مدمج في الباقة",
+    scenario: "مثال: استخراج كشوف إجازات لشهر كامل بضغطة",
   },
   {
     title: "التدريب والدورات",
     description: "مسارات تعليمية لنظام العمل، التوظيف، الامتثال، والتحقيقات الداخلية.",
     badge: "مسارات جاهزة",
     price: "مسارات قصيرة ومكثفة",
+    scenario: "مثال: تدريب الفريق القانوني على تحديثات 2024",
   },
 ];
 
@@ -79,16 +86,13 @@ export default function Services() {
                 رفع الكفاءة، وتقليل المخاطر في بيئة العمل.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Link href="/consulting/book">
-                  <Button size="lg" className="bg-gradient-to-r from-purple-600 to-blue-600">
-                    احجز استشارة الآن
-                  </Button>
-                </Link>
-                <Link href="/consulting/how-to-book">
-                  <Button size="lg" variant="outline">
-                    كيف يعمل رابِط؟
-                  </Button>
-                </Link>
+                <CTAButton label="احجز استشارة الآن" href="/consulting/book" />
+                <CTAButton
+                  label="كيف يعمل رابِط؟"
+                  href="/consulting/how-to-book"
+                  tone="secondary"
+                  showIcon={false}
+                />
               </div>
               <div className="flex items-center gap-5 pt-2">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -191,12 +195,18 @@ export default function Services() {
                 </div>
                 <CardTitle className="text-xl mt-2">{service.title}</CardTitle>
                 <CardDescription>{service.description}</CardDescription>
+                <p className="text-xs text-muted-foreground bg-slate-50 border border-dashed rounded-xl px-3 py-2 mt-3">
+                  {service.scenario}
+                </p>
               </CardHeader>
-              <CardContent className="flex items-center justify-between">
-                <Button variant="ghost" asChild>
-                  <Link href="/consulting/book">اطلب الخدمة</Link>
-                </Button>
-                <Button size="icon" variant="outline">
+              <CardContent className="flex items-center gap-3">
+                <CTAButton
+                  label="اطلب الخدمة"
+                  href="/consulting/book"
+                  className="flex-1"
+                  showIcon={false}
+                />
+                <Button size="icon" variant="outline" aria-label="استعراض الخدمة">
                   <PlayCircle className="h-5 w-5 text-purple-600" />
                 </Button>
               </CardContent>

@@ -17,12 +17,14 @@ const buttonVariants = cva(
         secondary:
           "bg-white text-purple-600 border border-purple-600 hover:bg-purple-50 dark:bg-transparent dark:text-purple-300 dark:border-purple-400 dark:hover:bg-purple-500/10",
         link: "text-purple-600 underline-offset-4 hover:underline focus-visible:underline bg-transparent shadow-none px-0",
+        cta: "rounded-full bg-gradient-to-r from-purple-600 via-fuchsia-500 to-amber-400 text-white font-semibold shadow-lg hover:shadow-xl hover:brightness-105 active:translate-y-px",
       },
       size: {
         sm: "h-8 px-3 text-xs",
         md: "h-10 px-4 text-sm",
         lg: "h-12 px-6 text-base",
         icon: "h-10 w-10 p-0 flex items-center justify-center",
+        cta: "h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg gap-2",
       },
     },
     defaultVariants: {

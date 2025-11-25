@@ -1,8 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
+import { CTAButton } from "@/components/CTAButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "wouter";
 import {
   Calculator,
   ClipboardCheck,
@@ -19,38 +18,50 @@ const toolCards = [
   {
     key: "tools.end_of_service",
     descKey: "tools.end_of_service.desc",
+    scenarioKey: "tools.end_of_service.use_case",
     icon: Calculator,
     color: "from-orange-100 to-orange-50",
+    href: "/tools/end-of-service",
   },
   {
     key: "tools.vacation",
     descKey: "tools.vacation.desc",
+    scenarioKey: "tools.vacation.use_case",
     icon: ListChecks,
     color: "from-blue-100 to-blue-50",
+    href: "/tools/leave-calculator",
   },
   {
     key: "tools.letter_generator",
     descKey: "tools.letter_generator.desc",
+    scenarioKey: "tools.letter_generator.use_case",
     icon: PenSquare,
     color: "from-purple-100 to-pink-50",
+    href: "/tools/letter-generator",
   },
   {
     key: "tools.smart_form_generator.title",
     descKey: "tools.smart_form_generator.desc",
+    scenarioKey: "tools.smart_form_generator.use_case",
     icon: FileText,
     color: "from-emerald-100 to-green-50",
+    href: "/dashboard/smart-form-generator",
   },
   {
     key: "tools.certificates.title",
     descKey: "tools.certificates.desc",
+    scenarioKey: "tools.certificates.use_case",
     icon: ShieldCheck,
     color: "from-slate-100 to-slate-50",
+    href: "/dashboard/certificates",
   },
   {
     key: "tools.reports.title",
     descKey: "tools.reports.desc",
+    scenarioKey: "tools.reports.use_case",
     icon: TrendingUp,
     color: "from-indigo-100 to-indigo-50",
+    href: "/dashboard/reports",
   },
 ];
 
@@ -115,16 +126,13 @@ export default function ToolsPage() {
               </Card>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Link href="/pricing">
-                <Button size="lg" className="gap-2">
-                  {t("tools.cta.primary")}
-                </Button>
-              </Link>
-              <Link href="/contact">
-                <Button variant="outline" size="lg" className="gap-2">
-                  {t("tools.cta.secondary")}
-                </Button>
-              </Link>
+              <CTAButton href="/pricing" label={t("tools.cta.primary") || ""} />
+              <CTAButton
+                href="/contact"
+                label={t("tools.cta.secondary") || ""}
+                tone="secondary"
+                showIcon={false}
+              />
             </div>
           </div>
           <Card className="border-none shadow-xl bg-white/80 backdrop-blur">
@@ -156,9 +164,14 @@ export default function ToolsPage() {
           </div>
           <div className="grid gap-6 md:grid-cols-2">
             {toolCards.map(card => (
-              <Card key={card.key} className="border-none shadow-md hover:-translate-y-1 transition-transform">
+              <Card
+                key={card.key}
+                className="border-none shadow-md hover:-translate-y-1 transition-transform"
+              >
                 <CardContent className="p-6 space-y-4">
-                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${card.color} flex items-center justify-center`}>
+                  <div
+                    className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${card.color} flex items-center justify-center`}
+                  >
                     <card.icon className="h-6 w-6 text-primary" />
                   </div>
                   <div className="space-y-2">
@@ -166,11 +179,15 @@ export default function ToolsPage() {
                     <p className="text-sm text-muted-foreground leading-relaxed">
                       {t(card.descKey)}
                     </p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {t(card.scenarioKey)}
+                    </p>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-primary">
-                    {t("tools.try_now")}
-                    <span aria-hidden>→</span>
-                  </div>
+                  <CTAButton
+                    href={card.href}
+                    label={t("tools.try_now") || ""}
+                    fullWidth
+                  />
                 </CardContent>
               </Card>
             ))}
@@ -236,15 +253,14 @@ export default function ToolsPage() {
           <p className="text-muted-foreground max-w-2xl mx-auto">
             {t("tools.cta.description")}
           </p>
-          <div className="flex justify-center gap-3">
-            <Link href="/contact">
-              <Button size="lg">{t("tools.cta.secondary")}</Button>
-            </Link>
-            <Link href="/pricing">
-              <Button variant="outline" size="lg">
-                {t("tools.cta.primary")}
-              </Button>
-            </Link>
+          <div className="flex flex-col sm:flex-row justify-center gap-3">
+            <CTAButton href="/contact" label={t("tools.cta.secondary") || ""} />
+            <CTAButton
+              href="/pricing"
+              label={t("tools.cta.primary") || ""}
+              tone="secondary"
+              showIcon={false}
+            />
           </div>
         </section>
       </div>

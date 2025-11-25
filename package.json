@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/vite-runner.mjs dev",
+    "dev:frontend": "node scripts/vite-runner.mjs dev",
     "dev:backend": "tsx server/_core/index.ts",
     "dev:server": "tsx server/_core/index.ts",
     "dev:both": "concurrently \"npm run dev\" \"npm run dev:backend\" --names \"VITE,API\" --prefix-colors \"blue,green\"",

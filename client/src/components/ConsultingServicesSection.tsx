@@ -1,3 +1,4 @@
+import { CTAButton } from "@/components/CTAButton";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
@@ -143,19 +144,12 @@ export function ConsultingServicesSection() {
                   </span>
                 </div>
 
-                <Link href={`/consulting/book-new?typeId=${type.id}`}>
-                  <Button
-                    className={`w-full ${
-                      isPopular
-                        ? `${colors.text.replace("text-", "bg-")} hover:opacity-90 text-white`
-                        : ""
-                    }`}
-                    variant={isPopular ? "default" : "outline"}
-                  >
-                    احجز الآن
-                    <ArrowRight className="mr-2 h-4 w-4" />
-                  </Button>
-                </Link>
+                <CTAButton
+                  href={`/consulting/book-new?typeId=${type.id}`}
+                  label="احجز الآن"
+                  fullWidth
+                  tone={isPopular ? "primary" : "secondary"}
+                />
               </Card>
             );
           })}

@@ -1,12 +1,12 @@
 {
   "version": "7",
-  "dialect": "postgresql",
+  "dialect": "mysql",
   "entries": [
     {
       "idx": 0,
-      "version": "7",
-      "when": 1763907828106,
-      "tag": "0001_optimal_callisto",
+      "version": "5",
+      "when": 1764089543011,
+      "tag": "0000_wandering_kulan_gath",
       "breakpoints": true
     }
   ]
