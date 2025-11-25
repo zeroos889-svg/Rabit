@@ -6,6 +6,8 @@
  * Run with: pnpm test server/__tests__/db-integration.test.ts
  */
 
+/* eslint-disable no-console */
+
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import {
   getDb,
@@ -39,7 +41,8 @@ describe("Database Integration Tests - اختبارات التكامل مع قا
         const { users } = await import("../../drizzle/schema");
         const { eq } = await import("drizzle-orm");
         try {
-          await (await db.delete(users)).where(eq(users.id, testUserId));
+          const deleteQuery = db.delete(users);
+          await deleteQuery.where(eq(users.id, testUserId));
           console.log(`[Cleanup] Test user ${testUserId} deleted`);
         } catch (error) {
           console.warn(`[Cleanup] Could not delete test user:`, error);
@@ -193,10 +196,15 @@ describe("Database Integration Tests - اختبارات التكامل مع قا
         return;
       }
 
+      interface ConsultantRow {
+        id: number;
+        [key: string]: unknown;
+      }
+
       const bookingData = {
         userId: testUserId,
-        consultantId: (availableConsultants[0] as any).id,
-        consultationTypeId: (availableTypes[0] as any).id,
+        consultantId: (availableConsultants[0] as ConsultantRow).id,
+        consultationTypeId: (availableTypes[0] as ConsultantRow).id,
         scheduledDate: new Date(Date.now() + 86400000)
           .toISOString()
           .split("T")[0], // Tomorrow

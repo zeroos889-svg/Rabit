@@ -1,6 +1,6 @@
 import "dotenv/config";
 import express from "express";
-import { createServer } from "http";
+import { createServer } from "node:http";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerAuthRoutes } from "./auth";
 import { checkEnv } from "./env";
@@ -15,7 +15,6 @@ import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { simpleHealthCheck } from "./healthCheck";
 import { errorHandler, initializeErrorHandling } from "./errorHandler";
-import { runSQLMigrations } from "./sqlMigrations";
 import { connectRedis, testRedisConnection } from "./redisClient";
 import { logger } from "./logger";
 import type { Request, Response, NextFunction } from "express";
@@ -37,9 +36,9 @@ initializeSentry();
  * Railway and other cloud platforms set PORT environment variable
  */
 function getPort(): number {
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  const port = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 3000;
 
-  if (isNaN(port) || port < 1 || port > 65535) {
+  if (Number.isNaN(port) || port < 1 || port > 65535) {
     logger.warn(`Invalid PORT value: ${process.env.PORT}, using default 3000`, { context: "Server" });
     return 3000;
   }
@@ -191,12 +190,15 @@ async function startServer() {
     "/api/webhooks/moyasar",
     express.raw({ type: "*/*" }),
     async (req, res) => {
-      const raw =
-        Buffer.isBuffer(req.body) && req.body.length
-          ? req.body.toString("utf8")
-          : typeof req.body === "string"
-            ? req.body
-            : JSON.stringify(req.body || {});
+      let raw: string;
+      if (Buffer.isBuffer(req.body) && req.body.length) {
+        raw = req.body.toString("utf8");
+      } else if (typeof req.body === "string") {
+        raw = req.body;
+      } else {
+        raw = JSON.stringify(req.body || {});
+      }
+      
       const signature =
         (req.headers["x-moyasar-signature"] as string | undefined) ||
         (req.headers["x-signature"] as string | undefined);
@@ -229,12 +231,15 @@ async function startServer() {
     "/api/webhooks/tap",
     express.raw({ type: "*/*" }),
     async (req, res) => {
-      const raw =
-        Buffer.isBuffer(req.body) && req.body.length
-          ? req.body.toString("utf8")
-          : typeof req.body === "string"
-            ? req.body
-            : JSON.stringify(req.body || {});
+      let raw: string;
+      if (Buffer.isBuffer(req.body) && req.body.length) {
+        raw = req.body.toString("utf8");
+      } else if (typeof req.body === "string") {
+        raw = req.body;
+      } else {
+        raw = JSON.stringify(req.body || {});
+      }
+      
       const signature =
         (req.headers["tap-signature"] as string | undefined) ||
         (req.headers["x-tap-signature"] as string | undefined);
@@ -281,7 +286,7 @@ async function startServer() {
           .status(503)
           .json({ status: "error", message: "Database connection failed" });
       }
-    } catch (error) {
+    } catch {
       res.status(503).json({ status: "error", message: "Health check failed" });
     }
   });
@@ -364,7 +369,7 @@ async function startServer() {
 
 // Start server for local development or Docker
 if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
-  startServer().catch((err) => logger.error("Server startup failed", { context: "Server", error: err }));
+  await startServer();
 }
 
 // Export for Vercel serverless

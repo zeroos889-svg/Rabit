@@ -30,7 +30,7 @@ export function initializeSentry() {
       environment: process.env.NODE_ENV || "development",
       
       // Performance Monitoring
-      tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
+      tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1,
       
       integrations: [
         // Enable HTTP calls tracing
@@ -191,4 +191,7 @@ export function getErrorHandler() {
   };
 }
 
-export { Sentry };
+// Re-export Sentry for convenience
+export * as Sentry from "@sentry/node";
+
+
