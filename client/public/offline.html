@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>غير متصل - رابِط</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      direction: rtl;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 3rem;
+      max-width: 500px;
+      margin: 1rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    .icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 2rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    p {
+      font-size: 1.1rem;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .features {
+      text-align: right;
+      margin: 2rem 0;
+      padding: 1.5rem;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .features h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    .features ul {
+      list-style: none;
+    }
+
+    .features li {
+      padding: 0.5rem 0;
+      color: #555;
+    }
+
+    .features li:before {
+      content: "✓";
+      color: #667eea;
+      font-weight: bold;
+      margin-left: 0.5rem;
+    }
+
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-weight: 600;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .status {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: #fee;
+      color: #c33;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .status.online {
+      background: #efe;
+      color: #3c3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">🌐</div>
+    
+    <div class="status" id="status">غير متصل بالإنترنت</div>
+    
+    <h1>لا يوجد اتصال بالإنترنت</h1>
+    
+    <p>
+      نأسف، يبدو أنك غير متصل بالإنترنت حالياً. 
+      بعض الميزات قد لا تكون متاحة حتى تستعيد الاتصال.
+    </p>
+
+    <div class="features">
+      <h2>ما يمكنك فعله الآن:</h2>
+      <ul>
+        <li>عرض الصفحات المحفوظة مسبقاً</li>
+        <li>استخدام الحاسبات دون اتصال</li>
+        <li>الاطلاع على بياناتك المحفوظة</li>
+        <li>سيتم مزامنة التغييرات عند الاتصال</li>
+      </ul>
+    </div>
+
+    <button onclick="retry()">إعادة المحاولة</button>
+  </div>
+
+  <script>
+    // Check connection status
+    function updateStatus() {
+      const status = document.getElementById('status');
+      if (navigator.onLine) {
+        status.textContent = 'متصل بالإنترنت';
+        status.classList.add('online');
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1000);
+      } else {
+        status.textContent = 'غير متصل بالإنترنت';
+        status.classList.remove('online');
+      }
+    }
+
+    function retry() {
+      if (navigator.onLine) {
+        window.location.href = '/';
+      } else {
+        updateStatus();
+      }
+    }
+
+    // Listen for online/offline events
+    window.addEventListener('online', updateStatus);
+    window.addEventListener('offline', updateStatus);
+
+    // Initial check
+    updateStatus();
+  </script>
+</body>
+</html>

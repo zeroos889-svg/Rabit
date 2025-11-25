@@ -45,3 +45,121 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 antiali
 /* انتقالات عامة */
 .fade-in { animation: fade-in 0.3s ease-in-out; }
 @keyframes fade-in { from { opacity:0 } to { opacity:1 } }
+
+/* Shimmer animation for skeletons */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Toast animations */
+@keyframes toast-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Enhanced toast styles */
+.toast-success {
+  animation: toast-slide-in 0.3s ease-out;
+  border-right: 4px solid #10b981;
+}
+
+.toast-error {
+  animation: toast-slide-in 0.3s ease-out;
+  border-right: 4px solid #ef4444;
+}
+
+.toast-info {
+  animation: toast-slide-in 0.3s ease-out;
+  border-right: 4px solid #3b82f6;
+}
+
+.toast-warning {
+  animation: toast-slide-in 0.3s ease-out;
+  border-right: 4px solid #f59e0b;
+}
+
+.toast-loading {
+  animation: toast-slide-in 0.3s ease-out;
+  border-right: 4px solid #8b5cf6;
+}
+
+/**
+ * Accessibility Styles
+ * Focus indicators, screen reader utilities, and high contrast support
+ */
+
+/* Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus Visible */
+.focus-visible:focus {
+  outline: 3px solid hsl(var(--primary));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+:focus:not(.focus-visible) {
+  outline: none;
+}
+
+@media (prefers-contrast: high) {
+  .focus-visible:focus {
+    outline-width: 4px;
+    outline-offset: 3px;
+  }
+}
+
+/* Touch targets - minimum 44x44px */
+@media (pointer: coarse) {
+  button, a, input[type="checkbox"], input[type="radio"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Interactive states */
+button:disabled, [disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+[aria-invalid="true"] {
+  border-color: hsl(var(--destructive)) !important;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

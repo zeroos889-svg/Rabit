@@ -1,70 +1,132 @@
-import { cn } from "@/lib/utils";
-import { AlertTriangle, RotateCcw } from "lucide-react";
 import { Component, ReactNode } from "react";
+import { ErrorFallback } from "./ErrorFallback";
 
 interface Props {
   children: ReactNode;
+  fallback?: (error: Error, reset: () => void) => ReactNode;
 }
 
 interface State {
   hasError: boolean;
   error: Error | null;
+  errorCount: number;
+  lastErrorTime: number | null;
 }
 
+/**
+ * Enhanced Error Boundary Component
+ * Catches React component errors and displays user-friendly fallback UI
+ * Includes error recovery mechanisms and error tracking
+ */
 class ErrorBoundary extends Component<Props, State> {
+  private resetTimeout: NodeJS.Timeout | null = null;
+
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { 
+      hasError: false, 
+      error: null,
+      errorCount: 0,
+      lastErrorTime: null
+    };
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): Partial<State> {
     return { hasError: true, error };
   }
 
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    // Log error to console in development
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error caught by ErrorBoundary:", error, errorInfo);
+    }
+
+    // Track error frequency (for detecting error loops)
+    const now = Date.now();
+    const timeSinceLastError = this.state.lastErrorTime 
+      ? now - this.state.lastErrorTime 
+      : Infinity;
+
+    // If errors are happening rapidly (< 5 seconds apart), increase count
+    const newErrorCount = timeSinceLastError < 5000 
+      ? this.state.errorCount + 1 
+      : 1;
+
+    this.setState({
+      errorCount: newErrorCount,
+      lastErrorTime: now
+    });
+
+    // TODO: Send to error monitoring service in production
+    if (process.env.NODE_ENV === "production") {
+      // Example: Sentry.captureException(error, { contexts: { react: errorInfo } });
+      console.error("Production error:", error.message);
+    }
+
+    // Auto-recovery mechanism: if only 1-2 errors, try to auto-reset after 10 seconds
+    if (newErrorCount <= 2) {
+      this.resetTimeout = setTimeout(() => {
+        this.handleReset();
+      }, 10000);
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.resetTimeout) {
+      clearTimeout(this.resetTimeout);
+    }
+  }
+
+  handleReset = () => {
+    if (this.resetTimeout) {
+      clearTimeout(this.resetTimeout);
+      this.resetTimeout = null;
+    }
+    
+    this.setState({ 
+      hasError: false, 
+      error: null,
+      // Keep error count for tracking, but reset if enough time has passed
+      errorCount: 0,
+      lastErrorTime: null
+    });
+  };
+
   render() {
-    if (this.state.hasError) {
-      const isArabic = document.documentElement.lang === "ar";
-
-      return (
-        <div className="flex items-center justify-center min-h-screen p-8 bg-background">
-          <div className="flex flex-col items-center w-full max-w-2xl p-8">
-            <AlertTriangle
-              size={48}
-              className="text-destructive mb-6 flex-shrink-0"
-            />
-
-            <h2 className="text-xl mb-4 text-center">
-              {isArabic ? "حدث خطأ غير متوقع" : "An unexpected error occurred"}
-            </h2>
-
-            <p className="text-sm text-muted-foreground mb-6 text-center">
-              {isArabic
-                ? "نعتذر عن الإزعاج. يرجى تحديث الصفحة أو المحاولة لاحقاً."
-                : "We apologize for the inconvenience. Please reload the page or try again later."}
-            </p>
-
-            {process.env.NODE_ENV === "development" && this.state.error && (
-              <div className="p-4 w-full rounded bg-muted overflow-auto mb-6">
-                <pre className="text-sm text-muted-foreground whitespace-break-spaces">
-                  {this.state.error?.stack || this.state.error?.message}
-                </pre>
-              </div>
-            )}
-
-            <button
-              onClick={() => window.location.reload()}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg",
-                "bg-primary text-primary-foreground",
-                "hover:opacity-90 cursor-pointer transition-opacity"
-              )}
-            >
-              <RotateCcw size={16} />
-              {isArabic ? "تحديث الصفحة" : "Reload Page"}
-            </button>
+    if (this.state.hasError && this.state.error) {
+      // If error loop detected (3+ rapid errors), show more serious warning
+      if (this.state.errorCount >= 3) {
+        return (
+          <div className="min-h-screen flex items-center justify-center p-4 bg-destructive/5">
+            <div className="max-w-md text-center space-y-4">
+              <h2 className="text-2xl font-bold text-destructive">
+                خطأ متكرر
+              </h2>
+              <p className="text-muted-foreground">
+                حدثت أخطاء متعددة بشكل متتالي. قد تحتاج إلى:
+              </p>
+              <ul className="text-sm text-right space-y-2">
+                <li>• مسح ذاكرة التخزين المؤقت</li>
+                <li>• إعادة تشغيل المتصفح</li>
+                <li>• الاتصال بالدعم الفني</li>
+              </ul>
+              <button
+                onClick={() => window.location.href = "/"}
+                className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
+              >
+                العودة للرئيسية
+              </button>
+            </div>
           </div>
-        </div>
-      );
+        );
+      }
+
+      // Use custom fallback if provided, otherwise use default ErrorFallback
+      if (this.props.fallback) {
+        return this.props.fallback(this.state.error, this.handleReset);
+      }
+
+      return <ErrorFallback error={this.state.error} resetErrorBoundary={this.handleReset} />;
     }
 
     return this.props.children;

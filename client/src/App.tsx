@@ -16,6 +16,12 @@ import { KeyboardShortcuts } from "./components/KeyboardShortcuts";
 import { RouteAnnouncer } from "./components/RouteAnnouncer";
 import { useAuth } from "./_core/hooks/useAuth";
 import { getDashboardPath } from "./lib/navigation";
+import { useWebVitals } from "./lib/performance";
+import { PWAInstallPrompt, PWAUpdatePrompt, OfflineIndicator } from "./components/PWAPrompts";
+import { useServiceWorker } from "./hooks/usePWA";
+import { useFocusVisible } from "./hooks/useAccessibility";
+import { useARIAEnhancer, useARIAValidation } from "./lib/ariaUtils";
+import { useAnalytics, usePageTracking } from "./hooks/useAnalytics";
 
 // Loading component
 const PageLoader = () => (
@@ -557,6 +563,30 @@ function Router() {
 // - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
 
 function App() {
+  // Initialize Analytics (GA4)
+  useAnalytics(import.meta.env.VITE_GA_MEASUREMENT_ID);
+  usePageTracking();
+
+  // Track Core Web Vitals
+  useWebVitals({
+    enableLogging: process.env.NODE_ENV === "development",
+    reportCallback: (metric) => {
+      // In production, send to analytics service
+      if (process.env.NODE_ENV === "production") {
+        // TODO: Send to analytics endpoint
+        console.log(`[Web Vitals] ${metric.name}: ${metric.value.toFixed(0)}`);
+      }
+    },
+  });
+
+  // Register Service Worker for PWA support
+  useServiceWorker();
+
+  // Accessibility enhancements
+  useFocusVisible();
+  useARIAEnhancer();
+  useARIAValidation();
+
   return (
     <ErrorBoundary>
       <AccessibilityProvider>
@@ -576,6 +606,11 @@ function App() {
             <ChatWidget />
             <CookieConsent />
             <KeyboardShortcuts />
+            
+            {/* PWA Components */}
+            <PWAInstallPrompt />
+            <PWAUpdatePrompt />
+            <OfflineIndicator />
           </TooltipProvider>
         </ThemeProvider>
       </AccessibilityProvider>

@@ -4,6 +4,7 @@
 
 import type { Request, Response, NextFunction } from "express";
 import { logger } from "./logger";
+import { captureException } from "../sentry";
 
 export class AppError extends Error {
   statusCode: number;
@@ -83,9 +84,14 @@ function logError(error: Error, req?: Request) {
   });
 
   // Send to Sentry in production if configured
-  if (process.env.NODE_ENV === "production" && process.env.VITE_SENTRY_DSN) {
-    // Sentry is initialized in main.tsx on client-side
-    // For server-side, you would initialize here
+  if (process.env.NODE_ENV === "production" && process.env.SENTRY_DSN) {
+    captureException(error, {
+      request: req ? {
+        method: req.method,
+        url: req.url,
+        headers: req.headers,
+      } : undefined,
+    });
   }
 }
 

@@ -1,40 +1,76 @@
 ## ================================
-## RabitHR Multi-Stage Dockerfile
+## RabitHR Production Dockerfile
 ## ================================
-## الهدف: صورة إنتاج خفيفة تعتمد على بناء منفصل
-## المرحلة 1: التحزيم والبناء (node:20-alpine)
-## المرحلة 2: التشغيل مع نسخ build و node_modules المطلوبة فقط
+## Multi-stage build for optimal image size
+## Stage 1: Dependencies installation
+## Stage 2: Build application
+## Stage 3: Production runtime
 
+# ===========================================
+# Stage 1: Dependencies
+# ===========================================
+FROM node:20-alpine AS deps
+WORKDIR /app
+
+# Install dependencies only when needed
+COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
+RUN npm ci --legacy-peer-deps --no-audit --no-fund
+
+# ===========================================
+# Stage 2: Builder
+# ===========================================
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# تحسين تثبيت الحزم: نسخ الملفات التعريفية فقط أولاً
-COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
 
-# تثبيت الاعتمادات (يتم تجاهل أي ملفات قفل غير موجودة)
-RUN npm install --legacy-peer-deps --no-audit --no-fund
-
-# نسخ بقية الشفرة
+# Copy source code
 COPY . .
 
-# فحص الأنواع ثم بناء الواجهة (يمكن تعديل السكربت لاحقاً)
-RUN npm run type-check && npm run build || echo "Skipping build if Vite not configured"
+# Type check and build
+RUN npm run type-check
+RUN npm run build
 
+# ===========================================
+# Stage 3: Production Runner
+# ===========================================
 FROM node:20-alpine AS runner
-ENV NODE_ENV=production
 WORKDIR /app
 
-# نسخ فقط ما نحتاجه من المرحلة السابقة
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/node_modules ./node_modules
+# Set production environment
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 rabitapp
+
+# Copy only production dependencies
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/package.json ./package.json
+
+# Copy built application
+COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/server ./server
 COPY --from=builder /app/drizzle ./drizzle
 COPY --from=builder /app/scripts ./scripts
-COPY --from=builder /app/.env.production* ./
 
-# منفذ افتراضي (يمكن تعديله عبر متغير بيئة في التشغيل)
+# Copy environment files (if exist)
+COPY --from=builder /app/.env.production* ./ 
+
+# Set ownership to non-root user
+RUN chown -R rabitapp:nodejs /app
+
+# Switch to non-root user
+USER rabitapp
+
+# Expose port
 EXPOSE 3000
 
-# أمر التشغيل: يمكن استبداله بـ process manager لاحقاً
-# استخدام tsx لتشغيل TypeScript مباشرة في بيئة الإنتاج الخفيفة
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+
+# Start application
 CMD ["npx", "tsx", "server/_core/index.ts"]

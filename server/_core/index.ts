@@ -20,8 +20,17 @@ import { connectRedis, testRedisConnection } from "./redisClient";
 import { logger } from "./logger";
 import type { Request, Response, NextFunction } from "express";
 import { verifyMoyasarWebhook, verifyTapWebhook } from "./payment";
+import {
+  initializeSentry,
+  getRequestHandler,
+  getTracingHandler,
+  getErrorHandler,
+} from "../sentry";
 
 console.log("🚀 Starting server initialization...");
+
+// Initialize Sentry as early as possible
+initializeSentry();
 
 /**
  * Get port from environment or use default
@@ -75,6 +84,12 @@ async function startServer() {
 
   // Trust reverse proxy headers for secure cookies/CSRF
   app.set("trust proxy", 1);
+
+  // Sentry request handler - must be first middleware
+  app.use(getRequestHandler());
+  
+  // Sentry tracing middleware
+  app.use(getTracingHandler());
 
   // Minimal CORS allowlist based on ALLOWED_ORIGINS (comma separated)
   const allowedOriginsEnv = process.env.ALLOWED_ORIGINS;
@@ -325,6 +340,9 @@ async function startServer() {
     console.error("❌ Error setting up Vite/Static:", error);
     throw error;
   }
+
+  // Sentry error handler - must be before global error handler
+  app.use(getErrorHandler());
 
   // Global Error Handler Middleware (must be last)
   app.use(errorHandler);

@@ -271,3 +271,191 @@ export function reportWebVitals(metric: {
     // gtag('event', metric.name, { value: metric.value });
   }
 }
+
+/**
+ * Enhanced Web Vitals tracking with Core Web Vitals
+ */
+import { useEffect } from "react";
+
+export interface PerformanceMetric {
+  name: string;
+  value: number;
+  rating: "good" | "needs-improvement" | "poor";
+  timestamp: number;
+}
+
+interface WebVitalsConfig {
+  reportCallback?: (metric: PerformanceMetric) => void;
+  enableLogging?: boolean;
+}
+
+/**
+ * Report Core Web Vitals metric
+ */
+function reportCoreMetric(metric: PerformanceMetric, config: WebVitalsConfig) {
+  if (config.enableLogging) {
+    console.log(`[Core Web Vitals] ${metric.name}:`, {
+      value: metric.name === "CLS" ? metric.value.toFixed(3) : `${metric.value.toFixed(0)}ms`,
+      rating: metric.rating,
+    });
+  }
+
+  if (config.reportCallback) {
+    config.reportCallback(metric);
+  }
+
+  // TODO: Send to analytics in production
+  if (process.env.NODE_ENV === "production") {
+    // Example: gtag('event', 'web_vitals', { metric_name: metric.name, value: metric.value, rating: metric.rating });
+  }
+}
+
+/**
+ * Get rating for Core Web Vitals
+ */
+function getCoreVitalsRating(name: string, value: number): "good" | "needs-improvement" | "poor" {
+  const thresholds: Record<string, { good: number; poor: number }> = {
+    LCP: { good: 2500, poor: 4000 },
+    FID: { good: 100, poor: 300 },
+    CLS: { good: 0.1, poor: 0.25 },
+    FCP: { good: 1800, poor: 3000 },
+    TTFB: { good: 800, poor: 1800 },
+    INP: { good: 200, poor: 500 },
+  };
+
+  const threshold = thresholds[name];
+  if (!threshold) return "good";
+
+  if (value <= threshold.good) return "good";
+  if (value <= threshold.poor) return "needs-improvement";
+  return "poor";
+}
+
+/**
+ * React hook for tracking Core Web Vitals
+ */
+export function useWebVitals(config: WebVitalsConfig = {}) {
+  useEffect(() => {
+    import("web-vitals").then(({ onCLS, onFCP, onLCP, onTTFB, onINP }) => {
+      onCLS((metric) => {
+        reportCoreMetric(
+          {
+            name: "CLS",
+            value: metric.value,
+            rating: getCoreVitalsRating("CLS", metric.value),
+            timestamp: Date.now(),
+          },
+          config
+        );
+      });
+
+      onFCP((metric) => {
+        reportCoreMetric(
+          {
+            name: "FCP",
+            value: metric.value,
+            rating: getCoreVitalsRating("FCP", metric.value),
+            timestamp: Date.now(),
+          },
+          config
+        );
+      });
+
+      onLCP((metric) => {
+        reportCoreMetric(
+          {
+            name: "LCP",
+            value: metric.value,
+            rating: getCoreVitalsRating("LCP", metric.value),
+            timestamp: Date.now(),
+          },
+          config
+        );
+      });
+
+      onTTFB((metric) => {
+        reportCoreMetric(
+          {
+            name: "TTFB",
+            value: metric.value,
+            rating: getCoreVitalsRating("TTFB", metric.value),
+            timestamp: Date.now(),
+          },
+          config
+        );
+      });
+
+      onINP((metric) => {
+        reportCoreMetric(
+          {
+            name: "INP",
+            value: metric.value,
+            rating: getCoreVitalsRating("INP", metric.value),
+            timestamp: Date.now(),
+          },
+          config
+        );
+      });
+    }).catch((error) => {
+      console.error("Failed to load web-vitals:", error);
+    });
+  }, [config]);
+}
+
+/**
+ * Calculate performance score (0-100) based on Core Web Vitals
+ */
+export function calculatePerformanceScore(metrics: {
+  lcp?: number;
+  fid?: number;
+  cls?: number;
+}): number {
+  let score = 100;
+
+  if (metrics.lcp) {
+    if (metrics.lcp > 4000) score -= 40;
+    else if (metrics.lcp > 2500) score -= 20;
+  }
+
+  if (metrics.fid) {
+    if (metrics.fid > 300) score -= 30;
+    else if (metrics.fid > 100) score -= 15;
+  }
+
+  if (metrics.cls) {
+    if (metrics.cls > 0.25) score -= 30;
+    else if (metrics.cls > 0.1) score -= 15;
+  }
+
+  return Math.max(0, score);
+}
+
+/**
+ * Track API request performance
+ */
+export function trackApiPerformance(endpoint: string, duration: number) {
+  let rating: "good" | "needs-improvement" | "poor";
+  if (duration < 500) {
+    rating = "good";
+  } else if (duration < 1000) {
+    rating = "needs-improvement";
+  } else {
+    rating = "poor";
+  }
+
+  const metric: PerformanceMetric = {
+    name: `API: ${endpoint}`,
+    value: duration,
+    rating,
+    timestamp: Date.now(),
+  };
+
+  if (metric.rating === "poor") {
+    console.warn(`[Performance] Slow API request:`, {
+      endpoint,
+      duration: `${duration}ms`,
+    });
+  }
+
+  return metric;
+}

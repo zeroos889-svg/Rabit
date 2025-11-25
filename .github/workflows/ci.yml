@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
@@ -6,8 +6,17 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+# Cancel in-progress runs on the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  # ==========================================
+  # Job 1: Code Quality Checks
+  # ==========================================
   lint-and-typecheck:
+    name: Code Quality
     runs-on: ubuntu-latest
     
     steps:
@@ -21,15 +30,90 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run ESLint
-        run: npm run lint:check || true
-
-      - name: TypeScript type check
         run: npm run lint
 
+      - name: TypeScript type check
+        run: npm run type-check
+
+  # ==========================================
+  # Job 2: Unit Tests
+  # ==========================================
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run unit tests
+        run: npm test -- --run
+
+      - name: Generate coverage report
+        run: npm run test:coverage
+        continue-on-error: true
+
+      - name: Upload coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+        continue-on-error: true
+
+  # ==========================================
+  # Job 3: E2E Tests
+  # ==========================================
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run E2E tests
+        run: npx playwright test
+
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+  # ==========================================
+  # Job 4: Security Audit
+  # ==========================================
   security-audit:
+    name: Security Audit
     runs-on: ubuntu-latest
     
     steps:
@@ -43,15 +127,31 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run security audit
-        run: npm audit --audit-level=high
+        run: npm audit --production --audit-level=moderate
         continue-on-error: true
 
+      - name: Generate audit report
+        run: npm audit --json > audit-report.json
+        continue-on-error: true
+
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-audit
+          path: audit-report.json
+          retention-days: 30
+        continue-on-error: true
+
+  # ==========================================
+  # Job 5: Build Test
+  # ==========================================
   build-test:
+    name: Build Test
     runs-on: ubuntu-latest
-    needs: [lint-and-typecheck]
+    needs: [unit-tests, e2e-tests]
     
     steps:
       - name: Checkout code
@@ -64,11 +164,97 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Build project
-        run: npm run build || echo "Build script not configured yet"
+        run: npm run build
+        env:
+          NODE_ENV: production
 
-      - name: Run tests
-        run: npm test || echo "Tests not configured yet"
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist/
+          retention-days: 7
+
+  # ==========================================
+  # Job 6: Docker Build (for main branch only)
+  # ==========================================
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: build-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+        if: ${{ secrets.DOCKER_USERNAME && secrets.DOCKER_PASSWORD }}
         continue-on-error: true
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: rabit-hr:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ==========================================
+  # Job 7: Deploy (Production)
+  # ==========================================
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build-test, docker-build, security-audit]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://rabit-hr.com
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Railway
+        if: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          npm install -g @railway/cli
+          railway up --service rabit-hr
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        continue-on-error: true
+
+      - name: Deploy to Vercel
+        if: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          npm install -g vercel
+          vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+        continue-on-error: true
+
+      - name: Notify deployment success
+        if: success()
+        run: |
+          echo "✅ Deployment successful!"
+          echo "Environment: production"
+          echo "Commit: ${{ github.sha }}"
+          echo "Deployed at: $(date)"
+
+      - name: Notify deployment failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed!"
+          echo "Check logs for details"
+          exit 1
+

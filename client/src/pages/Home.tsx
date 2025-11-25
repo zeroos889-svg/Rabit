@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
+import { queryConfig } from "@/lib/queryConfig";
 import {
   Building2,
   UserCheck,
@@ -155,7 +156,9 @@ const featureList = [
 // Consulting Services Section Component
 function ConsultingServicesSection() {
   const { data: typesData, isLoading } =
-    trpc.consultant.getConsultationTypes.useQuery();
+    trpc.consultant.getConsultationTypes.useQuery(undefined, {
+      ...queryConfig.staticData, // Cache for 30 minutes
+    });
   const consultationTypes = typesData?.types?.slice(0, 6) || [];
 
   if (isLoading) {
@@ -1324,7 +1327,7 @@ export default function Home() {
               <a
                 href="https://vimeo.com/906999651"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="text-primary hover:underline font-semibold"
               >
                 مشاهدة على Vimeo
