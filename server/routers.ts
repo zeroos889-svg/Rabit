@@ -1,4 +1,4 @@
-import { router, publicProcedure } from "./_core/trpc";
+import { router, publicProcedure, protectedProcedure } from "./_core/trpc";
 import { z } from "zod";
 import { getDb } from "./_core/db";
 import { users, passwords } from "../drizzle/schema";
@@ -310,6 +310,106 @@ const documentGeneratorRouter = router({
 });
 
 /**
+ * Dashboard router - Employee dashboard data
+ */
+const dashboardRouter = router({
+  employeeOverview: protectedProcedure.query(async ({ ctx }) => {
+    const db = await getDb();
+    const userId = ctx.user.id;
+
+    // Get user details
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+
+    if (!user) {
+      throw new Error("المستخدم غير موجود");
+    }
+
+    // Mock stats - replace with real data later
+    const stats = {
+      totalLeaves: 21,
+      usedLeaves: 5,
+      remainingLeaves: 16,
+      pendingRequests: 2,
+      eosbCalculations: 3,
+      documents: 7,
+    };
+
+    // Mock recent activities
+    const recentActivities = [
+      {
+        id: 1,
+        type: "leave_request",
+        title: "طلب إجازة سنوية",
+        description: "تم تقديم طلب إجازة لمدة 3 أيام",
+        status: "pending",
+        date: new Date().toISOString(),
+        icon: "calendar",
+      },
+      {
+        id: 2,
+        type: "eosb_calculation",
+        title: "حساب نهاية الخدمة",
+        description: "تم حساب مستحقات نهاية الخدمة",
+        status: "completed",
+        date: new Date(Date.now() - 86400000).toISOString(),
+        icon: "calculator",
+      },
+      {
+        id: 3,
+        type: "document",
+        title: "توليد مستند",
+        description: "تم إنشاء خطاب تعريف بالراتب",
+        status: "completed",
+        date: new Date(Date.now() - 172800000).toISOString(),
+        icon: "file",
+      },
+    ];
+
+    return {
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        userType: user.userType,
+        profilePicture: user.profilePicture,
+      },
+      stats,
+      recentActivities,
+    };
+  }),
+
+  employeeStats: protectedProcedure.query(async () => {
+    // TODO: Fetch real data from database using ctx.user.id
+    // const db = await getDb();
+    // const userId = ctx.user.id;
+    
+    // Mock data - replace with real database queries
+    return {
+      salary: {
+        current: 8000,
+        currency: "SAR",
+        lastUpdate: new Date().toISOString(),
+      },
+      employment: {
+        startDate: "2022-01-15",
+        yearsOfService: 2.9,
+        position: "موظف",
+        department: "قسم التقنية",
+      },
+      performance: {
+        rating: 4.5,
+        lastReview: new Date(Date.now() - 7776000000).toISOString(),
+        achievements: 12,
+      },
+    };
+  }),
+});
+
+/**
  * Main application router
  */
 export const appRouter = router({
@@ -318,6 +418,7 @@ export const appRouter = router({
   eosb: eosbRouter,
   letters: lettersRouter,
   documentGenerator: documentGeneratorRouter,
+  dashboard: dashboardRouter,
 });
 
 export type AppRouter = typeof appRouter;

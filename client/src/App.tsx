@@ -45,7 +45,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const CompanyDashboard = lazy(
   () => import("./pages/dashboard/CompanyDashboard")
 );
-const EmployeeDashboard = lazy(() => import("./pages/EmployeeDashboard"));
+const EmployeeDashboard = lazy(() => import("./pages/EmployeeDashboardNew"));
 const ConsultantDashboard = lazy(() => import("./pages/ConsultantDashboard"));
 const AdminDashboard = lazy(() => import("./pages/dashboard/AdminDashboard"));
 const AdminDashboardNew = lazy(() => import("./pages/admin/Dashboard"));

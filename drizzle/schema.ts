@@ -1277,3 +1277,65 @@ export const customerPdplSettings = mysqlTable("customerPdplSettings", {
 export type CustomerPdplSetting = typeof customerPdplSettings.$inferSelect;
 export type InsertCustomerPdplSetting =
   typeof customerPdplSettings.$inferInsert;
+
+// 43. أنواع الإجازات (Leave Types)
+export const leaveTypes = mysqlTable("leaveTypes", {
+  id: serial("id").primaryKey(),
+  code: varchar("code", { length: 50 }).notNull().unique(), // annual, sick, maternity, etc.
+  nameAr: varchar("nameAr", { length: 100 }).notNull(),
+  nameEn: varchar("nameEn", { length: 100 }).notNull(),
+  descriptionAr: text("descriptionAr"),
+  descriptionEn: text("descriptionEn"),
+  defaultDays: int("defaultDays").notNull(), // عدد الأيام الافتراضية سنوياً
+  requiresApproval: boolean("requiresApproval").default(true).notNull(),
+  isPaid: boolean("isPaid").default(true).notNull(),
+  carryForward: boolean("carryForward").default(false).notNull(), // ترحيل للسنة القادمة
+  maxCarryForwardDays: int("maxCarryForwardDays"),
+  active: boolean("active").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+});
+
+export type LeaveType = typeof leaveTypes.$inferSelect;
+export type InsertLeaveType = typeof leaveTypes.$inferInsert;
+
+// 44. طلبات الإجازات (Leave Requests)
+export const leaves = mysqlTable("leaves", {
+  id: serial("id").primaryKey(),
+  userId: int("userId").notNull(),
+  leaveTypeId: int("leaveTypeId").notNull(),
+  startDate: date("startDate").notNull(),
+  endDate: date("endDate").notNull(),
+  totalDays: int("totalDays").notNull(),
+  reason: text("reason"),
+  status: mysqlEnum("status", ["pending", "approved", "rejected", "cancelled"])
+    .default("pending")
+    .notNull(),
+  requestDate: timestamp("requestDate").defaultNow().notNull(),
+  reviewedBy: int("reviewedBy"), // المسؤول الذي راجع الطلب
+  reviewedAt: timestamp("reviewedAt"),
+  reviewNotes: text("reviewNotes"),
+  attachments: json("attachments"), // مرفقات (تقارير طبية، إلخ)
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+});
+
+export type Leave = typeof leaves.$inferSelect;
+export type InsertLeave = typeof leaves.$inferInsert;
+
+// 45. أرصدة الإجازات (Leave Balances)
+export const leaveBalances = mysqlTable("leaveBalances", {
+  id: serial("id").primaryKey(),
+  userId: int("userId").notNull(),
+  leaveTypeId: int("leaveTypeId").notNull(),
+  year: int("year").notNull(),
+  totalDays: int("totalDays").notNull(), // الرصيد الكلي
+  usedDays: int("usedDays").default(0).notNull(),
+  remainingDays: int("remainingDays").notNull(),
+  carriedForward: int("carriedForward").default(0).notNull(), // المرحل من السنة السابقة
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+});
+
+export type LeaveBalance = typeof leaveBalances.$inferSelect;
+export type InsertLeaveBalance = typeof leaveBalances.$inferInsert;
