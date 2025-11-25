@@ -88,3 +88,14 @@ backups/
 # Deployment
 .vercel
 
+=======
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# OS files
+Thumbs.db
+.DS_Store
+>>>>>>> 1f5ed655de8157b9864cb50aede1f7077069fc39
