@@ -17,7 +17,7 @@ import { reportsRouter } from "./reportsRouter";
 import { dashboardRouter } from "./dashboardRouter";
 import { sendEmail, sendPasswordResetEmail, sendEmailDetailed } from "./_core/email";
 import { validatePasswordStrength, hashPassword } from "./_core/password";
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { ENV } from "./_core/env";
 import {
   sendSMS,
@@ -54,10 +54,10 @@ const contactRouter = router({
         (ctx.req?.headers["x-forwarded-for"] as string | undefined)?.split(",")[0]?.trim() ||
         ctx.req?.ip ||
         undefined;
-      const userAgent = ctx.req?.headers["user-agent"] as string | undefined;
+      const userAgent = ctx.req?.headers["user-agent"];
       const locale =
         input.locale ||
-        (ctx.req?.headers["accept-language"] as string | undefined)?.split(",")[0]?.trim() ||
+        ctx.req?.headers["accept-language"]?.split(",")[0]?.trim() ||
         "ar";
 
       const saved = await db.createContactRequest({
@@ -836,7 +836,7 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
               .join("");
           }
 
-          const outputText = outputHtml.replace(/<[^>]*>/g, ""); // Strip HTML for text version
+          const outputText = outputHtml.replaceAll(/<[^>]*>/g, ""); // Strip HTML for text version
 
           // Save to database
           const documentId = await db.createGeneratedDocument({
@@ -1374,7 +1374,7 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
       )
       .query(async ({ input }) => {
         const code = await db.getDiscountCodeByCode(input.code);
-        if (!code || !code.isActive) {
+        if (!code?.isActive) {
           throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid code" });
         }
 
@@ -1652,7 +1652,7 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
         })
       )
       .mutation(async ({ input, ctx }) => {
-        const ALLOWED_MIME_TYPES = ["application/pdf", "image/png", "image/jpeg"];
+        const ALLOWED_MIME_TYPES = new Set(["application/pdf", "image/png", "image/jpeg"]);
         const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 
         const consultant = await db.getConsultantByUserId(ctx.user.id);
@@ -1671,8 +1671,9 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
         let fileSize = input.fileSize;
 
         if (isDataUrl) {
-          const match = input.documentUrl.match(/^data:([^;]+);base64,(.+)$/);
-          if (!match || !match[2]) {
+          const dataUrlRegex = /^data:([^;]+);base64,(.+)$/;
+          const match = dataUrlRegex.exec(input.documentUrl);
+          if (!match?.[2]) {
             throw new TRPCError({
               code: "BAD_REQUEST",
               message: "صيغة الملف غير مدعومة",
@@ -1682,7 +1683,7 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
           const buffer = Buffer.from(match[2], "base64");
           fileSize = buffer.length;
 
-          if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
+          if (!ALLOWED_MIME_TYPES.has(mimeType)) {
             throw new TRPCError({
               code: "BAD_REQUEST",
               message: "الملفات المسموحة: PDF, PNG, JPG فقط",
@@ -1700,7 +1701,7 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
           const safeName =
             input.documentName
               .toLowerCase()
-              .replace(/[^a-z0-9\u0600-\u06FF.-]+/gi, "-") || "document";
+              .replaceAll(/[^a-z0-9\u0600-\u06FF.-]+/gi, "-") || "document";
           const key = `consultants/${consultant.id}/${timestamp}-${safeName}`;
           const upload = await storagePut(key, buffer, mimeType, {
             actorId: ctx.user.id,
@@ -1709,7 +1710,7 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
           fileUrl = upload.url;
         }
         if (!isDataUrl) {
-          if (mimeType && !ALLOWED_MIME_TYPES.includes(mimeType)) {
+          if (mimeType && !ALLOWED_MIME_TYPES.has(mimeType)) {
             throw new TRPCError({
               code: "BAD_REQUEST",
               message: "الملفات المسموحة: PDF, PNG, JPG فقط",
@@ -1766,7 +1767,7 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
       .input(z.object({ id: z.number() }))
       .query(async ({ input }) => {
         const consultant = await db.getConsultantById(input.id);
-        if (!consultant || consultant.status !== "approved") {
+        if (consultant?.status !== "approved") {
           throw new TRPCError({ code: "NOT_FOUND", message: "Consultant not found" });
         }
         return { consultant };
@@ -1830,7 +1831,7 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
       .mutation(async ({ input, ctx }) => {
         // Verify consultant exists and is approved
         const consultant = await db.getConsultantById(input.consultantId);
-        if (!consultant || consultant.status !== "approved") {
+        if (consultant?.status !== "approved") {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "المستشار غير متاح",
@@ -1848,7 +1849,7 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
 
         const parseTimeToMinutes = (value?: string) => {
           if (!value) return null;
-          const parts = value.split(":").map(part => Number(part));
+          const parts = value.split(":").map(Number);
           if (parts.length !== 2 || parts.some(part => Number.isNaN(part))) {
             return null;
           }
@@ -1919,15 +1920,19 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
         const firstResponseHours = consultant.sla?.responseHours
           ? Number(consultant.sla.responseHours)
           : undefined;
-        const preferredChannel = consultant.channels
-          ? consultant.channels.inPerson
-            ? "inPerson"
-            : consultant.channels.voice
-              ? "voice"
-              : consultant.channels.chat
-                ? "chat"
-                : undefined
-          : undefined;
+        
+        // Determine preferred channel
+        let preferredChannel: string | undefined;
+        if (consultant.channels) {
+          if (consultant.channels.inPerson) {
+            preferredChannel = "inPerson";
+          } else if (consultant.channels.voice) {
+            preferredChannel = "voice";
+          } else if (consultant.channels.chat) {
+            preferredChannel = "chat";
+          }
+        }
+        
         const consultantUser = consultant?.userId
           ? await db.getUserById(consultant.userId)
           : null;
@@ -1968,7 +1973,7 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
         // سجل رسالة نظامية توضح تفاصيل الباقة/السعر/‏SLA لتظهر للمستشار
         const packageNoteParts = [
           input.packageName ? `الباقة: ${input.packageName}` : null,
-          input.packagePrice != null ? `السعر: ${input.packagePrice} ريال` : null,
+          input.packagePrice !== null && input.packagePrice !== undefined ? `السعر: ${input.packagePrice} ريال` : null,
           input.packageSlaHours ? `SLA: ${input.packageSlaHours} ساعة` : null,
         ].filter(Boolean);
         const packageNote =
@@ -2241,11 +2246,14 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
         // Determine sender type
         const consultant = await db.getConsultantByUserId(ctx.user.id);
         const isAdmin = ctx.user.role === "admin";
-        const senderType = isAdmin
-          ? "admin"
-          : consultant
-          ? "consultant"
-          : "client";
+        let senderType: "admin" | "consultant" | "client";
+        if (isAdmin) {
+          senderType = "admin";
+        } else if (consultant) {
+          senderType = "consultant";
+        } else {
+          senderType = "client";
+        }
 
         // Verify authorization
         if (senderType === "client" && booking.clientId !== ctx.user.id) {
@@ -2478,7 +2486,7 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
 
         await db.rateConsultation({
           bookingId: input.bookingId,
-          consultantId: booking.consultantId!,
+          consultantId: booking.consultantId,
           clientId: ctx.user.id,
           rating: input.rating,
           review: input.comment,

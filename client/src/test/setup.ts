@@ -11,9 +11,9 @@ afterEach(() => {
   cleanup();
 });
 
-if (typeof window !== 'undefined') {
+if (globalThis.window !== undefined) {
   // Mock window.matchMedia when running in jsdom
-  Object.defineProperty(window, 'matchMedia', {
+  Object.defineProperty(globalThis.window, 'matchMedia', {
     writable: true,
     value: vi.fn().mockImplementation((query) => ({
       matches: false,

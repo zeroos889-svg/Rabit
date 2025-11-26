@@ -1,0 +1,47 @@
+.container {
+  position: relative;
+  overflow: hidden;
+  width: var(--img-width, 100%);
+  height: var(--img-height, auto);
+}
+
+.placeholder {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-image: var(--blur-url);
+}
+
+.placeholderBlur {
+  filter: blur(20px);
+  transform: scale(1.1);
+}
+
+.image {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.imageLoaded {
+  opacity: 1;
+}
+
+.imageLoading {
+  opacity: 0;
+}
+
+.fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--fallback-bg);
+  color: var(--fallback-color);
+}
+
+.backgroundImage {
+  position: relative;
+  transition: opacity 0.3s;
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+}

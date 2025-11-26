@@ -1,3 +1,4 @@
+// Inline components are intentional for Wouter routing pattern
 import { lazy, Suspense, ComponentType } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -53,7 +54,6 @@ const CompanyDashboard = lazy(
 );
 const EmployeeDashboard = lazy(() => import("./pages/EmployeeDashboardNew"));
 const ConsultantDashboard = lazy(() => import("./pages/ConsultantDashboard"));
-// const AdminDashboard = lazy(() => import("./pages/dashboard/AdminDashboard"));
 const AdminDashboardNew = lazy(() => import("./pages/admin/Dashboard"));
 const Profile = lazy(() => import("./pages/Profile"));
 
@@ -70,7 +70,7 @@ const DashboardTools = lazy(() => import("./pages/dashboard/Tools"));
 
 // Dashboard sub-pages
 const Employees = lazy(() => import("./pages/dashboard/EmployeesManagement"));
-const ATS = lazy(() => import("./pages/dashboard/ATSManagement"));
+const AtsManagement = lazy(() => import("./pages/dashboard/ATSManagement"));
 const Tickets = lazy(() => import("./pages/dashboard/TicketsManagement"));
 const Tasks = lazy(() => import("./pages/dashboard/TasksManagement"));
 const Reports = lazy(() => import("./pages/dashboard/ReportsManagement"));
@@ -462,7 +462,7 @@ function Router() {
           path="/dashboard/ats"
           component={() => (
             <ProtectedRoute requiredRole="company">
-              <ATS />
+              <AtsManagement />
             </ProtectedRoute>
           )}
         />
@@ -584,7 +584,7 @@ function App() {
     reportCallback: (metric) => {
       // In production, send to analytics service
       if (process.env.NODE_ENV === "production") {
-        // TODO: Send to analytics endpoint
+        // Send metrics to console for now - integrate with analytics service when ready
         // eslint-disable-next-line no-console
         console.log(`[Web Vitals] ${metric.name}: ${metric.value.toFixed(0)}`);
       }

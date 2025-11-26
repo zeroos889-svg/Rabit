@@ -36,8 +36,8 @@ export default defineConfig({
   } as any,
   resolve: {
     alias: {
-      "@": path.resolve(import.meta.dirname, "client", "src"),
-      "@shared": path.resolve(import.meta.dirname, "shared"),
+      "@": node_path.resolve(import.meta.dirname, "client", "src"),
+      "@shared": node_path.resolve(import.meta.dirname, "shared"),
     },
   },
 });

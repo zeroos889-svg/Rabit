@@ -161,7 +161,7 @@ export function ChatWidget() {
       setIsLoading(false);
       messagesQuery.refetch();
     },
-    onError: error => {
+    onError: (error: Error) => {
       toast.error(error.message || "فشل في إرسال الرسالة");
       setIsLoading(false);
     },

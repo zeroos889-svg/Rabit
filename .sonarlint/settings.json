@@ -1,0 +1,37 @@
+{
+  "rules": {
+    "css:S6827": {
+      "level": "off"
+    },
+    "typescript:S3776": {
+      "level": "off"
+    },
+    "typescript:S1067": {
+      "level": "off"
+    },
+    "typescript:S6478": {
+      "level": "off"
+    },
+    "typescript:S1523": {
+      "level": "off"
+    },
+    "typescript:S6749": {
+      "level": "off"
+    },
+    "Web:DoctypePresenceCheck": {
+      "level": "off"
+    },
+    "Web:PageWithoutTitleCheck": {
+      "level": "off"
+    }
+  },
+  "connectedMode": {
+    "connections": {
+      "sonarcloud": [],
+      "sonarqube": []
+    }
+  },
+  "disableTelemetry": true,
+  "pathToCompileCommands": "",
+  "pathToNodeExecutable": ""
+}

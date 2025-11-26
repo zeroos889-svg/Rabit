@@ -245,7 +245,7 @@ function ServicesHighlightSection() {
               خدمات احترافية مدمجة
             </Badge>
             <h2 className="text-3xl md:text-4xl font-bold leading-tight">
-              حلول متكاملة للموارد البشرية
+              حلول متكاملة للموارد البشرية{" "}
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">
                 استشارات، مراجعات، ودورات تطبيقية
               </span>
@@ -302,7 +302,7 @@ export default function Home() {
 
   const redirectToLogin = () => {
     const loginUrl = getLoginUrl();
-    if (typeof globalThis.window === "undefined") return;
+    if (globalThis.window === undefined) return;
 
     const isExternal =
       /^https?:\/\//.test(loginUrl) && !loginUrl.startsWith(globalThis.window.location.origin);

@@ -5,6 +5,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+/* eslint-disable no-console */
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -27,12 +29,13 @@ async function applyIndexes() {
       try {
         await db.execute(sql.raw(statement));
         console.log("✅ Executed:", statement.substring(0, 50) + "...");
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Ignore "already exists" errors
-        if (error.message && error.message.includes("already exists")) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (errorMessage?.includes("already exists")) {
           console.log("⚠️  Index already exists, skipping");
         } else {
-          console.error("❌ Error:", error.message);
+          console.error("❌ Error:", errorMessage);
         }
       }
     }

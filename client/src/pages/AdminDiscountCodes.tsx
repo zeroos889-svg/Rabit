@@ -19,6 +19,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+interface DiscountCode {
+  id: number;
+  code: string;
+  discountType: "percentage" | "fixed";
+  discountValue: number;
+  isActive: boolean;
+  usedCount?: number;
+  maxUses?: number | null;
+  expiresAt?: Date | null;
+  description?: string;
+  validUntil?: Date | string;
+}
 import {
   Dialog,
   DialogContent,
@@ -43,11 +56,9 @@ import {
   Loader2,
   Plus,
   Trash2,
-  Edit,
   Tag,
   TrendingUp,
   Users,
-  Calendar,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -81,7 +92,7 @@ export default function AdminDiscountCodes() {
       resetForm();
       refetch();
     },
-    onError: error => {
+    onError: (error: Error) => {
       toast.error("فشل إنشاء الكود: " + error.message);
     },
   });
@@ -92,7 +103,7 @@ export default function AdminDiscountCodes() {
       toast.success("تم حذف الكود بنجاح");
       refetch();
     },
-    onError: error => {
+    onError: (error: Error) => {
       toast.error("فشل حذف الكود: " + error.message);
     },
   });
@@ -103,7 +114,7 @@ export default function AdminDiscountCodes() {
       toast.success("تم تحديث الكود بنجاح");
       refetch();
     },
-    onError: error => {
+    onError: (error: Error) => {
       toast.error("فشل تحديث الكود: " + error.message);
     },
   });
@@ -149,7 +160,7 @@ export default function AdminDiscountCodes() {
     );
   }
 
-  if (!user || user.role !== "admin") {
+  if (!user?.role || user.role !== "admin") {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="max-w-md">
@@ -164,9 +175,9 @@ export default function AdminDiscountCodes() {
 
   // Calculate stats
   const totalCodes = codes.length;
-  const activeCodes = codes.filter((c: any) => c.isActive).length;
+  const activeCodes = codes.filter((c: DiscountCode) => c.isActive).length;
   const totalUsage = codes.reduce(
-    (sum: number, c: any) => sum + (c.usedCount || 0),
+    (sum: number, c: DiscountCode) => sum + (c.usedCount || 0),
     0
   );
 
@@ -251,7 +262,7 @@ export default function AdminDiscountCodes() {
                       onChange={e =>
                         setNewCode({
                           ...newCode,
-                          discountValue: parseInt(e.target.value) || 0,
+                          discountValue: Number.parseInt(e.target.value) || 0,
                         })
                       }
                     />
@@ -272,7 +283,7 @@ export default function AdminDiscountCodes() {
                         setNewCode({
                           ...newCode,
                           maxUses: e.target.value
-                            ? parseInt(e.target.value)
+                            ? Number.parseInt(e.target.value)
                             : undefined,
                         })
                       }
@@ -366,10 +377,10 @@ export default function AdminDiscountCodes() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 gap-4">
-            {codes.map((code: any) => (
+            {codes.map((code: DiscountCode) => (
               <Card
                 key={code.id}
-                className={!code.isActive ? "opacity-60" : ""}
+                className={code.isActive ? "" : "opacity-60"}
               >
                 <CardContent className="pt-6">
                   <div className="flex items-start justify-between">

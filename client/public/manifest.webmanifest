@@ -1,12 +1,11 @@
 {
-  "name": "رابِط - منصة الموارد البشرية الذكية",
+  "name": "رابِط - منصة الموارد البشرية",
   "short_name": "رابِط",
   "lang": "ar",
   "dir": "rtl",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#ffffff",
   "theme_color": "#7c3aed",
   "orientation": "any",

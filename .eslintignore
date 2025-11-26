@@ -1,0 +1,41 @@
+# Build outputs
+dist/
+build/
+*.build/
+.next/
+out/
+
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Generated files
+*.generated.*
+*.min.js
+*.min.css
+
+# Config files
+*.config.js
+*.config.ts
+vite.config.*
+vitest.config.*
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Misc
+.DS_Store
+*.log

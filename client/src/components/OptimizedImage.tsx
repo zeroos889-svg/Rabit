@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, ImgHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
+import styles from "./OptimizedImage.module.css";
 
 interface OptimizedImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "srcSet"> {
   src: string;
@@ -39,7 +40,7 @@ export function OptimizedImage({
   onLoad,
   onError,
   ...props
-}: OptimizedImageProps) {
+}: Readonly<OptimizedImageProps>) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(priority);
   const [hasError, setHasError] = useState(false);
@@ -51,12 +52,12 @@ export function OptimizedImage({
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
+        for (const entry of entries) {
           if (entry.isIntersecting) {
             setIsInView(true);
             observer.disconnect();
           }
-        });
+        }
       },
       {
         rootMargin: "50px",
@@ -106,29 +107,34 @@ export function OptimizedImage({
   };
 
   // Blur-up placeholder styles
-  const placeholderStyle = placeholder === "blur" && !isLoaded ? {
-    filter: "blur(20px)",
-    transform: "scale(1.1)",
-  } : {};
+  const placeholderClasses = cn(
+    styles.placeholder,
+    "bg-gray-200 dark:bg-gray-800",
+    placeholder === "blur" && !isLoaded && styles.placeholderBlur
+  );
 
-  const containerStyle = {
-    position: "relative" as const,
-    width: width ? `${width}px` : "100%",
-    height: height ? `${height}px` : "auto",
-  };
+  const containerClasses = cn(
+    styles.container,
+    className
+  );
 
+  // Note: Inline styles are necessary here for CSS custom properties (CSS variables)
+  // which need to be dynamically set based on component props
   return (
-    <div style={containerStyle} className={cn("overflow-hidden", className)}>
+    <div 
+      className={containerClasses}
+      style={{
+        '--img-width': width ? `${width}px` : '100%',
+        '--img-height': height ? `${height}px` : 'auto',
+      } as React.CSSProperties}
+    >
       {/* Blur placeholder */}
       {placeholder === "blur" && !isLoaded && (
         <div
-          className="absolute inset-0 bg-gray-200 dark:bg-gray-800"
+          className={placeholderClasses}
           style={{
-            backgroundImage: blurDataURL ? `url(${blurDataURL})` : undefined,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            ...placeholderStyle,
-          }}
+            "--blur-url": blurDataURL ? `url(${blurDataURL})` : undefined,
+          } as React.CSSProperties}
         />
       )}
 
@@ -139,7 +145,7 @@ export function OptimizedImage({
           {isInView && (
             <source
               type="image/avif"
-              srcSet={generateSrcSet()?.replace(/\.(jpg|jpeg|png)/g, ".avif")}
+              srcSet={generateSrcSet()?.replaceAll(/\.(jpg|jpeg|png)/g, ".avif")}
               sizes={sizes}
             />
           )}
@@ -148,7 +154,7 @@ export function OptimizedImage({
           {isInView && (
             <source
               type="image/webp"
-              srcSet={generateSrcSet()?.replace(/\.(jpg|jpeg|png)/g, ".webp")}
+              srcSet={generateSrcSet()?.replaceAll(/\.(jpg|jpeg|png)/g, ".webp")}
               sizes={sizes}
             />
           )}
@@ -229,7 +235,7 @@ export function BackgroundImage({
   className,
   children,
   priority = false,
-}: BackgroundImageProps) {
+}: Readonly<BackgroundImageProps>) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(priority);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -239,12 +245,12 @@ export function BackgroundImage({
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
+        for (const entry of entries) {
           if (entry.isIntersecting) {
             setIsInView(true);
             observer.disconnect();
           }
-        });
+        }
       },
       {
         rootMargin: "50px",
@@ -259,10 +265,14 @@ export function BackgroundImage({
   useEffect(() => {
     if (!isInView) return;
 
-    const img = new Image();
+    const img = globalThis.Image ? new globalThis.Image() : document.createElement('img');
     img.src = src;
     img.onload = () => setIsLoaded(true);
   }, [isInView, src]);
+
+  const bgStyle = {
+    "--bg-image": isLoaded ? `url(${src})` : undefined,
+  } as React.CSSProperties;
 
   return (
     <div
@@ -270,14 +280,10 @@ export function BackgroundImage({
       className={cn(
         "relative transition-opacity duration-300",
         isLoaded ? "opacity-100" : "opacity-0",
+        "bg-cover bg-center",
         className
       )}
-      style={{
-        backgroundImage: isLoaded ? `url(${src})` : undefined,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-      role="img"
+      style={bgStyle}
       aria-label={alt}
     >
       {children}

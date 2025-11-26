@@ -73,15 +73,20 @@ class Analytics {
     document.head.appendChild(script);
 
     // Initialize dataLayer
+    // @ts-expect-error - Analytics globals injected at runtime
     globalThis.dataLayer = globalThis.dataLayer || [];
     
     // Define gtag function
+    // @ts-expect-error - Analytics globals injected at runtime
     globalThis.gtag = function gtag() {
       // eslint-disable-next-line prefer-rest-params
+      // @ts-expect-error - Analytics globals injected at runtime
       globalThis.dataLayer?.push(arguments);
     };
 
+    // @ts-expect-error - Analytics globals injected at runtime
     globalThis.gtag("js", new Date());
+    // @ts-expect-error - Analytics globals injected at runtime
     globalThis.gtag("config", config.measurementId, {
       send_page_view: false, // Manual page view tracking
       debug_mode: config.enableDebug,
@@ -119,11 +124,14 @@ class Analytics {
       return;
     }
 
+    // @ts-expect-error - Analytics globals injected at runtime
     if (!globalThis.gtag) {
+      // eslint-disable-next-line no-console
       console.warn("[Analytics] gtag not available");
       return;
     }
 
+    // @ts-expect-error - Analytics globals injected at runtime
     globalThis.gtag("event", eventName, {
       event_category: params.category,
       event_label: params.label,
@@ -132,6 +140,7 @@ class Analytics {
     });
 
     if (this.config?.enableDebug) {
+      // eslint-disable-next-line no-console
       console.log("[Analytics] Event tracked:", eventName, params);
     }
   }
@@ -140,6 +149,7 @@ class Analytics {
    * Track page view
    */
   trackPageView(params: PageViewParams = {}) {
+    // @ts-expect-error - Analytics globals injected at runtime
     if (!this.isInitialized || !globalThis.gtag) return;
 
     const pageParams = {
@@ -149,9 +159,11 @@ class Analytics {
       ...params,
     };
 
+    // @ts-expect-error - Analytics globals injected at runtime
     globalThis.gtag("event", "page_view", pageParams);
 
     if (this.config?.enableDebug) {
+      // eslint-disable-next-line no-console
       console.log("[Analytics] Page view tracked:", pageParams);
     }
   }
@@ -160,11 +172,14 @@ class Analytics {
    * Set user properties
    */
   setUserProperties(properties: UserProperties) {
+    // @ts-expect-error - Analytics globals injected at runtime
     if (!this.isInitialized || !globalThis.gtag) return;
 
+    // @ts-expect-error - Analytics globals injected at runtime
     globalThis.gtag("set", "user_properties", properties);
 
     if (this.config?.enableDebug) {
+      // eslint-disable-next-line no-console
       console.log("[Analytics] User properties set:", properties);
     }
   }
@@ -173,13 +188,16 @@ class Analytics {
    * Set user ID
    */
   setUserId(userId: string) {
+    // @ts-expect-error - Analytics globals injected at runtime
     if (!this.isInitialized || !globalThis.gtag) return;
 
+    // @ts-expect-error - Analytics globals injected at runtime
     globalThis.gtag("config", this.config?.measurementId || "", {
       user_id: userId,
     });
 
     if (this.config?.enableDebug) {
+      // eslint-disable-next-line no-console
       console.log("[Analytics] User ID set:", userId);
     }
   }
