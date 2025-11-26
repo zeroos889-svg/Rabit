@@ -21,11 +21,25 @@ import crypto from "node:crypto";
 import { ENV } from "./_core/env";
 import {
   sendSMS,
-  getLoginOtpSMS,
-  getLoginAlertSMS,
   getBookingConfirmationSMS,
   getConsultantBookingSMS,
 } from "./_core/sms";
+import {
+  sendOtpCode,
+  verifyOtpCode,
+  checkAndSendLoginAlerts,
+  extractRequestMetadata,
+} from "./auth-helpers";
+import {
+  parseTimeToMinutes,
+  checkDayAvailability,
+  checkBookingConflict,
+  extractSlaInfo,
+  determinePreferredChannel,
+  parseRequiredInfo,
+  buildPackageNote,
+  getConsultationDuration,
+} from "./booking-helpers";
 
 const MAX_HISTORY_LIMIT = 500;
 const CONTACT_EMAIL_FALLBACK = "support@rabit.sa";
@@ -200,6 +214,7 @@ export const appRouter = router({
       )
       .mutation(async ({ input, ctx }) => {
         try {
+          // التحقق من صحة بيانات الدخول
           const user = await db.verifyUserLogin(input.email, input.password);
           if (!user) {
             throw new TRPCError({
@@ -208,81 +223,28 @@ export const appRouter = router({
             });
           }
 
-          // Create session (simplified - in production, use proper session management)
-          // For now, we'll return user data and let frontend handle OAuth redirect
-          const ip = ctx.req?.ip || (ctx.req?.headers["x-forwarded-for"] as string) || "unknown";
-          const userAgent = ctx.req?.headers["user-agent"] || "unknown";
+          // استخراج معلومات الطلب (IP و User Agent)
+          const { ip, userAgent } = extractRequestMetadata(ctx.req);
           const is2faEnabled = ENV.enable2fa;
-          const smsOtpEnabled = ENV.enableSms2fa && Boolean(user.phoneNumber);
 
+          // معالجة المصادقة الثنائية (2FA) إذا كانت مفعلة
           if (is2faEnabled) {
-            const pendingOtp = await db.getLoginOtp(user.id);
-
             if (!input.otp) {
-              const code = `${Math.floor(100000 + Math.random() * 900000)}`;
-              const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-              await db.setLoginOtp({
+              // إرسال رمز OTP
+              return await sendOtpCode({
                 userId: user.id,
-                code,
-                expiresAt,
+                email: user.email || input.email,
+                phoneNumber: user.phoneNumber ?? null,
                 ip,
                 userAgent,
               });
-              const emailPromise = sendEmailDetailed({
-                to: user.email || input.email,
-                subject: "رمز الدخول الآمن (OTP)",
-                html: `<p>رمز الدخول الخاص بك هو <strong>${code}</strong></p><p>صالح لمدة 10 دقائق.</p>`,
-                template: "login-otp",
-                userId: user.id,
-              }).catch(() => undefined);
-              const smsPromise = smsOtpEnabled
-                ? sendSMS({
-                    to: user.phoneNumber!,
-                    message: getLoginOtpSMS({ code }),
-                    userId: user.id,
-                  }).catch(() => false)
-                : Promise.resolve(false);
-              await Promise.all([emailPromise, smsPromise]);
-
-              recordAudit({
-                action: "auth:otp_sent",
-                actorId: user.id,
-                actorEmail: user.email ?? input.email,
-                resource: "auth",
-              });
-
-              return {
-                success: false,
-                requiresOtp: true,
-                message: "تم إرسال رمز تحقق إلى بريدك الإلكتروني",
-              };
             }
 
-            if (!pendingOtp || pendingOtp.expiresAt < new Date()) {
-              throw new TRPCError({
-                code: "UNAUTHORIZED",
-                message: "رمز التحقق منتهي أو غير موجود، أعد المحاولة",
-              });
-            }
-
-            if (pendingOtp.attempts >= 5) {
-              throw new TRPCError({
-                code: "TOO_MANY_REQUESTS",
-                message: "تم تجاوز محاولات التحقق، الرجاء طلب رمز جديد",
-              });
-            }
-
-            if (pendingOtp.code !== input.otp) {
-              await db.incrementLoginOtpAttempt(user.id);
-              throw new TRPCError({
-                code: "UNAUTHORIZED",
-                message: "رمز التحقق غير صحيح",
-              });
-            }
-
-            await db.clearLoginOtp(user.id);
+            // التحقق من رمز OTP
+            await verifyOtpCode({ userId: user.id, otpInput: input.otp });
           }
 
+          // تسجيل حدث تسجيل الدخول
           recordAudit({
             action: "auth:login",
             actorId: user.id,
@@ -292,6 +254,7 @@ export const appRouter = router({
             summary: `${user.name ?? user.email ?? "مستخدم"} سجل الدخول`,
           });
 
+          // إنشاء Session Token
           const sessionToken = await createSessionToken({
             userId: user.id,
             email: user.email || input.email,
@@ -300,42 +263,14 @@ export const appRouter = router({
           const cookieOptions = getSessionCookieOptions(ctx.req);
           ctx.res.cookie(COOKIE_NAME, sessionToken, cookieOptions);
 
-          const previousMeta = await db.getLoginMeta(user.id);
-          await db.setLoginMeta(user.id, {
-            lastIp: ip,
-            lastUserAgent: userAgent,
+          // فحص وإرسال تنبيهات الدخول من جهاز جديد
+          await checkAndSendLoginAlerts({
+            userId: user.id,
+            email: user.email || input.email,
+            phoneNumber: user.phoneNumber ?? null,
+            ip,
+            userAgent,
           });
-
-          const shouldSendSmsAlert =
-            ENV.enableSmsLoginAlerts && Boolean(user.phoneNumber);
-
-          if (
-            previousMeta &&
-            ((previousMeta.lastIp && previousMeta.lastIp !== ip) ||
-              (previousMeta.lastUserAgent &&
-                previousMeta.lastUserAgent !== userAgent))
-          ) {
-            await sendEmailDetailed({
-              to: user.email || input.email,
-              subject: "تنبيه: تسجيل دخول جديد",
-              html: `<p>تم تسجيل الدخول إلى حسابك من جهاز أو موقع مختلف.</p><p>العنوان: ${ip}</p><p>User-Agent: ${userAgent}</p>`,
-              template: "login-alert",
-              userId: user.id,
-            }).catch(() => undefined);
-            if (shouldSendSmsAlert) {
-              await sendSMS({
-                to: user.phoneNumber!,
-                message: getLoginAlertSMS({ ip, device: String(userAgent) }),
-                userId: user.id,
-              }).catch(() => false);
-            }
-            recordAudit({
-              action: "auth:login_alert",
-              actorId: user.id,
-              actorEmail: user.email ?? input.email,
-              resource: "auth",
-            });
-          }
 
           return {
             success: true,
@@ -1829,7 +1764,7 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
         })
       )
       .mutation(async ({ input, ctx }) => {
-        // Verify consultant exists and is approved
+        // التحقق من المستشار
         const consultant = await db.getConsultantById(input.consultantId);
         if (consultant?.status !== "approved") {
           throw new TRPCError({
@@ -1838,24 +1773,14 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
           });
         }
 
+        // الحصول على تفاصيل نوع الاستشارة والمدة
         const consultationTypes = await db.getAllConsultationTypes();
         const consultationType = consultationTypes.find(
           t => t.id === input.consultationTypeId
         );
-        const durationMinutes =
-          consultationType?.duration ??
-          consultationType?.estimatedDuration ??
-          60;
+        const durationMinutes = getConsultationDuration(consultationType);
 
-        const parseTimeToMinutes = (value?: string) => {
-          if (!value) return null;
-          const parts = value.split(":").map(Number);
-          if (parts.length !== 2 || parts.some(part => Number.isNaN(part))) {
-            return null;
-          }
-          return parts[0] * 60 + parts[1];
-        };
-
+        // تحويل الوقت والتحقق من صحته
         const bookingDate = new Date(input.scheduledDate);
         const bookingStartMinutes = parseTimeToMinutes(input.scheduledTime);
         if (bookingStartMinutes === null) {
@@ -1866,46 +1791,27 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
         }
         const bookingEndMinutes = bookingStartMinutes + durationMinutes;
 
-        const dayNames = [
-          "الأحد",
-          "الاثنين",
-          "الثلاثاء",
-          "الأربعاء",
-          "الخميس",
-          "الجمعة",
-          "السبت",
-        ];
-        const dayName = dayNames[bookingDate.getDay()];
-        const isDayAllowed =
-          !consultant.availability ||
-          consultant.availability.length === 0 ||
-          consultant.availability.some(slot => slot.day === dayName && slot.active);
-        if (!isDayAllowed) {
+        // التحقق من توفر المستشار في اليوم المحدد
+        const { isAvailable, dayName } = checkDayAvailability({
+          consultant,
+          bookingDate,
+        });
+        if (!isAvailable) {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: `المستشار غير متاح يوم ${dayName}`,
           });
         }
 
-        const existing = await db.getConsultationBookingsByConsultant(input.consultantId);
-        const hasConflict = existing.some(b => {
-          const sameDay =
-            new Date(b.scheduledDate).toDateString() === bookingDate.toDateString();
-          const existingStart = parseTimeToMinutes(b.scheduledTime);
-          if (!sameDay || existingStart === null) return false;
-          const existingDuration =
-            typeof b.duration === "number" && b.duration > 0
-              ? b.duration
-              : durationMinutes;
-          const existingEnd = existingStart + existingDuration;
-          const activeStatus = !["cancelled", "completed", "no-show"].includes(
-            b.status
-          );
-          return (
-            activeStatus &&
-            bookingStartMinutes < existingEnd &&
-            existingStart < bookingEndMinutes
-          );
+        // فحص التعارض مع الحجوزات الموجودة
+        const hasConflict = await checkBookingConflict({
+          consultantId: input.consultantId,
+          bookingDate,
+          bookingSlot: {
+            startMinutes: bookingStartMinutes,
+            endMinutes: bookingEndMinutes,
+          },
+          durationMinutes,
         });
         if (hasConflict) {
           throw new TRPCError({
@@ -1914,40 +1820,20 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
           });
         }
 
-        const slaHours = consultant.sla?.deliveryHours
-          ? Number(consultant.sla.deliveryHours)
-          : undefined;
-        const firstResponseHours = consultant.sla?.responseHours
-          ? Number(consultant.sla.responseHours)
-          : undefined;
+        // استخراج معلومات SLA والقناة المفضلة
+        const { slaHours, firstResponseHours } = extractSlaInfo(consultant);
+        const preferredChannel = determinePreferredChannel(consultant);
         
-        // Determine preferred channel
-        let preferredChannel: string | undefined;
-        if (consultant.channels) {
-          if (consultant.channels.inPerson) {
-            preferredChannel = "inPerson";
-          } else if (consultant.channels.voice) {
-            preferredChannel = "voice";
-          } else if (consultant.channels.chat) {
-            preferredChannel = "chat";
-          }
-        }
-        
+        // الحصول على معلومات المستشار
         const consultantUser = consultant?.userId
           ? await db.getUserById(consultant.userId)
           : null;
         const smsBookingEnabled = ENV.enableSmsBookingAlerts;
 
-        // Create booking
-        let parsedRequiredInfo: Record<string, unknown> | undefined;
-        if (input.requiredInfo) {
-          try {
-            parsedRequiredInfo = JSON.parse(input.requiredInfo);
-          } catch {
-            parsedRequiredInfo = { raw: input.requiredInfo };
-          }
-        }
+        // تحليل المعلومات المطلوبة
+        const parsedRequiredInfo = parseRequiredInfo(input.requiredInfo);
 
+        // إنشاء الحجز
         const bookingId = await db.createConsultationBooking({
           userId: ctx.user.id,
           consultantId: input.consultantId,
@@ -1970,16 +1856,12 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
 
         const bookingRecord = await db.getConsultationBookingById(bookingId);
 
-        // سجل رسالة نظامية توضح تفاصيل الباقة/السعر/‏SLA لتظهر للمستشار
-        const packageNoteParts = [
-          input.packageName ? `الباقة: ${input.packageName}` : null,
-          input.packagePrice !== null && input.packagePrice !== undefined ? `السعر: ${input.packagePrice} ريال` : null,
-          input.packageSlaHours ? `SLA: ${input.packageSlaHours} ساعة` : null,
-        ].filter(Boolean);
-        const packageNote =
-          packageNoteParts.length > 0
-            ? `تفاصيل الباقة المختارة:\n${packageNoteParts.join(" | ")}`
-            : null;
+        // إضافة ملاحظة الباقة للمستشار
+        const packageNote = buildPackageNote({
+          packageName: input.packageName,
+          packagePrice: input.packagePrice,
+          packageSlaHours: input.packageSlaHours,
+        });
 
         if (packageNote) {
           await db.sendConsultationMessage({
@@ -1990,7 +1872,7 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
           });
         }
 
-        // Fire-and-forget email notification (stub)
+        // إرسال الإشعارات (Fire-and-forget)
         (async () => {
           const { sendBookingConfirmationEmail } = await import("./_core/email");
           try {
