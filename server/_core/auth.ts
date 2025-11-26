@@ -16,6 +16,7 @@ import { getSessionCookieOptions } from "./cookies";
 import { createSessionToken, verifySessionToken } from "./jwt";
 import { hashPassword, verifyPassword } from "./password";
 import { logger } from "./logger";
+import { validateRequest, AuthSchemas } from "./validation";
 
 // Security configuration
 const MAX_LOGIN_ATTEMPTS = 5;
@@ -151,15 +152,11 @@ export function registerAuthRoutes(app: Express, authLimiter?: any) {
   app.post(
     "/api/auth/login",
     ...loginMiddleware,
+    validateRequest(AuthSchemas.login, "body"),
     async (req: Request, res: Response) => {
       try {
         const { email, password } = req.body;
         const clientIp = getClientIp(req);
-
-        if (!email || !password) {
-          res.status(400).json({ error: "Email and password are required" });
-          return;
-        }
 
         // Check if account is locked
         if (isAccountLocked(email) || isAccountLocked(clientIp)) {
