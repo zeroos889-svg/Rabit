@@ -25,6 +25,7 @@ import {
   performanceMiddleware,
   errorContextMiddleware,
 } from "./requestTracking";
+import { smartTimeoutMiddleware } from "./requestTimeout";
 
 logger.info("🚀 Starting server initialization...", { context: "Server" });
 
@@ -122,6 +123,9 @@ async function startServer() {
   app.use(requestIdMiddleware);
   app.use(performanceMiddleware);
   app.use(errorContextMiddleware);
+
+  // Request Timeout Middleware (smart timeout based on path)
+  app.use(smartTimeoutMiddleware);
 
   // Request Logging with Morgan
   const logFormat =

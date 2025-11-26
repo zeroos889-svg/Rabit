@@ -5,6 +5,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { logger } from "./logger";
 import { captureException } from "../sentry";
+import { errorToStructuredResponse } from "./structuredErrors";
 
 export class AppError extends Error {
   statusCode: number;
@@ -130,11 +131,9 @@ function sendErrorDev(err: ErrorWithStatus, req: Request, res: Response) {
 function sendErrorProd(err: ErrorWithStatus, req: Request, res: Response) {
   // Operational, trusted error: send message to client
   if (err.isOperational) {
-    res.status(err.statusCode || 500).json({
-      status: "error",
-      code: err.code,
-      message: err.message,
-    });
+    // Use structured error response
+    const structuredResponse = errorToStructuredResponse(req, err);
+    res.status(err.statusCode || 500).json(structuredResponse);
   } else {
     // Programming or unknown error: don't leak error details
     logger.fatal("Unexpected error occurred", {
@@ -146,11 +145,9 @@ function sendErrorProd(err: ErrorWithStatus, req: Request, res: Response) {
       },
     });
 
-    res.status(500).json({
-      status: "error",
-      code: "INTERNAL_ERROR",
-      message: "Something went wrong. Please try again later.",
-    });
+    // Use structured error response for consistency
+    const structuredResponse = errorToStructuredResponse(req, err);
+    res.status(500).json(structuredResponse);
   }
 }
 
