@@ -1477,7 +1477,7 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
       )
       .mutation(async ({ input, ctx }) => {
         // Support both OAuth users and email/password users
-        const userId = ctx.user.userId || (ctx.user.openId ? await db.getUserByOpenId(ctx.user.openId)?.then(u => u?.id) : null);
+        const userId = ctx.user?.id;
         if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" });
         
         const updated = await db.updateUserProfileById(userId, {

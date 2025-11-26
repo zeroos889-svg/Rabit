@@ -2171,7 +2171,7 @@ interface EmailLogEntry {
   [key: string]: unknown;
 }
 export async function logEmail(entry: EmailLogEntry) {
-  logger.info('Email sent', { 
+  console.info('Email sent', { 
     context: 'Email',
     to: entry.to,
     subject: entry.subject,
@@ -2180,7 +2180,7 @@ export async function logEmail(entry: EmailLogEntry) {
 }
 
 export async function logSMS(entry: Record<string, unknown>) {
-  logger.info('SMS sent', { 
+  console.info('SMS sent', { 
     context: 'SMS',
     ...entry,
   });

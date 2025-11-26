@@ -71,6 +71,11 @@ class InMemoryRedis {
     return "used_memory_human:1.00M";
   }
 
+  async ping() {
+    // Mock ping response
+    return "PONG";
+  }
+
   async quit() {
     for (const entry of this.store.values()) {
       if (entry.timeout) clearTimeout(entry.timeout);
