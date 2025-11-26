@@ -80,6 +80,7 @@ drizzle/
 # Backups
 backups/
 *.backup
+drizzle_backup/
 
 # Cache directories
 .cache/
@@ -90,11 +91,15 @@ backups/
 .vercel
 
 # Backup & temporary files
-drizzle_backup/
 *.backup
 *copy*
 *Copy*
 *.tar.gz
+
+# Test Coverage
+coverage/
+*.lcov
+.nyc_output
 
 # FFmpeg binaries
 ffmpeg
