@@ -13,13 +13,18 @@ import { doubleSubmitCsrfProtection } from "./csrf";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
-import { simpleHealthCheck } from "./healthCheck";
+import { simpleHealthCheck, performHealthCheck } from "./healthCheck";
 import { errorHandler, initializeErrorHandling } from "./errorHandler";
 import { connectRedis, testRedisConnection } from "./redisClient";
 import { logger } from "./logger";
 import type { Request, Response, NextFunction } from "express";
 import { verifyMoyasarWebhook, verifyTapWebhook } from "./payment";
 import { initializeSentry, setupSentryErrorHandler } from "../sentry";
+import {
+  requestIdMiddleware,
+  performanceMiddleware,
+  errorContextMiddleware,
+} from "./requestTracking";
 
 logger.info("🚀 Starting server initialization...", { context: "Server" });
 
@@ -113,25 +118,12 @@ async function startServer() {
   // Initialize error handling (uncaught exceptions, unhandled rejections, graceful shutdown)
   initializeErrorHandling(server);
 
-  // Simple performance logging for slow requests
-  app.use((req, res, next) => {
-    const start = Date.now();
-    res.on("finish", () => {
-      const duration = Date.now() - start;
-      if (duration > 2000) {
-        logger.warn("Slow request detected", {
-          context: "Server",
-          path: req.originalUrl,
-          method: req.method,
-          duration,
-          status: res.statusCode,
-        });
-      }
-    });
-    next();
-  });
+  // Request ID and Performance Tracking Middleware (must be early)
+  app.use(requestIdMiddleware);
+  app.use(performanceMiddleware);
+  app.use(errorContextMiddleware);
 
-  // Request Logging
+  // Request Logging with Morgan
   const logFormat =
     process.env.NODE_ENV === "production"
       ? "combined" // Apache combined log format for production
@@ -262,7 +254,9 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   app.use(cookieParser());
 
-  // Health Check Endpoint (for Railway and load balancers)
+  // Health Check Endpoints
+  
+  // Simple health check (for load balancers - fast response)
   app.get("/health", async (req, res) => {
     try {
       const isHealthy = await simpleHealthCheck();
@@ -277,6 +271,21 @@ async function startServer() {
       }
     } catch {
       res.status(503).json({ status: "error", message: "Health check failed" });
+    }
+  });
+
+  // Detailed health check (comprehensive monitoring)
+  app.get("/health/detailed", async (req, res) => {
+    try {
+      const healthResult = await performHealthCheck();
+      const statusCode = healthResult.status === "unhealthy" ? 503 : 200;
+      res.status(statusCode).json(healthResult);
+    } catch (error) {
+      res.status(503).json({
+        status: "unhealthy",
+        timestamp: new Date().toISOString(),
+        error: error instanceof Error ? error.message : "Health check failed",
+      });
     }
   });
 
@@ -302,6 +311,31 @@ async function startServer() {
         error: error instanceof Error ? error.message : "Unknown error",
       });
     }
+  });
+
+  // Readiness probe (Kubernetes/Docker)
+  app.get("/health/ready", async (req, res) => {
+    try {
+      const isReady = await simpleHealthCheck();
+      res.status(isReady ? 200 : 503).json({
+        ready: isReady,
+        timestamp: new Date().toISOString(),
+      });
+    } catch {
+      res.status(503).json({
+        ready: false,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
+
+  // Liveness probe (Kubernetes/Docker)
+  app.get("/health/live", (req, res) => {
+    res.status(200).json({
+      alive: true,
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+    });
   });
 
   // CSRF Protection for all routes
