@@ -47,8 +47,17 @@ import {
   logTrpcRedisRateLimitConfig,
 } from "./trpcRedisRateLimit";
 import { redisWebhookRateLimiter } from "./redisRateLimit";
+import {
+  initializeTracing,
+  shutdownTracing,
+  tracingMiddleware,
+  logTracingConfig,
+} from "./openTelemetry";
 
 logger.info("🚀 Starting server initialization...", { context: "Server" });
+
+// Initialize OpenTelemetry tracing as early as possible (before other instrumentation)
+await initializeTracing();
 
 // Initialize Sentry as early as possible
 initializeSentry();
@@ -138,12 +147,15 @@ async function startServer() {
   });
 
   // Initialize error handling (uncaught exceptions, unhandled rejections, graceful shutdown)
-  initializeErrorHandling(server);
+  initializeErrorHandling(server, [shutdownTracing]);
 
   // Request ID and Performance Tracking Middleware (must be early)
   app.use(requestIdMiddleware);
   app.use(performanceMiddleware);
   app.use(errorContextMiddleware);
+
+  // OpenTelemetry Tracing Middleware (after Request ID for correlation)
+  app.use(tracingMiddleware);
 
   // API Versioning Middleware (attach version to request)
   app.use(apiVersioningMiddleware);
@@ -425,6 +437,7 @@ async function startServer() {
   logApiVersioningConfig();
   logRateLimitConfig();
   logTrpcRedisRateLimitConfig();
+  logTracingConfig();
 
   // Get port from environment (Railway sets this automatically)
   const port = getPort();

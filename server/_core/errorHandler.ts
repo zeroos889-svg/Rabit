@@ -237,11 +237,26 @@ export function handleUncaughtException() {
 /**
  * Graceful shutdown handler
  */
-export function setupGracefulShutdown(server: any) {
-  const shutdown = (signal: string) => {
+export function setupGracefulShutdown(server: any, shutdownCallbacks?: Array<() => Promise<void>>) {
+  const shutdown = async (signal: string) => {
     logger.info(`Received ${signal}. Starting graceful shutdown...`, {
       context: "Shutdown",
     });
+
+    // Execute shutdown callbacks (e.g., OpenTelemetry shutdown)
+    if (shutdownCallbacks && shutdownCallbacks.length > 0) {
+      logger.info("Executing shutdown callbacks...", { context: "Shutdown" });
+      for (const callback of shutdownCallbacks) {
+        try {
+          await callback();
+        } catch (error) {
+          logger.error("Error in shutdown callback", {
+            context: "Shutdown",
+            error: error as Error,
+          });
+        }
+      }
+    }
 
     server.close((err: any) => {
       if (err) {
@@ -278,11 +293,11 @@ export function setupGracefulShutdown(server: any) {
 /**
  * Initialize error handling
  */
-export function initializeErrorHandling(server?: any) {
+export function initializeErrorHandling(server?: any, shutdownCallbacks?: Array<() => Promise<void>>) {
   handleUncaughtException();
   handleUnhandledRejection();
 
   if (server) {
-    setupGracefulShutdown(server);
+    setupGracefulShutdown(server, shutdownCallbacks);
   }
 }
