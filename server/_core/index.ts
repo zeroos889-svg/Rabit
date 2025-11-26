@@ -53,11 +53,20 @@ import {
   tracingMiddleware,
   logTracingConfig,
 } from "./openTelemetry";
+import {
+  initializeMetrics,
+  metricsMiddleware,
+  getMetrics,
+  logMetricsConfig,
+} from "./metrics";
 
 logger.info("🚀 Starting server initialization...", { context: "Server" });
 
 // Initialize OpenTelemetry tracing as early as possible (before other instrumentation)
 await initializeTracing();
+
+// Initialize Prometheus metrics
+initializeMetrics();
 
 // Initialize Sentry as early as possible
 initializeSentry();
@@ -156,6 +165,9 @@ async function startServer() {
 
   // OpenTelemetry Tracing Middleware (after Request ID for correlation)
   app.use(tracingMiddleware);
+
+  // Prometheus Metrics Middleware (after tracing for complete observability)
+  app.use(metricsMiddleware);
 
   // API Versioning Middleware (attach version to request)
   app.use(apiVersioningMiddleware);
@@ -342,6 +354,20 @@ async function startServer() {
     }
   });
 
+  // Prometheus Metrics Endpoint
+  app.get("/metrics", async (req, res) => {
+    try {
+      const metrics = await getMetrics();
+      res.set("Content-Type", "text/plain; version=0.0.4; charset=utf-8");
+      res.send(metrics);
+    } catch (error) {
+      logger.error("📊 Metrics: Failed to generate metrics", {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      res.status(500).send("# Error generating metrics\n");
+    }
+  });
+
   // Redis Health Check Endpoint
   app.get("/health/redis", async (req, res) => {
     try {
@@ -438,6 +464,7 @@ async function startServer() {
   logRateLimitConfig();
   logTrpcRedisRateLimitConfig();
   logTracingConfig();
+  logMetricsConfig();
 
   // Get port from environment (Railway sets this automatically)
   const port = getPort();
