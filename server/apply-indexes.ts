@@ -4,15 +4,14 @@ import { sql } from "drizzle-orm";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-
-/* eslint-disable no-console */
+import { logger } from "./_core/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function applyIndexes() {
   try {
-    console.log("🔄 Applying database indexes...");
+    logger.info("Applying database indexes", { context: "Indexes" });
     
     const db = await getDb();
     
@@ -28,22 +27,35 @@ async function applyIndexes() {
     for (const statement of statements) {
       try {
         await db.execute(sql.raw(statement));
-        console.log("✅ Executed:", statement.substring(0, 50) + "...");
+        logger.info("Executed index statement", {
+          context: "Indexes",
+          preview: statement.substring(0, 50),
+        });
       } catch (error: unknown) {
         // Ignore "already exists" errors
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (errorMessage?.includes("already exists")) {
-          console.log("⚠️  Index already exists, skipping");
+          logger.info("Index already exists, skipping", {
+            context: "Indexes",
+          });
         } else {
-          console.error("❌ Error:", errorMessage);
+          logger.error("Failed to execute statement", {
+            context: "Indexes",
+            error: errorMessage,
+          });
         }
       }
     }
     
-    console.log("✅ Database indexes applied successfully!");
+    logger.info("Database indexes applied successfully", {
+      context: "Indexes",
+    });
     process.exit(0);
   } catch (error) {
-    console.error("❌ Failed to apply indexes:", error);
+    logger.error("Failed to apply indexes", {
+      context: "Indexes",
+      error: error instanceof Error ? error.message : String(error),
+    });
     process.exit(1);
   }
 }
