@@ -1,7 +1,6 @@
-type Role = "admin" | "company" | "consultant" | "employee" | "user";
-type MaybeRole = Role | null | undefined;
+import { useAuth } from "@/_core/hooks/useAuth";
 
-type Permission =
+export type Permission =
   // System Admin Permissions
   | "system.manage"
   | "users.manage"
@@ -68,22 +67,20 @@ type Permission =
   | "settings.company"
   | "settings.personal";
 
+type Role = "admin" | "company" | "consultant" | "employee" | "user";
+
 const rolePermissions: Record<Role, Permission[]> = {
   admin: [
-    // System
+    // All permissions
     "system.manage",
     "users.manage",
     "roles.manage",
     "audit.read",
-    
-    // All company permissions
     "employees.create",
     "employees.read",
     "employees.update",
     "employees.delete",
     "departments.manage",
-    
-    // All ATS permissions
     "jobs.create",
     "jobs.read",
     "jobs.update",
@@ -91,61 +88,44 @@ const rolePermissions: Record<Role, Permission[]> = {
     "applicants.read",
     "applicants.manage",
     "interviews.schedule",
-    
-    // All HR operations
     "leaves.approve",
     "leaves.request",
     "attendance.manage",
     "attendance.view",
     "payroll.manage",
     "payroll.view",
-    
-    // All documents
     "documents.create",
     "documents.read",
     "documents.update",
     "documents.delete",
     "pdf.generate",
     "templates.manage",
-    
-    // All reports
     "reports.view",
     "reports.export",
     "analytics.view",
-    
-    // All tickets
     "tickets.create",
     "tickets.read",
     "tickets.update",
     "tickets.resolve",
-    
-    // All communication
     "chat.reply",
     "chat.read",
     "notifications.read",
     "notifications.send",
-    
-    // All tasks
     "tasks.create",
     "tasks.read",
     "tasks.update",
     "tasks.delete",
     "tasks.assign",
-    
-    // All settings
     "settings.company",
     "settings.personal",
   ],
   
   company: [
-    // Employee management
     "employees.create",
     "employees.read",
     "employees.update",
     "employees.delete",
     "departments.manage",
-    
-    // ATS full access
     "jobs.create",
     "jobs.read",
     "jobs.update",
@@ -153,142 +133,133 @@ const rolePermissions: Record<Role, Permission[]> = {
     "applicants.read",
     "applicants.manage",
     "interviews.schedule",
-    
-    // HR operations
     "leaves.approve",
     "attendance.manage",
     "attendance.view",
     "payroll.manage",
     "payroll.view",
-    
-    // Documents
     "documents.create",
     "documents.read",
     "documents.update",
     "documents.delete",
     "pdf.generate",
     "templates.manage",
-    
-    // Reports
     "reports.view",
     "reports.export",
     "analytics.view",
-    
-    // Tickets
     "tickets.create",
     "tickets.read",
     "tickets.update",
     "tickets.resolve",
-    
-    // Communication
     "chat.reply",
     "chat.read",
     "notifications.read",
     "notifications.send",
-    
-    // Tasks
     "tasks.create",
     "tasks.read",
     "tasks.update",
     "tasks.delete",
     "tasks.assign",
-    
-    // Settings
     "settings.company",
     "settings.personal",
   ],
   
   consultant: [
-    // Limited employee access
     "employees.read",
-    
-    // Limited ATS access
     "jobs.read",
     "applicants.read",
-    
-    // Documents
     "documents.create",
     "documents.read",
     "pdf.generate",
     "templates.manage",
-    
-    // Communication
     "chat.reply",
     "chat.read",
     "notifications.read",
-    
-    // Tasks
     "tasks.read",
     "tasks.update",
-    
-    // Settings
     "settings.personal",
   ],
   
   employee: [
-    // Self HR operations
     "leaves.request",
     "attendance.view",
     "payroll.view",
-    
-    // Documents
     "documents.read",
     "documents.create",
-    
-    // Tickets
     "tickets.create",
     "tickets.read",
-    
-    // Communication
     "chat.read",
     "notifications.read",
-    
-    // Tasks
     "tasks.read",
     "tasks.update",
-    
-    // Settings
     "settings.personal",
   ],
   
   user: [
-    // Basic access
     "chat.read",
     "notifications.read",
     "settings.personal",
   ],
 };
 
-const fallbackPermissions: Permission[] = ["chat.read", "notifications.read"];
-
-function getPermissions(role: MaybeRole): Permission[] {
-  if (!role) return fallbackPermissions;
-  return rolePermissions[role] ?? fallbackPermissions;
+export function usePermissions() {
+  const { user } = useAuth();
+  
+  const hasPermission = (permission: Permission): boolean => {
+    if (!user) return false;
+    
+    const role = user.role as Role;
+    const permissions = rolePermissions[role] || [];
+    
+    return permissions.includes(permission);
+  };
+  
+  const hasAnyPermission = (permissions: Permission[]): boolean => {
+    return permissions.some(p => hasPermission(p));
+  };
+  
+  const hasAllPermissions = (permissions: Permission[]): boolean => {
+    return permissions.every(p => hasPermission(p));
+  };
+  
+  const getUserPermissions = (): Permission[] => {
+    if (!user) return [];
+    
+    const role = user.role as Role;
+    return rolePermissions[role] || [];
+  };
+  
+  const canManageEmployees = hasAnyPermission([
+    "employees.create",
+    "employees.update",
+    "employees.delete",
+  ]);
+  
+  const canManageJobs = hasAnyPermission([
+    "jobs.create",
+    "jobs.update",
+    "jobs.delete",
+  ]);
+  
+  const canManagePayroll = hasPermission("payroll.manage");
+  
+  const canApproveLeaves = hasPermission("leaves.approve");
+  
+  const canAccessReports = hasPermission("reports.view");
+  
+  const canManageSystem = hasPermission("system.manage");
+  
+  return {
+    hasPermission,
+    hasAnyPermission,
+    hasAllPermissions,
+    getUserPermissions,
+    // Convenience properties
+    canManageEmployees,
+    canManageJobs,
+    canManagePayroll,
+    canApproveLeaves,
+    canAccessReports,
+    canManageSystem,
+  };
 }
-
-export function hasPermission(role: MaybeRole, permission: Permission): boolean {
-  const permissions = getPermissions(role);
-  return permissions.includes(permission);
-}
-
-export function assertPermission(role: MaybeRole, permission: Permission): void {
-  if (!hasPermission(role, permission)) {
-    const error = new Error("INSUFFICIENT_PERMISSIONS");
-    (error as any).code = "FORBIDDEN";
-    throw error;
-  }
-}
-
-export function hasAnyPermission(role: MaybeRole, permissions: Permission[]): boolean {
-  return permissions.some(p => hasPermission(role, p));
-}
-
-export function hasAllPermissions(role: MaybeRole, permissions: Permission[]): boolean {
-  return permissions.every(p => hasPermission(role, p));
-}
-
-export function getUserPermissions(role: MaybeRole): Permission[] {
-  return getPermissions(role);
-}
-
-export type { Permission, Role, MaybeRole };

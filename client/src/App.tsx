@@ -31,6 +31,7 @@ const PageLoader = () => <LoadingSpinner fullScreen text="جاري التحمي�
 // Lazy load pages - Public pages (loaded first)
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
+const EnhancedLogin = lazy(() => import("./pages/EnhancedLogin"));
 const Register = lazy(() => import("./pages/Register"));
 const AccountType = lazy(() => import("./pages/AccountType"));
 const GuidedTour = lazy(() => import("./pages/GuidedTour"));
@@ -50,9 +51,12 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const CompanyDashboard = lazy(
   () => import("./pages/dashboard/CompanyDashboard")
 );
+const EnhancedCompanyDashboard = lazy(() => import("./pages/company/EnhancedCompanyDashboard"));
 const EmployeeDashboard = lazy(() => import("./pages/EmployeeDashboardNew"));
+const EnhancedEmployeeDashboard = lazy(() => import("./pages/employee/EnhancedEmployeeDashboard"));
 const ConsultantDashboard = lazy(() => import("./pages/ConsultantDashboard"));
 const AdminDashboardNew = lazy(() => import("./pages/admin/Dashboard"));
+const EnhancedAdminDashboard = lazy(() => import("./pages/admin/EnhancedAdminDashboard"));
 const Profile = lazy(() => import("./pages/Profile"));
 
 // Document & Tools
@@ -222,6 +226,7 @@ function Router() {
         <Route path={"/signup/company"} component={SignupCompany} />
         <Route path={"/complete-profile"} component={CompleteProfile} />
         <Route path={"/login"} component={withPublicOnly(Login)} />
+        <Route path={"/login-enhanced"} component={withPublicOnly(EnhancedLogin)} />
         <Route path={"/register"} component={withPublicOnly(Register)} />
         <Route
           path={"/forgot-password"}
@@ -238,6 +243,14 @@ function Router() {
         <Route
           path={"/employee/dashboard"}
           component={ProtectedEmployeeDashboard}
+        />
+        <Route
+          path={"/employee/dashboard-enhanced"}
+          component={() => (
+            <ProtectedRoute requiredRole="employee">
+              <EnhancedEmployeeDashboard />
+            </ProtectedRoute>
+          )}
         />
         <Route
           path={"/dashboard/employee"}
@@ -390,12 +403,28 @@ function Router() {
           )}
         />
         <Route
-          path="/admin"
+          path="/company/dashboard-enhanced"
+          component={() => (
+            <ProtectedRoute requiredRole="company">
+              <EnhancedCompanyDashboard />
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/admin/dashboard"
           component={() => (
             <ProtectedRoute requiredRole="admin">
               <AdminLayout>
                 <AdminDashboardNew />
               </AdminLayout>
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/admin/dashboard-enhanced"
+          component={() => (
+            <ProtectedRoute requiredRole="admin">
+              <EnhancedAdminDashboard />
             </ProtectedRoute>
           )}
         />
