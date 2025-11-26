@@ -17,7 +17,7 @@
 import rateLimit, { type Options } from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
 import { type Request, type Response } from "express";
-import { redis } from "../redis";
+import { getRedisInstance } from "../redis";
 
 /**
  * معلومات Rate Limit
@@ -47,6 +47,7 @@ const rateLimitMessage = (info: RateLimitInfo) => ({
  * مما يسمح بالتوزيع على multiple servers
  */
 const createRedisStore = (prefix: string): any => {
+  const redis = getRedisInstance();
   if (!redis) {
     console.warn("⚠️ Redis not available, using memory store for rate limiting");
     return undefined;

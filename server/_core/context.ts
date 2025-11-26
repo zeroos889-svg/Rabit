@@ -12,8 +12,6 @@ export type TrpcContext = {
   user: User | null;
 };
 
-export type Context = TrpcContext;
-
 async function resolveUser(userId?: number | null): Promise<User | null> {
   if (!userId) return null;
   try {

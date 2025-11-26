@@ -3,25 +3,25 @@ import { logger } from "./logger";
 
 const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 
-let redis: ReturnType<typeof createClient> | null = null;
+let redisInstance: ReturnType<typeof createClient> | null = null;
 
 /**
  * Get or create Redis connection
  */
 export async function getRedis() {
-  if (redis?.isOpen) return redis;
+  if (redisInstance?.isOpen) return redisInstance;
 
   try {
-    redis = createClient({ url: REDIS_URL });
-    redis.on("error", (err) => 
+    redisInstance = createClient({ url: REDIS_URL });
+    redisInstance.on("error", (err) => 
       logger.error("Redis Client Error", {
         context: "Redis",
         error: err.message,
       })
     );
-    await redis.connect();
+    await redisInstance.connect();
     logger.info("Redis connected successfully", { context: "Redis" });
-    return redis;
+    return redisInstance;
   } catch (error) {
     logger.warn("Redis connection failed, continuing without cache", {
       context: "Redis",
@@ -31,4 +31,9 @@ export async function getRedis() {
   }
 }
 
-export { redis };
+/**
+ * Get Redis instance (read-only accessor)
+ */
+export function getRedisInstance() {
+  return redisInstance;
+}
