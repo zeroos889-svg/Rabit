@@ -57,7 +57,7 @@ class Analytics {
   private static instance: Analytics;
   private config: AnalyticsConfig | null = null;
   private isInitialized = false;
-  private eventQueue: Array<{ name: string; params: EventParams }> = [];
+  private readonly eventQueue: Array<{ name: string; params: EventParams }> = [];
 
   private constructor() {}
 

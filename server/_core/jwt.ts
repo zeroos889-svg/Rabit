@@ -5,6 +5,7 @@
 
 import * as jose from "jose";
 import { ENV } from "./env";
+import { logger } from "./logger";
 
 export interface SessionPayload {
   userId: number;
@@ -47,7 +48,10 @@ export async function verifySessionToken(
       role: payload.role as string,
     };
   } catch (error) {
-    console.error("[JWT] Token verification failed", error);
+    logger.error("Token verification failed", {
+      context: "JWT",
+      error: error instanceof Error ? error.message : String(error),
+    });
     return null;
   }
 }

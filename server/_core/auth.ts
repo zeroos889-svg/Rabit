@@ -9,6 +9,7 @@ import * as db from "../db";
 import { getSessionCookieOptions } from "./cookies";
 import { createSessionToken, verifySessionToken } from "./jwt";
 import { hashPassword, verifyPassword } from "./password";
+import { logger } from "./logger";
 
 /**
  * Register authentication routes
@@ -79,7 +80,10 @@ export function registerAuthRoutes(app: Express, authLimiter?: any) {
           },
         });
       } catch (error) {
-        console.error("[Auth] Login failed", error);
+        logger.error("Login failed", {
+          context: "Auth",
+          error: error instanceof Error ? error.message : String(error),
+        });
         res.status(500).json({ error: "Login failed" });
       }
     }
@@ -157,7 +161,10 @@ export function registerAuthRoutes(app: Express, authLimiter?: any) {
           },
         });
       } catch (error) {
-        console.error("[Auth] Registration failed", error);
+        logger.error("Registration failed", {
+          context: "Auth",
+          error: error instanceof Error ? error.message : String(error),
+        });
         res.status(500).json({ error: "Registration failed" });
       }
     }
@@ -170,7 +177,10 @@ export function registerAuthRoutes(app: Express, authLimiter?: any) {
       res.clearCookie(COOKIE_NAME, cookieOptions);
       res.json({ success: true });
     } catch (error) {
-      console.error("[Auth] Logout failed", error);
+      logger.error("Logout failed", {
+        context: "Auth",
+        error: error instanceof Error ? error.message : String(error),
+      });
       res.status(500).json({ error: "Logout failed" });
     }
   });
@@ -203,7 +213,10 @@ export function registerAuthRoutes(app: Express, authLimiter?: any) {
         role: user.role,
       });
     } catch (error) {
-      console.error("[Auth] Get user failed", error);
+      logger.error("Get user failed", {
+        context: "Auth",
+        error: error instanceof Error ? error.message : String(error),
+      });
       res.status(500).json({ error: "Failed to get user" });
     }
   });
@@ -245,7 +258,7 @@ export async function requireAdmin(
   }
 
   const payload = await verifySessionToken(token);
-  if (!payload || payload.role !== "admin") {
+  if (!payload || payload?.role !== "admin") {
     res.status(403).json({ error: "Admin access required" });
     return;
   }

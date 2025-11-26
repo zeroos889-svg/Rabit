@@ -3,6 +3,8 @@
  * Saudi payment gateways integration
  */
 
+import { createHmac } from "node:crypto";
+
 export interface PaymentOptions {
   amount: number; // in SAR
   currency?: string;
@@ -216,7 +218,6 @@ export function verifyMoyasarWebhook(
   payload: string,
   signature: string
 ): boolean {
-  const crypto = require("crypto");
   const secret = process.env.MOYASAR_WEBHOOK_SECRET || process.env.MOYASAR_SECRET_KEY;
 
   if (!secret) {
@@ -224,7 +225,7 @@ export function verifyMoyasarWebhook(
     return false;
   }
 
-  const hmac = crypto.createHmac("sha256", secret);
+  const hmac = createHmac("sha256", secret);
   hmac.update(payload);
   const calculatedSignature = hmac.digest("hex");
 
@@ -236,7 +237,6 @@ export function verifyMoyasarWebhook(
  * Tap sends a SHA256 HMAC signature in the header `tap-signature`
  */
 export function verifyTapWebhook(payload: string, signature?: string | string[]): boolean {
-  const crypto = require("crypto");
   const secret = process.env.TAP_WEBHOOK_SECRET;
 
   if (!secret) {
@@ -247,7 +247,7 @@ export function verifyTapWebhook(payload: string, signature?: string | string[])
   const headerSig = Array.isArray(signature) ? signature[0] : signature;
   if (!headerSig) return false;
 
-  const hmac = crypto.createHmac("sha256", secret);
+  const hmac = createHmac("sha256", secret);
   hmac.update(payload, "utf8");
   const calculatedSignature = hmac.digest("hex");
   return calculatedSignature === headerSig;
