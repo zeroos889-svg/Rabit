@@ -23,10 +23,10 @@ import { useServiceWorker } from "./hooks/usePWA";
 import { useFocusVisible } from "./hooks/useAccessibility";
 import { useARIAEnhancer, useARIAValidation } from "./lib/ariaUtils";
 import { useAnalytics, usePageTracking } from "./hooks/useAnalytics";
-import { PageLoadingFallback } from "./components/LoadingSpinner";
+import { LoadingSpinner } from "./components/LoadingSpinner";
 
 // Loading component - Enhanced with better UX
-const PageLoader = () => <PageLoadingFallback />;
+const PageLoader = () => <LoadingSpinner fullScreen text="جاري التحميل..." />;
 
 // Lazy load pages - Public pages (loaded first)
 const Home = lazy(() => import("./pages/Home"));
