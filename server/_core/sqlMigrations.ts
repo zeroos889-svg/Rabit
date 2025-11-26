@@ -1,13 +1,16 @@
 import fs from "fs";
 import path from "path";
 import mysql from "mysql2/promise";
+import { logger } from "./logger";
 
 /**
  * Run SQL migrations directly without drizzle-kit CLI (compatible مع MySQL)
  */
 export async function runSQLMigrations() {
   if (!process.env.DATABASE_URL) {
-    console.log("[SQL Migrations] DATABASE_URL not set, skipping migrations");
+    logger.info("DATABASE_URL not set, skipping migrations", {
+      context: "SQL Migrations",
+    });
     return false;
   }
 
@@ -27,7 +30,9 @@ export async function runSQLMigrations() {
       .sort();
 
     if (files.length === 0) {
-      console.log("[SQL Migrations] No migration files found, skipping.");
+      logger.info("No migration files found, skipping", {
+        context: "SQL Migrations",
+      });
       return false;
     }
 
@@ -45,7 +50,10 @@ export async function runSQLMigrations() {
     let executedCount = 0;
     for (const file of files) {
       if (executedNames.has(file)) {
-        console.log(`[SQL Migrations] ✓ Already executed: ${file}`);
+        logger.info("Already executed migration", {
+          context: "SQL Migrations",
+          file,
+        });
         continue;
       }
 
@@ -59,21 +67,33 @@ export async function runSQLMigrations() {
           [file]
         );
         await connection.query("COMMIT");
-        console.log(`[SQL Migrations] ✓ Executed: ${file}`);
+        logger.info("Successfully executed migration", {
+          context: "SQL Migrations",
+          file,
+        });
         executedCount++;
       } catch (error) {
         await connection.query("ROLLBACK");
-        console.error(`[SQL Migrations] ✗ Failed to execute ${file}:`, error);
+        logger.error("Failed to execute migration", {
+          context: "SQL Migrations",
+          file,
+          error: error instanceof Error ? error.message : String(error),
+        });
         throw error;
       }
     }
 
-    console.log(
-      `[SQL Migrations] ✓ Successfully executed ${executedCount} new migrations`
-    );
+    logger.info("Successfully executed migrations", {
+      context: "SQL Migrations",
+      executedCount,
+      totalFiles: files.length,
+    });
     return true;
   } catch (error) {
-    console.error("[SQL Migrations] ✗ Failed to run migrations:", error);
+    logger.error("Failed to run migrations", {
+      context: "SQL Migrations",
+      error: error instanceof Error ? error.message : String(error),
+    });
     return false;
   } finally {
     await connection.end();

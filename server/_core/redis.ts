@@ -1,4 +1,5 @@
 import { createClient } from "redis";
+import { logger } from "./logger";
 
 const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 
@@ -12,12 +13,20 @@ export async function getRedis() {
 
   try {
     redis = createClient({ url: REDIS_URL });
-    redis.on("error", (err) => console.error("Redis Client Error:", err));
+    redis.on("error", (err) => 
+      logger.error("Redis Client Error", {
+        context: "Redis",
+        error: err.message,
+      })
+    );
     await redis.connect();
-    console.log("✅ Redis connected successfully");
+    logger.info("Redis connected successfully", { context: "Redis" });
     return redis;
   } catch (error) {
-    console.warn("⚠️  Redis connection failed, continuing without cache:", error);
+    logger.warn("Redis connection failed, continuing without cache", {
+      context: "Redis",
+      error: error instanceof Error ? error.message : String(error),
+    });
     return null;
   }
 }

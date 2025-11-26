@@ -2171,13 +2171,19 @@ interface EmailLogEntry {
   [key: string]: unknown;
 }
 export async function logEmail(entry: EmailLogEntry) {
-  // eslint-disable-next-line no-console
-  console.log('Email log:', entry);
+  logger.info('Email sent', { 
+    context: 'Email',
+    to: entry.to,
+    subject: entry.subject,
+    meta: entry.meta,
+  });
 }
 
 export async function logSMS(entry: Record<string, unknown>) {
-  // eslint-disable-next-line no-console
-  console.log('SMS log:', entry);
+  logger.info('SMS sent', { 
+    context: 'SMS',
+    ...entry,
+  });
 }
 
 // Consent & privacy

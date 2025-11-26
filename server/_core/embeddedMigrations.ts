@@ -3,6 +3,8 @@
  * This avoids filesystem dependencies in serverless environments like Vercel
  */
 
+import { logger } from "./logger";
+
 export const EMBEDDED_MIGRATIONS = `
 CREATE TABLE IF NOT EXISTS \`users\` (
 	\`id\` int AUTO_INCREMENT NOT NULL,
@@ -556,14 +558,19 @@ CREATE TABLE IF NOT EXISTS \`__drizzle_migrations\` (
  */
 export async function runEmbeddedMigrations(connection: any) {
   try {
-    console.log("[Embedded Migrations] Starting...");
+    logger.info("Starting embedded migrations", {
+      context: "Embedded Migrations",
+    });
 
     // Split by semicolon and execute each statement
     const statements = EMBEDDED_MIGRATIONS.split(";")
       .map(s => s.trim())
       .filter(s => s.length > 0);
 
-    console.log(`[Embedded Migrations] Found ${statements.length} statements`);
+    logger.info("Found migration statements", {
+      context: "Embedded Migrations",
+      count: statements.length,
+    });
 
     for (const statement of statements) {
       try {
@@ -575,19 +582,24 @@ export async function runEmbeddedMigrations(connection: any) {
           error.code === "ER_TABLE_EXISTS_ERROR" ||
           error.message?.includes("already exists")
         ) {
-          console.log(`[Embedded Migrations] ✓ Table already exists (skipped)`);
+          logger.info("Table already exists, skipped", {
+            context: "Embedded Migrations",
+          });
           continue;
         }
         throw error;
       }
     }
 
-    console.log(
-      "[Embedded Migrations] ✓ All migrations completed successfully"
-    );
+    logger.info("All migrations completed successfully", {
+      context: "Embedded Migrations",
+    });
     return true;
   } catch (error) {
-    console.error("[Embedded Migrations] ✗ Failed:", error);
+    logger.error("Failed to run embedded migrations", {
+      context: "Embedded Migrations",
+      error: error instanceof Error ? error.message : String(error),
+    });
     throw error;
   }
 }
