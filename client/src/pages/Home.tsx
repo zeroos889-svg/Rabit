@@ -190,36 +190,82 @@ function ConsultingServicesSection() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {consultationTypes.map((type: { id: number; titleAr: string; titleEn: string; descriptionAr: string; descriptionEn: string; duration: number; price: number; }) => (
-            <Card
-              key={type.id}
-              className="p-6 hover-lift cursor-pointer group h-full"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="h-14 w-14 rounded-lg bg-blue-100 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Headphones className="h-7 w-7 text-blue-600" />
-                </div>
-                <div className="text-right">
-                  <div className="text-sm text-muted-foreground">
-                    {type.duration} دقيقة
+          {consultationTypes.map((type: {
+            id: number | string;
+            titleAr?: string;
+            titleEn?: string;
+            nameAr?: string;
+            nameEn?: string;
+            descriptionAr?: string;
+            descriptionEn?: string;
+            description?: string;
+            duration?: number;
+            durationMinutes?: number;
+            price?: number;
+            amount?: number;
+          }) => {
+            const durationMinutes =
+              typeof type.duration === "number"
+                ? type.duration
+                : typeof type.durationMinutes === "number"
+                  ? type.durationMinutes
+                  : undefined;
+
+            const priceValue =
+              typeof type.price === "number"
+                ? type.price
+                : typeof type.amount === "number"
+                  ? type.amount
+                  : undefined;
+
+            const title =
+              type.nameAr ??
+              type.titleAr ??
+              type.nameEn ??
+              type.titleEn ??
+              "استشارة الموارد البشرية";
+
+            const description =
+              type.descriptionAr ??
+              type.descriptionEn ??
+              type.description ??
+              "استشارات متخصصة لجميع الاحتياجات";
+
+            return (
+              <Card
+                key={type.id}
+                className="p-6 hover-lift cursor-pointer group h-full"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="h-14 w-14 rounded-lg bg-blue-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Headphones className="h-7 w-7 text-blue-600" />
                   </div>
-                  <div className="text-2xl font-bold text-blue-600">
-                    {type.price} ر.س
+                  <div className="text-right">
+                    {typeof durationMinutes === "number" && (
+                      <div className="text-sm text-muted-foreground">
+                        {durationMinutes} دقيقة
+                      </div>
+                    )}
+                    {typeof priceValue === "number" && (
+                      <div className="text-2xl font-bold text-blue-600">
+                        {priceValue} ر.س
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-              <h3 className="text-xl font-bold mb-2">{type.titleAr}</h3>
-              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                {type.descriptionAr}
-              </p>
-              <Link href="/consulting/book-new">
-                <Button className="w-full gradient-primary text-white">
-                  احجز الآن
-                  <ArrowRight className="mr-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </Card>
-          ))}
+                <h3 className="text-xl font-bold mb-2">{title}</h3>
+                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                  {description}
+                </p>
+                <Link href="/consulting/book-new">
+                  <Button className="w-full gradient-primary text-white">
+                    احجز الآن
+                    <ArrowRight className="mr-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </Card>
+            );
+          })}
         </div>
 
         <div className="text-center">

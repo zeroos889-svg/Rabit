@@ -12,15 +12,15 @@ export function Badge({
 }: BadgeProps) {
   const styles = {
     default:
-      "bg-purple-600 text-white border border-purple-600 dark:bg-purple-500 dark:border-purple-500",
+      "bg-primary text-primary-foreground border border-transparent shadow-sm",
     outline:
-      "border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-200",
+      "border border-border text-foreground",
     success:
       "bg-green-600 text-white border border-green-600 dark:bg-green-500 dark:border-green-500",
     destructive:
       "bg-red-600 text-white border border-red-600 dark:bg-red-500 dark:border-red-500",
     secondary:
-      "bg-purple-100 text-purple-700 border border-purple-200 dark:bg-purple-900/40 dark:text-purple-200 dark:border-purple-800",
+      "bg-brand-50 text-brand-700 border border-brand-100 dark:bg-brand-900/40 dark:text-brand-50 dark:border-brand-800",
   }[variant];
   return (
     <span

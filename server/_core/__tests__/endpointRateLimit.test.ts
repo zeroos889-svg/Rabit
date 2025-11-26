@@ -20,12 +20,21 @@ describe("Endpoint Rate Limiting", () => {
       path: "/api/test",
       method: "POST",
       headers: {},
+      app: {
+        get: vi.fn((key: string) => {
+          if (key === "trust proxy") {
+            return false;
+          }
+          return undefined;
+        }),
+      } as any,
     };
 
     mockRes = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn().mockReturnThis(),
       setHeader: vi.fn(),
+      append: vi.fn(),
     };
 
     mockNext = vi.fn();

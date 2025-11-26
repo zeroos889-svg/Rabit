@@ -91,10 +91,46 @@ export function performanceMiddleware(
   next: NextFunction
 ) {
   const start = process.hrtime.bigint();
+  const originalWriteHead: Response["writeHead"] = res.writeHead.bind(res);
+  let responseTimeHeaderSet = false;
+
+  const calculateDurationMs = () => Number(process.hrtime.bigint() - start) / 1_000_000;
+
+  const ensureResponseTimeHeader = (durationMs: number) => {
+    if (responseTimeHeaderSet) {
+      return;
+    }
+
+    try {
+      res.setHeader("X-Response-Time", `${durationMs.toFixed(2)}ms`);
+      responseTimeHeaderSet = true;
+    } catch (error) {
+      logger.warn("Failed to set response time header", {
+        context: "Performance",
+        requestId: getRequestId(req),
+        method: req.method,
+        path: req.originalUrl,
+        error: error instanceof Error ? error.message : error,
+      });
+    }
+  };
+
+  // Inject header right before the response is committed
+  res.writeHead = function writeHeadPatched(...args: Parameters<typeof res.writeHead>) {
+    if (!responseTimeHeaderSet) {
+      const durationMs = calculateDurationMs();
+      ensureResponseTimeHeader(durationMs);
+    }
+
+    return originalWriteHead(...args);
+  } as Response["writeHead"];
 
   res.on("finish", () => {
-    const end = process.hrtime.bigint();
-    const duration = Number(end - start) / 1_000_000; // Convert to milliseconds
+    const duration = calculateDurationMs();
+
+    if (!responseTimeHeaderSet && !res.headersSent) {
+      ensureResponseTimeHeader(duration);
+    }
 
     // Log slow requests (>2 seconds)
     if (duration > 2000) {
@@ -120,8 +156,8 @@ export function performanceMiddleware(
       });
     }
 
-    // Add duration header
-    res.setHeader("X-Response-Time", `${duration.toFixed(2)}ms`);
+    // Restore original writeHead to avoid side effects in long-lived responses
+    res.writeHead = originalWriteHead;
   });
 
   next();

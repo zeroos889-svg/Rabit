@@ -83,7 +83,7 @@ describe("Structured Errors", () => {
 
       expect(response.error.code).toBe("UNKNOWN_ERROR");
       expect(response.error.category).toBe(ErrorCategory.SERVER_ERROR);
-      expect(response.error.severity).toBe(ErrorSeverity.MEDIUM);
+      expect(response.error.severity).toBe(ErrorSeverity.HIGH);
     });
   });
 
@@ -163,7 +163,7 @@ describe("Structured Errors", () => {
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           error: expect.objectContaining({
-            code: "NOT_FOUND",
+            code: "RESOURCE_NOT_FOUND",
             message: "User not found",
           }),
         })

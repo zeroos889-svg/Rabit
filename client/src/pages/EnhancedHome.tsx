@@ -10,6 +10,18 @@ import {
   StaggerItem,
   AnimatedCard
 } from "@/components/ui/animated-card";
+import {
+  AudienceBenefitCard,
+  type AudienceBenefit,
+  LogoCloud,
+  type Logo,
+  PricingPlanCard,
+  type PricingPlan,
+  TestimonialCard,
+  type Testimonial,
+  TrustSignalCard,
+  type TrustSignal,
+} from "@/components/home/MarketingCards";
 import { motion } from "framer-motion";
 import {
   Building2,
@@ -149,6 +161,157 @@ const steps = [
   },
 ];
 
+const heroValueBullets = [
+  {
+    title: "منصة واحدة لكل العمليات",
+    description: "توحيد الحضور، الملفات، وإدارة الحالات القانونية في لوحة واحدة بدل الأدوات المتفرقة.",
+  },
+  {
+    title: "مصمم للشركات السعودية والخليجية",
+    description: "إجراءات، وثائق، وتنبيهات مبنية على نظام العمل المحلي ومتطلبات وزارة الموارد البشرية.",
+  },
+  {
+    title: "قرارات أسرع بدون عمل يدوي",
+    description: "ذكاء تشغيلي يحول البيانات إلى رؤى فورية للمديرين ويقلل الروتين بنسبة كبيرة.",
+  },
+];
+
+const audienceBenefits: AudienceBenefit[] = [
+  {
+    audienceLabel: "لفرق الموارد البشرية",
+    title: "تشغيل الموارد البشرية بدون فوضى",
+    summary: "يجمع ربط كل النماذج والمهام اليومية في لوحة عربية سهلة ومتصلة بالقوانين المحلية.",
+    details: [
+      "أتمتة الحضور، الإجازات، وسلاسل الموافقات بدون ملفات Excel",
+      "سياسات جاهزة ومتوافقة مع وزارة الموارد البشرية والتنمية الاجتماعية",
+      "مهام يومية مع تنبيهات ذكية تقلل المتابعة اليدوية",
+    ],
+    icon: Building2,
+    accent: "bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-100",
+    ctaLabel: "جرّب لوحة HR",
+    ctaHref: "/signup",
+  },
+  {
+    audienceLabel: "للإدارة التنفيذية",
+    title: "رؤية مالية وتشغيلية فورية",
+    summary: "لوحات تحكم جاهزة توضح التكاليف، المخاطر، وقراءة نبض الموظفين بدون انتظار تقارير منفصلة.",
+    details: [
+      "مؤشرات رئيسية للالتزام، الدوام، وتكلفة الموظف في الوقت الفعلي",
+      "تنبيهات مخاطر فورية لحالات التأخير في التوقيعات أو انتهاء العقود",
+      "مقارنات جاهزة بين الفروع أو الأقسام لدعم القرارات السريعة",
+    ],
+    icon: BarChart3,
+    accent: "bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-100",
+    ctaLabel: "اطلب عرضاً تنفيذياً",
+    ctaHref: "/contact",
+  },
+  {
+    audienceLabel: "للموظفين",
+    title: "تجربة واضحة وشفافة",
+    summary: "تطبيق ذاتي باللغة العربية يبسط طلبات الموظفين ويزيد الثقة داخل الشركة.",
+    details: [
+      "متابعة الراتب، الإجازات، والوثائق في مكان واحد",
+      "إشعارات فورية بأي تحديث على الطلبات أو العقود",
+      "مرونة في التقديم عبر الجوال بدون الحاجة لرسائل بريد",
+    ],
+    icon: UserCheck,
+    accent: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-100",
+    ctaLabel: "دع موظفيك يسجلون",
+    ctaHref: "/signup",
+  },
+];
+
+const pricingPlans: PricingPlan[] = [
+  {
+    name: "Starter | البداية",
+    price: "599 SAR / شهر",
+    description: "لشركات تبدأ بتنظيم عمليات الموارد البشرية",
+    employeeSize: "حتى 50 موظف",
+    features: [
+      "حضور وإجازات ذكية",
+      "مكتبة مستندات مع قوالب جاهزة",
+      "دعم عربي خلال أيام العمل",
+    ],
+    ctaLabel: "ابدأ الخطة",
+    ctaHref: "/signup",
+  },
+  {
+    name: "Growth | التوسع",
+    price: "1,299 SAR / شهر",
+    description: "لفرق الموارد البشرية التي تحتاج رقابة وتشريعات أعمق",
+    employeeSize: "حتى 200 موظف",
+    features: [
+      "لوحات تحكم تنفيذية",
+      "أتمتة تنبيهات الامتثال والتوقيعات",
+      "تكامل مع أنظمة الرواتب والبوابات الحكومية",
+    ],
+    ctaLabel: "جرّب الخطة",
+    ctaHref: "/signup",
+    badge: "الأكثر طلباً",
+    highlighted: true,
+  },
+  {
+    name: "Business | الأعمال",
+    price: "حسب الاستخدام",
+    description: "للمجموعات والشركات متعددة الفروع",
+    employeeSize: "أكثر من 200 موظف",
+    features: [
+      "استشاري نجاح مخصص",
+      "تخصيص الصلاحيات والسياسات",
+      "مراقبة أداء وذكاء تنبؤي",
+    ],
+    ctaLabel: "اطلب عرض سعر",
+    ctaHref: "/contact",
+  },
+];
+
+const trustSignals: TrustSignal[] = [
+  {
+    title: "متوافق مع الأنظمة المحلية",
+    description: "يبنى ربط على تشريعات العمل السعودية والخليجية ويحدث باستمرار مع أي تعديل جديد.",
+    icon: Shield,
+  },
+  {
+    title: "موجه للامتثال والشفافية",
+    description: "صلاحيات دقيقة، سجلات تدقيق، وتنبيهات تجعل الفرق متأكدة من كل خطوة.",
+    icon: CheckCircle2,
+  },
+  {
+    title: "ذكاء اصطناعي يساند القرار",
+    description: "اقتراحات تلقائية للرواتب، المخاطر، وتوزيع القوى العاملة تسهل عمل الإدارة.",
+    icon: Brain,
+  },
+  {
+    title: "لوحات واضحة للإدارة",
+    description: "رؤى مباشرة للتكاليف، الالتزام، والموارد تجعل الاجتماعات أقصر وأكثر تركيزاً.",
+    icon: BarChart3,
+  },
+];
+
+// Placeholder client names to keep the layout ready until real logos are provided.
+const customerLogos: Logo[] = [
+  { name: "شركة ألفا" },
+  { name: "مجموعة المدار" },
+  { name: "حلول توازن" },
+  { name: "نور القابضة" },
+  { name: "أفق الأعمال" },
+  { name: "نخبة الموارد" },
+];
+
+// Lightweight testimonials are placeholders that can be swapped with verified quotes.
+const testimonials: Testimonial[] = [
+  {
+    quote: "خفضنا الوقت الضائع على المهام اليدوية بنسبة 60٪ لأن كل الإجراءات أصبحت في منصة واحدة.",
+    name: "سارة الحربي",
+    role: "مديرة الموارد البشرية - شركة تقنية سعودية",
+  },
+  {
+    quote: "لوحات ربط أعطتنا وضوحاً فورياً للتكاليف والالتزام القانوني لكل فرع.",
+    name: "راشد القحطاني",
+    role: "الرئيس التنفيذي للعمليات - مجموعة خدمات خليجية",
+  },
+];
+
 export default function EnhancedHome() {
   const { t } = useTranslation();
 
@@ -197,7 +360,7 @@ export default function EnhancedHome() {
                 >
                   <Badge className="mb-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
                     <Zap className="mr-2 h-4 w-4" />
-                    الحل الأمثل للموارد البشرية في السعودية
+                    منصة الموارد البشرية المخصصة للشركات السعودية والخليجية
                   </Badge>
                 </motion.div>
 
@@ -208,11 +371,11 @@ export default function EnhancedHome() {
                   className="text-5xl font-bold leading-tight tracking-tight lg:text-7xl"
                 >
                   <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    ربط
+                    رابط
                   </span>
                   <br />
                   <span className="text-foreground">
-                    نظام الموارد البشرية الذكي
+                    يوحد عمليات الموارد البشرية ويكشف الفوضى المخفية
                   </span>
                 </motion.h1>
 
@@ -222,14 +385,35 @@ export default function EnhancedHome() {
                   transition={{ delay: 0.3 }}
                   className="text-xl text-muted-foreground lg:text-2xl"
                 >
-                  حلول متكاملة لإدارة الموارد البشرية مدعومة بالذكاء الاصطناعي
-                  ومتوافقة مع الأنظمة السعودية
+                  ربط هو مساعد الموارد البشرية الذي يجمع حضور الموظفين، المستندات، والتقارير التنفيذية في منصة عربية جاهزة للامتثال.
+                  مصمم لفرق HR في الشركات الصغيرة والمتوسطة بالسعودية والخليج ليعالج العمل اليدوي، البيانات المتفرقة، وغياب الرؤى.
                 </motion.p>
 
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
+                  transition={{ delay: 0.35 }}
+                  className="rounded-2xl border border-primary/10 bg-background/80 p-6 shadow-lg"
+                >
+                  <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-primary">
+                    لماذا نختلف عن الأنظمة الكلاسيكية؟
+                  </p>
+                  <ul className="space-y-3 text-base text-muted-foreground">
+                    {heroValueBullets.map(point => (
+                      <li key={point.title} className="flex gap-3">
+                        <CheckCircle2 className="mt-1 h-5 w-5 text-primary" />
+                        <span>
+                          <span className="font-semibold text-foreground">{point.title}:</span> {point.description}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.45 }}
                   className="flex flex-wrap gap-4"
                 >
                   <Button
@@ -371,6 +555,27 @@ export default function EnhancedHome() {
           </div>
         </div>
       </section>
+
+      {/* Audience Benefits Section */}
+      <AnimatedSection className="container mx-auto px-4 py-16 lg:py-24">
+        <div className="mx-auto max-w-3xl text-center">
+          <FadeIn>
+            <Badge className="mb-4">لكل من يعتمد على ربط</Badge>
+            <h2 className="mb-4 text-4xl font-bold lg:text-5xl">
+              قيمة واضحة لكل فريق داخل الشركة
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              قسم الموارد البشرية، القيادات، والموظفون يحصلون على تجربة مصممة لاحتياجهم باللغة العربية وبأفضل الممارسات المحلية.
+            </p>
+          </FadeIn>
+        </div>
+
+        <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {audienceBenefits.map(benefit => (
+            <AudienceBenefitCard key={benefit.title} {...benefit} />
+          ))}
+        </div>
+      </AnimatedSection>
 
       {/* Categories Section - Enhanced */}
       <AnimatedSection className="container mx-auto px-4 py-20">
@@ -578,6 +783,82 @@ export default function EnhancedHome() {
                 </div>
               </FadeIn>
             ))}
+          </div>
+        </div>
+      </AnimatedSection>
+
+      {/* Pricing Section */}
+      <AnimatedSection className="bg-muted/30 py-20">
+        <div className="container mx-auto px-4">
+          <div className="mb-12 text-center">
+            <FadeIn>
+              <Badge className="mb-4">الأسعار والخطط</Badge>
+              <h2 className="mb-4 text-4xl font-bold lg:text-5xl">
+                خطط مرنة حسب حجم فريقك
+              </h2>
+              <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+                القيم التالية إرشادية ويمكن تخصيصها بالكامل، مما يسهل تجربة الخطة المناسبة ثم الترقية عند الحاجة.
+              </p>
+            </FadeIn>
+          </div>
+
+          <StaggerContainer className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {pricingPlans.map((plan, index) => (
+              <StaggerItem key={plan.name}>
+                <AnimatedCard delay={index * 0.15} className="h-full">
+                  <PricingPlanCard {...plan} />
+                </AnimatedCard>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </div>
+      </AnimatedSection>
+
+      {/* Trust & Credibility Section */}
+      <AnimatedSection className="container mx-auto px-4 py-20">
+        <div className="mb-12 text-center">
+          <FadeIn>
+            <Badge className="mb-4">لماذا تثق بنا الشركات</Badge>
+            <h2 className="mb-4 text-4xl font-bold lg:text-5xl">
+              مصمم لسياق الموارد البشرية في السعودية والخليج
+            </h2>
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+              نقاط الثقة التالية مبنية على حوارات مع فرق الموارد البشرية في المنطقة وستضاف إليها شعارات وشهادات حقيقية لاحقاً.
+            </p>
+          </FadeIn>
+        </div>
+
+        <div className="grid gap-12 lg:grid-cols-2">
+          <div className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              {trustSignals.map(signal => (
+                <TrustSignalCard key={signal.title} {...signal} />
+              ))}
+            </div>
+            <div className="rounded-2xl border border-dashed border-primary/30 p-6">
+              <p className="mb-4 text-sm font-semibold text-primary">
+                شعارات العملاء (قابلة للتحديث)
+              </p>
+              <LogoCloud logos={customerLogos} />
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="space-y-4 p-6 text-lg text-muted-foreground">
+                <p>
+                  “نبني قصص نجاح جديدة كل شهر. أضف شهادات مديري الموارد البشرية أو روابط الدراسات هنا لإبراز التأثير الحقيقي.”
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  ملاحظة: يمكن استبدال هذا النص باقتباس موثق من عميل عند توافره.
+                </p>
+              </CardContent>
+            </Card>
+            <div className="grid gap-6 md:grid-cols-2">
+              {testimonials.map(testimonial => (
+                <TestimonialCard key={testimonial.name} {...testimonial} />
+              ))}
+            </div>
           </div>
         </div>
       </AnimatedSection>

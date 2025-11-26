@@ -72,8 +72,8 @@ describe("Signup page", () => {
     await user.type(screen.getByLabelText(/الاسم الكامل/), "  علي أحمد  ");
     await user.type(screen.getByLabelText(/رقم الجوال/), "0555555555");
     await user.type(screen.getByLabelText(/البريد الإلكتروني/), "user@test.com");
-    await user.type(screen.getByLabelText(/كلمة المرور/), "Passw0rd!");
-    await user.type(screen.getByLabelText(/تأكيد كلمة المرور/), "Passw0rd!");
+  await user.type(screen.getByLabelText(/^كلمة المرور/), "Passw0rd!");
+  await user.type(screen.getByLabelText(/^تأكيد كلمة المرور/), "Passw0rd!");
 
     await user.click(screen.getByRole("checkbox", { name: /الشروط والأحكام/ }));
     await user.click(screen.getByRole("checkbox", { name: /سياسة الخصوصية/ }));
@@ -108,8 +108,8 @@ describe("Signup page", () => {
 
     await user.type(screen.getByLabelText(/رقم الجوال/), "0555555555");
     await user.type(screen.getByLabelText(/البريد الإلكتروني/), "l@test.com");
-    await user.type(screen.getByLabelText(/كلمة المرور/), "Passw0rd!");
-    await user.type(screen.getByLabelText(/تأكيد كلمة المرور/), "Passw0rd!");
+  await user.type(screen.getByLabelText(/^كلمة المرور/), "Passw0rd!");
+  await user.type(screen.getByLabelText(/^تأكيد كلمة المرور/), "Passw0rd!");
 
     await user.click(screen.getByRole("checkbox", { name: /الشروط والأحكام/ }));
     await user.click(screen.getByRole("checkbox", { name: /سياسة الخصوصية/ }));

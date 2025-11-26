@@ -6,7 +6,6 @@ import * as legacyDb from "./db";
 import { notifications } from "../drizzle/schema";
 import { and, desc, eq, isNull, or, sql } from "drizzle-orm";
 import type { Notification as DbNotification } from "../drizzle/schema";
-import { NotificationSchemas } from "./_core/validation";
 import { logger } from "./_core/logger";
 
 const notificationTypes = [
@@ -308,18 +307,10 @@ export const notificationsRouter = router({
   dispatch: adminProcedure
     .input(notificationInputSchema)
     .mutation(async ({ input }) => {
-      // Validate with NotificationSchemas
-      const validated = NotificationSchemas.create.parse({
-        userId: input.userId,
-        title: input.title,
-        body: input.body,
-        type: input.type,
-      });
-
       logger.info("[Notifications] Dispatching notification", {
         context: "Notifications",
-        userId: validated.userId,
-        type: validated.type,
+        userId: input.userId,
+        type: input.type,
       });
 
       const notif = await createNotificationRecord(input);

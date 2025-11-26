@@ -41,6 +41,9 @@ describe("Request Tracking Middleware", () => {
     mockRes = {
       setHeader: vi.fn(),
       getHeader: vi.fn(),
+      writeHead: vi.fn().mockImplementation(function (this: Response) {
+        return this;
+      }),
       on: vi.fn((event: string, listener: () => void) => {
         if (event === "finish") {
           finishListeners.push(listener);

@@ -39,7 +39,7 @@ export default function PaymentSuccess() {
         angle: 60,
         spread: 55,
         origin: { x: 0 },
-        colors: ["#8B5CF6", "#EC4899", "#F59E0B"],
+        colors: ["#35C6FF", "#1F8DFF", "#0B3DC2"],
       });
 
       confetti({
@@ -47,7 +47,7 @@ export default function PaymentSuccess() {
         angle: 120,
         spread: 55,
         origin: { x: 1 },
-        colors: ["#8B5CF6", "#EC4899", "#F59E0B"],
+        colors: ["#35C6FF", "#1F8DFF", "#0B3DC2"],
       });
 
       if (Date.now() < end) {
@@ -102,7 +102,7 @@ export default function PaymentSuccess() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-primary/5 to-primary/10 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 flex items-center justify-center p-4 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
       <div className="w-full max-w-2xl space-y-6">
         {isTrialExperience && (
           <Alert className="border-dashed border-primary/40 bg-primary/5">
@@ -112,15 +112,15 @@ export default function PaymentSuccess() {
           </Alert>
         )}
         {/* Success Message */}
-        <Card className="border-2 border-green-500">
+        <Card className="border-2 border-brand-300 shadow-brand-soft">
           <CardContent className="pt-6">
             <div className="text-center space-y-4">
-              <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center animate-bounce">
-                <CheckCircle2 className="w-12 h-12 text-green-600" />
+              <div className="mx-auto w-20 h-20 bg-brand-100 rounded-full flex items-center justify-center animate-bounce">
+                <CheckCircle2 className="w-12 h-12 text-brand-600" />
               </div>
 
               <div>
-                <h1 className="text-3xl font-bold text-green-600 mb-2">
+                <h1 className="text-3xl font-bold text-gradient-primary mb-2">
                   {heroTitle}
                 </h1>
                 <p className="text-muted-foreground">{heroSubtitle}</p>

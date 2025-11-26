@@ -6,7 +6,7 @@ export function Card({ className, ...props }: CardProps) {
   return (
     <div
       className={clsx(
-        "rounded-lg border bg-white/70 backdrop-blur shadow-sm dark:bg-neutral-900 dark:border-neutral-700",
+        "rounded-2xl border border-border bg-card/90 backdrop-blur shadow-brand-soft dark:bg-slate-900/80 dark:border-slate-800",
         className
       )}
       {...props}
@@ -18,7 +18,7 @@ export function CardHeader({ className, ...props }: CardProps) {
   return (
     <div
       className={clsx(
-        "flex flex-col space-y-1.5 p-4 border-b dark:border-neutral-700",
+        "flex flex-col space-y-1.5 p-4 border-b border-border/80 dark:border-slate-800",
         className
       )}
       {...props}
@@ -41,10 +41,7 @@ export function CardTitle({ className, ...props }: CardProps) {
 export function CardDescription({ className, ...props }: CardProps) {
   return (
     <p
-      className={clsx(
-        "text-sm text-neutral-600 dark:text-neutral-400",
-        className
-      )}
+      className={clsx("text-sm text-muted-foreground", className)}
       {...props}
     />
   );
@@ -60,7 +57,7 @@ export function CardFooter({ className, ...props }: CardProps) {
   return (
     <div
       className={clsx(
-        "p-4 border-t dark:border-neutral-700 flex items-center justify-end gap-2",
+        "p-4 border-t border-border/80 dark:border-slate-800 flex items-center justify-end gap-2",
         className
       )}
       {...props}

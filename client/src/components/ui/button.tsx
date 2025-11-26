@@ -5,19 +5,19 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "inline-flex items-center justify-center rounded-md font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-purple-600 text-white hover:bg-purple-700",
+        default: "bg-primary text-primary-foreground hover:bg-brand-600 shadow-brand-soft",
         outline:
-          "border border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800",
-        ghost: "hover:bg-gray-100 dark:hover:bg-gray-800",
-        destructive: "bg-red-600 text-white hover:bg-red-700",
+          "border border-border bg-transparent text-foreground hover:bg-secondary hover:text-secondary-foreground",
+        ghost: "text-foreground hover:bg-secondary/60",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-red-600/90",
         secondary:
-          "bg-white text-purple-600 border border-purple-600 hover:bg-purple-50 dark:bg-transparent dark:text-purple-300 dark:border-purple-400 dark:hover:bg-purple-500/10",
-        link: "text-purple-600 underline-offset-4 hover:underline focus-visible:underline bg-transparent shadow-none px-0",
-        cta: "rounded-full bg-gradient-to-r from-purple-600 via-fuchsia-500 to-amber-400 text-white font-semibold shadow-lg hover:shadow-xl hover:brightness-105 active:translate-y-px",
+          "bg-secondary text-secondary-foreground border border-transparent hover:border-brand-200",
+        link: "text-brand-600 underline-offset-4 hover:underline focus-visible:underline bg-transparent shadow-none px-0",
+        cta: "rounded-full gradient-primary text-white font-semibold shadow-brand-glow hover:translate-y-0.5 hover:shadow-brand-soft",
       },
       size: {
         sm: "h-8 px-3 text-xs",

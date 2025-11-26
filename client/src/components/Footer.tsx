@@ -18,7 +18,7 @@ import {
 
 export function Footer() {
   return (
-    <footer className="border-t bg-gradient-to-br from-gray-50 to-gray-100">
+    <footer className="border-t bg-gradient-to-br from-brand-50 via-white to-brand-100 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
       <div className="container py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
           {/* Brand & Description */}
@@ -33,7 +33,7 @@ export function Footer() {
                 height={40}
                 sizes="40px"
               />
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold text-gradient-primary">
                 رابِط
               </span>
             </div>
@@ -50,7 +50,7 @@ export function Footer() {
                 <Input placeholder="بريدك الإلكتروني" className="text-right" />
                 <Button
                   size="icon"
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 flex-shrink-0"
+                  className="gradient-primary flex-shrink-0"
                 >
                   <Send className="h-4 w-4" />
                 </Button>
@@ -197,7 +197,7 @@ export function Footer() {
             <h4 className="font-semibold mb-4 text-lg">تواصل معنا</h4>
             <ul className="space-y-4 text-muted-foreground">
               <li className="flex items-start gap-3">
-                <Mail className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <Mail className="h-5 w-5 text-brand-600 flex-shrink-0 mt-0.5" />
                 <div>
                   <div className="font-medium text-foreground mb-1">
                     البريد الإلكتروني
@@ -211,7 +211,7 @@ export function Footer() {
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <Phone className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Phone className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
                 <div>
                   <div className="font-medium text-foreground mb-1">
                     الهاتف / واتساب
@@ -225,7 +225,7 @@ export function Footer() {
                 </div>
               </li>
               <li className="flex items-start gap-3">
-              <MapPin className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <MapPin className="h-5 w-5 text-brand-500 flex-shrink-0 mt-0.5" />
               <div>
                 <div className="font-medium text-foreground mb-1">الموقع</div>
                 <span>الرياض، المملكة العربية السعودية</span>
@@ -241,7 +241,7 @@ export function Footer() {
                   href="https://twitter.com/rbithr"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white hover:scale-110 transition-transform"
+                  className="h-10 w-10 rounded-full gradient-primary flex items-center justify-center text-white hover:scale-110 transition-transform"
                 >
                   <Twitter className="h-4 w-4" />
                 </a>
@@ -249,7 +249,7 @@ export function Footer() {
                   href="https://linkedin.com/company/rbithr"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white hover:scale-110 transition-transform"
+                  className="h-10 w-10 rounded-full bg-gradient-to-br from-brand-600 to-brand-700 flex items-center justify-center text-white hover:scale-110 transition-transform"
                 >
                   <Linkedin className="h-4 w-4" />
                 </a>
@@ -257,7 +257,7 @@ export function Footer() {
                   href="https://instagram.com/rbithr"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="h-10 w-10 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-white hover:scale-110 transition-transform"
+                  className="h-10 w-10 rounded-full bg-gradient-to-br from-rose-500 to-brand-500 flex items-center justify-center text-white hover:scale-110 transition-transform"
                 >
                   <Instagram className="h-4 w-4" />
                 </a>
@@ -265,7 +265,7 @@ export function Footer() {
                   href="https://facebook.com/rbithr"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white hover:scale-110 transition-transform"
+                  className="h-10 w-10 rounded-full bg-gradient-to-br from-brand-500 to-brand-800 flex items-center justify-center text-white hover:scale-110 transition-transform"
                 >
                   <Facebook className="h-4 w-4" />
                 </a>
@@ -275,7 +275,7 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t pt-8">
+  <div className="border-t pt-8 border-white/40 dark:border-slate-800">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground text-center md:text-right">
               © {new Date().getFullYear()} رابِط. جميع الحقوق محفوظة.
@@ -307,22 +307,22 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4 text-lg">الأمان والامتثال</h4>
             <div className="space-y-3 text-sm text-muted-foreground">
-              <div className="flex items-start gap-3 p-3 rounded-lg border bg-white/60">
-                <Shield className="h-5 w-5 text-emerald-600 mt-0.5" />
+              <div className="flex items-start gap-3 p-3 rounded-lg border bg-white/60 dark:bg-slate-900/60">
+                <Shield className="h-5 w-5 text-emerald-500 mt-0.5" />
                 <div>
                   <p className="font-medium text-foreground">SSL & ISO 27001</p>
                   <p>اتصالات آمنة ومعايير إدارة أمن المعلومات.</p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 p-3 rounded-lg border bg-white/60">
-                <Lock className="h-5 w-5 text-blue-600 mt-0.5" />
+              <div className="flex items-start gap-3 p-3 rounded-lg border bg-white/60 dark:bg-slate-900/60">
+                <Lock className="h-5 w-5 text-brand-600 mt-0.5" />
                 <div>
                   <p className="font-medium text-foreground">SOC 2 Controls</p>
                   <p>ضوابط حماية البيانات وسجل تدقيق شامل.</p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 p-3 rounded-lg border bg-white/60">
-                <Globe2 className="h-5 w-5 text-purple-600 mt-0.5" />
+              <div className="flex items-start gap-3 p-3 rounded-lg border bg-white/60 dark:bg-slate-900/60">
+                <Globe2 className="h-5 w-5 text-brand-500 mt-0.5" />
                 <div>
                   <p className="font-medium text-foreground">مناطق بيانات</p>
                   <p>خيارات data_region: sa-gcc | eu | us.</p>

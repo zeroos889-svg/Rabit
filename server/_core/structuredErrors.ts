@@ -342,7 +342,9 @@ export function errorToStructuredResponse(
       req,
       "INTERNAL_SERVER_ERROR",
       error.message || "An unexpected error occurred",
-      { stack: process.env.NODE_ENV === "development" ? error.stack : undefined }
+      {
+        stack: process.env.NODE_ENV !== "production" ? error.stack : undefined,
+      }
     );
   }
 
