@@ -6,6 +6,8 @@ import * as legacyDb from "./db";
 import { notifications } from "../drizzle/schema";
 import { and, desc, eq, isNull, or, sql } from "drizzle-orm";
 import type { Notification as DbNotification } from "../drizzle/schema";
+import { NotificationSchemas } from "./_core/validation";
+import { logger } from "./_core/logger";
 
 const notificationTypes = [
   "system",
@@ -306,6 +308,20 @@ export const notificationsRouter = router({
   dispatch: adminProcedure
     .input(notificationInputSchema)
     .mutation(async ({ input }) => {
+      // Validate with NotificationSchemas
+      const validated = NotificationSchemas.create.parse({
+        userId: input.userId,
+        title: input.title,
+        body: input.body,
+        type: input.type,
+      });
+
+      logger.info("[Notifications] Dispatching notification", {
+        context: "Notifications",
+        userId: validated.userId,
+        type: validated.type,
+      });
+
       const notif = await createNotificationRecord(input);
       recordAudit({
         action: "notification:dispatch",
@@ -335,20 +351,37 @@ export const notificationsRouter = router({
   }),
 
   markRead: protectedProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ id: z.number().positive("Invalid notification ID") }))
     .mutation(async ({ ctx, input }) => {
+      logger.info("[Notifications] Marking notification as read", {
+        context: "Notifications",
+        userId: ctx.user.id,
+        notificationId: input.id,
+      });
+
       const success = await markNotificationAsRead(ctx.user.id, input.id);
       return { success };
     }),
 
   markAllRead: protectedProcedure.mutation(async ({ ctx }) => {
+    logger.info("[Notifications] Marking all notifications as read", {
+      context: "Notifications",
+      userId: ctx.user.id,
+    });
+
     await markAllAsRead(ctx.user.id);
     return { success: true };
   }),
 
   delete: protectedProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ id: z.number().positive("Invalid notification ID") }))
     .mutation(async ({ ctx, input }) => {
+      logger.info("[Notifications] Deleting notification", {
+        context: "Notifications",
+        userId: ctx.user.id,
+        notificationId: input.id,
+      });
+
       const success = await deleteNotificationRecord(ctx.user.id, input.id);
       return { success };
     }),

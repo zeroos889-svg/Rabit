@@ -26,6 +26,23 @@ import {
   errorContextMiddleware,
 } from "./requestTracking";
 import { smartTimeoutMiddleware } from "./requestTimeout";
+import {
+  requestLoggingMiddleware,
+  errorResponseLoggingMiddleware,
+  slowRequestLoggingMiddleware,
+  largePayloadLoggingMiddleware,
+  logMiddlewareConfig,
+} from "./requestResponseLogger";
+import {
+  apiVersioningMiddleware,
+  versionTransformMiddleware,
+  logApiVersioningConfig,
+} from "./apiVersioning";
+import {
+  webhookRateLimiter,
+  logRateLimitConfig,
+} from "./endpointRateLimit";
+import { trpcRateLimitMiddleware } from "./trpcRateLimit";
 
 logger.info("🚀 Starting server initialization...", { context: "Server" });
 
@@ -124,6 +141,15 @@ async function startServer() {
   app.use(performanceMiddleware);
   app.use(errorContextMiddleware);
 
+  // API Versioning Middleware (attach version to request)
+  app.use(apiVersioningMiddleware);
+  app.use(versionTransformMiddleware);
+
+  // Request/Response Logging Middleware
+  app.use(requestLoggingMiddleware);
+  app.use(slowRequestLoggingMiddleware);
+  app.use(largePayloadLoggingMiddleware);
+
   // Request Timeout Middleware (smart timeout based on path)
   app.use(smartTimeoutMiddleware);
 
@@ -173,6 +199,7 @@ async function startServer() {
   // Webhook endpoints (use raw body for signature verification)
   app.post(
     "/api/webhooks/moyasar",
+    webhookRateLimiter, // Rate limit webhook endpoints
     express.raw({ type: "*/*" }),
     async (req, res) => {
       let raw: string;
@@ -214,6 +241,7 @@ async function startServer() {
 
   app.post(
     "/api/webhooks/tap",
+    webhookRateLimiter, // Rate limit webhook endpoints
     express.raw({ type: "*/*" }),
     async (req, res) => {
       let raw: string;
@@ -352,6 +380,7 @@ async function startServer() {
   logger.info("🔌 Setting up tRPC middleware...", { context: "Server" });
   app.use(
     "/api/trpc",
+    trpcRateLimitMiddleware, // Apply endpoint-specific rate limiting
     createExpressMiddleware({
       router: appRouter,
       createContext,
@@ -376,8 +405,16 @@ async function startServer() {
   // Register Sentry error middleware before the global error handler
   setupSentryErrorHandler(app);
 
+  // Error response logging middleware (before global error handler)
+  app.use(errorResponseLoggingMiddleware);
+
   // Global Error Handler Middleware (must be last)
   app.use(errorHandler);
+
+  // Log middleware configurations
+  logMiddlewareConfig();
+  logApiVersioningConfig();
+  logRateLimitConfig();
 
   // Get port from environment (Railway sets this automatically)
   const port = getPort();

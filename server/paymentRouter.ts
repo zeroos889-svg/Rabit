@@ -2,6 +2,7 @@ import { router, publicProcedure } from "./_core/trpc";
 import { z } from "zod";
 import { ENV } from "./_core/env";
 import { logger } from "./_core/logger";
+import { PaymentSchemas } from "./_core/validation";
 
 type PaymentInput = {
   planKey: string;
@@ -37,10 +38,13 @@ async function createMoyasarInvoice(input: PaymentInput) {
     },
   };
 
+  const authString = `${ENV.moyasarSecretKey}:`;
+  const authHeader = `Basic ${Buffer.from(authString).toString("base64")}`;
+
   const response = await fetch("https://api.moyasar.com/v1/invoices", {
     method: "POST",
     headers: {
-      Authorization: `Basic ${Buffer.from(`${ENV.moyasarSecretKey}:`).toString("base64")}`,
+      Authorization: authHeader,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
@@ -116,26 +120,67 @@ async function createTapCharge(input: PaymentInput) {
   return { redirectUrl, chargeId: data.transaction?.id };
 }
 
-// Payment router with graceful fallbacks to mock redirects when credentials are absent.
+// Payment router with validation and graceful fallbacks
 export const paymentRouter = router({
   createMoyasarPayment: publicProcedure
     .input(
       z.object({
-        planKey: z.string(),
-        amount: z.number().positive(),
+        planKey: z.string().min(1, "Plan key is required"),
+        amount: z.number().positive("Amount must be positive"),
         discountCode: z.string().optional(),
-        customerEmail: z.string().email().optional(),
+        customerEmail: z.string().email("Invalid email format").optional(),
       })
     )
-    .mutation(async ({ input }) => createMoyasarInvoice(input)),
+    .mutation(async ({ input }) => {
+      // Additional validation using PaymentSchemas
+      const validatedPayment = PaymentSchemas.createPayment.parse({
+        amount: input.amount,
+        currency: "SAR",
+        description: `Plan ${input.planKey}`,
+        metadata: {
+          planKey: input.planKey,
+          discountCode: input.discountCode,
+          customerEmail: input.customerEmail,
+        },
+      });
+
+      logger.info("[Payment] Creating Moyasar payment", {
+        context: "Payment",
+        planKey: input.planKey,
+        amount: validatedPayment.amount,
+      });
+
+      return createMoyasarInvoice(input);
+    }),
+
   createTapPayment: publicProcedure
     .input(
       z.object({
-        planKey: z.string(),
-        amount: z.number().positive(),
+        planKey: z.string().min(1, "Plan key is required"),
+        amount: z.number().positive("Amount must be positive"),
         discountCode: z.string().optional(),
-        customerEmail: z.string().email().optional(),
+        customerEmail: z.string().email("Invalid email format").optional(),
       })
     )
-    .mutation(async ({ input }) => createTapCharge(input)),
+    .mutation(async ({ input }) => {
+      // Additional validation using PaymentSchemas
+      const validatedPayment = PaymentSchemas.createPayment.parse({
+        amount: input.amount,
+        currency: "SAR",
+        description: `Plan ${input.planKey}`,
+        metadata: {
+          planKey: input.planKey,
+          discountCode: input.discountCode,
+          customerEmail: input.customerEmail,
+        },
+      });
+
+      logger.info("[Payment] Creating Tap payment", {
+        context: "Payment",
+        planKey: input.planKey,
+        amount: validatedPayment.amount,
+      });
+
+      return createTapCharge(input);
+    }),
 });
