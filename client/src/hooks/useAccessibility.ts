@@ -185,7 +185,7 @@ export function useFocusVisible() {
         globalThis.clearTimeout(hadFocusVisibleRecentlyTimeout);
         hadFocusVisibleRecentlyTimeout = globalThis.setTimeout(() => {
           // Focus was recently visible
-        }, 100);
+        }, 100) as unknown as number;
         removeFocusVisibleClass(e.target);
       }
     }

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { trpc } from "@/lib/trpc";
-import { getLoginUrl } from "@/const";
+import { getLoginUrl, APP_LOGO } from "@/const";
 import { queryConfig } from "@/lib/queryConfig";
 import {
   Building2,
@@ -30,7 +30,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Link } from "wouter";
-import { APP_LOGO } from "@/const";
 import { FAQSection } from "@/components/FAQSection";
 import { Footer } from "@/components/Footer";
 import { VimeoVideo } from "@/components/VimeoVideo";
@@ -191,7 +190,7 @@ function ConsultingServicesSection() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {consultationTypes.map((type: any, index: number) => (
+          {consultationTypes.map((type: { id: number; titleAr: string; titleEn: string; descriptionAr: string; descriptionEn: string; duration: number; price: number; }) => (
             <Card
               key={type.id}
               className="p-6 hover-lift cursor-pointer group h-full"
@@ -209,7 +208,7 @@ function ConsultingServicesSection() {
                   </div>
                 </div>
               </div>
-              <h3 className="text-xl font-bold mb-2">{type.nameAr}</h3>
+              <h3 className="text-xl font-bold mb-2">{type.titleAr}</h3>
               <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                 {type.descriptionAr}
               </p>
@@ -303,18 +302,18 @@ export default function Home() {
 
   const redirectToLogin = () => {
     const loginUrl = getLoginUrl();
-    if (typeof window === "undefined") return;
+    if (typeof globalThis.window === "undefined") return;
 
     const isExternal =
-      /^https?:\/\//.test(loginUrl) && !loginUrl.startsWith(window.location.origin);
+      /^https?:\/\//.test(loginUrl) && !loginUrl.startsWith(globalThis.window.location.origin);
 
     // في بيئة الاختبار نتجنب تحذير jsdom عن التنقل لمستند آخر، ونضع الرابط في الـ hash لضمان وجوده في href
     if (isTestEnv && isExternal) {
-      window.location.hash = loginUrl;
+      globalThis.window.location.hash = loginUrl;
       return;
     }
 
-    window.location.href = loginUrl;
+    globalThis.window.location.href = loginUrl;
   };
 
   // Prefetch أكثر الصفحات استخداماً لتسريع الانتقال
@@ -333,7 +332,9 @@ export default function Home() {
       return link;
     });
     return () => {
-      links.forEach(link => document.head.removeChild(link));
+      for (const link of links) {
+        link.remove();
+      }
     };
   }, []);
 
@@ -1020,8 +1021,8 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="flex gap-1 mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-yellow-400">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <span key={`star-1-${i}`} className="text-yellow-400">
                       ★
                     </span>
                   ))}
@@ -1047,8 +1048,8 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="flex gap-1 mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-yellow-400">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <span key={`star-2-${i}`} className="text-yellow-400">
                       ★
                     </span>
                   ))}
@@ -1074,8 +1075,8 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="flex gap-1 mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-yellow-400">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <span key={`star-3-${i}`} className="text-yellow-400">
                       ★
                     </span>
                   ))}
@@ -1121,9 +1122,9 @@ export default function Home() {
               { name: "مجموعة النجاح", icon: Building2 },
               { name: "شركة التطوير", icon: Building2 },
               { name: "مؤسسة الرؤية", icon: Building2 },
-            ].map((partner, index) => (
+            ].map((partner) => (
               <div
-                key={index}
+                key={partner.name}
                 className="flex items-center justify-center p-6 rounded-lg bg-background hover:shadow-lg transition-all duration-300 group"
               >
                 <div className="text-center">

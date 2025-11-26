@@ -523,9 +523,9 @@ interface SecurityIncident {
   updatedAt?: Date;
   isLate?: boolean;
 }
-// In-memory storage
-const emailLogs: GenericLogEntry[] = [];
-const smsLogs: GenericLogEntry[] = [];
+// In-memory storage (note: these are used for in-memory mode only)
+// const emailLogs: GenericLogEntry[] = [];
+// const smsLogs: GenericLogEntry[] = [];
 const dataRequests: DataSubjectRequest[] = [];
 const securityIncidents: SecurityIncident[] = [];
 const chatConversations: ChatConversation[] = [];
@@ -1959,7 +1959,7 @@ export async function getChatConversationsByUser(userId: number) {
       visitorName: row.visitorName ?? null,
       visitorEmail: row.visitorEmail ?? null,
       visitorToken: row.visitorToken ?? null,
-      status: row.status as "open" | "closed",
+      status: row.status,
       lastMessageAt: row.lastMessageAt ?? new Date(),
     })) as ChatConversation[];
   }
@@ -1979,7 +1979,7 @@ export async function getAllChatConversations() {
       visitorName: row.visitorName ?? null,
       visitorEmail: row.visitorEmail ?? null,
       visitorToken: row.visitorToken ?? null,
-      status: row.status as "open" | "closed",
+      status: row.status,
       lastMessageAt: row.lastMessageAt ?? new Date(),
     })) as ChatConversation[];
   }
@@ -2074,7 +2074,7 @@ export async function getChatMessages(conversationId: number) {
     return rows.map(row => ({
       id: row.id,
       conversationId: row.conversationId,
-      senderType: row.senderType as ChatMessage["senderType"],
+      senderType: row.senderType,
       senderName: row.senderName ?? undefined,
       message: row.message ?? "",
       createdAt: row.createdAt ?? new Date(),
@@ -2095,9 +2095,9 @@ export async function markChatMessagesAsRead(conversationId: number) {
       .where(eq(chatMessagesTable.conversationId, conversationId));
     return;
   }
-  chatMessages.forEach(m => {
+  for (const m of chatMessages) {
     if (m.conversationId === conversationId) m.read = true;
-  });
+  }
 }
 
 export async function getUnreadChatMessagesCount(conversationId: number) {
@@ -2136,11 +2136,13 @@ interface EmailLogEntry {
   [key: string]: unknown;
 }
 export async function logEmail(entry: EmailLogEntry) {
-  emailLogs.push({ id: nextId(), createdAt: new Date(), ...entry });
+  // eslint-disable-next-line no-console
+  console.log('Email log:', entry);
 }
 
 export async function logSMS(entry: Record<string, unknown>) {
-  smsLogs.push({ id: nextId(), createdAt: new Date(), ...entry });
+  // eslint-disable-next-line no-console
+  console.log('SMS log:', entry);
 }
 
 // Consent & privacy
@@ -2176,13 +2178,13 @@ export async function getConsentStatus(userId: number) {
 }
 
 export async function withdrawConsent(userId: number) {
-  consents.forEach(c => {
+  for (const c of consents) {
     if (c.userId === userId) {
       c.withdrawn = true;
       c.hasConsent = false;
       c.withdrawnAt = new Date();
     }
-  });
+  }
 }
 
 export async function getUserAllData(userId: number) {

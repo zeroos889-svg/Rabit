@@ -3,8 +3,8 @@ import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 
 interface ErrorFallbackProps {
-  error: Error;
-  resetErrorBoundary: () => void;
+  readonly error: Error;
+  readonly resetErrorBoundary: () => void;
 }
 
 /**
@@ -14,7 +14,8 @@ interface ErrorFallbackProps {
 export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
   // Log error to monitoring service in production
   if (process.env.NODE_ENV === "production") {
-    // TODO: Send to error monitoring service (Sentry, LogRocket, etc.)
+    // TODO: Integrate with error monitoring service (Sentry, LogRocket, etc.)
+    // eslint-disable-next-line no-console
     console.error("Error caught by boundary:", error);
   }
 
@@ -93,7 +94,7 @@ export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps)
               إعادة المحاولة
             </Button>
             <Button
-              onClick={() => window.location.href = "/"}
+              onClick={() => globalThis.window.location.href = "/"}
               variant="outline"
               className="flex-1"
               size="lg"
@@ -125,13 +126,12 @@ export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps)
  * Compact Error Message Component
  * For inline error displays
  */
-export function ErrorMessage({ 
-  message, 
-  retry 
-}: { 
-  message: string; 
-  retry?: () => void;
-}) {
+interface ErrorMessageProps {
+  readonly message: string;
+  readonly retry?: () => void;
+}
+
+export function ErrorMessage({ message, retry }: ErrorMessageProps) {
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center space-y-4">
       <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center">

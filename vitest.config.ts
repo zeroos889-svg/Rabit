@@ -1,9 +1,9 @@
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
-import path from "path";
+import node_path from "node:path";
 
 export default defineConfig({
-  root: path.resolve(import.meta.dirname),
+  root: node_path.resolve(import.meta.dirname),
   plugins: [react()],
   test: {
     environment: "jsdom",

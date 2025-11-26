@@ -21,6 +21,7 @@ export function initializeSentry() {
   // Only initialize if DSN is provided
   const dsn = process.env.SENTRY_DSN;
   if (!dsn) {
+    // eslint-disable-next-line no-console
     console.log("⚠️  Sentry DSN not configured, error tracking disabled");
     return;
   }
@@ -72,8 +73,10 @@ export function initializeSentry() {
     });
 
     sentryInitialized = true;
+    // eslint-disable-next-line no-console
     console.log("✅ Sentry error tracking initialized");
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("❌ Failed to initialize Sentry:", error);
   }
 }
@@ -81,7 +84,7 @@ export function initializeSentry() {
 /**
  * Capture an exception with Sentry
  */
-export function captureException(error: Error, context?: Record<string, any>) {
+export function captureException(error: Error, context?: Record<string, unknown>) {
   if (!sentryInitialized) {
     return;
   }
@@ -134,7 +137,7 @@ export function clearUser() {
 export function addBreadcrumb(
   message: string,
   category: string,
-  data?: Record<string, any>
+  data?: Record<string, unknown>
 ) {
   if (!sentryInitialized) {
     return;
@@ -151,8 +154,17 @@ export function addBreadcrumb(
 /**
  * Register Sentry middleware using the modern Express helpers.
  * This should be called after all routes but before custom error handlers.
+ * @deprecated Use setupSentryErrorHandler instead
  */
 export function registerSentryMiddleware(app: Application) {
+  setupSentryErrorHandler(app);
+}
+
+/**
+ * Setup Sentry error handler for Express
+ * Should be called after all routes but before custom error handlers
+ */
+export function setupSentryErrorHandler(app: Application) {
   if (!sentryInitialized) {
     return;
   }

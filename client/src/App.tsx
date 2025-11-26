@@ -53,7 +53,7 @@ const CompanyDashboard = lazy(
 );
 const EmployeeDashboard = lazy(() => import("./pages/EmployeeDashboardNew"));
 const ConsultantDashboard = lazy(() => import("./pages/ConsultantDashboard"));
-const AdminDashboard = lazy(() => import("./pages/dashboard/AdminDashboard"));
+// const AdminDashboard = lazy(() => import("./pages/dashboard/AdminDashboard"));
 const AdminDashboardNew = lazy(() => import("./pages/admin/Dashboard"));
 const Profile = lazy(() => import("./pages/Profile"));
 
@@ -162,6 +162,55 @@ const withPublicOnly = (Component: ComponentType) => () =>
     </PublicOnlyRoute>
   );
 
+// Protected route wrappers
+const ProtectedEmployeeDashboard = () => (
+  <ProtectedRoute requiredRole="employee">
+    <EmployeeDashboard />
+  </ProtectedRoute>
+);
+
+const ProtectedPayment = () => (
+  <ProtectedRoute>
+    <Payment planName="اشتراك قياسي" price={500} />
+  </ProtectedRoute>
+);
+
+const ProtectedCheckoutNew = () => (
+  <ProtectedRoute>
+    <CheckoutNew />
+  </ProtectedRoute>
+);
+
+const ProtectedCheckout = () => (
+  <ProtectedRoute>
+    <Checkout />
+  </ProtectedRoute>
+);
+
+const ProtectedProfile = () => (
+  <ProtectedRoute>
+    <Profile />
+  </ProtectedRoute>
+);
+
+const ProtectedDocumentGenerator = () => (
+  <ProtectedRoute>
+    <DocumentGenerator />
+  </ProtectedRoute>
+);
+
+const ProtectedMyDocuments = () => (
+  <ProtectedRoute>
+    <MyDocuments />
+  </ProtectedRoute>
+);
+
+const ProtectedAdminRoute = () => (
+  <AdminLayout>
+    <AdminDiscountCodes />
+  </AdminLayout>
+);
+
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -189,43 +238,23 @@ function Router() {
         />
         <Route
           path={"/employee/dashboard"}
-          component={() => (
-            <ProtectedRoute requiredRole="employee">
-              <EmployeeDashboard />
-            </ProtectedRoute>
-          )}
+          component={ProtectedEmployeeDashboard}
         />
         <Route
           path={"/dashboard/employee"}
-          component={() => (
-            <ProtectedRoute requiredRole="employee">
-              <EmployeeDashboard />
-            </ProtectedRoute>
-          )}
+          component={ProtectedEmployeeDashboard}
         />
         <Route
           path={"/payment"}
-          component={() => (
-            <ProtectedRoute>
-              <Payment planName="اشتراك قياسي" price={500} />
-            </ProtectedRoute>
-          )}
+          component={ProtectedPayment}
         />
         <Route
           path={"/checkout"}
-          component={() => (
-            <ProtectedRoute>
-              <CheckoutNew />
-            </ProtectedRoute>
-          )}
+          component={ProtectedCheckoutNew}
         />
         <Route
           path={"/checkout-old"}
-          component={() => (
-            <ProtectedRoute>
-              <Checkout />
-            </ProtectedRoute>
-          )}
+          component={ProtectedCheckout}
         />
         <Route path={"/payment/moyasar/callback"} component={MoyasarCallback} />
         <Route path={"/payment/tap/callback"} component={TapCallback} />
@@ -233,37 +262,19 @@ function Router() {
         <Route path={"/payment-failed"} component={PaymentFailed} />
         <Route
           path="/profile"
-          component={() => (
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          )}
+          component={ProtectedProfile}
         />
         <Route
           path="/document-generator"
-          component={() => (
-            <ProtectedRoute>
-              <DocumentGenerator />
-            </ProtectedRoute>
-          )}
+          component={ProtectedDocumentGenerator}
         />
         <Route
           path="/my-documents"
-          component={() => (
-            <ProtectedRoute>
-              <MyDocuments />
-            </ProtectedRoute>
-          )}
+          component={ProtectedMyDocuments}
         />
         <Route
           path={"/admin/discount-codes"}
-          component={() => (
-            <ProtectedRoute requiredRole="admin">
-              <AdminLayout>
-                <AdminDiscountCodes />
-              </AdminLayout>
-            </ProtectedRoute>
-          )}
+          component={ProtectedAdminRoute}
         />
         <Route path="/contact" component={Contact} />
         <Route path="/faq" component={FAQ} />
@@ -574,6 +585,7 @@ function App() {
       // In production, send to analytics service
       if (process.env.NODE_ENV === "production") {
         // TODO: Send to analytics endpoint
+        // eslint-disable-next-line no-console
         console.log(`[Web Vitals] ${metric.name}: ${metric.value.toFixed(0)}`);
       }
     },

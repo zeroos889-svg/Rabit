@@ -19,7 +19,7 @@ import { connectRedis, testRedisConnection } from "./redisClient";
 import { logger } from "./logger";
 import type { Request, Response, NextFunction } from "express";
 import { verifyMoyasarWebhook, verifyTapWebhook } from "./payment";
-import { initializeSentry, registerSentryMiddleware } from "../sentry";
+import { initializeSentry, setupSentryErrorHandler } from "../sentry";
 
 logger.info("🚀 Starting server initialization...", { context: "Server" });
 
@@ -336,7 +336,7 @@ async function startServer() {
   }
 
   // Register Sentry error middleware before the global error handler
-  registerSentryMiddleware(app);
+  setupSentryErrorHandler(app);
 
   // Global Error Handler Middleware (must be last)
   app.use(errorHandler);

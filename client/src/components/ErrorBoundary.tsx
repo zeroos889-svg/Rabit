@@ -38,6 +38,7 @@ class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error to console in development
     if (process.env.NODE_ENV === "development") {
+      // eslint-disable-next-line no-console
       console.error("Error caught by ErrorBoundary:", error, errorInfo);
     }
 
@@ -48,23 +49,27 @@ class ErrorBoundary extends Component<Props, State> {
       : Infinity;
 
     // If errors are happening rapidly (< 5 seconds apart), increase count
-    const newErrorCount = timeSinceLastError < 5000 
-      ? this.state.errorCount + 1 
-      : 1;
+    this.setState((prevState) => {
+      const newErrorCount = timeSinceLastError < 5000 
+        ? prevState.errorCount + 1 
+        : 1;
 
-    this.setState({
-      errorCount: newErrorCount,
-      lastErrorTime: now
+      return {
+        errorCount: newErrorCount,
+        lastErrorTime: now
+      };
     });
 
-    // TODO: Send to error monitoring service in production
+    // TODO: Integrate with error monitoring service (Sentry, LogRocket, etc.)
     if (process.env.NODE_ENV === "production") {
       // Example: Sentry.captureException(error, { contexts: { react: errorInfo } });
+      // eslint-disable-next-line no-console
       console.error("Production error:", error.message);
     }
 
     // Auto-recovery mechanism: if only 1-2 errors, try to auto-reset after 10 seconds
-    if (newErrorCount <= 2) {
+    const errorCount = timeSinceLastError < 5000 ? this.state.errorCount + 1 : 1;
+    if (errorCount <= 2) {
       this.resetTimeout = setTimeout(() => {
         this.handleReset();
       }, 10000);
@@ -111,7 +116,7 @@ class ErrorBoundary extends Component<Props, State> {
                 <li>• الاتصال بالدعم الفني</li>
               </ul>
               <button
-                onClick={() => window.location.href = "/"}
+                onClick={() => globalThis.window.location.href = "/"}
                 className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
               >
                 العودة للرئيسية
