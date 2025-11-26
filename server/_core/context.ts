@@ -4,15 +4,17 @@ import { verifySessionToken } from "./jwt";
 import { verifyToken } from "../utils/jwt";
 import * as db from "../db";
 
+type User = Awaited<ReturnType<typeof db.getUserById>>;
+
 export type TrpcContext = {
   req: CreateExpressContextOptions["req"];
   res: CreateExpressContextOptions["res"];
-  user: any | null;
+  user: User | null;
 };
 
 export type Context = TrpcContext;
 
-async function resolveUser(userId?: number | null) {
+async function resolveUser(userId?: number | null): Promise<User | null> {
   if (!userId) return null;
   try {
     const fetchedUser = await db.getUserById(userId);
@@ -26,7 +28,7 @@ export async function createContext(
   opts: CreateExpressContextOptions
 ): Promise<TrpcContext> {
   const { req, res } = opts;
-  let user: any | null = null;
+  let user: User | null = null;
 
   try {
     const cookieToken = req.cookies?.[COOKIE_NAME];

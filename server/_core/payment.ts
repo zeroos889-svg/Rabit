@@ -4,6 +4,7 @@
  */
 
 import { createHmac } from "node:crypto";
+import { logger } from "./logger";
 
 export interface PaymentOptions {
   amount: number; // in SAR
@@ -88,7 +89,10 @@ export async function createMoyasarPayment(
     const data = await response.json();
     return data;
   } catch (error: any) {
-    console.error("[Moyasar] Payment creation error:", error);
+    logger.error("[Moyasar] Payment creation error", {
+      context: "Payment",
+      error: error instanceof Error ? error.message : String(error),
+    });
     throw error;
   }
 }
@@ -122,7 +126,11 @@ export async function getMoyasarPayment(
     const data = await response.json();
     return data;
   } catch (error: any) {
-    console.error("[Moyasar] Payment fetch error:", error);
+    logger.error("[Moyasar] Payment fetch error", {
+      context: "Payment",
+      paymentId,
+      error: error instanceof Error ? error.message : String(error),
+    });
     throw error;
   }
 }
@@ -163,7 +171,12 @@ export async function refundMoyasarPayment(
     const data = await response.json();
     return data;
   } catch (error: any) {
-    console.error("[Moyasar] Refund error:", error);
+    logger.error("[Moyasar] Refund error", {
+      context: "Payment",
+      paymentId,
+      amount,
+      error: error instanceof Error ? error.message : String(error),
+    });
     throw error;
   }
 }
@@ -205,7 +218,10 @@ export async function createTapPayment(options: PaymentOptions): Promise<any> {
     const data = await response.json();
     return data;
   } catch (error: any) {
-    console.error("[Tap] Payment creation error:", error);
+    logger.error("[Tap] Payment creation error", {
+      context: "Payment",
+      error: error instanceof Error ? error.message : String(error),
+    });
     throw error;
   }
 }
@@ -221,7 +237,9 @@ export function verifyMoyasarWebhook(
   const secret = process.env.MOYASAR_WEBHOOK_SECRET || process.env.MOYASAR_SECRET_KEY;
 
   if (!secret) {
-    console.warn("[Moyasar] Webhook secret not configured");
+    logger.warn("[Moyasar] Webhook secret not configured", {
+      context: "Payment",
+    });
     return false;
   }
 
@@ -240,7 +258,9 @@ export function verifyTapWebhook(payload: string, signature?: string | string[])
   const secret = process.env.TAP_WEBHOOK_SECRET;
 
   if (!secret) {
-    console.warn("[Tap] Webhook secret not configured");
+    logger.warn("[Tap] Webhook secret not configured", {
+      context: "Payment",
+    });
     return false;
   }
 

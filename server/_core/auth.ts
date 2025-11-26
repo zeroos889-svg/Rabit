@@ -1,6 +1,12 @@
 /**
  * Authentication Module
- * Handles user authentication and session management
+ * Handles user authentication and session management with enhanced security
+ * Features:
+ * - Login attempt tracking
+ * - Account lockout protection (5 attempts, 15min lockout)
+ * - IP-based security
+ * - Password strength validation
+ * - Security event logging
  */
 
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
@@ -10,6 +16,131 @@ import { getSessionCookieOptions } from "./cookies";
 import { createSessionToken, verifySessionToken } from "./jwt";
 import { hashPassword, verifyPassword } from "./password";
 import { logger } from "./logger";
+
+// Security configuration
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
+const loginAttempts = new Map<string, { count: number; timestamp: number }>();
+
+/**
+ * Get client IP address
+ */
+function getClientIp(req: Request): string {
+  return (
+    (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
+    (req.headers["x-real-ip"] as string) ||
+    req.socket.remoteAddress ||
+    "unknown"
+  );
+}
+
+/**
+ * Check if account is locked
+ */
+function isAccountLocked(identifier: string): boolean {
+  const attempt = loginAttempts.get(identifier);
+  if (!attempt) return false;
+
+  const isLocked =
+    attempt.count >= MAX_LOGIN_ATTEMPTS &&
+    Date.now() - attempt.timestamp < LOCKOUT_DURATION;
+
+  // Reset if lockout period has passed
+  if (!isLocked && attempt.count >= MAX_LOGIN_ATTEMPTS) {
+    loginAttempts.delete(identifier);
+  }
+
+  return isLocked;
+}
+
+/**
+ * Record login attempt
+ */
+function recordLoginAttempt(identifier: string, success: boolean): void {
+  if (success) {
+    loginAttempts.delete(identifier);
+    return;
+  }
+
+  const attempt = loginAttempts.get(identifier);
+  if (attempt) {
+    attempt.count++;
+    attempt.timestamp = Date.now();
+  } else {
+    loginAttempts.set(identifier, { count: 1, timestamp: Date.now() });
+  }
+
+  // Log security event
+  if (attempt && attempt.count >= MAX_LOGIN_ATTEMPTS) {
+    logger.warn("Account locked due to multiple failed login attempts", {
+      context: "Security",
+      identifier,
+      attempts: attempt.count,
+    });
+  }
+}
+
+/**
+ * Log security event
+ */
+function logSecurityEvent(
+  event: string,
+  req: Request,
+  additionalData?: Record<string, any>
+): void {
+  logger.info(event, {
+    context: "Security",
+    ip: getClientIp(req),
+    userAgent: req.headers["user-agent"],
+    timestamp: new Date().toISOString(),
+    ...additionalData,
+  });
+}
+
+/**
+ * Validate password strength
+ */
+function isPasswordStrong(password: string): {
+  valid: boolean;
+  message?: string;
+} {
+  if (password.length < 8) {
+    return {
+      valid: false,
+      message: "Password must be at least 8 characters long",
+    };
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    return {
+      valid: false,
+      message: "Password must contain at least one uppercase letter",
+    };
+  }
+
+  if (!/[a-z]/.test(password)) {
+    return {
+      valid: false,
+      message: "Password must contain at least one lowercase letter",
+    };
+  }
+
+  if (!/\d/.test(password)) {
+    return {
+      valid: false,
+      message: "Password must contain at least one number",
+    };
+  }
+
+  if (!/[^A-Za-z0-9]/.test(password)) {
+    return {
+      valid: false,
+      message: "Password must contain at least one special character",
+    };
+  }
+
+  return { valid: true };
+}
 
 /**
  * Register authentication routes
@@ -23,15 +154,32 @@ export function registerAuthRoutes(app: Express, authLimiter?: any) {
     async (req: Request, res: Response) => {
       try {
         const { email, password } = req.body;
+        const clientIp = getClientIp(req);
 
         if (!email || !password) {
           res.status(400).json({ error: "Email and password are required" });
           return;
         }
 
+        // Check if account is locked
+        if (isAccountLocked(email) || isAccountLocked(clientIp)) {
+          logSecurityEvent("Blocked login attempt - Account locked", req, {
+            email,
+          });
+          res.status(429).json({
+            error: "Too many failed login attempts. Please try again later.",
+          });
+          return;
+        }
+
         // Get user by email
         const user = await db.getUserByEmail(email);
         if (!user) {
+          recordLoginAttempt(email, false);
+          recordLoginAttempt(clientIp, false);
+          logSecurityEvent("Failed login attempt - User not found", req, {
+            email,
+          });
           res.status(401).json({ error: "Invalid email or password" });
           return;
         }
@@ -39,6 +187,8 @@ export function registerAuthRoutes(app: Express, authLimiter?: any) {
         // Get password from database
         const userPassword = await db.getPasswordByUserId(user.id);
         if (!userPassword) {
+          recordLoginAttempt(email, false);
+          recordLoginAttempt(clientIp, false);
           res.status(401).json({ error: "Invalid email or password" });
           return;
         }
@@ -49,9 +199,19 @@ export function registerAuthRoutes(app: Express, authLimiter?: any) {
           userPassword.hashedPassword
         );
         if (!isValid) {
+          recordLoginAttempt(email, false);
+          recordLoginAttempt(clientIp, false);
+          logSecurityEvent("Failed login attempt - Invalid password", req, {
+            email,
+            userId: user.id,
+          });
           res.status(401).json({ error: "Invalid email or password" });
           return;
         }
+
+        // Successful login
+        recordLoginAttempt(email, true);
+        recordLoginAttempt(clientIp, true);
 
         // Update last signed in
         await db.updateUserLastSignedIn(user.id);
@@ -68,6 +228,12 @@ export function registerAuthRoutes(app: Express, authLimiter?: any) {
         res.cookie(COOKIE_NAME, sessionToken, {
           ...cookieOptions,
           maxAge: ONE_YEAR_MS,
+        });
+
+        logSecurityEvent("Successful login", req, {
+          email,
+          userId: user.id,
+          role: user.role,
         });
 
         res.json({
@@ -102,9 +268,26 @@ export function registerAuthRoutes(app: Express, authLimiter?: any) {
           return;
         }
 
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          res.status(400).json({ error: "Invalid email format" });
+          return;
+        }
+
+        // Validate password strength
+        const passwordValidation = isPasswordStrong(password);
+        if (!passwordValidation.valid) {
+          res.status(400).json({ error: passwordValidation.message });
+          return;
+        }
+
         // Check if user already exists
         const existingUser = await db.getUserByEmail(email);
         if (existingUser) {
+          logSecurityEvent("Registration attempt - User exists", req, {
+            email,
+          });
           res.status(409).json({ error: "User already exists" });
           return;
         }
@@ -123,17 +306,13 @@ export function registerAuthRoutes(app: Express, authLimiter?: any) {
         await db.savePassword(userId, hashedPassword);
 
         // Save privacy consent
-        const ipAddress =
-          (req.headers["x-forwarded-for"] as string) ||
-          (req.headers["x-real-ip"] as string) ||
-          req.socket.remoteAddress ||
-          "unknown";
+        const clientIp = getClientIp(req);
         const userAgent = req.headers["user-agent"] || "unknown";
 
         await db.saveUserConsent({
           userId,
           policyVersion: "1.0",
-          ipAddress,
+          ipAddress: clientIp,
           userAgent,
         });
 
@@ -149,6 +328,11 @@ export function registerAuthRoutes(app: Express, authLimiter?: any) {
         res.cookie(COOKIE_NAME, sessionToken, {
           ...cookieOptions,
           maxAge: ONE_YEAR_MS,
+        });
+
+        logSecurityEvent("Successful registration", req, {
+          email,
+          userId,
         });
 
         res.json({
@@ -267,3 +451,14 @@ export async function requireAdmin(
   (req as any).user = payload;
   next();
 }
+
+// Clean up old login attempts periodically (every 30 minutes)
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, attempt] of loginAttempts.entries()) {
+    if (now - attempt.timestamp > LOCKOUT_DURATION) {
+      loginAttempts.delete(key);
+    }
+  }
+}, 30 * 60 * 1000);
+

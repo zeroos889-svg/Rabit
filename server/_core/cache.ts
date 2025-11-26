@@ -5,9 +5,13 @@
 
 import Redis from "ioredis";
 import { ENV } from "./env";
+import { logger } from "./logger";
+
+// Type for Redis client - can be real Redis or mock
+type RedisClient = Redis | InMemoryRedis;
 
 // Redis client instance (singleton pattern)
-let redisClient: any = null;
+let redisClient: RedisClient | null = null;
 
 class InMemoryRedis {
   private store = new Map<string, { value: string; timeout?: NodeJS.Timeout }>();
@@ -61,19 +65,21 @@ class InMemoryRedis {
  * إنشاء اتصال Redis
  * @returns Redis client instance
  */
-export function getRedisClient(): any {
+export function getRedisClient(): RedisClient {
   if (!redisClient) {
     const useMock =
       process.env.NODE_ENV === "test" && !process.env.REDIS_URL;
 
     if (useMock) {
-      redisClient = new InMemoryRedis() as unknown as any;
-      console.log("⚠️  Using in-memory Redis mock for tests");
+      redisClient = new InMemoryRedis();
+      logger.info("Using in-memory Redis mock for tests", {
+        context: "Cache",
+      });
     } else {
       // استخدام environment variable أو fallback للتطوير المحلي
       const redisUrl = ENV.redisUrl || "redis://localhost:6379";
 
-      redisClient = new (Redis as any)(redisUrl, {
+      redisClient = new Redis(redisUrl, {
         maxRetriesPerRequest: 3,
         retryStrategy(times: number) {
           const delay = Math.min(times * 50, 2000);
@@ -86,15 +92,22 @@ export function getRedisClient(): any {
 
       // تسجيل الأحداث المهمة
       redisClient.on("connect", () => {
-        console.log("✅ Redis connected successfully");
+        logger.info("Redis connected successfully", {
+          context: "Cache",
+        });
       });
 
       redisClient.on("error", (err: Error) => {
-        console.error("❌ Redis error:", err.message);
+        logger.error("Redis error", {
+          context: "Cache",
+          error: err.message,
+        });
       });
 
       redisClient.on("close", () => {
-        console.log("⚠️  Redis connection closed");
+        logger.warn("Redis connection closed", {
+          context: "Cache",
+        });
       });
     }
   }
@@ -106,12 +119,12 @@ export function getRedisClient(): any {
  * Cache Manager مع دوال مساعدة
  */
 export class CacheManager {
-  private redis: any;
-  private defaultTTL = 3600; // 1 hour default
+  private readonly redis: RedisClient;
+  private readonly defaultTTL = 3600; // 1 hour default
 
   constructor(ttl?: number) {
     this.redis = getRedisClient();
-    if (ttl) this.defaultTTL = ttl;
+    if (ttl) (this as any).defaultTTL = ttl;
   }
 
   /**
@@ -262,7 +275,7 @@ export const CACHE_TTL = {
  * Get Redis client for direct operations
  * @returns Redis client instance
  */
-export function getCache(): any {
+export function getCache(): RedisClient {
   return getRedisClient();
 }
 
