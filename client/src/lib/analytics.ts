@@ -3,6 +3,8 @@
  * Google Analytics 4 integration with custom event tracking
  */
 
+import { errorLogger } from "./errorLogger";
+
 declare global {
   interface Window {
     gtag?: (
@@ -73,7 +75,9 @@ class Analytics {
    */
   init(config: AnalyticsConfig) {
     if (this.isInitialized) {
-      console.warn("Analytics already initialized");
+      errorLogger.warn("Analytics already initialized", {
+        component: "Analytics",
+      });
       return;
     }
 
@@ -107,7 +111,7 @@ class Analytics {
     this.processQueue();
 
     if (config.enableDebug) {
-      console.log("[Analytics] Initialized with config:", config);
+      errorLogger.info("[Analytics] Initialized with config");
     }
   }
 
@@ -133,8 +137,9 @@ class Analytics {
     }
 
     if (!analyticsGlobals.gtag) {
-      // eslint-disable-next-line no-console
-      console.warn("[Analytics] gtag not available");
+      errorLogger.warn("gtag not available", {
+        component: "Analytics",
+      });
       return;
     }
 
@@ -146,8 +151,7 @@ class Analytics {
     });
 
     if (this.config?.enableDebug) {
-      // eslint-disable-next-line no-console
-      console.log("[Analytics] Event tracked:", eventName, params);
+      errorLogger.info(`[Analytics] Event tracked: ${eventName}`);
     }
   }
 
@@ -167,8 +171,7 @@ class Analytics {
     analyticsGlobals.gtag("event", "page_view", pageParams);
 
     if (this.config?.enableDebug) {
-      // eslint-disable-next-line no-console
-      console.log("[Analytics] Page view tracked:", pageParams);
+      errorLogger.info("[Analytics] Page view tracked");
     }
   }
 
@@ -181,8 +184,7 @@ class Analytics {
     analyticsGlobals.gtag("set", "user_properties", properties);
 
     if (this.config?.enableDebug) {
-      // eslint-disable-next-line no-console
-      console.log("[Analytics] User properties set:", properties);
+      errorLogger.info("[Analytics] User properties set");
     }
   }
 
@@ -197,8 +199,7 @@ class Analytics {
     });
 
     if (this.config?.enableDebug) {
-      // eslint-disable-next-line no-console
-      console.log("[Analytics] User ID set:", userId);
+      errorLogger.info(`[Analytics] User ID set: ${userId}`);
     }
   }
 

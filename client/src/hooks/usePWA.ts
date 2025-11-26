@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { errorLogger } from "../lib/errorLogger";
 
 /**
  * PWA Install Prompt Hook
@@ -61,7 +62,9 @@ export function usePWAInstall(): UsePWAInstallReturn {
 
   const promptInstall = async () => {
     if (!deferredPrompt) {
-      console.log("Install prompt not available");
+      errorLogger.info("Install prompt not available", {
+        component: "PWA",
+      });
       return;
     }
 
@@ -69,7 +72,9 @@ export function usePWAInstall(): UsePWAInstallReturn {
       await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       
-      console.log(`User ${outcome} the install prompt`);
+      errorLogger.info(`User ${outcome} the install prompt`, {
+        component: "PWA",
+      });
       
       if (outcome === "accepted") {
         setIsInstalled(true);
@@ -77,7 +82,10 @@ export function usePWAInstall(): UsePWAInstallReturn {
       
       setDeferredPrompt(null);
     } catch (error) {
-      console.error("Error showing install prompt:", error);
+      errorLogger.error(error as Error, {
+        component: "PWA",
+        action: "Install prompt",
+      });
     }
   };
 
@@ -105,12 +113,12 @@ export function useOnlineStatus() {
   useEffect(() => {
     const handleOnline = () => {
       setIsOnline(true);
-      console.log("[PWA] Back online");
+      errorLogger.info("Back online", { component: "PWA" });
     };
 
     const handleOffline = () => {
       setIsOnline(false);
-      console.log("[PWA] Gone offline");
+      errorLogger.warn("Gone offline", { component: "PWA" });
     };
 
     window.addEventListener("online", handleOnline);
@@ -135,7 +143,9 @@ export function useServiceWorker() {
 
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
-      console.log("[PWA] Service Worker not supported");
+      errorLogger.info("Service Worker not supported", {
+        component: "PWA",
+      });
       return;
     }
 
@@ -147,7 +157,10 @@ export function useServiceWorker() {
 
         setRegistration(reg);
         setIsRegistered(true);
-        console.log("[PWA] Service Worker registered:", reg.scope);
+        errorLogger.info("Service Worker registered", {
+          component: "PWA",
+          scope: reg.scope,
+        });
 
         // Check for updates
         reg.addEventListener("updatefound", () => {
@@ -157,7 +170,9 @@ export function useServiceWorker() {
 
           newWorker.addEventListener("statechange", () => {
             if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-              console.log("[PWA] Update available");
+              errorLogger.info("Update available", {
+                component: "PWA",
+              });
               setIsUpdateAvailable(true);
             }
           });
@@ -168,7 +183,10 @@ export function useServiceWorker() {
           reg.update();
         }, 60 * 60 * 1000);
       } catch (error) {
-        console.error("[PWA] Service Worker registration failed:", error);
+        errorLogger.error(error as Error, {
+          component: "PWA",
+          action: "Service Worker registration",
+        });
       }
     };
 
@@ -195,12 +213,17 @@ export function useServiceWorker() {
     try {
       const success = await registration.unregister();
       if (success) {
-        console.log("[PWA] Service Worker unregistered");
+        errorLogger.info("Service Worker unregistered", {
+          component: "PWA",
+        });
         setIsRegistered(false);
         setRegistration(null);
       }
     } catch (error) {
-      console.error("[PWA] Service Worker unregistration failed:", error);
+      errorLogger.error(error as Error, {
+        component: "PWA",
+        action: "Service Worker unregistration",
+      });
     }
   };
 
