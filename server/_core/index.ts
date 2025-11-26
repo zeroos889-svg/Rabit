@@ -60,6 +60,11 @@ import {
   logMetricsConfig,
 } from "./metrics";
 import { logCacheConfig, shutdownCache } from "./cache";
+import {
+  initializeWebSocket,
+  logWebSocketConfig,
+  shutdownWebSocket,
+} from "./websocket";
 
 logger.info("🚀 Starting server initialization...", { context: "Server" });
 
@@ -157,7 +162,7 @@ async function startServer() {
   });
 
   // Initialize error handling (uncaught exceptions, unhandled rejections, graceful shutdown)
-  initializeErrorHandling(server, [shutdownTracing, shutdownCache]);
+  initializeErrorHandling(server, [shutdownTracing, shutdownCache, shutdownWebSocket]);
 
   // Request ID and Performance Tracking Middleware (must be early)
   app.use(requestIdMiddleware);
@@ -467,6 +472,10 @@ async function startServer() {
   logTracingConfig();
   logMetricsConfig();
   logCacheConfig();
+  logWebSocketConfig();
+
+  // Initialize WebSocket server
+  initializeWebSocket(server);
 
   // Get port from environment (Railway sets this automatically)
   const port = getPort();
