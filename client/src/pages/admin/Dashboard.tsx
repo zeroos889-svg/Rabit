@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useState } from "react";
-import { Users, CreditCard, Calendar, DollarSign, Globe2 } from "lucide-react";
+import { Users, CreditCard, Calendar, DollarSign, Globe2, Building2, ExternalLink } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AdminNotifications } from "@/components/AdminNotifications";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -172,6 +172,73 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Quick Access to HQ */}
+      <Card className="mt-6 border-2 border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950 dark:to-blue-950">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Building2 className="h-6 w-6 text-purple-600" />
+            مركز القيادة - Rabit HQ
+          </CardTitle>
+          <CardDescription>
+            لوحة تحكم الإدارة العليا + بوابة المستثمرين
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              مركز القيادة الداخلي يوفر:
+            </p>
+            <ul className="text-sm space-y-2 mr-4">
+              <li className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-purple-600" />{" "}
+                Dashboard المالي (Burn runway, Monthly trends)
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-purple-600" />{" "}
+                Investor Portal (Roadmap timeline, Financial snapshots)
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-purple-600" />{" "}
+                Capital & Expense Management
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-purple-600" />{" "}
+                AI-driven Insights (مع OpenAI)
+              </li>
+            </ul>
+            <div className="flex gap-3 pt-3">
+              <Button
+                asChild
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              >
+                <a
+                  href="http://localhost:3001"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  <Building2 className="h-4 w-4" />
+                  فتح مركز القيادة
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  navigator.clipboard.writeText("http://localhost:3001");
+                  toast.success("تم نسخ الرابط");
+                }}
+              >
+                نسخ الرابط
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground mt-3">
+              ملاحظة: تأكد من تشغيل rabit-hq على المنفذ 3001 (npm run dev)
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
