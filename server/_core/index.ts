@@ -8,7 +8,8 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import compression from "compression";
 import morgan from "morgan";
-import { apiLimiter, authLimiter } from "./rateLimit";
+import { apiLimiter } from "./rateLimit";
+import rateLimiters from "./middleware/rateLimiter";
 import { doubleSubmitCsrfProtection } from "./csrf";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
@@ -427,12 +428,14 @@ async function startServer() {
   app.use(doubleSubmitCsrfProtection);
 
   // Authentication routes with strict rate limiting
-  registerAuthRoutes(app, authLimiter);
+  // Use new specialized rate limiters for auth endpoints
+  registerAuthRoutes(app, rateLimiters.login);
 
-  // tRPC API
+  // tRPC API with general rate limiting
   logger.info("🔌 Setting up tRPC middleware...", { context: "Server" });
   app.use(
     "/api/trpc",
+    rateLimiters.general, // General API rate limiting
     trpcRedisRateLimitMiddleware, // Apply Redis or in-memory rate limiting
     createExpressMiddleware({
       router: appRouter,
