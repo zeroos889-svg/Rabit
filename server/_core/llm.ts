@@ -232,19 +232,7 @@ const buildChatCompletionsUrl = (baseUrl: string) => {
 };
 
 const getLlmConfig = (): LlmConfig => {
-  if (ENV.forgeApiKey) {
-    return {
-      provider: "forge",
-      apiKey: ENV.forgeApiKey,
-      baseUrl:
-        (ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
-          ? ENV.forgeApiUrl
-          : "https://forge.manus.im"),
-      model: "gemini-2.5-flash",
-      supportsThinking: true,
-    };
-  }
-
+  // Use Deepseek as primary provider
   if (ENV.deepseekApiKey) {
     return {
       provider: "deepseek",
@@ -258,6 +246,21 @@ const getLlmConfig = (): LlmConfig => {
     };
   }
 
+  // Fallback to Forge
+  if (ENV.forgeApiKey) {
+    return {
+      provider: "forge",
+      apiKey: ENV.forgeApiKey,
+      baseUrl:
+        (ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
+          ? ENV.forgeApiUrl
+          : "https://forge.manus.im"),
+      model: "gemini-2.5-flash",
+      supportsThinking: true,
+    };
+  }
+
+  // Fallback to OpenAI
   if (ENV.openaiApiKey) {
     return {
       provider: "openai",
@@ -268,7 +271,7 @@ const getLlmConfig = (): LlmConfig => {
     };
   }
 
-  throw new Error("LLM API key is not configured");
+  throw new Error("LLM API key is not configured. Please set DEEPSEEK_API_KEY");
 };
 
 const normalizeResponseFormat = ({

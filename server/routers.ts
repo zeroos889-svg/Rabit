@@ -19,6 +19,8 @@ import { sendEmail, sendPasswordResetEmail, sendEmailDetailed } from "./_core/em
 import { validatePasswordStrength, hashPassword } from "./_core/password";
 import crypto from "node:crypto";
 import { ENV } from "./_core/env";
+import { aiRouter } from "./routes/ai";
+import { aiAdvancedRouter } from "./routes/ai-advanced";
 import {
   sendSMS,
   getBookingConfirmationSMS,
@@ -120,6 +122,8 @@ const contactRouter = router({
 export const appRouter = router({
   system: systemRouter,
   contact: contactRouter,
+  ai: aiRouter,
+  aiAdvanced: aiAdvancedRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
 

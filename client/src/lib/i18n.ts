@@ -405,6 +405,7 @@ const resources = {
       "category.employee.feature3": "Letter generator",
       "category.employee.feature4": "Save documents",
       "category.employee.price": "Free",
+      "category.driver": "HR Freelancers",
       "category.individual": "HR Freelancers",
       "category.individual.desc": "Expand your services with smart tools and reports.",
       "category.individual.feature1": "Client management",
