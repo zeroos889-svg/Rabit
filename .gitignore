@@ -89,14 +89,26 @@ backups/
 # Deployment
 .vercel
 
-=======
+# Backup & temporary files
+drizzle_backup/
+*.backup
+*copy*
+*Copy*
+*.tar.gz
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# FFmpeg binaries
+ffmpeg
+ffmpeg.exe
 
-# OS files
-Thumbs.db
-.DS_Store
->>>>>>> 1f5ed655de8157b9864cb50aede1f7077069fc39
+# Binary executables
+bin/ffmpeg
+bin/ffmpeg.exe
+
+# Test files
+test-*.js
+test-*.ts
+performance-test*.js
+
+# Code analysis tools
+.sonarlint/
+.scannerwork/
