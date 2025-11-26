@@ -23,13 +23,10 @@ import { useServiceWorker } from "./hooks/usePWA";
 import { useFocusVisible } from "./hooks/useAccessibility";
 import { useARIAEnhancer, useARIAValidation } from "./lib/ariaUtils";
 import { useAnalytics, usePageTracking } from "./hooks/useAnalytics";
+import { PageLoadingFallback } from "./components/LoadingSpinner";
 
-// Loading component
-const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-  </div>
-);
+// Loading component - Enhanced with better UX
+const PageLoader = () => <PageLoadingFallback />;
 
 // Lazy load pages - Public pages (loaded first)
 const Home = lazy(() => import("./pages/Home"));

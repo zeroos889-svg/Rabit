@@ -32,7 +32,13 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 antiali
 .bg-gradient-primary { background-image: var(--brand-gradient); }
 .brand-gradient-text { @apply bg-gradient-primary bg-clip-text text-transparent; }
 .brand-section { @apply relative overflow-hidden; }
-.brand-section::before { content:''; @apply absolute inset-0 bg-gradient-radial opacity-10; }
+.brand-section::before { 
+  content:''; 
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+  opacity: 0.1;
+}
 
 /* رأس الموقع */
 .brand-header { @apply bg-white/60 dark:bg-gray-900/60; }
