@@ -59,6 +59,7 @@ import {
   getMetrics,
   logMetricsConfig,
 } from "./metrics";
+import { logCacheConfig, shutdownCache } from "./cache";
 
 logger.info("🚀 Starting server initialization...", { context: "Server" });
 
@@ -156,7 +157,7 @@ async function startServer() {
   });
 
   // Initialize error handling (uncaught exceptions, unhandled rejections, graceful shutdown)
-  initializeErrorHandling(server, [shutdownTracing]);
+  initializeErrorHandling(server, [shutdownTracing, shutdownCache]);
 
   // Request ID and Performance Tracking Middleware (must be early)
   app.use(requestIdMiddleware);
@@ -465,6 +466,7 @@ async function startServer() {
   logTrpcRedisRateLimitConfig();
   logTracingConfig();
   logMetricsConfig();
+  logCacheConfig();
 
   // Get port from environment (Railway sets this automatically)
   const port = getPort();

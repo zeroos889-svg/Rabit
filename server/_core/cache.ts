@@ -6,6 +6,11 @@
 import Redis from "ioredis";
 import { ENV } from "./env";
 import { logger } from "./logger";
+import {
+  trackCacheHit,
+  trackCacheMiss,
+  updateCacheHitRate,
+} from "./metrics";
 
 // Type for Redis client - can be real Redis or mock
 type RedisClient = Redis | InMemoryRedis;
@@ -14,7 +19,7 @@ type RedisClient = Redis | InMemoryRedis;
 let redisClient: RedisClient | null = null;
 
 class InMemoryRedis {
-  private store = new Map<string, { value: string; timeout?: NodeJS.Timeout }>();
+  private readonly store = new Map<string, { value: string; timeout?: NodeJS.Timeout }>();
 
   async setex(key: string, ttl: number, value: string) {
     const existing = this.store.get(key);
@@ -31,9 +36,9 @@ class InMemoryRedis {
 
   async del(...keys: string[]) {
     let deleted = 0;
-    keys.forEach(key => {
+    for (const key of keys) {
       if (this.store.delete(key)) deleted += 1;
-    });
+    }
     return deleted;
   }
 
@@ -49,8 +54,27 @@ class InMemoryRedis {
     return this.store.has(key) ? 1 : 0;
   }
 
+  async mget(...keys: string[]) {
+    return keys.map(key => this.store.get(key)?.value ?? null);
+  }
+
+  async flushdb() {
+    for (const { timeout } of this.store.values()) {
+      if (timeout) clearTimeout(timeout);
+    }
+    this.store.clear();
+    return "OK";
+  }
+
+  async info(_section?: string) {
+    // Mock info response for memory section
+    return "used_memory_human:1.00M";
+  }
+
   async quit() {
-    this.store.forEach(entry => entry.timeout && clearTimeout(entry.timeout));
+    for (const entry of this.store.values()) {
+      if (entry.timeout) clearTimeout(entry.timeout);
+    }
     this.store.clear();
     return "OK";
   }
@@ -148,7 +172,16 @@ export class CacheManager {
   async get<T>(key: string): Promise<T | null> {
     const cached = await this.redis.get(key);
 
-    if (!cached) return null;
+    if (!cached) {
+      // Track cache miss
+      const namespace = key.split(':')[0] || 'default';
+      trackCacheMiss(namespace);
+      return null;
+    }
+
+    // Track cache hit
+    const namespace = key.split(':')[0] || 'default';
+    trackCacheHit(namespace);
 
     try {
       return JSON.parse(cached) as T;
@@ -241,6 +274,167 @@ export class CacheManager {
       await this.redis.quit();
     }
   }
+
+  // ============================================================================
+  // Advanced Features: Statistics and Monitoring
+  // ميزات متقدمة: الإحصائيات والمراقبة
+  // ============================================================================
+
+  /**
+   * Get cache statistics
+   * الحصول على إحصائيات الذاكرة المؤقتة
+   */
+  async getStats(): Promise<{
+    totalKeys: number;
+    memoryUsage: string;
+    hitRate?: number;
+  }> {
+    try {
+      const keys = await this.redis.keys('*');
+      const totalKeys = keys.length;
+      
+      let memoryUsage = 'N/A';
+      
+      // Get memory usage from Redis INFO command (only available in real Redis)
+      if ('info' in this.redis && typeof this.redis.info === 'function') {
+        const info = await this.redis.info('memory');
+        const match = info.match(/used_memory_human:([^\r\n]+)/);
+        if (match) {
+          memoryUsage = match[1];
+        }
+      }
+
+      return {
+        totalKeys,
+        memoryUsage,
+      };
+    } catch (error) {
+      logger.error('📦 Cache: Failed to get stats', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return {
+        totalKeys: 0,
+        memoryUsage: 'Error',
+      };
+    }
+  }
+
+  // ============================================================================
+  // Cache Warming Support
+  // دعم تسخين الذاكرة المؤقتة
+  // ============================================================================
+
+  /**
+   * Warm cache with data
+   * تسخين الذاكرة المؤقتة بالبيانات
+   * 
+   * @example
+   * ```typescript
+   * await cache.warm('active_employees', async () => {
+   *   return await db.employee.findMany({ where: { active: true } });
+   * }, 600);
+   * ```
+   */
+  async warm<T>(
+    key: string,
+    fetchFn: () => Promise<T>,
+    ttl?: number
+  ): Promise<T> {
+    try {
+      logger.info('📦 Cache: Warming cache', { key });
+      const data = await fetchFn();
+      await this.set(key, data, ttl);
+      logger.info('📦 Cache: Cache warmed successfully', { key });
+      return data;
+    } catch (error) {
+      logger.error('📦 Cache: Failed to warm cache', {
+        key,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Get cache keys by pattern
+   * الحصول على مفاتيح الذاكرة المؤقتة بنمط
+   */
+  async getKeysByPattern(pattern: string): Promise<string[]> {
+    try {
+      return await this.redis.keys(pattern);
+    } catch (error) {
+      logger.error('📦 Cache: Failed to get keys', {
+        pattern,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return [];
+    }
+  }
+
+  /**
+   * Batch get multiple keys
+   * الحصول على قيم متعددة دفعة واحدة
+   */
+  async mget<T>(keys: string[]): Promise<(T | null)[]> {
+    if (keys.length === 0) return [];
+
+    try {
+      const values = await this.redis.mget(...keys);
+      return values.map(value => {
+        if (!value) {
+          const namespace = keys[0]?.split(':')[0] || 'default';
+          trackCacheMiss(namespace);
+          return null;
+        }
+
+        const namespace = keys[0]?.split(':')[0] || 'default';
+        trackCacheHit(namespace);
+
+        try {
+          return JSON.parse(value) as T;
+        } catch {
+          return null;
+        }
+      });
+    } catch (error) {
+      logger.error('📦 Cache: Batch get failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return keys.map(() => null);
+    }
+  }
+
+  /**
+   * Check if key exists
+   * التحقق من وجود مفتاح
+   */
+  async has(key: string): Promise<boolean> {
+    return await this.exists(key);
+  }
+
+  /**
+   * Clear all cache
+   * مسح كل الذاكرة المؤقتة
+   */
+  async clear(): Promise<void> {
+    try {
+      if ('flushdb' in this.redis && typeof this.redis.flushdb === 'function') {
+        await this.redis.flushdb();
+        logger.warn('📦 Cache: All cache cleared');
+      } else {
+        // For in-memory cache, delete all keys
+        const keys = await this.redis.keys('*');
+        if (keys.length > 0) {
+          await this.redis.del(...keys);
+        }
+        logger.warn('📦 Cache: All cache cleared (in-memory)');
+      }
+    } catch (error) {
+      logger.error('📦 Cache: Failed to clear cache', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
 }
 
 /**
@@ -281,3 +475,72 @@ export function getCache(): RedisClient {
 
 // تصدير instance جاهز للاستخدام
 export const cache = new CacheManager();
+
+// ============================================================================
+// Monitoring and Configuration Logging
+// المراقبة وتسجيل الإعدادات
+// ============================================================================
+
+/**
+ * Log cache configuration
+ * تسجيل إعدادات الذاكرة المؤقتة
+ */
+export function logCacheConfig(): void {
+  const enabled = !!ENV.redisUrl;
+  logger.info('📦 ============================================');
+  logger.info('📦 Cache Configuration');
+  logger.info('📦 ============================================');
+  logger.info(`📦 Enabled: ${enabled ? 'Redis' : 'In-Memory (Fallback)'}`);
+  logger.info(`📦 Default TTL: ${cache['defaultTTL']}s (1 hour)`);
+  logger.info(`📦 Redis URL: ${enabled ? 'Connected' : 'Not configured'}`);
+  logger.info('📦 ============================================');
+}
+
+/**
+ * Get cache status for health checks
+ * الحصول على حالة الذاكرة المؤقتة لفحوصات الصحة
+ */
+export async function getCacheStatus() {
+  const stats = await cache.getStats();
+  const enabled = !!ENV.redisUrl;
+
+  return {
+    enabled,
+    type: enabled ? 'redis' : 'in-memory',
+    stats,
+  };
+}
+
+/**
+ * Update cache metrics for monitoring
+ * تحديث مقاييس الذاكرة المؤقتة للمراقبة
+ */
+export async function updateCacheMetrics(): Promise<void> {
+  try {
+    const stats = await cache.getStats();
+    if (stats.hitRate !== undefined) {
+      updateCacheHitRate('default', stats.hitRate);
+    }
+  } catch (error) {
+    logger.error('📦 Cache: Failed to update metrics', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
+
+/**
+ * Shutdown cache gracefully
+ * إغلاق الذاكرة المؤقتة بشكل كريم
+ */
+export async function shutdownCache(): Promise<void> {
+  try {
+    logger.info('📦 Cache: Shutting down...');
+    await cache.disconnect();
+    logger.info('📦 Cache: Shutdown complete');
+  } catch (error) {
+    logger.error('📦 Cache: Shutdown error', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
+
