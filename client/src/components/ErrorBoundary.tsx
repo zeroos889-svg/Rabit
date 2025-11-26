@@ -1,5 +1,6 @@
 import { Component, ReactNode } from "react";
 import { ErrorFallback } from "./ErrorFallback";
+import { errorLogger } from "@/lib/errorLogger";
 
 interface Props {
   children: ReactNode;
@@ -36,11 +37,8 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Log error to console in development
-    if (process.env.NODE_ENV === "development") {
-      // eslint-disable-next-line no-console
-      console.error("Error caught by ErrorBoundary:", error, errorInfo);
-    }
+    // Log error using centralized error logger
+    errorLogger.componentError(error, errorInfo, "ErrorBoundary");
 
     // Track error frequency (for detecting error loops)
     const now = Date.now();
@@ -59,13 +57,6 @@ class ErrorBoundary extends Component<Props, State> {
         lastErrorTime: now
       };
     });
-
-    // TODO: Integrate with error monitoring service (Sentry, LogRocket, etc.)
-    if (process.env.NODE_ENV === "production") {
-      // Example: Sentry.captureException(error, { contexts: { react: errorInfo } });
-      // eslint-disable-next-line no-console
-      console.error("Production error:", error.message);
-    }
 
     // Auto-recovery mechanism: if only 1-2 errors, try to auto-reset after 10 seconds
     const errorCount = timeSinceLastError < 5000 ? this.state.errorCount + 1 : 1;

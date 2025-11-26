@@ -44,6 +44,7 @@
  */
 
 import { useEffect, useRef } from "react";
+import { errorLogger } from "@/lib/errorLogger";
 
 declare global {
   interface Window {
@@ -76,9 +77,9 @@ export function MapView({
   useEffect(() => {
     // Check if API key is available
     if (!API_KEY) {
-      console.warn(
-        "Google Maps API key is not configured. Map features will be disabled."
-      );
+      errorLogger.warn("Google Maps API key is not configured", {
+        component: "Map",
+      });
       return;
     }
 
@@ -109,8 +110,10 @@ export function MapView({
           setTimeout(() => clearInterval(checkGoogle), 10000);
         })
         .catch(error => {
-          console.error("Failed to fetch Google Maps script:", error);
-          // Optionally show user-friendly error message
+          errorLogger.error(error, {
+            component: "Map",
+            action: "fetch-google-maps-script",
+          });
         });
     } else {
       initMap();
