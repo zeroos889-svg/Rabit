@@ -6,22 +6,205 @@
 import { z } from "zod";
 import { router, protectedProcedure } from "../_core/trpc";
 import { getAIAssistantResponse, generateDocumentContent, analyzeHRData } from "../ai/assistant";
-import { 
-  evaluateEmployeePerformance, 
-  comparePerformanceWithDepartment, 
-  generateDevelopmentPlan 
+import {
+  evaluateEmployeePerformance,
+  comparePerformanceWithDepartment,
+  generateDevelopmentPlan,
 } from "../ai/performance-evaluator";
-import { 
-  evaluateCandidate, 
-  rankCandidates, 
-  generateJobDescription, 
-  generateInterviewQuestions 
+import {
+  evaluateCandidate,
+  rankCandidates,
+  generateJobDescription,
+  generateInterviewQuestions,
 } from "../ai/hiring-assistant";
-import { 
-  recommendTraining, 
-  generateDepartmentTrainingPlan, 
-  evaluateTrainingEffectiveness 
+import {
+  recommendTraining,
+  generateDepartmentTrainingPlan,
+  evaluateTrainingEffectiveness,
 } from "../ai/training-recommender";
+
+const SUPPORTED_LANGUAGES = ["ar", "en"] as const;
+type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
+
+const skillLevelScale = ["beginner", "intermediate", "advanced", "expert"] as const;
+type SkillLevel = (typeof skillLevelScale)[number];
+
+const performanceMetricsSchema = z.object({
+  attendanceRate: z.number().min(0).max(100),
+  taskCompletionRate: z.number().min(0).max(100),
+  qualityScore: z.number().min(0).max(100),
+  teamworkScore: z.number().min(0).max(100),
+  punctualityScore: z.number().min(0).max(100),
+  initiativeScore: z.number().min(0).max(100),
+  customerSatisfaction: z.number().min(0).max(100).optional(),
+  salesPerformance: z.number().min(0).max(100).optional(),
+});
+
+const evaluateEmployeeSchema = z.object({
+  employeeId: z.number().optional().default(0),
+  employeeName: z.string(),
+  position: z.string(),
+  department: z.string(),
+  joiningDate: z.string().default("N/A"),
+  reviewPeriod: z.string().optional(),
+  metrics: performanceMetricsSchema,
+  achievements: z.array(z.string()).optional(),
+  challenges: z.array(z.string()).optional(),
+  goals: z.array(z.string()).optional(),
+  managerNotes: z.string().optional(),
+  previousReviews: z.array(z.string()).optional(),
+  currentSalary: z.number().optional(),
+});
+
+const performanceRatingOptions = ["excellent", "very_good", "good", "needs_improvement", "poor"] as const;
+const performanceRatingArOptions = ["ممتاز", "جيد جداً", "جيد", "يحتاج تحسين", "ضعيف"] as const;
+const salaryRecommendationActions = ["increase", "maintain", "review"] as const;
+const candidateRecommendationOptions = [
+  "highly_recommended",
+  "recommended",
+  "maybe",
+  "not_recommended",
+] as const;
+const candidateRecommendationArOptions = ["موصى به بشدة", "موصى به", "ربما", "غير موصى به"] as const;
+const experienceQualityOptions = ["excellent", "good", "average", "below_average"] as const;
+
+type PerformanceEvaluationInput = Parameters<typeof generateDevelopmentPlan>[0];
+
+const performanceEvaluationSchema = z.object({
+  overallScore: z.number(),
+  rating: z.enum(performanceRatingOptions),
+  ratingAr: z.enum(performanceRatingArOptions),
+  strengths: z.array(z.string()),
+  weaknesses: z.array(z.string()),
+  recommendations: z.array(z.string()),
+  trainingNeeds: z.array(z.string()),
+  careerPath: z.string(),
+  salaryRecommendation: z.object({
+    action: z.enum(salaryRecommendationActions),
+    percentage: z.number().optional(),
+    reason: z.string(),
+  }),
+  promotionReadiness: z.object({
+    ready: z.boolean(),
+    timeline: z.string(),
+    requirements: z.array(z.string()),
+  }),
+  detailedAnalysis: z.string(),
+  actionPlan: z.object({
+    shortTerm: z.array(z.string()),
+    mediumTerm: z.array(z.string()),
+    longTerm: z.array(z.string()),
+  }),
+});
+
+const resumeSchema = z.object({
+  candidateName: z.string(),
+  email: z.string().email(),
+  phone: z.string(),
+  education: z.array(
+    z.object({
+      degree: z.string(),
+      institution: z.string(),
+      year: z.string(),
+      gpa: z.string().optional(),
+    })
+  ),
+  experience: z.array(
+    z.object({
+      title: z.string(),
+      company: z.string(),
+      duration: z.string(),
+      responsibilities: z.array(z.string()),
+    })
+  ),
+  skills: z.array(z.string()),
+  certifications: z.array(z.string()).optional(),
+  languages: z
+    .array(
+      z.object({
+        language: z.string(),
+        proficiency: z.string(),
+      })
+    )
+    .optional(),
+  summary: z.string().optional(),
+  summaryPoints: z.array(z.string()).optional(),
+  projects: z.array(z.string()).optional(),
+});
+
+const jobRequirementsSchema = z.object({
+  title: z.string(),
+  department: z.string(),
+  level: z.enum(["entry", "mid", "senior", "executive"]),
+  requiredSkills: z.array(z.string()),
+  preferredSkills: z.array(z.string()).optional(),
+  minExperience: z.number(),
+  education: z.array(z.string()),
+  responsibilities: z.array(z.string()),
+  salary: z
+    .object({
+      min: z.number(),
+      max: z.number(),
+    })
+    .optional(),
+});
+
+const candidateEvaluationSchema = z.object({
+  overallScore: z.number(),
+  matchPercentage: z.number(),
+  recommendation: z.enum(candidateRecommendationOptions),
+  recommendationAr: z.enum(candidateRecommendationArOptions),
+  strengths: z.array(z.string()),
+  weaknesses: z.array(z.string()),
+  skillsMatch: z.object({
+    matched: z.array(z.string()),
+    missing: z.array(z.string()),
+    additional: z.array(z.string()),
+  }),
+  experienceAnalysis: z.object({
+    relevant: z.boolean(),
+    years: z.number(),
+    quality: z.enum(experienceQualityOptions),
+    details: z.string(),
+  }),
+  educationMatch: z.object({
+    meets: z.boolean(),
+    details: z.string(),
+  }),
+  salaryExpectation: z
+    .object({
+      estimated: z.number(),
+      inRange: z.boolean(),
+      notes: z.string(),
+    })
+    .optional(),
+  interviewQuestions: z.array(z.string()),
+  redFlags: z.array(z.string()),
+  detailedAnalysis: z.string(),
+  nextSteps: z.array(z.string()),
+});
+
+function normalizeSkillLevels(skillLevels: Record<string, number | string>): Record<string, SkillLevel> {
+  const mapNumberToSkillLevel = (value: number): SkillLevel => {
+    if (value >= 4.5) return "expert";
+    if (value >= 3.5) return "advanced";
+    if (value >= 2) return "intermediate";
+    return "beginner";
+  };
+
+  return Object.fromEntries(
+    Object.entries(skillLevels).map(([skill, level]) => {
+      if (typeof level === "string") {
+        const normalized = skillLevelScale.includes(level as SkillLevel)
+          ? (level as SkillLevel)
+          : "intermediate";
+        return [skill, normalized];
+      }
+
+      return [skill, mapNumberToSkillLevel(level)];
+    })
+  );
+}
 
 export const aiRouter = router({
   /**
@@ -52,12 +235,16 @@ export const aiRouter = router({
       }
 
       // Determine user type
+      const accountType =
+        ((user as { accountType?: string | null }).accountType ?? user.userType)?.toString() ??
+        "employee";
+
       let userType: "employee" | "company" | "consultant" | "admin" = "employee";
       if (user.role === "admin") {
         userType = "admin";
-      } else if (user.accountType === "company") {
+      } else if (accountType === "company") {
         userType = "company";
-      } else if (user.accountType === "consultant") {
+      } else if (accountType === "consultant") {
         userType = "consultant";
       }
 
@@ -145,7 +332,10 @@ export const aiRouter = router({
       }
 
       // Only allow company and admin users to analyze data
-      if (user.accountType !== "company" && user.role !== "admin") {
+      const accountType =
+        ((user as { accountType?: string | null }).accountType ?? user.userType)?.toString();
+
+      if (accountType !== "company" && user.role !== "admin") {
         throw new Error("Access denied. Only companies and admins can analyze data.");
       }
 
@@ -277,32 +467,27 @@ export const aiRouter = router({
    */
   evaluatePerformance: protectedProcedure
     .input(
-      z.object({
-        employeeId: z.number(),
-        employeeName: z.string(),
-        position: z.string(),
-        department: z.string(),
-        joiningDate: z.string(),
-        reviewPeriod: z.string(),
-        metrics: z.object({
-          attendanceRate: z.number().min(0).max(100),
-          taskCompletionRate: z.number().min(0).max(100),
-          qualityScore: z.number().min(0).max(100),
-          teamworkScore: z.number().min(0).max(100),
-          initiativeScore: z.number().min(0).max(100),
-          communicationScore: z.number().min(0).max(100),
-        }),
-        achievements: z.array(z.string()).optional(),
-        challenges: z.array(z.string()).optional(),
-        goals: z.array(z.string()).optional(),
-        managerNotes: z.string().optional(),
-        currentSalary: z.number().optional(),
-        language: z.enum(["ar", "en"]).default("ar"),
+      evaluateEmployeeSchema.extend({
+        language: z.enum(SUPPORTED_LANGUAGES).default("ar"),
       })
     )
     .mutation(async ({ input }) => {
       const { language, ...data } = input;
-      const evaluation = await evaluateEmployeePerformance(data, language);
+      const evaluation = await evaluateEmployeePerformance(
+        {
+          employeeId: data.employeeId ?? 0,
+          employeeName: data.employeeName,
+          position: data.position,
+          department: data.department,
+          joiningDate: data.joiningDate,
+          metrics: data.metrics,
+          achievements: data.achievements,
+          challenges: data.challenges,
+          previousReviews: data.previousReviews,
+          goals: data.goals,
+        },
+        language
+      );
       return evaluation;
     }),
 
@@ -313,17 +498,18 @@ export const aiRouter = router({
   comparePerformance: protectedProcedure
     .input(
       z.object({
-        employeeName: z.string(),
-        employeeScore: z.number(),
-        employeeMetrics: z.record(z.number()),
-        departmentName: z.string(),
-        departmentAverage: z.number(),
-        departmentMetrics: z.record(z.number()),
-        language: z.enum(["ar", "en"]).default("ar"),
+        employee: evaluateEmployeeSchema,
+        departmentAverage: performanceMetricsSchema,
+        language: z.enum(SUPPORTED_LANGUAGES).default("ar"),
       })
     )
     .mutation(async ({ input }) => {
-      const comparison = await comparePerformanceWithDepartment(input);
+      const { employee, departmentAverage, language } = input;
+      const comparison = await comparePerformanceWithDepartment(
+        employee,
+        departmentAverage,
+        language
+      );
       return comparison;
     }),
 
@@ -334,18 +520,19 @@ export const aiRouter = router({
   generateDevelopmentPlan: protectedProcedure
     .input(
       z.object({
+        evaluation: performanceEvaluationSchema,
         employeeName: z.string(),
-        currentPosition: z.string(),
-        targetPosition: z.string().optional(),
-        strengths: z.array(z.string()),
-        weaknesses: z.array(z.string()),
-        careerGoals: z.array(z.string()).optional(),
-        timeframe: z.string().default("12 months"),
-        language: z.enum(["ar", "en"]).default("ar"),
+        position: z.string(),
+        language: z.enum(SUPPORTED_LANGUAGES).default("ar"),
       })
     )
     .mutation(async ({ input }) => {
-      const plan = await generateDevelopmentPlan(input);
+      const plan = await generateDevelopmentPlan(
+        input.evaluation as PerformanceEvaluationInput,
+        input.employeeName,
+        input.position,
+        input.language
+      );
       return plan;
     }),
 
@@ -356,48 +543,9 @@ export const aiRouter = router({
   evaluateCandidate: protectedProcedure
     .input(
       z.object({
-        resume: z.object({
-          candidateName: z.string(),
-          email: z.string().email(),
-          phone: z.string().optional(),
-          summary: z.string().optional(),
-          skills: z.array(z.string()),
-          experience: z.array(
-            z.object({
-              title: z.string(),
-              company: z.string(),
-              duration: z.string(),
-              description: z.string(),
-            })
-          ),
-          education: z.array(
-            z.object({
-              degree: z.string(),
-              institution: z.string(),
-              year: z.string(),
-              gpa: z.string().optional(),
-            })
-          ),
-          certifications: z.array(z.string()).optional(),
-          languages: z
-            .array(
-              z.object({
-                language: z.string(),
-                proficiency: z.string(),
-              })
-            )
-            .optional(),
-          projects: z.array(z.string()).optional(),
-        }),
-        jobRequirements: z.object({
-          title: z.string(),
-          requiredSkills: z.array(z.string()),
-          preferredSkills: z.array(z.string()).optional(),
-          minimumExperience: z.number(),
-          education: z.string(),
-          responsibilities: z.array(z.string()),
-        }),
-        language: z.enum(["ar", "en"]).default("ar"),
+        resume: resumeSchema,
+        jobRequirements: jobRequirementsSchema,
+        language: z.enum(SUPPORTED_LANGUAGES).default("ar"),
       })
     )
     .mutation(async ({ input }) => {
@@ -418,22 +566,18 @@ export const aiRouter = router({
       z.object({
         candidates: z.array(
           z.object({
-            name: z.string(),
-            score: z.number(),
-            strengths: z.array(z.string()),
-            weaknesses: z.array(z.string()),
-            experience: z.string(),
-            skills: z.array(z.string()),
+            resume: resumeSchema,
+            evaluation: candidateEvaluationSchema,
           })
         ),
-        jobTitle: z.string(),
-        language: z.enum(["ar", "en"]).default("ar"),
+        jobRequirements: jobRequirementsSchema,
+        language: z.enum(SUPPORTED_LANGUAGES).default("ar"),
       })
     )
     .mutation(async ({ input }) => {
       const ranking = await rankCandidates(
         input.candidates,
-        input.jobTitle,
+        input.jobRequirements,
         input.language
       );
       return ranking;
@@ -446,24 +590,22 @@ export const aiRouter = router({
   generateJobDescription: protectedProcedure
     .input(
       z.object({
-        jobTitle: z.string(),
-        department: z.string(),
-        level: z.enum(["entry", "mid", "senior", "lead", "manager"]),
-        requiredSkills: z.array(z.string()),
-        responsibilities: z.array(z.string()),
-        qualifications: z.array(z.string()),
-        benefits: z.array(z.string()).optional(),
-        salaryRange: z
-          .object({
-            min: z.number(),
-            max: z.number(),
-          })
-          .optional(),
-        language: z.enum(["ar", "en"]).default("ar"),
+        jobRequirements: jobRequirementsSchema,
+        companyInfo: z.object({
+          name: z.string(),
+          industry: z.string(),
+          size: z.string(),
+          culture: z.string().optional(),
+        }),
+        language: z.enum(SUPPORTED_LANGUAGES).default("ar"),
       })
     )
     .mutation(async ({ input }) => {
-      const jobDescription = await generateJobDescription(input);
+      const jobDescription = await generateJobDescription(
+        input.jobRequirements,
+        input.companyInfo,
+        input.language
+      );
       return jobDescription;
     }),
 
@@ -474,15 +616,19 @@ export const aiRouter = router({
   generateInterviewQuestions: protectedProcedure
     .input(
       z.object({
-        jobTitle: z.string(),
-        level: z.enum(["entry", "mid", "senior", "lead"]),
-        skills: z.array(z.string()),
-        candidateBackground: z.string().optional(),
-        language: z.enum(["ar", "en"]).default("ar"),
+        resume: resumeSchema,
+        jobRequirements: jobRequirementsSchema,
+        focusAreas: z.array(z.string()).default([]),
+        language: z.enum(SUPPORTED_LANGUAGES).default("ar"),
       })
     )
     .mutation(async ({ input }) => {
-      const questions = await generateInterviewQuestions(input);
+      const questions = await generateInterviewQuestions(
+        input.resume,
+        input.jobRequirements,
+        input.focusAreas,
+        input.language
+      );
       return questions;
     }),
 
@@ -499,29 +645,45 @@ export const aiRouter = router({
           position: z.string(),
           department: z.string(),
           currentSkills: z.array(z.string()),
-          skillLevels: z.record(z.number().min(1).max(5)),
-          targetSkills: z.array(z.string()).optional(),
+          skillLevels: z.record(z.union([z.number().min(1).max(5), z.enum(skillLevelScale)])).default({}),
+          interests: z.array(z.string()).optional(),
+          careerGoals: z.array(z.string()).optional(),
+          performanceScore: z.number().optional(),
+          weakAreas: z.array(z.string()).optional(),
         }),
         availableCourses: z
           .array(
             z.object({
               id: z.string(),
               title: z.string(),
+              titleAr: z.string(),
               provider: z.string(),
+              type: z.enum(["online", "onsite", "hybrid"]),
               duration: z.string(),
-              cost: z.number(),
-              skills: z.array(z.string()),
               level: z.enum(["beginner", "intermediate", "advanced"]),
+              skills: z.array(z.string()),
+              cost: z.number().optional(),
+              language: z.enum(["ar", "en", "both"]),
+              certification: z.boolean(),
+              url: z.string().optional(),
             })
           )
-          .optional(),
+          .default([]),
+          budget: z.number().optional(),
         departmentNeeds: z.array(z.string()).optional(),
-        budget: z.number().optional(),
-        language: z.enum(["ar", "en"]).default("ar"),
+        language: z.enum(SUPPORTED_LANGUAGES).default("ar"),
       })
     )
     .mutation(async ({ input }) => {
-      const recommendations = await recommendTraining(input);
+      const recommendations = await recommendTraining(
+        {
+          ...input.employee,
+          skillLevels: normalizeSkillLevels(input.employee.skillLevels as Record<string, number | string>),
+        },
+        input.availableCourses,
+        input.departmentNeeds,
+        input.language
+      );
       return recommendations;
     }),
 
@@ -533,17 +695,41 @@ export const aiRouter = router({
     .input(
       z.object({
         departmentName: z.string(),
-        employeeCount: z.number(),
-        currentSkills: z.record(z.number()),
-        targetSkills: z.array(z.string()),
+        employees: z.array(
+          z.object({
+            id: z.number(),
+            name: z.string(),
+            position: z.string(),
+            department: z.string(),
+            currentSkills: z.array(z.string()),
+            skillLevels: z.record(z.union([z.number().min(1).max(5), z.enum(skillLevelScale)])).default({}),
+          })
+        ),
+        departmentGoals: z.array(z.string()).optional(),
+        targetSkills: z.array(z.string()).optional(),
         budget: z.number(),
         timeframe: z.string().default("12 months"),
         priorities: z.array(z.string()).optional(),
-        language: z.enum(["ar", "en"]).default("ar"),
+        employeeCount: z.number().optional(),
+        currentSkills: z.record(z.number()).optional(),
+        language: z.enum(SUPPORTED_LANGUAGES).default("ar"),
       })
     )
     .mutation(async ({ input }) => {
-      const plan = await generateDepartmentTrainingPlan(input);
+      const goals = input.departmentGoals?.length
+        ? input.departmentGoals
+        : input.targetSkills ?? [];
+
+      const plan = await generateDepartmentTrainingPlan(
+        input.departmentName,
+        input.employees.map((employee) => ({
+          ...employee,
+          skillLevels: normalizeSkillLevels(employee.skillLevels as Record<string, number | string>),
+        })),
+        goals,
+        input.budget,
+        input.language
+      );
       return plan;
     }),
 
@@ -554,27 +740,25 @@ export const aiRouter = router({
   evaluateTrainingEffectiveness: protectedProcedure
     .input(
       z.object({
-        trainingInfo: z.object({
-          title: z.string(),
-          provider: z.string(),
-          duration: z.string(),
-          cost: z.number(),
-          targetSkills: z.array(z.string()),
-        }),
-        employee: z.object({
-          name: z.string(),
-          position: z.string(),
-          preTrainingSkills: z.record(z.number().min(1).max(5)),
-          postTrainingSkills: z.record(z.number().min(1).max(5)),
-        }),
+        employeeName: z.string(),
+        courseName: z.string(),
+        preTrainingSkills: z.record(z.number().min(0).max(10)),
+        postTrainingSkills: z.record(z.number().min(0).max(10)),
         performanceChange: z.number().optional(),
-        feedbackScore: z.number().min(1).max(5).optional(),
         feedbackComments: z.string().optional(),
-        language: z.enum(["ar", "en"]).default("ar"),
+        language: z.enum(SUPPORTED_LANGUAGES).default("ar"),
       })
     )
     .mutation(async ({ input }) => {
-      const evaluation = await evaluateTrainingEffectiveness(input);
+      const evaluation = await evaluateTrainingEffectiveness(
+        input.employeeName,
+        input.courseName,
+        input.preTrainingSkills,
+        input.postTrainingSkills,
+        input.performanceChange,
+        input.feedbackComments,
+        input.language
+      );
       return evaluation;
     }),
 });

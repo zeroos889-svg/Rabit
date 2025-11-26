@@ -2,7 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { CheckCircle2, AlertCircle, Loader2, FlaskConical } from "lucide-react";
+import { IS_TRIAL_MODE, TRIAL_MESSAGE } from "@/const";
+import { toast } from "sonner";
 
 interface PaymentProps {
   planName: string;
@@ -17,6 +20,7 @@ export default function Payment({
   currency = "SAR",
   onSuccess,
 }: PaymentProps) {
+  const isTrialMode = IS_TRIAL_MODE;
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +30,11 @@ export default function Payment({
     expiryDate: "",
     cvv: "",
   });
+  const cardFieldDisabled = loading || isTrialMode;
+  const cardFieldRequired = !isTrialMode;
+  const submitLabel = isTrialMode
+    ? "طلب تفعيل الفترة التجريبية"
+    : `ادفع الآن ${price} ${currency}`;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -37,14 +46,24 @@ export default function Payment({
 
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
 
+    if (isTrialMode) {
+      toast.info("تم تسجيل طلبك بنجاح. لن يتم خصم أي مبالغ خلال الفترة التجريبية.");
+      setSuccess(true);
+      if (onSuccess) {
+        setTimeout(() => onSuccess(), 1500);
+      }
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      // محاكاة معالجة الدفع
+      // محاكاة معالجة الدفع خلال التطوير
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // TODO: ربط Moyasar أو Tap Payments هنا
+      // يمكن ربط Moyasar أو Tap هنا عند جاهزية بوابات الدفع
       console.log("[Payment] Simulated payment for:", { planName, price });
       setSuccess(true);
 
@@ -55,6 +74,7 @@ export default function Payment({
         }, 2000);
       }
     } catch (err) {
+      console.error("Payment error", err);
       setError("حدث خطأ أثناء معالجة الدفع. يرجى المحاولة مرة أخرى.");
     } finally {
       setLoading(false);
@@ -68,7 +88,9 @@ export default function Payment({
           <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold mb-2">تم الدفع بنجاح!</h1>
           <p className="text-muted-foreground mb-4">
-            شكراً لاختيارك {planName}. سيتم تفعيل حسابك قريباً.
+            {isTrialMode
+              ? "تم تسجيلك في الفترة التجريبية ولن يتم خصم أي مبالغ حالياً."
+              : `شكراً لاختيارك ${planName}. سيتم تفعيل حسابك قريباً.`}
           </p>
           <p className="text-sm text-muted-foreground">
             سيتم إعادة توجيهك إلى لوحة التحكم...
@@ -81,6 +103,13 @@ export default function Payment({
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-md mx-auto">
+        {isTrialMode && (
+          <Alert className="mb-6 border-dashed border-primary/40 bg-primary/5">
+            <FlaskConical className="h-5 w-5" />
+            <AlertTitle>الفترة التجريبية مفعلة</AlertTitle>
+            <AlertDescription>{TRIAL_MESSAGE}</AlertDescription>
+          </Alert>
+        )}
         {/* ملخص الطلب */}
         <Card className="mb-6 p-6">
           <h2 className="text-xl font-bold mb-4">ملخص الطلب</h2>
@@ -115,65 +144,71 @@ export default function Payment({
           <form onSubmit={handlePayment} className="space-y-4">
             {/* اسم المالك */}
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label htmlFor="cardName" className="block text-sm font-medium mb-2">
                 اسم المالك
               </label>
               <Input
+                id="cardName"
                 type="text"
                 name="cardName"
                 placeholder="أحمد محمد"
                 value={cardData.cardName}
                 onChange={handleInputChange}
-                required
-                disabled={loading}
+                required={cardFieldRequired}
+                disabled={cardFieldDisabled}
               />
             </div>
 
             {/* رقم البطاقة */}
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label htmlFor="cardNumber" className="block text-sm font-medium mb-2">
                 رقم البطاقة
               </label>
               <Input
+                id="cardNumber"
                 type="text"
                 name="cardNumber"
                 placeholder="1234 5678 9012 3456"
                 value={cardData.cardNumber}
                 onChange={handleInputChange}
                 maxLength={19}
-                required
-                disabled={loading}
+                required={cardFieldRequired}
+                disabled={cardFieldDisabled}
               />
             </div>
 
             {/* تاريخ الانتهاء و CVV */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label htmlFor="expiryDate" className="block text-sm font-medium mb-2">
                   انتهاء الصلاحية
                 </label>
                 <Input
+                  id="expiryDate"
                   type="text"
                   name="expiryDate"
                   placeholder="MM/YY"
                   value={cardData.expiryDate}
                   onChange={handleInputChange}
                   maxLength={5}
-                  required
-                  disabled={loading}
+                  required={cardFieldRequired}
+                  disabled={cardFieldDisabled}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">CVV</label>
+                <label htmlFor="cvv" className="block text-sm font-medium mb-2">
+                  CVV
+                </label>
                 <Input
+                  id="cvv"
                   type="text"
                   name="cvv"
                   placeholder="123"
                   value={cardData.cvv}
                   onChange={handleInputChange}
                   maxLength={4}
-                  required
-                  disabled={loading}
+                  required={cardFieldRequired}
+                  disabled={cardFieldDisabled}
                 />
               </div>
             </div>
@@ -190,13 +225,15 @@ export default function Payment({
                   جاري المعالجة...
                 </>
               ) : (
-                `ادفع الآن ${price} ${currency}`
+                submitLabel
               )}
             </Button>
 
             {/* رسالة أمان */}
             <p className="text-xs text-center text-muted-foreground">
-              ✓ معاملتك آمنة وموثوقة
+              {isTrialMode
+                ? "لن يتم خصم أي مبالغ حتى يتم تفعيل بوابات الدفع."
+                : "✓ معاملتك آمنة وموثوقة"}
             </p>
           </form>
         </Card>

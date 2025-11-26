@@ -132,6 +132,13 @@ export const paymentRouter = router({
       })
     )
     .mutation(async ({ input }) => {
+      if (ENV.trialMode) {
+        logger.info("[Payment] Trial mode active, bypassing Moyasar integration", {
+          planKey: input.planKey,
+          amount: input.amount,
+        });
+        return { redirectUrl: "/payment-success?trial=true" };
+      }
       // Additional validation using PaymentSchemas
       const validatedPayment = PaymentSchemas.createPayment.parse({
         amount: input.amount,
@@ -163,6 +170,13 @@ export const paymentRouter = router({
       })
     )
     .mutation(async ({ input }) => {
+      if (ENV.trialMode) {
+        logger.info("[Payment] Trial mode active, bypassing Tap integration", {
+          planKey: input.planKey,
+          amount: input.amount,
+        });
+        return { redirectUrl: "/payment-success?trial=true" };
+      }
       // Additional validation using PaymentSchemas
       const validatedPayment = PaymentSchemas.createPayment.parse({
         amount: input.amount,

@@ -38,7 +38,10 @@ class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error using centralized error logger
-    errorLogger.componentError(error, errorInfo, "ErrorBoundary");
+    const safeErrorInfo = {
+      componentStack: errorInfo.componentStack ?? undefined,
+    };
+    errorLogger.componentError(error, safeErrorInfo, "ErrorBoundary");
 
     // Track error frequency (for detecting error loops)
     const now = Date.now();

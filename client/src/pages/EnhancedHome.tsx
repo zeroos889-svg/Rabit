@@ -453,6 +453,34 @@ export default function EnhancedHome() {
         </StaggerContainer>
       </AnimatedSection>
 
+      {/* Consulting Promo */}
+      <AnimatedSection className="container mx-auto px-4">
+        <Card className="border-2 border-purple-100 bg-gradient-to-r from-purple-50 via-white to-blue-50 shadow-sm">
+          <CardContent className="flex flex-col gap-4 p-8 md:flex-row md:items-center md:justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Badge className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+                  الاستشارات الذكية
+                </Badge>
+                <Headphones className="h-5 w-5 text-purple-600" />
+              </div>
+              <h3 className="text-2xl font-bold mb-2">دعم قانوني وتشغيلي سريع</h3>
+              <p className="text-muted-foreground max-w-2xl">
+                احجز استشارة مدعومة بالذكاء الاصطناعي مع خبراء الموارد البشرية: رد أولي خلال 90 دقيقة، ملخصات جاهزة، وضمان رضا كامل.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button asChild className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+                <Link href="/consulting/book-new">احجز استشارة الآن</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/consulting">استعراض التفاصيل</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </AnimatedSection>
+
       {/* Features Section - Enhanced */}
       <AnimatedSection className="bg-muted/50 py-20">
         <div className="container mx-auto px-4">

@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import {
   XCircle,
@@ -17,8 +18,10 @@ import {
   CreditCard,
   ArrowLeft,
   CheckCircle2,
+  FlaskConical,
 } from "lucide-react";
 import { Link } from "wouter";
+import { IS_TRIAL_MODE, TRIAL_MESSAGE } from "@/const";
 
 export default function PaymentFailed() {
   // Mock error data - should come from URL params or state
@@ -63,15 +66,41 @@ export default function PaymentFailed() {
     },
   ];
 
-  const currentError = commonErrors.find(e => e.code === error.code) || {
+  const trialFromQuery = (() => {
+    if (typeof globalThis === "undefined") return false;
+    try {
+      const params = new URLSearchParams(globalThis.location?.search ?? "");
+      return params.get("trial") === "true";
+    } catch (err) {
+      console.warn("Failed to read trial query param", err);
+      return false;
+    }
+  })();
+  const isTrialExperience = IS_TRIAL_MODE || trialFromQuery;
+
+  const currentError = isTrialExperience
+    ? {
+        title: "لا توجد عملية دفع فعلية",
+        description: "نحن في الفترة التجريبية ولا يتم تمرير المعاملات الفعلية حالياً.",
+        solution: "يمكنك متابعة استكشاف المنصة وسنتواصل معك عند تفعيل البوابات.",
+      }
+    :
+      commonErrors.find(e => e.code === error.code) || {
     title: "فشلت عملية الدفع",
     description: error.message,
     solution: "يرجى المحاولة مرة أخرى أو استخدام طريقة دفع أخرى",
-  };
+      };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-primary/5 to-primary/10 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl space-y-6">
+        {isTrialExperience && (
+          <Alert className="border-dashed border-primary/40 bg-primary/5">
+            <FlaskConical className="h-5 w-5" />
+            <AlertTitle>الفترة التجريبية مفعلة</AlertTitle>
+            <AlertDescription>{TRIAL_MESSAGE}</AlertDescription>
+          </Alert>
+        )}
         {/* Error Message */}
         <Card className="border-2 border-red-500">
           <CardContent className="pt-6">
@@ -122,10 +151,12 @@ export default function PaymentFailed() {
             </div>
 
             <div className="space-y-3">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">رمز الخطأ</span>
-                <span className="font-mono font-semibold">{error.code}</span>
-              </div>
+              {!isTrialExperience && (
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">رمز الخطأ</span>
+                  <span className="font-mono font-semibold">{error.code}</span>
+                </div>
+              )}
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">التاريخ والوقت</span>
                 <span className="font-semibold">
@@ -152,34 +183,47 @@ export default function PaymentFailed() {
         {/* Common Reasons */}
         <Card>
           <CardHeader>
-            <CardTitle>أسباب شائعة لفشل الدفع</CardTitle>
-            <CardDescription>تحقق من النقاط التالية</CardDescription>
+            <CardTitle>
+              {isTrialExperience ? "لماذا تظهر صفحة الفشل؟" : "أسباب شائعة لفشل الدفع"}
+            </CardTitle>
+            <CardDescription>
+              {isTrialExperience
+                ? "نعرض هذه الصفحة لأغراض الاختبار فقط خلال الفترة التجريبية"
+                : "تحقق من النقاط التالية"}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-3">
-              {commonErrors.slice(0, 4).map((err, idx) => (
-                <li key={idx} className="flex items-start gap-3 text-sm">
-                  <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center flex-shrink-0 text-xs font-semibold">
-                    {idx + 1}
-                  </div>
-                  <div>
-                    <p className="font-semibold">{err.title}</p>
-                    <p className="text-muted-foreground text-xs">
-                      {err.solution}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
+            {isTrialExperience ? (
+              <p className="text-sm text-muted-foreground">
+                طالما أن البوابات معطلة، لن يتم الخصم أو التواصل مع البنوك. يمكنك الاستمرار
+                في استكشاف المنصة وسيتم إشعارك حال تفعيل الدفع الفعلي.
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {commonErrors.slice(0, 4).map((err, idx) => (
+                  <li key={err.code} className="flex items-start gap-3 text-sm">
+                    <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center flex-shrink-0 text-xs font-semibold">
+                      {idx + 1}
+                    </div>
+                    <div>
+                      <p className="font-semibold">{err.title}</p>
+                      <p className="text-muted-foreground text-xs">
+                        {err.solution}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </CardContent>
         </Card>
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3">
           <Link href="/checkout" className="flex-1">
-            <Button className="w-full" size="lg">
+            <Button className="w-full" size="lg" disabled={isTrialExperience}>
               <RefreshCcw className="ml-2 h-5 w-5" />
-              المحاولة مرة أخرى
+              {isTrialExperience ? "سيتم تفعيل الدفع قريباً" : "المحاولة مرة أخرى"}
             </Button>
           </Link>
 
@@ -228,11 +272,13 @@ export default function PaymentFailed() {
               </div>
             </div>
 
-            <div className="bg-muted/50 p-4 rounded-lg text-center">
-              <p className="text-sm text-muted-foreground">
-                💡 نصيحة: احتفظ برقم العملية ({error.transactionId}) للمراجعة
-              </p>
-            </div>
+            {!isTrialExperience && (
+              <div className="bg-muted/50 p-4 rounded-lg text-center">
+                <p className="text-sm text-muted-foreground">
+                  💡 نصيحة: احتفظ برقم العملية ({error.transactionId}) للمراجعة
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -241,40 +287,39 @@ export default function PaymentFailed() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CreditCard className="w-5 h-5" />
-              طرق دفع بديلة
+              {isTrialExperience ? "خيارات الدفع" : "طرق دفع بديلة"}
             </CardTitle>
-            <CardDescription>جرّب إحدى الطرق التالية</CardDescription>
+            <CardDescription>
+              {isTrialExperience
+                ? "سيتم إتاحة الطرق التالية بعد تفعيل البوابات الفعلية"
+                : "جرّب إحدى الطرق التالية"}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid sm:grid-cols-2 gap-3">
-              <div className="p-3 border rounded-lg hover:border-primary transition-colors cursor-pointer">
-                <p className="font-semibold text-sm">بطاقة ائتمان أخرى</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  استخدم بطاقة مختلفة
-                </p>
+            {isTrialExperience ? (
+              <p className="text-sm text-muted-foreground">
+                جميع خيارات الدفع ستكون متاحة فور اكتمال التهيئة المالية. شكراً لصبرك.
+              </p>
+            ) : (
+              <div className="grid sm:grid-cols-2 gap-3">
+                {[
+                  { title: "بطاقة ائتمان أخرى", desc: "استخدم بطاقة مختلفة" },
+                  { title: "تحويل بنكي", desc: "الدفع عبر التحويل المباشر" },
+                  { title: "Apple Pay", desc: "دفع سريع وآمن" },
+                  { title: "فواتير لاحقة", desc: "ادفع لاحقاً مع الفاتورة" },
+                ].map(option => (
+                  <div
+                    key={option.title}
+                    className="p-3 border rounded-lg hover:border-primary transition-colors cursor-pointer"
+                  >
+                    <p className="font-semibold text-sm">{option.title}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {option.desc}
+                    </p>
+                  </div>
+                ))}
               </div>
-
-              <div className="p-3 border rounded-lg hover:border-primary transition-colors cursor-pointer">
-                <p className="font-semibold text-sm">تحويل بنكي</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  الدفع عبر التحويل المباشر
-                </p>
-              </div>
-
-              <div className="p-3 border rounded-lg hover:border-primary transition-colors cursor-pointer">
-                <p className="font-semibold text-sm">Apple Pay</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  دفع سريع وآمن
-                </p>
-              </div>
-
-              <div className="p-3 border rounded-lg hover:border-primary transition-colors cursor-pointer">
-                <p className="font-semibold text-sm">فواتير لاحقة</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  ادفع لاحقاً مع الفاتورة
-                </p>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>

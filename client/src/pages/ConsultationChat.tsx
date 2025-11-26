@@ -18,8 +18,10 @@ import {
   ArrowLeft,
   Loader2,
   Timer,
+  AlertTriangle,
 } from "lucide-react";
 import { Streamdown } from "streamdown";
+import { Progress } from "@/components/ui/progress";
 
 type ConsultationMessageRecord = {
   id: number;
@@ -130,6 +132,15 @@ export default function ConsultationChat() {
       },
     });
 
+  const escalateMutation = trpc.consulting.escalate.useMutation({
+    onSuccess: () => {
+      toast.success("تم تصعيد التذكرة لفريق الدعم");
+    },
+    onError: error => {
+      toast.error("فشل التصعيد: " + error.message);
+    },
+  });
+
   // Rate consultation mutation
   const rateConsultationMutation = trpc.consultant.rateConsultation.useMutation(
     {
@@ -158,6 +169,27 @@ export default function ConsultationChat() {
   };
   const messages: ConsultationMessageRecord[] = (messagesData?.messages ??
     []) as unknown as ConsultationMessageRecord[];
+
+  const slaInfo = (() => {
+    if (!booking?.createdAt) return null;
+    const sla = booking.slaHours || booking.consultationType?.slaHours || 24;
+    const created = new Date(booking.createdAt as any).getTime();
+    const due = created + sla * 60 * 60 * 1000;
+    const now = Date.now();
+    const total = due - created;
+    const elapsed = Math.max(0, Math.min(total, now - created));
+    const progress = Math.min(100, Math.max(0, (elapsed / total) * 100));
+    const remainingMs = due - now;
+    const isLate = remainingMs < 0;
+    const isNear = !isLate && remainingMs <= 4 * 60 * 60 * 1000; // أقل من 4 ساعات
+    return {
+      progress,
+      remainingLabel: calculateRemaining(),
+      isLate,
+      isNear,
+      remainingMs,
+    };
+  })();
 
   // Check if user is consultant
   const [isConsultant, setIsConsultant] = useState(false);
@@ -342,6 +374,65 @@ export default function ConsultationChat() {
               {booking.scheduledTime || ""}
             </span>
           </div>
+          {slaInfo && (
+            <div className="mt-3 space-y-1">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">التقدم نحو الـ SLA</span>
+                <span
+                  className={
+                    slaInfo.isLate
+                      ? "text-red-600 font-semibold"
+                      : slaInfo.isNear
+                        ? "text-amber-600 font-semibold"
+                        : "text-foreground"
+                  }
+                >
+                  {slaInfo.isLate ? "تم تجاوز الوقت" : slaInfo.remainingLabel || "—"}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Progress
+                  value={slaInfo.progress}
+                  className={`flex-1 ${
+                    slaInfo.isLate
+                      ? "bg-red-100 [&>[data-slot=progress-indicator]]:bg-red-500"
+                      : slaInfo.isNear
+                        ? "bg-amber-100 [&>[data-slot=progress-indicator]]:bg-amber-500"
+                        : ""
+                  }`}
+                />
+                {(slaInfo.isLate || slaInfo.isNear) && (
+                  <AlertTriangle
+                    className={`h-4 w-4 ${
+                      slaInfo.isLate ? "text-red-600" : "text-amber-600"
+                    }`}
+                  />
+                )}
+              </div>
+              {(slaInfo.isLate || slaInfo.isNear) && (
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    variant={slaInfo.isLate ? "destructive" : "outline"}
+                    disabled={escalateMutation.isPending}
+                    onClick={() =>
+                      escalateMutation.mutate({
+                        bookingId,
+                        reason: slaInfo.isLate ? "sla-missed" : "sla-risk",
+                      })
+                    }
+                  >
+                    {escalateMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4 mr-1" />
+                    )}
+                    تصعيد الدعم
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -479,6 +570,22 @@ export default function ConsultationChat() {
                   </div>
                 ) : booking.status !== "cancelled" ? (
                   <div className="space-y-2">
+                    {isConsultant && (
+                      <div className="mb-2 rounded-lg border bg-muted/60 p-3 text-xs text-muted-foreground flex gap-2">
+                        <div className="h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                          <Sparkles className="h-4 w-4" />
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-sm font-semibold text-foreground">
+                            مساعد الذكاء الاصطناعي (DeepSeek)
+                          </p>
+                          <p>
+                            يقرأ آخر 10 رسائل ويقترح رداً سريعاً مع مراعاة SLA والمتطلبات
+                            المرفوعة. راجع الاقتراح قبل الإرسال.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                     {isConsultant && (
                       <Button
                         variant="outline"

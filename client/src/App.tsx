@@ -29,6 +29,7 @@ import { LoadingSpinner } from "./components/LoadingSpinner";
 const PageLoader = () => <LoadingSpinner fullScreen text="جاري التحميل..." />;
 
 // Lazy load pages - Public pages (loaded first)
+const EnhancedHome = lazy(() => import("./pages/EnhancedHome"));
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const EnhancedLogin = lazy(() => import("./pages/EnhancedLogin"));
@@ -111,6 +112,7 @@ const KnowledgeBase = lazy(() => import("./pages/KnowledgeBase"));
 const KnowledgeBaseArticle = lazy(() => import("./pages/KnowledgeBaseArticle"));
 const Knowledge = lazy(() => import("./pages/Knowledge"));
 const CaseStudies = lazy(() => import("./pages/CaseStudies"));
+const SuccessStories = lazy(() => import("./pages/SuccessStories"));
 
 // Legal & Policy pages
 const Privacy = lazy(() => import("./pages/Privacy"));
@@ -150,6 +152,9 @@ const MoyasarCallback = lazy(() => import("./pages/MoyasarCallback"));
 const TapCallback = lazy(() => import("./pages/TapCallback"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const PaymentFailed = lazy(() => import("./pages/PaymentFailed"));
+const AIChat = lazy(() => import("./pages/AIChat"));
+const AIAnalytics = lazy(() => import("./pages/AIAnalytics"));
+const AIPerformanceEvaluator = lazy(() => import("./pages/AIPerformanceEvaluator"));
 
 const DashboardRedirect = () => {
   const { user, loading } = useAuth({ redirectOnUnauthenticated: true });
@@ -218,7 +223,8 @@ function Router() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Switch>
-        <Route path={"/"} component={Home} />
+        <Route path={"/"} component={EnhancedHome} />
+        <Route path={"/home"} component={Home} />
         <Route path={"/signup"} component={withPublicOnly(AccountType)} />
         <Route path={"/guided/:role"} component={GuidedTour} />
         <Route path={"/signup/employee"} component={SignupEmployee} />
@@ -294,6 +300,7 @@ function Router() {
         <Route path={"/refund-policy"} component={RefundPolicy} />
         <Route path="/blog" component={Blog} />
         <Route path="/blog/:id" component={BlogPost} />
+        <Route path="/success-stories" component={SuccessStories} />
         <Route path="/privacy" component={Privacy} />
         <Route path="/privacy-policy" component={PrivacyPolicy} />
         <Route path="/compliance" component={Compliance} />
@@ -390,6 +397,9 @@ function Router() {
         <Route path={"/tools/leave-calculator"} component={LeaveCalculator} />
         <Route path={"/tools/letter-generator"} component={LetterGenerator} />
         <Route path="/pricing" component={Pricing} />
+        <Route path="/ai/chat" component={AIChat} />
+        <Route path="/ai/analytics" component={AIAnalytics} />
+        <Route path="/ai/performance-evaluator" component={AIPerformanceEvaluator} />
         <Route
           path="/dashboard"
           component={DashboardRedirect}
@@ -552,6 +562,14 @@ function Router() {
         />
         <Route
           path="/dashboard/templates"
+          component={() => (
+            <ProtectedRoute requiredRole="company">
+              <Templates />
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/dashboard/smart-form-generator"
           component={() => (
             <ProtectedRoute requiredRole="company">
               <Templates />

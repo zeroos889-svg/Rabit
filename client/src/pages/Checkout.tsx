@@ -2,18 +2,13 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   CreditCard,
   Building2,
@@ -24,12 +19,15 @@ import {
   Loader2,
   Sparkles,
   Tag,
+  FlaskConical,
 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import { IS_TRIAL_MODE, TRIAL_MESSAGE } from "@/const";
 
 export default function Checkout() {
   const [, setLocation] = useLocation();
+  const isTrialMode = IS_TRIAL_MODE;
   const [isLoading, setIsLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<
     "credit_card" | "bank_transfer"
@@ -155,6 +153,12 @@ export default function Checkout() {
       return;
     }
 
+    if (isTrialMode) {
+      toast.success("تم تسجيل طلبك خلال الفترة التجريبية. لن يتم خصم أي مبالغ حالياً.");
+      setLocation("/payment-success?trial=true");
+      return;
+    }
+
     if (paymentMethod === "credit_card") {
       if (
         !cardData.cardNumber ||
@@ -182,7 +186,7 @@ export default function Checkout() {
           : await createTapPayment.mutateAsync(paymentPayload);
 
       if (result?.redirectUrl) {
-        window.location.href = result.redirectUrl;
+          globalThis?.location?.assign(result.redirectUrl);
         return;
       }
 
@@ -209,12 +213,18 @@ export default function Checkout() {
 
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2">إتمام عملية الدفع</h1>
           <p className="text-muted-foreground">
             أنت على بعد خطوة واحدة من الانضمام إلى منصة رابِط
           </p>
         </div>
 
+        {isTrialMode && (
+          <Alert className="mb-8 border-dashed border-primary/40 bg-primary/5">
+            <FlaskConical className="h-5 w-5" />
+            <AlertTitle>الفترة التجريبية مفعلة</AlertTitle>
+            <AlertDescription>{TRIAL_MESSAGE}</AlertDescription>
+          </Alert>
+        )}
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Form */}
           <div className="lg:col-span-2 space-y-6">
@@ -342,9 +352,11 @@ export default function Checkout() {
               <CardContent className="space-y-6">
                 <RadioGroup
                   value={paymentMethod}
-                  onValueChange={value =>
-                    setPaymentMethod(value as "credit_card" | "bank_transfer")
-                  }
+                  onValueChange={value => {
+                    if (isTrialMode) return;
+                    setPaymentMethod(value as "credit_card" | "bank_transfer");
+                  }}
+                  className={isTrialMode ? "opacity-60 pointer-events-none" : ""}
                 >
                   <div className="flex items-center space-x-2 space-x-reverse p-4 border rounded-lg cursor-pointer hover:bg-muted/50">
                     <RadioGroupItem value="credit_card" id="credit_card" />
@@ -416,6 +428,8 @@ export default function Checkout() {
                               expiryDate: e.target.value,
                             })
                           }
+                          required={!isTrialMode}
+                          disabled={isTrialMode || isLoading}
                         />
                       </div>
 
@@ -430,6 +444,8 @@ export default function Checkout() {
                           onChange={e =>
                             setCardData({ ...cardData, cvv: e.target.value })
                           }
+                          required={!isTrialMode}
+                          disabled={isTrialMode || isLoading}
                         />
                       </div>
                     </div>
@@ -460,7 +476,12 @@ export default function Checkout() {
                   {isLoading ? (
                     <>
                       <Loader2 className="ml-2 h-5 w-5 animate-spin" />
-                      جاري معالجة الدفع...
+                      جاري معالجة الطلب...
+                    </>
+                  ) : isTrialMode ? (
+                    <>
+                      تأكيد الاشتراك التجريبي
+                      <Sparkles className="mr-2 h-5 w-5" />
                     </>
                   ) : (
                     <>
@@ -469,6 +490,12 @@ export default function Checkout() {
                     </>
                   )}
                 </Button>
+
+                {isTrialMode && (
+                  <p className="text-xs text-center text-primary font-medium">
+                    {TRIAL_MESSAGE}
+                  </p>
+                )}
 
                 <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
@@ -523,8 +550,8 @@ export default function Checkout() {
                   <ul className="text-sm text-muted-foreground space-y-1">
                     {selectedPackage.features
                       .slice(0, 3)
-                      .map((feature, idx) => (
-                        <li key={idx} className="flex items-center gap-2">
+                      .map(feature => (
+                        <li key={feature} className="flex items-center gap-2">
                           <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />
                           {feature}
                         </li>

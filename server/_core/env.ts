@@ -14,7 +14,7 @@ export const ENV = {
   // Authentication & Security
   jwtSecret: process.env.JWT_SECRET ?? "",
   sessionSecret: process.env.SESSION_SECRET ?? "",
-  sessionMaxAge: parseInt(process.env.SESSION_MAX_AGE ?? "604800000"),
+  sessionMaxAge: Number.parseInt(process.env.SESSION_MAX_AGE ?? "604800000"),
 
   // Admin Configuration
   adminEmail: process.env.ADMIN_EMAIL ?? "",
@@ -24,7 +24,15 @@ export const ENV = {
   appUrl: process.env.VITE_APP_URL ?? "http://localhost:3000",
   appTitle: process.env.VITE_APP_TITLE ?? "رابِط - منصة إدارة الموارد البشرية",
   appLogo: process.env.VITE_APP_LOGO ?? "/logo.png",
-  port: parseInt(process.env.PORT ?? "3000"),
+  port: Number.parseInt(process.env.PORT ?? "3000"),
+  trialMode:
+    (process.env.VITE_TRIAL_MODE ?? process.env.TRIAL_MODE ?? "false")
+      .toString()
+      .toLowerCase() === "true",
+  trialMessage:
+    process.env.VITE_TRIAL_MESSAGE ??
+    process.env.TRIAL_MESSAGE ??
+    "بوابات الدفع متوقفة مؤقتاً خلال الفترة التجريبية ولن يتم خصم أي مبالغ.",
 
   // Analytics
   analyticsEndpoint: process.env.VITE_ANALYTICS_ENDPOINT ?? "",
@@ -49,7 +57,7 @@ export const ENV = {
 
   // Email Service
   smtpHost: process.env.SMTP_HOST ?? "",
-  smtpPort: parseInt(process.env.SMTP_PORT ?? "587"),
+  smtpPort: Number.parseInt(process.env.SMTP_PORT ?? "587"),
   smtpUser: process.env.SMTP_USER ?? "",
   smtpPassword: process.env.SMTP_PASSWORD ?? "",
   smtpFrom: process.env.SMTP_FROM ?? "noreply@rabit.sa",
@@ -80,6 +88,9 @@ export const ENV = {
   // Redis Cache
   redisUrl: process.env.REDIS_URL ?? "redis://localhost:6379",
 
+  // LLM Provider Order (optional)
+  llmProviderOrder: process.env.LLM_PROVIDER_ORDER ?? "",
+
   // Security flags
   enable2fa: process.env.ENABLE_2FA === "true",
 };
@@ -94,12 +105,17 @@ export function validateEnv(): { valid: boolean; missing: string[]; weak: string
 
   const missing = required.filter(key => !process.env[key]);
   const weak: string[] = [];
+  const hasAiProvider =
+    !!(process.env.DEEPSEEK_API_KEY || process.env.OPENAI_API_KEY || process.env.BUILT_IN_FORGE_API_KEY);
 
   if ((process.env.JWT_SECRET || "").length < 16) {
     weak.push("JWT_SECRET should be at least 16 characters");
   }
   if ((process.env.SESSION_SECRET || "").length < 16) {
     weak.push("SESSION_SECRET should be at least 16 characters");
+  }
+  if (!hasAiProvider) {
+    weak.push("AI provider not configured (DeepSeek/OpenAI/Forge)");
   }
 
   return {

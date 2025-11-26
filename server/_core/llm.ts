@@ -231,10 +231,11 @@ const buildChatCompletionsUrl = (baseUrl: string) => {
   return `${normalized}/v1/chat/completions`;
 };
 
-const getLlmConfig = (): LlmConfig => {
-  // Use Deepseek as primary provider
+const getAvailableLlmConfigs = (): LlmConfig[] => {
+  const providerConfigs: Partial<Record<LlmProvider, LlmConfig>> = {};
+
   if (ENV.deepseekApiKey) {
-    return {
+    providerConfigs.deepseek = {
       provider: "deepseek",
       apiKey: ENV.deepseekApiKey,
       baseUrl:
@@ -246,9 +247,18 @@ const getLlmConfig = (): LlmConfig => {
     };
   }
 
-  // Fallback to Forge
+  if (ENV.openaiApiKey) {
+    providerConfigs.openai = {
+      provider: "openai",
+      apiKey: ENV.openaiApiKey,
+      baseUrl: "https://api.openai.com",
+      model: ENV.openaiModel || "gpt-4o-mini",
+      supportsThinking: false,
+    };
+  }
+
   if (ENV.forgeApiKey) {
-    return {
+    providerConfigs.forge = {
       provider: "forge",
       apiKey: ENV.forgeApiKey,
       baseUrl:
@@ -260,18 +270,24 @@ const getLlmConfig = (): LlmConfig => {
     };
   }
 
-  // Fallback to OpenAI
-  if (ENV.openaiApiKey) {
-    return {
-      provider: "openai",
-      apiKey: ENV.openaiApiKey,
-      baseUrl: "https://api.openai.com",
-      model: ENV.openaiModel || "gpt-4o-mini",
-      supportsThinking: false,
-    };
+  const defaultOrder: LlmProvider[] = ["deepseek", "openai", "forge"];
+  const envOrder = (ENV.llmProviderOrder || "")
+    .split(",")
+    .map(p => p.trim().toLowerCase())
+    .filter(
+      (p): p is LlmProvider =>
+        p === "deepseek" || p === "openai" || p === "forge"
+    );
+
+  const order = envOrder.length > 0 ? envOrder : defaultOrder;
+  const configs: LlmConfig[] = [];
+
+  for (const provider of order) {
+    const cfg = providerConfigs[provider];
+    if (cfg) configs.push(cfg);
   }
 
-  throw new Error("LLM API key is not configured. Please set DEEPSEEK_API_KEY");
+  return configs;
 };
 
 const normalizeResponseFormat = ({
@@ -320,8 +336,6 @@ const normalizeResponseFormat = ({
 };
 
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
-  const config = getLlmConfig();
-
   const {
     messages,
     tools,
@@ -333,33 +347,14 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     response_format,
   } = params;
 
-  const payload: Record<string, unknown> = {
-    model: config.model,
-    messages: messages.map(normalizeMessage),
-  };
-
-  if (tools && tools.length > 0) {
-    payload.tools = tools;
-  }
+  const normalizedMessages = messages.map(normalizeMessage);
 
   const normalizedToolChoice = normalizeToolChoice(
     toolChoice || tool_choice,
     tools
   );
-  if (normalizedToolChoice) {
-    payload.tool_choice = normalizedToolChoice;
-  }
 
   const providedMaxTokens = params.maxTokens ?? params.max_tokens;
-  const defaultMaxTokens = config.provider === "forge" ? 32768 : 4096;
-  payload.max_tokens =
-    typeof providedMaxTokens === "number" ? providedMaxTokens : defaultMaxTokens;
-
-  if (config.supportsThinking) {
-    payload.thinking = {
-      budget_tokens: 128,
-    };
-  }
 
   const normalizedResponseFormat = normalizeResponseFormat({
     responseFormat,
@@ -368,25 +363,75 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     output_schema,
   });
 
-  if (normalizedResponseFormat) {
-    payload.response_format = normalizedResponseFormat;
-  }
-
-  const response = await fetch(buildChatCompletionsUrl(config.baseUrl), {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${config.apiKey}`,
-    },
-    body: JSON.stringify(payload),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
+  const configs = getAvailableLlmConfigs();
+  if (configs.length === 0) {
     throw new Error(
-      `LLM invoke failed: ${response.status} ${response.statusText} – ${errorText}`
+      "LLM API key is not configured. Please set DEEPSEEK_API_KEY or another provider key."
     );
   }
 
-  return (await response.json()) as InvokeResult;
+  const errors: string[] = [];
+
+  for (const config of configs) {
+    const payload: Record<string, unknown> = {
+      model: config.model,
+      messages: normalizedMessages,
+    };
+
+    if (tools && tools.length > 0) {
+      payload.tools = tools;
+    }
+
+    if (normalizedToolChoice) {
+      payload.tool_choice = normalizedToolChoice;
+    }
+
+    const defaultMaxTokens = config.provider === "forge" ? 32768 : 4096;
+    payload.max_tokens =
+      typeof providedMaxTokens === "number"
+        ? providedMaxTokens
+        : defaultMaxTokens;
+
+    if (config.supportsThinking) {
+      payload.thinking = {
+        budget_tokens: 128,
+      };
+    }
+
+    if (normalizedResponseFormat) {
+      payload.response_format = normalizedResponseFormat;
+    }
+
+    try {
+      const response = await fetch(buildChatCompletionsUrl(config.baseUrl), {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${config.apiKey}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        errors.push(
+          `${config.provider}: ${response.status} ${response.statusText} – ${errorText}`
+        );
+        continue;
+      }
+
+      return (await response.json()) as InvokeResult;
+    } catch (error) {
+      errors.push(
+        `${config.provider}: ${(error as Error)?.message ?? "Unknown error"}`
+      );
+    }
+  }
+
+  throw new Error(
+    `All LLM providers failed. Attempts: ${errors.join(" | ")}`
+  );
 }
+
+// Backwards compatibility for older imports
+export const callLLM = invokeLLM;

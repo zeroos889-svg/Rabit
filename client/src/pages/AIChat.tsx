@@ -27,7 +27,7 @@ import {
   FileText,
   TrendingUp,
 } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { useLanguage } from "@/hooks/use-language";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
@@ -52,13 +52,13 @@ export default function AIChat() {
   
   // tRPC mutations
   const chatMutation = trpc.ai.chat.useMutation();
-  const suggestionQuery = trpc.ai.getSuggestions.useQuery({
+  const { data: suggestionData } = trpc.ai.getSuggestions.useQuery({
     language: isArabic ? "ar" : "en",
     context: "general",
   });
 
   // Suggested questions
-  const suggestedQuestions = isArabic
+  const defaultSuggestedQuestions = isArabic
     ? [
         "كيف أحسب نهاية الخدمة وفق المادة 84؟",
         "ما هي حقوق الموظف في الإجازات السنوية؟",
@@ -75,6 +75,11 @@ export default function AIChat() {
         "How do I calculate employee salary with allowances?",
         "What are the legal hiring procedures?",
       ];
+
+  const suggestedQuestions =
+    suggestionData?.suggestions?.length
+      ? suggestionData.suggestions
+      : defaultSuggestedQuestions;
 
   // Quick actions
   const quickActions = isArabic

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
+import { useLocation, Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -27,11 +29,14 @@ import {
   Briefcase,
   AlertCircle,
   BadgeCheck,
+  Sparkles,
+  Star,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 
 export default function ConsultingBookingNew() {
+  const { t } = useTranslation();
   const { user, isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
   const [step, setStep] = useState(1);
@@ -49,6 +54,7 @@ export default function ConsultingBookingNew() {
   const [uploadedFiles, setUploadedFiles] = useState<
     Array<{ name: string; url: string; type: string }>
   >([]);
+  const [aiConsent, setAiConsent] = useState(true);
   const [savedPackage, setSavedPackage] = useState<{
     id?: number;
     name?: string;
@@ -211,9 +217,38 @@ export default function ConsultingBookingNew() {
       return;
     }
 
+    // Validate required info fields
+    const missingInfo = requiredInfoFields.filter(
+      (field: any) => field.required && !requiredInfo[field.nameAr]
+    );
+    if (missingInfo.length > 0) {
+      toast.error(
+        t(
+          "consulting.requiredInfoMissing",
+          `يرجى تعبئة الحقول المطلوبة: ${missingInfo.map(f => f.nameAr).join(", ")}`
+        )
+      );
+      return;
+    }
+
+    // Validate required documents
+    const missingDocs = requiredDocuments.filter(
+      (doc: any) => doc.required && !uploadedFiles.some(f => f.name === doc.nameAr)
+    );
+    if (missingDocs.length > 0) {
+      toast.error(
+        t(
+          "consulting.requiredDocsMissing",
+          `يرجى رفع المستندات المطلوبة: ${missingDocs.map(d => d.nameAr).join(", ")}`
+        )
+      );
+      return;
+    }
+
     try {
       const combinedRequiredInfo = {
         ...requiredInfo,
+        aiConsent,
         ...(savedPackage ? { selectedPackage: savedPackage } : {}),
       };
 
@@ -293,6 +328,25 @@ export default function ConsultingBookingNew() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-12">
       <div className="container max-w-4xl">
+        <Card className="mb-6 border-indigo-200 bg-white shadow-sm">
+          <CardContent className="py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <div className="h-12 w-12 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center">
+                <Sparkles className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="font-bold text-indigo-900">مساعد DeepSeek الذكي</h3>
+                <p className="text-sm text-muted-foreground">
+                  سننشئ ملخصاً تلقائياً من معلومات الحجز والمرفقات لتصل للمستشار قبل الجلسة، مع اقتراح ردود أثناء المحادثة.
+                </p>
+              </div>
+            </div>
+            <Badge variant="outline" className="text-indigo-700 border-indigo-200 bg-indigo-50">
+              يلتزم بالخصوصية وـSLA
+            </Badge>
+          </CardContent>
+        </Card>
+
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -492,6 +546,14 @@ export default function ConsultingBookingNew() {
                               <p className="text-sm text-muted-foreground">
                                 {consultant.yearsOfExperience} سنوات خبرة
                               </p>
+                              <div className="flex flex-wrap gap-2 mt-1 text-xs text-muted-foreground">
+                                {consultant.mainSpecialization && (
+                                  <Badge variant="secondary">{consultant.mainSpecialization}</Badge>
+                                )}
+                                {consultant.secondarySpecialization && (
+                                  <Badge variant="outline">{consultant.secondarySpecialization}</Badge>
+                                )}
+                              </div>
                             </div>
                             {selectedConsultantId === consultant.id && (
                               <CheckCircle2 className="h-5 w-5 text-purple-600" />
@@ -500,6 +562,26 @@ export default function ConsultingBookingNew() {
                           <p className="text-sm mt-2 line-clamp-2">
                             {consultant.bioAr}
                           </p>
+                          <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-muted-foreground">
+                            <div className="flex items-center gap-1">
+                              <Star className="h-4 w-4 text-amber-500" />
+                              <span>
+                                {consultant.rating ??
+                                  consultant.averageRating ??
+                                  consultant.avgRating ??
+                                  "جديد"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                              <span>
+                                {(consultant.consultations ||
+                                  consultant.completedConsultations ||
+                                  consultant.totalBookings ||
+                                  0) + " استشارة"}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </Card>
@@ -561,6 +643,17 @@ export default function ConsultingBookingNew() {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+              <div className="rounded-lg border bg-white/70 p-3 text-sm text-muted-foreground flex items-start gap-2">
+                <Clock className="h-4 w-4 text-purple-600 mt-0.5" />
+                <div>
+                  <p className="font-medium text-foreground">زمن الاستجابة والتسليم</p>
+                  <p>
+                    رد أولي متوقع خلال{" "}
+                    <strong>{summarySla <= 24 ? "90 دقيقة" : `${Math.min(summarySla, 24)} ساعة`}</strong>{" "}
+                    حسب الباقة، وتسليم نهائي وفق {summarySla} ساعة SLA. سنرسل تذكيراً قبل الموعد، مع تنبيه للمستشار إذا اقترب وقت التسليم.
+                  </p>
                 </div>
               </div>
 
@@ -686,8 +779,74 @@ export default function ConsultingBookingNew() {
                       )}
                     </div>
                   ))}
+                  {uploadedFiles.length > 0 && (
+                    <div className="rounded-lg border border-dashed p-3 bg-white/60">
+                      <p className="text-sm font-semibold mb-2">المرفقات المرفوعة</p>
+                      <div className="space-y-2">
+                        {uploadedFiles.map(file => (
+                          <div key={file.name} className="flex items-center justify-between text-sm">
+                            <div className="flex items-center gap-2">
+                              <CheckCircle2 className="h-4 w-4 text-green-500" />
+                              <span>{file.name}</span>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="text-red-600"
+                              onClick={() =>
+                                setUploadedFiles(prev =>
+                                  prev.filter(f => !(f.name === file.name && f.url === file.url))
+                                )
+                              }
+                            >
+                              إزالة
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
+
+              {selectedConsultant && selectedType && (
+                <Card className="border-primary/20 bg-white/80">
+                  <CardContent className="py-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">معلومات مختصرة</p>
+                        <p className="text-lg font-bold">{selectedConsultant.fullNameAr}</p>
+                        <p className="text-sm text-muted-foreground">
+                          خبرة {selectedConsultant.yearsOfExperience || "-"} سنة • {selectedType.nameAr}
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant="secondary">SLA {summarySla} ساعة</Badge>
+                        <Badge variant="secondary">
+                          {selectedType.duration || selectedType.estimatedDuration || 30} دقيقة
+                        </Badge>
+                        <Badge variant="secondary">
+                          {(summaryPrice || 0).toLocaleString()} ريال
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              <div className="rounded-lg border bg-white/70 p-4 text-sm text-muted-foreground flex gap-3">
+                <div className="h-10 w-10 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+                <div className="space-y-1">
+                  <p className="font-semibold text-foreground">ماذا يحدث بعد الحجز؟</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    <li>يُنشئ مساعد DeepSeek ملخصاً من وصفك والمرفقات ليصل للمستشار قبل الموعد.</li>
+                    <li>نرسل تذكيراً بالموعد ونضبط التنبيهات حسب الـ SLA الخاص بالباقة.</li>
+                    <li>تأكيد السعر لن يتم تحصيله الآن؛ يتم التثبيت بعد مراجعة المستشار.</li>
+                  </ul>
+                </div>
+              </div>
 
               <div className="flex justify-between">
                 <Button onClick={() => setStep(2)} variant="outline">
@@ -787,6 +946,21 @@ export default function ConsultingBookingNew() {
                         <span className="font-medium">{estimatedDelivery}</span>
                       </div>
                     )}
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">المرفقات المرفوعة:</span>
+                      <span className="font-medium">
+                        {uploadedFiles.length > 0 ? `${uploadedFiles.length} ملف` : "لا يوجد"}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">مساعد AI للمستشار:</span>
+                      <Badge variant="secondary" className="bg-white text-purple-700 border-purple-100">
+                        {aiConsent ? "مفعل" : "معطل"}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      نعتمد على DeepSeek لتوليد ملخص من وصفك والمرفقات (يُشارك مع المستشار فقط) لتسريع الجودة والالتزام بالوقت.
+                    </p>
                   </div>
                 </Card>
 
@@ -803,6 +977,33 @@ export default function ConsultingBookingNew() {
                     </p>
                   </div>
                 </div>
+
+                <Card className="border-muted">
+                  <CardContent className="pt-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <Checkbox
+                        id="ai-consent"
+                        checked={aiConsent}
+                        onCheckedChange={checked => setAiConsent(Boolean(checked))}
+                      />
+                      <div>
+                        <label htmlFor="ai-consent" className="font-medium">
+                          أوافق على استخدام المساعد الذكي لإعداد المستشار
+                        </label>
+                        <p className="text-sm text-muted-foreground">
+                          نستخدم بيانات هذا الحجز والمرفقات لإنشاء ملخص داخلي للمستشار فقط. يمكنك تعطيل المساعد، لكن قد يؤثر ذلك على سرعة الرد.
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      بالمتابعة، أنت موافق على معالجة بياناتك وفق{" "}
+                      <Link href="/privacy" className="text-purple-700 underline">
+                        سياسة الخصوصية
+                      </Link>{" "}
+                      وسياسات حماية البيانات المعتمدة لدينا.
+                    </p>
+                  </CardContent>
+                </Card>
               </div>
 
               <div className="flex justify-between">

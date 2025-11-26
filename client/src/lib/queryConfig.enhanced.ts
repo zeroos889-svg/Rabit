@@ -128,19 +128,16 @@ export function createQueryClient(): QueryClient {
           Math.min(1000 * 2 ** attemptIndex, 10000),
         networkMode: "online",
 
-        // Error handling
-        throwOnError: false,
-        useErrorBoundary: false,
+  // Error handling
+  throwOnError: false,
 
         // Performance optimization
-        structuralSharing: true,
-        keepPreviousData: true,
+  structuralSharing: true,
       },
       mutations: {
-        ...queryConfig.mutations,
-        // Error handling for mutations
-        throwOnError: false,
-        useErrorBoundary: false,
+  ...queryConfig.mutations,
+  // Error handling for mutations
+  throwOnError: false,
       },
     },
   };

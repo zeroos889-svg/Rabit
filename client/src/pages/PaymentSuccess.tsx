@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -19,9 +20,11 @@ import {
   CreditCard,
   ArrowRight,
   Sparkles,
+  FlaskConical,
 } from "lucide-react";
 import { Link } from "wouter";
 import confetti from "canvas-confetti";
+import { IS_TRIAL_MODE, TRIAL_MESSAGE } from "@/const";
 
 export default function PaymentSuccess() {
   // Success animation
@@ -55,27 +58,59 @@ export default function PaymentSuccess() {
     frame();
   }, []);
 
-  // Mock transaction data - should come from URL params or state
-  const transaction = {
-    id: "TRX" + Date.now(),
-    amount: 1499,
-    vat: 224.85,
-    total: 1723.85,
-    date: new Date().toLocaleDateString("ar-SA"),
-    time: new Date().toLocaleTimeString("ar-SA"),
-    packageName: "الباقة الاحترافية",
-    paymentMethod: "بطاقة مدى",
-    cardLast4: "1234",
-  };
+  const trialFromQuery = useMemo(() => {
+    if (typeof globalThis === "undefined") return false;
+    try {
+      const params = new URLSearchParams(globalThis.location?.search ?? "");
+      return params.get("trial") === "true";
+    } catch (error) {
+      console.warn("Failed to read trial query param", error);
+      return false;
+    }
+  }, []);
+  const isTrialExperience = IS_TRIAL_MODE || trialFromQuery;
+  const transaction = isTrialExperience
+    ? {
+        id: "TRIAL-" + Date.now(),
+        amount: 0,
+        vat: 0,
+        total: 0,
+        date: new Date().toLocaleDateString("ar-SA"),
+        time: new Date().toLocaleTimeString("ar-SA"),
+        packageName: "الباقة الاحترافية",
+        paymentMethod: "وضع تجريبي",
+        cardLast4: "0000",
+      }
+    : {
+        id: "TRX" + Date.now(),
+        amount: 1499,
+        vat: 224.85,
+        total: 1723.85,
+        date: new Date().toLocaleDateString("ar-SA"),
+        time: new Date().toLocaleTimeString("ar-SA"),
+        packageName: "الباقة الاحترافية",
+        paymentMethod: "بطاقة مدى",
+        cardLast4: "1234",
+      };
+  const heroTitle = isTrialExperience ? "تم تأكيد طلب الاشتراك التجريبي" : "تمت عملية الدفع بنجاح!";
+  const heroSubtitle = isTrialExperience
+    ? "لن يتم خصم أي مبالغ خلال هذه الفترة وسنتواصل معك لتفعيل الحساب الكامل."
+    : "شكراً لك على الاشتراك في منصة رابِط";
 
   const handleDownloadReceipt = () => {
-    // TODO: Generate and download PDF receipt
     console.log("Downloading receipt...");
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-primary/5 to-primary/10 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl space-y-6">
+        {isTrialExperience && (
+          <Alert className="border-dashed border-primary/40 bg-primary/5">
+            <FlaskConical className="h-5 w-5" />
+            <AlertTitle>الفترة التجريبية مفعلة</AlertTitle>
+            <AlertDescription>{TRIAL_MESSAGE}</AlertDescription>
+          </Alert>
+        )}
         {/* Success Message */}
         <Card className="border-2 border-green-500">
           <CardContent className="pt-6">
@@ -86,11 +121,9 @@ export default function PaymentSuccess() {
 
               <div>
                 <h1 className="text-3xl font-bold text-green-600 mb-2">
-                  تمت عملية الدفع بنجاح!
+                  {heroTitle}
                 </h1>
-                <p className="text-muted-foreground">
-                  شكراً لك على الاشتراك في منصة رابِط
-                </p>
+                <p className="text-muted-foreground">{heroSubtitle}</p>
               </div>
 
               <Badge variant="secondary" className="text-lg px-4 py-2">
@@ -171,8 +204,9 @@ export default function PaymentSuccess() {
                 تم إرسال إيصال الدفع
               </p>
               <p className="text-sm text-muted-foreground">
-                تم إرسال إيصال الدفع التفصيلي إلى بريدك الإلكتروني المسجل. يمكنك
-                أيضاً تحميله من هنا.
+                {isTrialExperience
+                  ? "سيصلك إشعار بريدي عند تفعيل بوابات الدفع والبدء بالفوترة الفعلية."
+                  : "تم إرسال إيصال الدفع التفصيلي إلى بريدك الإلكتروني المسجل. يمكنك أيضاً تحميله من هنا."}
               </p>
             </div>
           </CardContent>
@@ -238,7 +272,7 @@ export default function PaymentSuccess() {
           <Link href="/dashboard" className="flex-1">
             <Button className="w-full" size="lg">
               <Home className="ml-2 h-5 w-5" />
-              الانتقال إلى لوحة التحكم
+              {isTrialExperience ? "العودة إلى الصفحة الرئيسية" : "الانتقال إلى لوحة التحكم"}
               <ArrowRight className="mr-2 h-5 w-5" />
             </Button>
           </Link>
