@@ -1467,11 +1467,30 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
         z.object({
           name: z.string().min(2).optional(),
           email: z.string().email().optional(),
+          bio: z.string().optional(),
+          city: z.string().optional(),
+          profilePicture: z.string().optional(),
+          linkedIn: z.string().optional(),
+          twitter: z.string().optional(),
+          metadata: z.string().optional(), // JSON string for additional fields
         })
       )
       .mutation(async ({ input, ctx }) => {
-        if (!ctx.user.openId) throw new TRPCError({ code: "UNAUTHORIZED" });
-        const updated = await db.updateUserProfile(ctx.user.openId, input);
+        // Support both OAuth users and email/password users
+        const userId = ctx.user.userId || (ctx.user.openId ? await db.getUserByOpenId(ctx.user.openId)?.then(u => u?.id) : null);
+        if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" });
+        
+        const updated = await db.updateUserProfileById(userId, {
+          name: input.name,
+          email: input.email,
+          bio: input.bio,
+          city: input.city,
+          profilePicture: input.profilePicture,
+          linkedIn: input.linkedIn,
+          twitter: input.twitter,
+          metadata: input.metadata,
+          profileCompleted: true,
+        });
         return { success: true, user: updated };
       }),
 

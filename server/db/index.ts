@@ -1139,6 +1139,41 @@ export async function updateUserProfile(openId: string, data: Partial<UserRecord
   return user;
 }
 
+export async function updateUserProfileById(userId: number, data: {
+  name?: string;
+  email?: string;
+  bio?: string;
+  city?: string;
+  profilePicture?: string;
+  linkedIn?: string;
+  twitter?: string;
+  metadata?: string;
+  profileCompleted?: boolean;
+}) {
+  if (process.env.DATABASE_URL) {
+    const db = await getDrizzleDb();
+    await db
+      .update(usersTable)
+      .set({
+        name: data.name,
+        email: data.email,
+        profilePicture: data.profilePicture,
+        profileCompleted: data.profileCompleted,
+        updatedAt: new Date(),
+      })
+      .where(eq(usersTable.id, userId));
+    return getUserById(userId);
+  }
+  // In-memory fallback
+  const user = users.find(u => u.id === userId);
+  if (!user) return null;
+  Object.assign(user, {
+    ...data,
+    updatedAt: new Date(),
+  });
+  return user;
+}
+
 export async function updateUserProfilePicture(openId: string, url: string) {
   return updateUserProfile(openId, { profilePicture: url });
 }

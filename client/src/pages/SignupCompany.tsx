@@ -164,8 +164,7 @@ export default function SignupCompany() {
       localStorage.setItem("user", JSON.stringify(data.user));
       const token = data.token || data.accessToken;
       if (token) localStorage.setItem("token", token);
-      const nextPath = getDashboardPath(data.user);
-      setTimeout(() => setLocation(nextPath), 600);
+      setTimeout(() => setLocation("/complete-profile"), 600);
     },
     onError: error => {
       toast.error(error.message || t("signup.error"));

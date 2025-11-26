@@ -20,7 +20,7 @@ export default defineConfig({
     // - server/_core/__tests__/cache.test.ts
     // These tests conflict with vite-plugin-manus-runtime
     globals: true,
-  setupFiles: ["./client/src/test/setup.ts"],
+  setupFiles: [node_path.resolve(import.meta.dirname, "client/src/test/setup.ts")],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],

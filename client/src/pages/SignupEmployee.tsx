@@ -63,11 +63,12 @@ export default function SignupEmployee() {
           ? "تم إنشاء الحساب بنجاح! مرحباً بك في رابِط"
           : "Account created successfully! Welcome to Rabit"
       );
-  localStorage.setItem("user", JSON.stringify(data.user));
-  const token = data.token || data.accessToken;
-  if (token) localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      const token = data.token || data.accessToken;
+      if (token) localStorage.setItem("token", token);
       setTimeout(() => {
-        setLocation("/dashboard/employee");
+        // Redirect to complete profile page
+        setLocation("/complete-profile");
       }, 1500);
     },
     onError: (error) => {

@@ -43,6 +43,7 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const SignupEmployee = lazy(() => import("./pages/SignupEmployee"));
 const SignupConsultant = lazy(() => import("@/pages/SignupConsultant"));
 const SignupCompany = lazy(() => import("./pages/SignupCompany"));
+const CompleteProfile = lazy(() => import("./pages/CompleteProfile"));
 const ConsultantLogin = lazy(() => import("@/pages/ConsultantLogin"));
 const ConsultantRegister = lazy(() => import("./pages/ConsultantRegister"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
@@ -222,6 +223,7 @@ function Router() {
         <Route path={"/signup/employee"} component={SignupEmployee} />
         <Route path={"/signup/consultant"} component={SignupConsultant} />
         <Route path={"/signup/company"} component={SignupCompany} />
+        <Route path={"/complete-profile"} component={CompleteProfile} />
         <Route path={"/login"} component={withPublicOnly(Login)} />
         <Route path={"/register"} component={withPublicOnly(Register)} />
         <Route

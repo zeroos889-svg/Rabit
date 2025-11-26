@@ -1,4 +1,10 @@
-import { useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type MouseEvent,
+} from "react";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +28,9 @@ import {
   Phone,
   Briefcase,
   UserCircle,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 import { Link } from "wouter";
 import { APP_LOGO } from "@/const";
@@ -29,19 +38,28 @@ import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
+import analytics from "@/lib/analytics";
 
 export default function Signup() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const [accountType, setAccountType] = useState<
     "company" | "freelancer" | "employee"
   >("company");
   const [isLoading, setIsLoading] = useState(false);
+  const [formErrors, setFormErrors] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
 
   const registerMutation = trpc.auth.register.useMutation({
     onSuccess: data => {
       toast.success("تم إنشاء الحساب بنجاح! يرجى تسجيل الدخول");
       // Save user data to localStorage
       localStorage.setItem("registeredUser", JSON.stringify(data.user));
+      analytics.auth.signUp("email", data.user?.userType || accountType);
       // Redirect to login
       setTimeout(() => {
         setLocation("/login");
@@ -51,6 +69,7 @@ export default function Signup() {
       toast.error(error.message || "فشل في إنشاء الحساب");
       setIsLoading(false);
     },
+    onSettled: () => setIsLoading(false),
   });
   const [formData, setFormData] = useState({
     fullName: "",
@@ -60,11 +79,60 @@ export default function Signup() {
     password: "",
     confirmPassword: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const fullNameRef = useRef<HTMLInputElement | null>(null);
+  const phoneRef = useRef<HTMLInputElement | null>(null);
+  const emailRef = useRef<HTMLInputElement | null>(null);
+  const passwordRef = useRef<HTMLInputElement | null>(null);
+  const confirmPasswordRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    analytics.trackPageView({
+      page_title: "Signup",
+      page_path: location,
+    });
+  }, [location]);
+  const accountBenefits: Record<
+    typeof accountType,
+    { title: string; points: string[] }
+  > = {
+    company: {
+      title: "مناسب للشركات النامية",
+      points: ["إدارة الموظفين", "لوحة تحكم شاملة", "تذاكر ودعم HR"],
+    },
+    freelancer: {
+      title: "للمستقلين المحترفين",
+      points: ["تتبع العملاء", "مولد الخطابات الذكي", "تقارير شهرية"],
+    },
+    employee: {
+      title: "للاستخدام الشخصي",
+      points: ["إدارة الإجازات", "سجل الرواتب", "مساعد قانوني"],
+    },
+  };
 
   const [agreements, setAgreements] = useState({
     terms: false,
     privacy: false,
     cookies: false,
+  });
+
+  const getValidationErrors = (data: typeof formData) => ({
+    fullName:
+      data.fullName.trim().length < 3
+        ? "الاسم يجب أن يكون 3 أحرف على الأقل"
+        : "",
+    email: validateEmail(data.email) ? "" : "البريد الإلكتروني غير صالح",
+    phone: validatePhone(data.phone)
+      ? ""
+      : "أدخل رقم جوال سعودي يبدأ بـ 05 من 10 أرقام",
+    password: validatePassword(data.password)
+      ? ""
+      : "كلمة المرور يجب أن تكون 8 أحرف وتحتوي على أرقام ورموز",
+    confirmPassword:
+      data.password === data.confirmPassword
+        ? ""
+        : "كلمتا المرور غير متطابقتين",
   });
 
   const canSubmit =
@@ -73,26 +141,128 @@ export default function Signup() {
     formData.phone &&
     formData.password &&
     formData.confirmPassword &&
-    formData.password === formData.confirmPassword &&
     agreements.terms &&
     agreements.privacy &&
-    agreements.cookies;
+    agreements.cookies &&
+    Object.values(getValidationErrors(formData)).every(error => !error);
 
-  const handleSignup = async (e: React.MouseEvent) => {
+  const validateEmail = (email: string) =>
+    /\S+@\S+\.\S+/.test(email.trim().toLowerCase());
+
+  const validatePhone = (phone: string) => /^05\d{8}$/.test(phone);
+
+  const normalizeSaudiPhone = (value: string) => {
+    let digits = value.replace(/\D/g, "");
+    if (digits.startsWith("966")) {
+      digits = digits.slice(3);
+    }
+    if (!digits.startsWith("0") && digits.startsWith("5")) {
+      digits = `0${digits}`;
+    }
+    return digits.slice(0, 10);
+  };
+
+  const validatePassword = (password: string) =>
+    password.length >= 8 &&
+    /[A-Za-z]/.test(password) &&
+    /\d/.test(password) &&
+    /[^A-Za-z0-9]/.test(password);
+
+  const getPasswordStrength = (password: string) => {
+    const score =
+      (password.length >= 8 ? 1 : 0) +
+      (/[A-Z]/.test(password) ? 1 : 0) +
+      (/[a-z]/.test(password) ? 1 : 0) +
+      (/\d/.test(password) ? 1 : 0) +
+      (/[^A-Za-z0-9]/.test(password) ? 1 : 0);
+
+    if (!password) {
+      return { score: 0, label: "أدخل كلمة مرور قوية" };
+    }
+
+    if (score <= 2) return { score, label: "ضعيفة" };
+    if (score === 3) return { score, label: "متوسطة" };
+    if (score === 4) return { score, label: "جيدة" };
+    return { score, label: "قوية" };
+  };
+
+  const validateForm = () => {
+    const nextErrors = getValidationErrors(formData);
+    setFormErrors(nextErrors);
+    focusFirstError(nextErrors);
+    return Object.values(nextErrors).every(error => !error);
+  };
+
+  const updateField = (field: keyof typeof formData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (field in formErrors) {
+      setFormErrors(prev => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  const isSubmitting = isLoading || registerMutation.isLoading;
+  const passwordStrength = getPasswordStrength(formData.password);
+  const handleBlurValidate = (field: keyof typeof formData) => {
+    const errors = getValidationErrors(formData);
+    if (errors[field]) {
+      setFormErrors(prev => ({ ...prev, [field]: errors[field] }));
+    }
+  };
+
+  const focusFirstError = (errors: typeof formErrors) => {
+    const order: Array<keyof typeof formErrors> = [
+      "fullName",
+      "phone",
+      "email",
+      "password",
+      "confirmPassword",
+    ];
+    const firstError = order.find(key => errors[key]);
+    if (!firstError) return;
+    const refMap: Record<keyof typeof formErrors, HTMLInputElement | null> = {
+      fullName: fullNameRef.current,
+      phone: phoneRef.current,
+      email: emailRef.current,
+      password: passwordRef.current,
+      confirmPassword: confirmPasswordRef.current,
+    };
+    refMap[firstError]?.focus();
+  };
+
+  const requirementStates = [
+    {
+      label: "إكمال البيانات الأساسية",
+      ok: Boolean(formData.fullName && formData.email && formData.phone),
+    },
+    {
+      label: "كلمة مرور قوية (8 أحرف وأرقام ورمز)",
+      ok: validatePassword(formData.password),
+    },
+    {
+      label: "تطابق كلمة المرور والتأكيد",
+      ok:
+        Boolean(formData.password) &&
+        formData.password === formData.confirmPassword,
+    },
+    {
+      label: "الموافقة على الشروط والسياسات",
+      ok: agreements.terms && agreements.privacy && agreements.cookies,
+    },
+  ];
+
+  const handleSignup = async (
+    e: FormEvent<HTMLFormElement> | MouseEvent<HTMLButtonElement>,
+  ) => {
     e.preventDefault();
 
-    if (!canSubmit) {
-      toast.error("يرجى ملء جميع الحقول والموافقة على الإقرارات");
+    if (!agreements.terms || !agreements.privacy || !agreements.cookies) {
+      toast.error("يرجى الموافقة على الإقرارات الإلزامية أولاً");
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("كلمات المرور غير متطابقة");
-      return;
-    }
-
-    if (formData.password.length < 8) {
-      toast.error("كلمة المرور يجب أن تكون 8 أحرف على الأقل");
+    const isValid = validateForm();
+    if (!isValid) {
+      toast.error("يرجى تصحيح الحقول المعلّمة قبل المتابعة");
       return;
     }
 
@@ -107,8 +277,8 @@ export default function Signup() {
 
     // Register with database
     registerMutation.mutate({
-      name: formData.fullName,
-      email: formData.email,
+      name: formData.fullName.trim(),
+      email: formData.email.trim(),
       password: formData.password,
       phoneNumber: formData.phone,
       userType: userTypeMap[accountType],
@@ -116,6 +286,18 @@ export default function Signup() {
   };
 
   const handleSocialSignup = (provider: string) => {
+    if (!agreements.terms || !agreements.privacy || !agreements.cookies) {
+      toast.error("يرجى الموافقة على الإقرارات قبل التسجيل");
+      return;
+    }
+
+    const userTypeMap = {
+      company: "company" as const,
+      freelancer: "consultant" as const,
+      employee: "employee" as const,
+    };
+    analytics.auth.signUp(provider, userTypeMap[accountType]);
+
     // Save account type and agreements
     const socialData = {
       accountType,
@@ -158,13 +340,16 @@ export default function Signup() {
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-6">
+          <CardContent>
+            <form className="space-y-6" onSubmit={handleSignup}>
             {/* Account Type Selection */}
             <div className="space-y-3">
               <Label className="text-base font-semibold">نوع الحساب *</Label>
               <RadioGroup
                 value={accountType}
-                onValueChange={(value: any) => setAccountType(value)}
+                onValueChange={(value: "company" | "freelancer" | "employee") =>
+                  setAccountType(value)
+                }
               >
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <label
@@ -227,6 +412,29 @@ export default function Signup() {
               </RadioGroup>
             </div>
 
+            <div className="rounded-lg border bg-muted/40 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-primary">
+                    {accountBenefits[accountType].title}
+                  </p>
+                  <div className="text-xs text-muted-foreground flex flex-wrap gap-2 mt-2">
+                    {accountBenefits[accountType].points.map(point => (
+                      <span
+                        key={point}
+                        className="inline-flex items-center rounded-full bg-background px-3 py-1 border text-foreground"
+                      >
+                        {point}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <span className="text-xs text-muted-foreground">
+                  يمكنك التبديل لاحقاً من الإعدادات
+                </span>
+              </div>
+            </div>
+
             {/* Form Fields */}
             <div className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
@@ -237,14 +445,25 @@ export default function Signup() {
                     <Input
                       id="fullName"
                       placeholder="أدخل اسمك الكامل"
-                      className="pr-10"
+                      className={`pr-10 ${
+                        formErrors.fullName
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }`}
+                      autoComplete="name"
+                      ref={fullNameRef}
                       value={formData.fullName}
-                      onChange={e =>
-                        setFormData({ ...formData, fullName: e.target.value })
-                      }
+                      onChange={e => updateField("fullName", e.target.value)}
+                      onBlur={() => handleBlurValidate("fullName")}
+                      aria-invalid={!!formErrors.fullName}
                       required
                     />
                   </div>
+                  {formErrors.fullName && (
+                    <p className="text-xs text-destructive">
+                      {formErrors.fullName}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -255,13 +474,31 @@ export default function Signup() {
                       id="phone"
                       type="tel"
                       placeholder="05xxxxxxxx"
-                      className="pr-10"
+                      className={`pr-10 ${
+                        formErrors.phone
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }`}
+                      dir="ltr"
+                      inputMode="tel"
+                      autoComplete="tel-national"
+                      ref={phoneRef}
                       value={formData.phone}
                       onChange={e =>
-                        setFormData({ ...formData, phone: e.target.value })
+                        updateField("phone", normalizeSaudiPhone(e.target.value))
                       }
+                      onBlur={() => handleBlurValidate("phone")}
+                      aria-invalid={!!formErrors.phone}
                       required
                     />
+                  </div>
+                  <div className="text-xs text-muted-foreground flex items-center justify-between">
+                    <span>تنسيق سعودي: يبدأ بـ 05</span>
+                    {formErrors.phone && (
+                      <span className="text-destructive">
+                        {formErrors.phone}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -274,14 +511,24 @@ export default function Signup() {
                     id="email"
                     type="email"
                     placeholder="example@company.com"
-                    className="pr-10"
+                    className={`pr-10 ${
+                      formErrors.email
+                        ? "border-destructive focus-visible:ring-destructive"
+                        : ""
+                    }`}
+                    dir="ltr"
+                    autoComplete="email"
+                    ref={emailRef}
                     value={formData.email}
-                    onChange={e =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
+                    onChange={e => updateField("email", e.target.value)}
+                    onBlur={() => handleBlurValidate("email")}
+                    aria-invalid={!!formErrors.email}
                     required
                   />
                 </div>
+                {formErrors.email && (
+                  <p className="text-xs text-destructive">{formErrors.email}</p>
+                )}
               </div>
 
               {accountType === "company" && (
@@ -293,10 +540,9 @@ export default function Signup() {
                       id="company"
                       placeholder="اسم شركتك"
                       className="pr-10"
+                      autoComplete="organization"
                       value={formData.company}
-                      onChange={e =>
-                        setFormData({ ...formData, company: e.target.value })
-                      }
+                      onChange={e => updateField("company", e.target.value)}
                     />
                   </div>
                 </div>
@@ -309,16 +555,35 @@ export default function Signup() {
                     <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
-                      className="pr-10"
+                    className={`pr-10 ${
+                        formErrors.password
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }`}
+                      dir="ltr"
+                      autoComplete="new-password"
+                      ref={passwordRef}
                       value={formData.password}
-                      onChange={e =>
-                        setFormData({ ...formData, password: e.target.value })
-                      }
+                      onChange={e => updateField("password", e.target.value)}
+                      onBlur={() => handleBlurValidate("password")}
+                      aria-invalid={!!formErrors.password}
                       required
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(prev => !prev)}
+                      className="absolute left-3 top-2.5 text-xs text-primary underline-offset-2 hover:underline"
+                    >
+                      {showPassword ? "إخفاء" : "إظهار"}
+                    </button>
                   </div>
+                  {formErrors.password && (
+                    <p className="text-xs text-destructive">
+                      {formErrors.password}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -327,19 +592,60 @@ export default function Signup() {
                     <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="confirmPassword"
-                      type="password"
+                      type={showConfirmPassword ? "text" : "password"}
                       placeholder="••••••••"
-                      className="pr-10"
+                    className={`pr-10 ${
+                        formErrors.confirmPassword
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }`}
+                      dir="ltr"
+                      autoComplete="new-password"
+                      ref={confirmPasswordRef}
                       value={formData.confirmPassword}
                       onChange={e =>
-                        setFormData({
-                          ...formData,
-                          confirmPassword: e.target.value,
-                        })
+                        updateField("confirmPassword", e.target.value)
                       }
+                      onBlur={() => handleBlurValidate("confirmPassword")}
+                      aria-invalid={!!formErrors.confirmPassword}
                       required
                     />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowConfirmPassword(prev => !prev)
+                      }
+                      className="absolute left-3 top-2.5 text-xs text-primary underline-offset-2 hover:underline"
+                    >
+                      {showConfirmPassword ? "إخفاء" : "إظهار"}
+                    </button>
                   </div>
+                  {formErrors.confirmPassword && (
+                    <p className="text-xs text-destructive">
+                      {formErrors.confirmPassword}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all ${
+                      passwordStrength.score >= 4
+                        ? "bg-emerald-500"
+                        : passwordStrength.score === 3
+                        ? "bg-amber-500"
+                        : passwordStrength.score === 2
+                        ? "bg-orange-500"
+                        : "bg-destructive"
+                    }`}
+                    style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
+                  />
+                </div>
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>قوة كلمة المرور: {passwordStrength.label}</span>
+                  <span>استخدم أحرف كبيرة وصغيرة وأرقام ورمز</span>
                 </div>
               </div>
             </div>
@@ -443,13 +749,46 @@ export default function Signup() {
             <Button
               className="w-full gradient-primary text-white"
               size="lg"
-              onClick={handleSignup}
-              type="button"
-              disabled={!canSubmit}
+              type="submit"
+              disabled={!canSubmit || isSubmitting}
             >
-              إنشاء الحساب
-              <ArrowRight className="mr-2 h-4 w-4" />
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  جاري إنشاء الحساب...
+                </>
+              ) : (
+                <>
+                  إنشاء الحساب
+                  <ArrowRight className="mr-2 h-4 w-4" />
+                </>
+              )}
             </Button>
+
+            <div className="grid gap-2 rounded-lg border bg-muted/30 p-3">
+              <p className="text-xs font-semibold text-muted-foreground">
+                جاهزية الإرسال
+              </p>
+              <div className="grid gap-1.5 sm:grid-cols-2">
+                {requirementStates.map(req => (
+                  <div
+                    key={req.label}
+                    className={`flex items-center gap-2 rounded-md border px-3 py-2 text-xs ${
+                      req.ok
+                        ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                        : "border-amber-200 bg-amber-50 text-amber-800"
+                    }`}
+                  >
+                    {req.ok ? (
+                      <CheckCircle2 className="h-4 w-4" />
+                    ) : (
+                      <AlertCircle className="h-4 w-4" />
+                    )}
+                    <span>{req.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             {/* Divider */}
             <div className="relative">
@@ -522,6 +861,7 @@ export default function Signup() {
                 تسجيل الدخول
               </Link>
             </p>
+            </form>
           </CardContent>
         </Card>
       </div>

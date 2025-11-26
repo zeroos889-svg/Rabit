@@ -67,7 +67,7 @@ export default function SignupConsultant() {
       const token = data.token || data.accessToken;
       if (token) localStorage.setItem("token", token);
       setTimeout(() => {
-        setLocation("/checkout?plan=consultant");
+        setLocation("/complete-profile");
       }, 1500);
     },
     onError: (error) => {

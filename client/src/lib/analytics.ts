@@ -40,6 +40,19 @@ interface UserProperties {
   [key: string]: unknown;
 }
 
+type GtagFunction = (
+  command: string,
+  targetId: string | Date,
+  params?: Record<string, unknown>
+) => void;
+
+type AnalyticsGlobals = typeof globalThis & {
+  gtag?: GtagFunction;
+  dataLayer?: unknown[];
+};
+
+const analyticsGlobals = globalThis as AnalyticsGlobals;
+
 class Analytics {
   private static instance: Analytics;
   private config: AnalyticsConfig | null = null;
@@ -73,21 +86,16 @@ class Analytics {
     document.head.appendChild(script);
 
     // Initialize dataLayer
-    // @ts-expect-error - Analytics globals injected at runtime
-    globalThis.dataLayer = globalThis.dataLayer || [];
-    
+    analyticsGlobals.dataLayer = analyticsGlobals.dataLayer || [];
+
     // Define gtag function
-    // @ts-expect-error - Analytics globals injected at runtime
-    globalThis.gtag = function gtag() {
+    analyticsGlobals.gtag = function gtag() {
       // eslint-disable-next-line prefer-rest-params
-      // @ts-expect-error - Analytics globals injected at runtime
-      globalThis.dataLayer?.push(arguments);
+      analyticsGlobals.dataLayer?.push(arguments);
     };
 
-    // @ts-expect-error - Analytics globals injected at runtime
-    globalThis.gtag("js", new Date());
-    // @ts-expect-error - Analytics globals injected at runtime
-    globalThis.gtag("config", config.measurementId, {
+    analyticsGlobals.gtag("js", new Date());
+    analyticsGlobals.gtag("config", config.measurementId, {
       send_page_view: false, // Manual page view tracking
       debug_mode: config.enableDebug,
       anonymize_ip: !config.enableUserTracking,
@@ -124,15 +132,13 @@ class Analytics {
       return;
     }
 
-    // @ts-expect-error - Analytics globals injected at runtime
-    if (!globalThis.gtag) {
+    if (!analyticsGlobals.gtag) {
       // eslint-disable-next-line no-console
       console.warn("[Analytics] gtag not available");
       return;
     }
 
-    // @ts-expect-error - Analytics globals injected at runtime
-    globalThis.gtag("event", eventName, {
+    analyticsGlobals.gtag("event", eventName, {
       event_category: params.category,
       event_label: params.label,
       value: params.value,
@@ -149,8 +155,7 @@ class Analytics {
    * Track page view
    */
   trackPageView(params: PageViewParams = {}) {
-    // @ts-expect-error - Analytics globals injected at runtime
-    if (!this.isInitialized || !globalThis.gtag) return;
+    if (!this.isInitialized || !analyticsGlobals.gtag) return;
 
     const pageParams = {
       page_title: document.title,
@@ -159,8 +164,7 @@ class Analytics {
       ...params,
     };
 
-    // @ts-expect-error - Analytics globals injected at runtime
-    globalThis.gtag("event", "page_view", pageParams);
+    analyticsGlobals.gtag("event", "page_view", pageParams);
 
     if (this.config?.enableDebug) {
       // eslint-disable-next-line no-console
@@ -172,11 +176,9 @@ class Analytics {
    * Set user properties
    */
   setUserProperties(properties: UserProperties) {
-    // @ts-expect-error - Analytics globals injected at runtime
-    if (!this.isInitialized || !globalThis.gtag) return;
+    if (!this.isInitialized || !analyticsGlobals.gtag) return;
 
-    // @ts-expect-error - Analytics globals injected at runtime
-    globalThis.gtag("set", "user_properties", properties);
+    analyticsGlobals.gtag("set", "user_properties", properties);
 
     if (this.config?.enableDebug) {
       // eslint-disable-next-line no-console
@@ -188,11 +190,9 @@ class Analytics {
    * Set user ID
    */
   setUserId(userId: string) {
-    // @ts-expect-error - Analytics globals injected at runtime
-    if (!this.isInitialized || !globalThis.gtag) return;
+    if (!this.isInitialized || !analyticsGlobals.gtag) return;
 
-    // @ts-expect-error - Analytics globals injected at runtime
-    globalThis.gtag("config", this.config?.measurementId || "", {
+    analyticsGlobals.gtag("config", this.config?.measurementId || "", {
       user_id: userId,
     });
 
