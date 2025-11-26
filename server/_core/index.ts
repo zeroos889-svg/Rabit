@@ -42,7 +42,11 @@ import {
   webhookRateLimiter,
   logRateLimitConfig,
 } from "./endpointRateLimit";
-import { trpcRateLimitMiddleware } from "./trpcRateLimit";
+import {
+  trpcRedisRateLimitMiddleware,
+  logTrpcRedisRateLimitConfig,
+} from "./trpcRedisRateLimit";
+import { redisWebhookRateLimiter } from "./redisRateLimit";
 
 logger.info("🚀 Starting server initialization...", { context: "Server" });
 
@@ -197,9 +201,14 @@ async function startServer() {
   app.use("/api/", apiLimiter);
 
   // Webhook endpoints (use raw body for signature verification)
+  const activeWebhookRateLimiter =
+    process.env.USE_REDIS_RATE_LIMIT === "true"
+      ? redisWebhookRateLimiter
+      : webhookRateLimiter;
+
   app.post(
     "/api/webhooks/moyasar",
-    webhookRateLimiter, // Rate limit webhook endpoints
+    activeWebhookRateLimiter, // Rate limit webhook endpoints
     express.raw({ type: "*/*" }),
     async (req, res) => {
       let raw: string;
@@ -241,7 +250,7 @@ async function startServer() {
 
   app.post(
     "/api/webhooks/tap",
-    webhookRateLimiter, // Rate limit webhook endpoints
+    activeWebhookRateLimiter, // Rate limit webhook endpoints
     express.raw({ type: "*/*" }),
     async (req, res) => {
       let raw: string;
@@ -380,7 +389,7 @@ async function startServer() {
   logger.info("🔌 Setting up tRPC middleware...", { context: "Server" });
   app.use(
     "/api/trpc",
-    trpcRateLimitMiddleware, // Apply endpoint-specific rate limiting
+    trpcRedisRateLimitMiddleware, // Apply Redis or in-memory rate limiting
     createExpressMiddleware({
       router: appRouter,
       createContext,
@@ -415,6 +424,7 @@ async function startServer() {
   logMiddlewareConfig();
   logApiVersioningConfig();
   logRateLimitConfig();
+  logTrpcRedisRateLimitConfig();
 
   // Get port from environment (Railway sets this automatically)
   const port = getPort();
