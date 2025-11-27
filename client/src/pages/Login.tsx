@@ -96,16 +96,24 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20 py-12 px-4 sm:px-6 lg:px-8">
+    <>
       <BackButton />
-      
-      <div className="max-w-md mx-auto">
+      <main
+        id="main-content"
+        role="main"
+        aria-labelledby="login-page-title"
+        className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20 py-12 px-4 sm:px-6 lg:px-8"
+      >
+        <div className="max-w-md mx-auto">
         {/* Logo & Title */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center mb-4">
             <img src={APP_LOGO} alt="رابِط | Rabit" className="h-20 w-auto" />
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1
+            id="login-page-title"
+            className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+          >
             {t("login.welcomeBack")}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
@@ -277,7 +285,8 @@ export default function Login() {
             </Link>
           </p>
         </div>
-      </div>
-    </div>
+        </div>
+      </main>
+    </>
   );
 }

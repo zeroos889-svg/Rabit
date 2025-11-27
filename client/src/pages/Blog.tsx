@@ -354,6 +354,11 @@ export default function Blog() {
                         src={post.image}
                         alt={post.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        loading="lazy"
+                        decoding="async"
+                        width={640}
+                        height={320}
+                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                       />
                       <Badge className="absolute top-4 right-4 bg-blue-600">
                         {post.categoryName}
@@ -415,6 +420,11 @@ export default function Blog() {
                         src={post.image}
                         alt={post.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        loading="lazy"
+                        decoding="async"
+                        width={480}
+                        height={260}
+                        sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 100vw"
                       />
                       <Badge className="absolute top-3 right-3 bg-purple-600 text-xs">
                         {post.categoryName}

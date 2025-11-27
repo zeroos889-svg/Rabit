@@ -387,6 +387,11 @@ export default function BlogPost() {
                 src={post.image}
                 alt={post.title}
                 className="w-full h-96 object-cover"
+                loading="lazy"
+                decoding="async"
+                width={1200}
+                height={500}
+                sizes="(min-width: 1024px) 1024px, 100vw"
               />
             </div>
           </div>
@@ -479,6 +484,11 @@ export default function BlogPost() {
                           src={relatedPost.image}
                           alt={relatedPost.title}
                           className="w-full h-full object-cover hover:scale-105 transition-transform"
+                          loading="lazy"
+                          decoding="async"
+                          width={640}
+                          height={360}
+                          sizes="(min-width: 1024px) 50vw, 100vw"
                         />
                       </div>
                       <CardContent className="pt-4">

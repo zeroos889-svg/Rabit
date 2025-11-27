@@ -1,5 +1,6 @@
-import { ReactNode } from "react";
-import { Link } from "wouter";
+import { type ReactNode, useEffect, useState } from "react";
+import { Link, useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -14,6 +15,8 @@ import {
   Clock,
   Bell,
   Wrench,
+  Menu,
+  X,
 } from "lucide-react";
 
 interface DashboardLayoutProps {
@@ -23,6 +26,21 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children, userType = "company", title }: DashboardLayoutProps) {
+  const [location] = useLocation();
+  const { t } = useTranslation();
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+
+  useEffect(() => {
+    setIsMobileNavOpen(false);
+  }, [location]);
+
+  const navLabel = t("dashboard.nav", { defaultValue: "التنقل داخل لوحة التحكم" });
+  const skipContentLabel = t("dashboard.skipContent", { defaultValue: "تخطي إلى المحتوى" });
+  const mobileToggleLabel = isMobileNavOpen
+    ? t("dashboard.closeNav", { defaultValue: "إغلاق القائمة" })
+    : t("dashboard.openNav", { defaultValue: "فتح القائمة" });
+  const mainLabel = t("dashboard.main", { defaultValue: "المحتوى الرئيسي للوحة التحكم" });
+  const navId = "dashboard-primary-nav";
   const menuItems = [
     {
       label: "لوحة التحكم",
@@ -99,36 +117,87 @@ export default function DashboardLayout({ children, userType = "company", title 
   ];
 
   return (
-    <div className={cn("min-h-screen flex flex-col md:flex-row")}>
-      <aside className="w-full md:w-64 bg-gradient-to-b from-blue-600 via-purple-600 to-purple-700 text-white p-4 space-y-4">
-        <div className="mb-6">
-          <h2 className="font-bold text-xl">رابِط HR</h2>
-          <p className="text-xs opacity-75 mt-1">نظام الموارد البشرية</p>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <a
+        href="#dashboard-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-lg"
+      >
+        {skipContentLabel}
+      </a>
+
+      <header className="md:hidden sticky top-0 z-40 flex items-center justify-between border-b border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/75">
+        <div>
+          <p className="text-sm font-semibold text-muted-foreground">رابِط HR</p>
+          {(title || userType) && (
+            <span className="text-xs text-muted-foreground/80">
+              {title || (userType === "employee" ? "لوحة الموظف" : userType === "consultant" ? "لوحة المستشار" : "لوحة الشركة")}
+            </span>
+          )}
         </div>
-        
-        <nav className="space-y-1">
-          {menuItems.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors group">
-                <item.icon className="w-5 h-5 opacity-75 group-hover:opacity-100" />
-                <span className="text-sm font-medium opacity-90 group-hover:opacity-100">
-                  {item.label}
-                </span>
-              </a>
-            </Link>
-          ))}
-        </nav>
-      </aside>
-      <main className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
-        {title && (
-          <div className="mb-6 md:hidden">
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-              {title}
-            </h1>
+        <button
+          type="button"
+          onClick={() => setIsMobileNavOpen(prev => !prev)}
+          aria-expanded={isMobileNavOpen ? "true" : "false"}
+          aria-controls={navId}
+          aria-label={mobileToggleLabel}
+          className="inline-flex items-center justify-center rounded-full border border-border p-2 text-sm font-medium"
+        >
+          {isMobileNavOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
+        </button>
+      </header>
+
+      <div className="flex flex-col md:flex-row">
+        <aside
+          id={navId}
+          aria-label={navLabel}
+          className={cn(
+            "bg-gradient-to-b from-blue-600 via-purple-600 to-purple-700 text-white p-4 space-y-4 md:w-64 md:min-h-screen",
+            isMobileNavOpen ? "block" : "hidden",
+            "md:block"
+          )}
+        >
+          <div className="mb-6">
+            <h2 className="font-bold text-xl">رابِط HR</h2>
+            <p className="text-xs opacity-75 mt-1">نظام الموارد البشرية</p>
           </div>
-        )}
-        {children}
-      </main>
+
+          <nav className="space-y-1">
+            {menuItems.map((item) => {
+              const isActive = location?.startsWith(item.href);
+              return (
+                <Link key={item.href} href={item.href}>
+                  <a
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                    aria-current={isActive ? "page" : undefined}
+                    onClick={() => setIsMobileNavOpen(false)}
+                  >
+                    <item.icon className="w-5 h-5 opacity-75 group-hover:opacity-100" aria-hidden="true" />
+                    <span className="text-sm font-medium opacity-90 group-hover:opacity-100">
+                      {item.label}
+                    </span>
+                  </a>
+                </Link>
+              );
+            })}
+          </nav>
+        </aside>
+
+        <main
+          id="dashboard-content"
+          tabIndex={-1}
+          aria-label={mainLabel}
+          className="flex-1 p-6 focus-visible:outline-none"
+        >
+          {title && (
+            <div className="mb-6">
+              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                {title}
+              </h1>
+            </div>
+          )}
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

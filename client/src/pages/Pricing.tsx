@@ -211,19 +211,39 @@ export default function Pricing() {
   const { t } = useTranslation();
   const [selectedCompanyTier, setSelectedCompanyTier] =
     useState("professional");
+  const includedLabel = t("pricing.a11y.included", {
+    defaultValue: "متاح",
+  });
+  const excludedLabel = t("pricing.a11y.excluded", {
+    defaultValue: "غير متاح",
+  });
+  const backLabel = t("pricing.a11y.back", {
+    defaultValue: "العودة إلى الصفحة الرئيسية",
+  });
+  const tableCaption = t("pricing.table.caption", {
+    defaultValue: "مقارنة تفصيلية بين خطط الأسعار.",
+  });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4">
+    <main
+      id="main-content"
+      role="main"
+      aria-labelledby="pricing-page-title"
+      className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4"
+    >
       <div className="container max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-12">
           <Link href="/">
-            <Button variant="ghost" size="icon">
-              <ChevronLeft className="h-5 w-5" />
+            <Button variant="ghost" size="icon" aria-label={backLabel}>
+              <ChevronLeft className="h-5 w-5" aria-hidden="true" />
             </Button>
           </Link>
           <div className="flex-1 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            <h1
+              id="pricing-page-title"
+              className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4"
+            >
               {t("pricing.page.title")}
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -250,7 +270,11 @@ export default function Pricing() {
               <div
                 className={`mx-auto mb-4 p-4 rounded-2xl bg-gradient-to-br ${pricingPlans.employee.color} w-fit`}
               >
-                <pricingPlans.employee.icon className="h-8 w-8 text-white" />
+                <pricingPlans.employee.icon
+                  className="h-8 w-8 text-white"
+                  aria-hidden="true"
+                  focusable="false"
+                />
               </div>
               <CardTitle className="text-2xl mb-2">
                 {t(pricingPlans.employee.nameKey)}
@@ -276,9 +300,19 @@ export default function Pricing() {
                 {pricingPlans.employee.features.map((feature, index) => (
                   <div key={index} className="flex items-start gap-3">
                     {feature.included ? (
-                      <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      <Check
+                        className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5"
+                        aria-label={includedLabel}
+                        role="img"
+                        focusable="false"
+                      />
                     ) : (
-                      <X className="h-5 w-5 text-gray-300 flex-shrink-0 mt-0.5" />
+                      <X
+                        className="h-5 w-5 text-gray-300 flex-shrink-0 mt-0.5"
+                        aria-label={excludedLabel}
+                        role="img"
+                        focusable="false"
+                      />
                     )}
                     <span
                       className={`text-sm ${!feature.included ? "text-muted-foreground line-through" : ""}`}
@@ -320,8 +354,16 @@ export default function Pricing() {
               <div
                 className={`mx-auto mb-4 p-4 rounded-2xl bg-gradient-to-br ${pricingPlans.freelancer.color} w-fit relative`}
               >
-                <pricingPlans.freelancer.icon className="h-8 w-8 text-white" />
-                <Sparkles className="h-4 w-4 text-yellow-300 absolute -top-1 -right-1" />
+                <pricingPlans.freelancer.icon
+                  className="h-8 w-8 text-white"
+                  aria-hidden="true"
+                  focusable="false"
+                />
+                <Sparkles
+                  className="h-4 w-4 text-yellow-300 absolute -top-1 -right-1"
+                  aria-hidden="true"
+                  focusable="false"
+                />
               </div>
               <CardTitle className="text-2xl mb-2">
                 {t(pricingPlans.freelancer.nameKey)}
@@ -348,9 +390,19 @@ export default function Pricing() {
                 {pricingPlans.freelancer.features.map((feature, index) => (
                   <div key={index} className="flex items-start gap-3">
                     {feature.included ? (
-                      <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      <Check
+                        className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5"
+                        aria-label={includedLabel}
+                        role="img"
+                        focusable="false"
+                      />
                     ) : (
-                      <X className="h-5 w-5 text-gray-300 flex-shrink-0 mt-0.5" />
+                      <X
+                        className="h-5 w-5 text-gray-300 flex-shrink-0 mt-0.5"
+                        aria-label={excludedLabel}
+                        role="img"
+                        focusable="false"
+                      />
                     )}
                     <span
                       className={`text-sm ${!feature.included ? "text-muted-foreground line-through" : ""}`}
@@ -383,7 +435,11 @@ export default function Pricing() {
               <div
                 className={`mx-auto mb-4 p-4 rounded-2xl bg-gradient-to-br ${pricingPlans.company.color} w-fit`}
               >
-                <pricingPlans.company.icon className="h-8 w-8 text-white" />
+                <pricingPlans.company.icon
+                  className="h-8 w-8 text-white"
+                  aria-hidden="true"
+                  focusable="false"
+                />
               </div>
               <CardTitle className="text-2xl mb-2">
                 {t(pricingPlans.company.nameKey)}
@@ -396,54 +452,71 @@ export default function Pricing() {
             <CardContent className="space-y-6">
               {/* Company Tiers */}
               <div className="grid grid-cols-2 gap-2 mb-4">
-                {(pricingPlans.company.tiers ?? []).map(tier => (
+                {(pricingPlans.company.tiers ?? []).map(tier => {
+                  const tierDescriptionId = `tier-${tier.id}-details`;
+                  const tierPrice = tier.price
+                    ? `${tier.price} ﷼`
+                    : t("pricing.plan.company.tier.custom_price");
+                  const tierEmployees = (() => {
+                    const employeesLabel =
+                      tier.employeesLabel ?? tier.employees.toString();
+                    const translated = t(
+                      "pricing.plan.company.tier.employees",
+                      {
+                        count: tier.employees,
+                        defaultValue: `حتى ${employeesLabel} موظف`,
+                      }
+                    );
+                    return translated.replace(
+                      "{{count}}",
+                      employeesLabel.toString()
+                    );
+                  })();
+
+                  return (
                   <button
-                    key={tier.id}
-                    onClick={() => setSelectedCompanyTier(tier.id)}
-                    className={`p-3 rounded-lg border-2 transition-all text-center ${
-                      selectedCompanyTier === tier.id
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                  >
-                    <div className="font-semibold text-sm">
-                      {tier.nameKey ? t(tier.nameKey) : tier.name}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {tier.price
-                        ? `${tier.price} ﷼`
-                        : t("pricing.plan.company.tier.custom_price")}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {(() => {
-                        const employeesLabel =
-                          tier.employeesLabel ?? tier.employees.toString();
-                        const translated = t(
-                          "pricing.plan.company.tier.employees",
-                          {
-                            count: tier.employees,
-                            defaultValue: `Up to ${employeesLabel} employees`,
-                          }
-                        );
-                        return translated.replace(
-                          "{{count}}",
-                          employeesLabel.toString()
-                        );
-                      })()}
-                    </div>
-                    {tier.popular && (
-                      <Badge className="mt-1 text-xs bg-purple-500">
-                        {t("pricing.plan.company.tier.popular_badge")}
-                      </Badge>
-                    )}
-                  </button>
-                ))}
+                      key={tier.id}
+                      type="button"
+                      aria-pressed={selectedCompanyTier === tier.id}
+                      aria-describedby={tierDescriptionId}
+                      className={`p-3 rounded-lg border-2 transition-all text-center ${
+                        selectedCompanyTier === tier.id
+                          ? "border-blue-500 bg-blue-50"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                      onClick={() => setSelectedCompanyTier(tier.id)}
+                    >
+                      <div className="font-semibold text-sm">
+                        {tier.nameKey ? t(tier.nameKey) : tier.name}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {tierPrice}
+                      </div>
+                      <div
+                        id={tierDescriptionId}
+                        className="text-xs text-muted-foreground"
+                      >
+                        {tierEmployees}
+                      </div>
+                      {tier.popular && (
+                        <Badge className="mt-1 text-xs bg-purple-500">
+                          {t("pricing.plan.company.tier.popular_badge")}
+                        </Badge>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
 
               <div className="space-y-3">
                 {pricingPlans.company.features.map((feature, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <Check
+                      className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5"
+                      aria-label={includedLabel}
+                      role="img"
+                      focusable="false"
+                    />
                     <span className="text-sm">
                       {feature.nameKey ? t(feature.nameKey) : feature.name}
                     </span>
@@ -568,19 +641,23 @@ export default function Pricing() {
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <table className="w-full" role="table">
+                    <caption className="sr-only">{tableCaption}</caption>
                     <thead>
                       <tr className="border-b">
-                        <th className="text-right p-4 font-semibold">
+                        <th scope="col" className="text-right p-4 font-semibold">
                           {t("pricing.table.col.feature")}
                         </th>
-                        <th className="text-center p-4 font-semibold">
+                        <th scope="col" className="text-center p-4 font-semibold">
                           {t("pricing.table.col.employee")}
                         </th>
-                        <th className="text-center p-4 font-semibold bg-purple-50">
+                        <th
+                          scope="col"
+                          className="text-center p-4 font-semibold bg-purple-50"
+                        >
                           {t("pricing.table.col.freelancer")}
                         </th>
-                        <th className="text-center p-4 font-semibold">
+                        <th scope="col" className="text-center p-4 font-semibold">
                           {t("pricing.table.col.company")}
                         </th>
                       </tr>
@@ -594,9 +671,19 @@ export default function Pricing() {
                           <td className="p-4 text-center">
                             {typeof row.employee === "boolean" ? (
                               row.employee ? (
-                                <Check className="h-5 w-5 text-green-500 mx-auto" />
+                                <Check
+                                  className="h-5 w-5 text-green-500 mx-auto"
+                                  aria-label={includedLabel}
+                                  role="img"
+                                  focusable="false"
+                                />
                               ) : (
-                                <X className="h-5 w-5 text-gray-300 mx-auto" />
+                                <X
+                                  className="h-5 w-5 text-gray-300 mx-auto"
+                                  aria-label={excludedLabel}
+                                  role="img"
+                                  focusable="false"
+                                />
                               )
                             ) : (
                               <span className="text-sm">
@@ -609,9 +696,19 @@ export default function Pricing() {
                           <td className="p-4 text-center bg-purple-50">
                             {typeof row.freelancer === "boolean" ? (
                               row.freelancer ? (
-                                <Check className="h-5 w-5 text-green-500 mx-auto" />
+                                <Check
+                                  className="h-5 w-5 text-green-500 mx-auto"
+                                  aria-label={includedLabel}
+                                  role="img"
+                                  focusable="false"
+                                />
                               ) : (
-                                <X className="h-5 w-5 text-gray-300 mx-auto" />
+                                <X
+                                  className="h-5 w-5 text-gray-300 mx-auto"
+                                  aria-label={excludedLabel}
+                                  role="img"
+                                  focusable="false"
+                                />
                               )
                             ) : (
                               <span className="text-sm font-semibold">
@@ -624,9 +721,19 @@ export default function Pricing() {
                           <td className="p-4 text-center">
                             {typeof row.company === "boolean" ? (
                               row.company ? (
-                                <Check className="h-5 w-5 text-green-500 mx-auto" />
+                                <Check
+                                  className="h-5 w-5 text-green-500 mx-auto"
+                                  aria-label={includedLabel}
+                                  role="img"
+                                  focusable="false"
+                                />
                               ) : (
-                                <X className="h-5 w-5 text-gray-300 mx-auto" />
+                                <X
+                                  className="h-5 w-5 text-gray-300 mx-auto"
+                                  aria-label={excludedLabel}
+                                  role="img"
+                                  focusable="false"
+                                />
                               )
                             ) : (
                               <span className="text-sm font-semibold">
@@ -650,7 +757,11 @@ export default function Pricing() {
         <div className="grid md:grid-cols-4 gap-6 mb-16">
           {trustBadges.map(badge => (
             <Card key={badge.titleKey} className="text-center p-6">
-              <badge.icon className={`h-8 w-8 mx-auto mb-3 ${badge.color}`} />
+              <badge.icon
+                className={`h-8 w-8 mx-auto mb-3 ${badge.color}`}
+                aria-hidden="true"
+                focusable="false"
+              />
               <h3 className="font-semibold mb-2">{t(badge.titleKey)}</h3>
               <p className="text-sm text-muted-foreground">
                 {t(badge.descKey)}
@@ -663,7 +774,11 @@ export default function Pricing() {
         <Card className="mb-16">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 p-3 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 w-fit">
-              <HelpCircle className="h-6 w-6 text-white" />
+              <HelpCircle
+                className="h-6 w-6 text-white"
+                aria-hidden="true"
+                focusable="false"
+              />
             </div>
             <CardTitle className="text-2xl">{t("pricing.faq.title")}</CardTitle>
             <CardDescription>{t("pricing.faq.subtitle")}</CardDescription>
@@ -719,6 +834,6 @@ export default function Pricing() {
 
       {/* Footer */}
       <Footer />
-    </div>
+    </main>
   );
 }

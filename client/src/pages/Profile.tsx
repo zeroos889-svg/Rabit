@@ -41,7 +41,6 @@ import {
   Settings,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import {
   AUDIT_ACTION_META,
@@ -249,8 +248,6 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-      <Header />
-
       <main className="flex-1 container py-8">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Header */}
@@ -287,6 +284,7 @@ export default function Profile() {
                         type="file"
                         accept="image/*"
                         className="hidden"
+                        aria-label="تحميل صورة الملف الشخصي"
                         onChange={handleImageUpload}
                         disabled={
                           uploadFileMutation.isPending ||

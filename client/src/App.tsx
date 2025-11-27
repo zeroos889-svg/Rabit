@@ -10,7 +10,7 @@ import { ChatWidget } from "./components/ChatWidget";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { PublicOnlyRoute } from "./components/PublicOnlyRoute";
 import { AdminLayout } from "./components/AdminLayout";
-import { BrandHeader } from "./components/BrandHeader";
+import { Header } from "./components/Header";
 import { SkipLink } from "./components/SkipLink";
 import { AccessibilityProvider } from "./contexts/AccessibilityContext";
 import { KeyboardShortcuts } from "./components/KeyboardShortcuts";
@@ -654,7 +654,7 @@ function App() {
         <ThemeProvider defaultTheme="light" switchable>
           <TooltipProvider>
             <SkipLink />
-            <BrandHeader />
+            <Header />
             <main
               id="main-content"
               className="min-h-[calc(100vh-4rem)]"

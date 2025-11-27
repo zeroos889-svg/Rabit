@@ -1,8 +1,10 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
+import { cn } from "@/lib/utils";
 import { 
   AnimatedSection, 
   FadeIn, 
@@ -197,6 +199,191 @@ const trialTiles = [
   },
 ];
 
+type DemoScenario = {
+  id: string;
+  title: string;
+  summary: string;
+  highlight: string;
+  ctaHref: string;
+  ctaLabel: string;
+  steps: {
+    title: string;
+    description: string;
+    previewTitle: string;
+    previewHighlights: { label: string; value: string }[];
+    timeline: { label: string; status: "done" | "active" | "pending"; note: string }[];
+    actionLabel: string;
+  }[];
+};
+
+const demoScenarios: DemoScenario[] = [
+  {
+    id: "automation",
+    title: "أتمتة الموارد البشرية",
+    summary: "حوّل طلبات الإجازات والعقود إلى سير عمل تلقائي مع إشعارات دقيقة.",
+    highlight: "توفير 6 ساعات أسبوعياً",
+    ctaHref: "/trial-accounts",
+    ctaLabel: "شاهد السيرة العملية",
+    steps: [
+      {
+        title: "ضبط سياسات الموافقات",
+        description: "اختر الأقسام وحدد مستويات الاعتماد لضمان شفافية كاملة.",
+        previewTitle: "سير العمل",
+        previewHighlights: [
+          { label: "طلبات نشطة", value: "24" },
+          { label: "تأخيرات", value: "0" },
+        ],
+        timeline: [
+          { label: "إجازة قسم التقنية", status: "done", note: "تم الاعتماد من المدير" },
+          { label: "تحذير الرواتب", status: "active", note: "بانتظار مراجعة الامتثال" },
+          { label: "تذكير تلقائي", status: "pending", note: "سيُرسل بعد 30 دقيقة" },
+        ],
+        actionLabel: "يستغرق الإعداد أقل من دقيقتين",
+      },
+      {
+        title: "متابعة التنفيذ",
+        description: "راقب المؤشرات وتأكد من اكتمال كل خطوة مع تنبيهات تلقائية.",
+        previewTitle: "المؤشرات",
+        previewHighlights: [
+          { label: "معدل الالتزام", value: "98%" },
+          { label: "وقت التنفيذ", value: "4 دقائق" },
+        ],
+        timeline: [
+          { label: "مراجعة الموارد البشرية", status: "done", note: "تمت أمس" },
+          { label: "توقيع المدير التنفيذي", status: "active", note: "قيد الانتظار" },
+          { label: "أرشفة تلقائية", status: "pending", note: "بعد التوقيع" },
+        ],
+        actionLabel: "شارك التقرير مع فريقك فوراً",
+      },
+      {
+        title: "إغلاق الحلقة",
+        description: "أرسل ملخصًا آليًا للأطراف وتتبّع التحسينات المتكررة.",
+        previewTitle: "لوحة الأداء",
+        previewHighlights: [
+          { label: "طلبات مُقفلة", value: "112" },
+          { label: "حالات متعثرة", value: "1" },
+        ],
+        timeline: [
+          { label: "ملخص الامتثال", status: "done", note: "تم الإرسال" },
+          { label: "استبيان الرضا", status: "active", note: "جارٍ الجمع" },
+          { label: "تحسين السياسة", status: "pending", note: "يوصى بمراجعة شهرية" },
+        ],
+        actionLabel: "أرسل الملخص إلى القيادة بنقرة واحدة",
+      },
+    ],
+  },
+  {
+    id: "self-service",
+    title: "تجربة الموظف الذاتية",
+    summary: "اجعل الموظفين ينهون طلباتهم دون الرجوع للدعم مع تعقب فوري.",
+    highlight: "90% من الطلبات ذاتية",
+    ctaHref: "/signup",
+    ctaLabel: "منح صلاحيات الموظفين",
+    steps: [
+      {
+        title: "واجهة الطلب الذكي",
+        description: "نموذج عربي مبسّط يعرض السياسات تلقائياً حسب نوع الطلب.",
+        previewTitle: "نموذج الخدمة الذاتية",
+        previewHighlights: [
+          { label: "ثواني للإرسال", value: "42" },
+          { label: "طلبات اليوم", value: "36" },
+        ],
+        timeline: [
+          { label: "طلب بدل سكن", status: "done", note: "تم تحويله للمالية" },
+          { label: "طلب إجازة عاجلة", status: "active", note: "قيد التحقق" },
+          { label: "إثبات حضور", status: "pending", note: "بانتظار المستند" },
+        ],
+        actionLabel: "يصل الموظف إلى النتيجة خلال أقل من دقيقة",
+      },
+      {
+        title: "إشعارات فورية",
+        description: "إشعارات واتساب وبريد مرتبطة بنظام الموافقات.",
+        previewTitle: "قنوات الإشعار",
+        previewHighlights: [
+          { label: "رسائل فورية", value: "12" },
+          { label: "متوسط الاستجابة", value: "8 دقائق" },
+        ],
+        timeline: [
+          { label: "إشعار المدير", status: "done", note: "قُرئ للتو" },
+          { label: "تنبيه الموظف", status: "active", note: "بانتظار رد" },
+          { label: "سلم التصعيد", status: "pending", note: "يبدأ بعد 2 ساعة" },
+        ],
+        actionLabel: "تذكير تلقائي قبل انتهاء SLA",
+      },
+      {
+        title: "تحليلات التجربة",
+        description: "راقب زمن إغلاق الطلبات ونقاط الاحتياج لتحسين الرحلة.",
+        previewTitle: "لوحة CX",
+        previewHighlights: [
+          { label: "معدل الرضا", value: "4.8/5" },
+          { label: "طلبات مكالمات", value: "3" },
+        ],
+        timeline: [
+          { label: "استبيان ما بعد الإغلاق", status: "done", note: "اكتمل" },
+          { label: "مقابلة عمق", status: "active", note: "خلال هذا الأسبوع" },
+          { label: "خريطة رحلة جديدة", status: "pending", note: "تحت الإعداد" },
+        ],
+        actionLabel: "صدّر التقرير بالفيديو التوضيحي",
+      },
+    ],
+  },
+  {
+    id: "compliance",
+    title: "متابعة الامتثال",
+    summary: "راقب العقود والتنبيهات القانونية مع لوحة زمنية واضحة.",
+    highlight: "صفر مخالفات تأخير",
+    ctaHref: "/contact",
+    ctaLabel: "اطلب مراجعة امتثال",
+    steps: [
+      {
+        title: "جدول الالتزامات",
+        description: "سجل تلقائي لتواريخ نهاية العقود والتأشيرات.",
+        previewTitle: "مؤقت الامتثال",
+        previewHighlights: [
+          { label: "بنود تحت المراقبة", value: "14" },
+          { label: "مخاطر مرتفعة", value: "0" },
+        ],
+        timeline: [
+          { label: "عقد مورد", status: "done", note: "تم التجديد" },
+          { label: "تأشيرة استشاري", status: "active", note: "تنتهي خلال 5 أيام" },
+          { label: "مراجعة وزارة الموارد", status: "pending", note: "مجدولة" },
+        ],
+        actionLabel: "ارسل التذكير القانوني بضغطة",
+      },
+      {
+        title: "تنبيهات تلقائية",
+        description: "يصلك تنبيه متعدد القنوات لأي حدث حساس.",
+        previewTitle: "مسار التنبيه",
+        previewHighlights: [
+          { label: "تنبيهات اليوم", value: "5" },
+          { label: "تم الحل", value: "4" },
+        ],
+        timeline: [
+          { label: "إشعار مدير الفرع", status: "done", note: "استلم التنبيه" },
+          { label: "تنسيق جهة قانونية", status: "active", note: "قيد النقاش" },
+          { label: "تصعيد مجلس الإدارة", status: "pending", note: "جاهز عند الحاجة" },
+        ],
+        actionLabel: "تأكد من التوثيق في سجل التدقيق",
+      },
+      {
+        title: "تقارير رقمية",
+        description: "قدّم ملف امتثال جاهز للمراجعات الداخلية والخارجية.",
+        previewTitle: "ملف الامتثال",
+        previewHighlights: [
+          { label: "مرفقات", value: "32" },
+          { label: "جلسات مراجعة", value: "6" },
+        ],
+        timeline: [
+          { label: "مراجعة داخلية", status: "done", note: "تم اعتمادها" },
+          { label: "ملاحظات قانونية", status: "active", note: "تحت التنفيذ" },
+          { label: "أرشفة إلكترونية", status: "pending", note: "تُغلق بعد الاعتماد" },
+        ],
+        actionLabel: "صدّر PDF أو شاركه عبر رابط آمن",
+      },
+    ],
+  },
+];
+
 const audienceBenefits: AudienceBenefit[] = [
   {
     audienceLabel: "لفرق الموارد البشرية",
@@ -335,9 +522,24 @@ const testimonials: Testimonial[] = [
 
 export default function EnhancedHome() {
   const { t } = useTranslation();
+  const [heroImageError, setHeroImageError] = useState(false);
+  const [activeDemoId, setActiveDemoId] = useState(() => demoScenarios[0]?.id ?? "automation");
+  const [activeStepIndex, setActiveStepIndex] = useState(0);
+
+  useEffect(() => {
+    setActiveStepIndex(0);
+  }, [activeDemoId]);
+
+  const activeDemo = demoScenarios.find(demo => demo.id === activeDemoId) ?? demoScenarios[0];
+  const activeStep = activeDemo.steps[activeStepIndex] ?? activeDemo.steps[0];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
+    <main
+      id="main-content"
+      role="main"
+      aria-labelledby="enhanced-home-hero-title"
+      className="min-h-screen bg-gradient-to-br from-background via-background to-muted"
+    >
       {/* Hero Section - Enhanced */}
       <section className="relative overflow-hidden">
         {/* Animated Background */}
@@ -386,6 +588,7 @@ export default function EnhancedHome() {
                 </motion.div>
 
                 <motion.h1
+                  id="enhanced-home-hero-title"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
@@ -500,18 +703,29 @@ export default function EnhancedHome() {
                   className="relative rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 p-1 shadow-2xl"
                 >
                   <div className="rounded-xl bg-background p-8">
-                    <img
-                      src="/hero-illustration.svg"
-                      alt="Rabit HR System"
-                      className="w-full"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
-                    />
-                    {/* Placeholder if image doesn't exist */}
-                    <div className="flex h-96 items-center justify-center">
-                      <Globe className="h-48 w-48 text-primary/20" />
-                    </div>
+                    {!heroImageError ? (
+                      <img
+                        src="/hero-illustration.svg"
+                        alt="Rabit HR System overview"
+                        className="h-auto w-full"
+                        width={960}
+                        height={720}
+                        loading="eager"
+                        decoding="async"
+                        fetchPriority="high"
+                        onError={() => setHeroImageError(true)}
+                      />
+                    ) : (
+                      <div className="flex h-96 flex-col items-center justify-center gap-4 text-center text-primary/80">
+                        <Globe className="h-24 w-24" />
+                        <div className="space-y-1">
+                          <p className="text-lg font-semibold">منصة رابط للموارد البشرية</p>
+                          <p className="text-sm text-muted-foreground">
+                            يتعذر تحميل الرسم التوضيحي حالياً.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
 
@@ -614,6 +828,158 @@ export default function EnhancedHome() {
                   </CardContent>
                 </Card>
               ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-slate-950 py-16 text-white">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto mb-12 max-w-3xl text-center space-y-4">
+            <Badge className="mx-auto w-fit bg-white/10 text-white">
+              عرض تفاعلي مباشر
+            </Badge>
+            <h2 className="text-4xl font-bold lg:text-5xl">
+              جرّب لوحات ربط بدون تسجيل
+            </h2>
+            <p className="text-base text-white/80">
+              اختر السيناريو الذي يهم فريقك وشاهد كيف تنتقل الإجراءات من الطلب إلى التقرير النهائي بخطوات واضحة يمكن اختبارها الآن.
+            </p>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-[280px,1fr]">
+            <div
+              role="tablist"
+              aria-label="سيناريوهات العرض التفاعلي"
+              className="flex flex-col gap-3"
+            >
+              {demoScenarios.map((scenario) => {
+                const isActive = scenario.id === activeDemoId;
+                return (
+                  <button
+                    key={scenario.id}
+                    type="button"
+                    role="tab"
+                    id={`demo-tab-${scenario.id}`}
+                    aria-selected={isActive ? "true" : undefined}
+                    aria-controls={`demo-panel-${scenario.id}`}
+                    onClick={() => setActiveDemoId(scenario.id)}
+                    className={cn(
+                      "rounded-2xl border border-white/15 px-4 py-4 text-left transition-all",
+                      isActive
+                        ? "bg-white text-slate-900 shadow-2xl"
+                        : "bg-white/5 text-white/80 hover:bg-white/10"
+                    )}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-lg font-semibold">{scenario.title}</span>
+                      {isActive && <Sparkles className="h-5 w-5 text-amber-500" aria-hidden="true" />}
+                    </div>
+                    <p className={cn("mt-2 text-sm", isActive ? "text-slate-600" : "text-white/70")}>{scenario.summary}</p>
+                    <span className={cn("mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold", isActive ? "bg-emerald-100 text-emerald-700" : "bg-white/10 text-white/80")}>{scenario.highlight}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div
+              id={`demo-panel-${activeDemo.id}`}
+              role="tabpanel"
+              aria-labelledby={`demo-tab-${activeDemo.id}`}
+              className="rounded-3xl border border-white/10 bg-white text-slate-900 shadow-2xl"
+            >
+              <div className="flex flex-col gap-8 p-6 lg:p-8">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-2xl font-bold text-slate-900">{activeDemo.title}</h3>
+                    <p className="text-sm text-slate-500">{activeDemo.summary}</p>
+                  </div>
+                  <span className="rounded-full bg-emerald-50 px-4 py-1.5 text-sm font-semibold text-emerald-700">
+                    {activeDemo.highlight}
+                  </span>
+                </div>
+
+                <div className="grid gap-6 lg:grid-cols-[260px,1fr]">
+                  <div className="space-y-3" role="listbox" aria-label="خطوات السيناريو">
+                    {activeDemo.steps.map((step, stepIndex) => {
+                      const isStepActive = stepIndex === activeStepIndex;
+                      return (
+                        <button
+                          key={`${activeDemo.id}-step-${stepIndex}`}
+                          type="button"
+                          role="option"
+                          aria-selected={isStepActive ? "true" : undefined}
+                          onClick={() => setActiveStepIndex(stepIndex)}
+                          className={cn(
+                            "w-full rounded-2xl border px-4 py-3 text-right transition-colors",
+                            isStepActive
+                              ? "border-blue-500 bg-blue-50 text-slate-900"
+                              : "border-slate-200 bg-white text-slate-600 hover:border-blue-200"
+                          )}
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <span className="text-sm font-semibold">{step.title}</span>
+                            {isStepActive && <ArrowRight className="h-4 w-4 text-blue-600" aria-hidden="true" />}
+                          </div>
+                          <p className="mt-1 text-xs text-slate-500">{step.description}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-6">
+                    <div className="mb-5">
+                      <p className="text-xs uppercase tracking-widest text-slate-500">{activeStep.previewTitle}</p>
+                      <h4 className="text-2xl font-bold text-slate-900">{activeStep.title}</h4>
+                      <p className="text-sm text-slate-600">{activeStep.description}</p>
+                    </div>
+
+                    <div className="mb-6 flex flex-wrap gap-3">
+                      {activeStep.previewHighlights.map((highlight) => (
+                        <div key={`${activeStep.title}-${highlight.label}`} className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-2">
+                          <p className="text-xs text-slate-500">{highlight.label}</p>
+                          <p className="text-lg font-semibold text-slate-900">{highlight.value}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="space-y-3">
+                      {activeStep.timeline.map((checkpoint) => {
+                        const baseStyles =
+                          checkpoint.status === "done"
+                            ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                            : checkpoint.status === "active"
+                              ? "border-blue-200 bg-blue-50 text-blue-900"
+                              : "border-slate-200 bg-white text-slate-600";
+                        const Icon = checkpoint.status === "done" ? CheckCircle2 : checkpoint.status === "active" ? Zap : Clock;
+                        return (
+                          <div
+                            key={`${activeStep.title}-${checkpoint.label}`}
+                            className={cn("flex items-start gap-3 rounded-2xl border px-3 py-3", baseStyles)}
+                          >
+                            <Icon className="mt-1 h-4 w-4" aria-hidden="true" />
+                            <div>
+                              <p className="text-sm font-semibold">{checkpoint.label}</p>
+                              <p className="text-xs opacity-80">{checkpoint.note}</p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="mt-6 flex flex-wrap items-center gap-3">
+                      <Button size="sm" asChild>
+                        <Link href={activeDemo.ctaHref}>{activeDemo.ctaLabel}</Link>
+                      </Button>
+                      <span className="text-xs text-slate-500">{activeStep.actionLabel}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div role="status" aria-live="polite" className="sr-only">
+                  {`${activeDemo.title} – ${activeStep.title}`}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -765,7 +1131,7 @@ export default function EnhancedHome() {
           </div>
 
           <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {features.map((feature, index) => (
+            {features.map((feature) => (
               <StaggerItem key={feature.title}>
                 <motion.div
                   whileHover={{ y: -8 }}
@@ -986,6 +1352,6 @@ export default function EnhancedHome() {
 
       {/* Footer */}
       <Footer />
-    </div>
+    </main>
   );
 }

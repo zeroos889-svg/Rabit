@@ -1,4 +1,6 @@
-import { Link } from "wouter";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,11 +12,35 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, Settings, LogOut, LayoutDashboard } from "lucide-react";
-import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
+import {
+  User,
+  Settings,
+  LogOut,
+  LayoutDashboard,
+  Menu,
+  X,
+  Globe,
+} from "lucide-react";
+import { APP_LOGO, APP_TITLE } from "@/const";
+
+const NAV_LINKS = [
+  { href: "/", labelKey: "nav.home", fallback: "الرئيسية" },
+  { href: "/services", labelKey: "nav.services", fallback: "الخدمات" },
+  { href: "/consulting", labelKey: "nav.consulting", fallback: "الاستشارات" },
+  { href: "/pricing", labelKey: "nav.pricing", fallback: "الأسعار" },
+  { href: "/contact", labelKey: "nav.contact", fallback: "تواصل معنا" },
+];
 
 export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
+  const { t, i18n } = useTranslation();
+  const [location] = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const mobileMenuId = "primary-nav-panel";
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location]);
 
   const getInitials = (name: string | null) => {
     if (!name) return "U";
@@ -23,6 +49,49 @@ export function Header() {
       return parts[0][0] + parts[1][0];
     }
     return name[0];
+  };
+
+  const primaryNavLabel = t("nav.primary", { defaultValue: "التنقل الرئيسي" });
+  const localeToggleLabel =
+    i18n.language === "ar"
+      ? "English"
+      : "العربية";
+  const localeToggleAria = t("nav.localeToggle", {
+    defaultValue: "تبديل اللغة",
+  });
+  const mobileToggleLabel = isMobileMenuOpen
+    ? t("nav.closeMenu", { defaultValue: "إغلاق القائمة" })
+    : t("nav.openMenu", { defaultValue: "فتح القائمة" });
+
+  const handleLocaleToggle = () => {
+    const nextLang = i18n.language === "ar" ? "en" : "ar";
+    i18n.changeLanguage(nextLang);
+    if (typeof document !== "undefined") {
+      document.documentElement.lang = nextLang;
+      document.documentElement.dir = nextLang === "ar" ? "rtl" : "ltr";
+    }
+  };
+
+  const renderNavLink = (link: (typeof NAV_LINKS)[number], isMobile = false) => {
+    const label = t(link.labelKey, { defaultValue: link.fallback });
+    const isActive = location === link.href;
+    const baseClasses = isMobile
+      ? "block w-full rounded-lg px-4 py-2 text-right text-base font-medium"
+      : "inline-flex items-center rounded-full px-3 py-2 text-sm font-medium";
+    const stateClasses = isActive
+      ? "bg-primary/10 text-primary"
+      : "text-muted-foreground hover:text-foreground";
+
+    return (
+      <Link
+        key={link.href}
+        href={link.href}
+        aria-current={isActive ? "page" : undefined}
+        className={`${baseClasses} ${stateClasses}`}
+      >
+        {label}
+      </Link>
+    );
   };
 
   return (
@@ -35,7 +104,10 @@ export function Header() {
           </span>
         </Link>
 
-        <nav className="flex items-center gap-4">
+        <nav className="flex w-auto items-center gap-4" aria-label={primaryNavLabel}>
+          <div className="hidden md:flex items-center gap-2">
+            {NAV_LINKS.map(link => renderNavLink(link))}
+          </div>
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -92,7 +164,7 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2">
               <Button variant="ghost" asChild>
                 <Link href="/login">تسجيل الدخول</Link>
               </Button>
@@ -101,8 +173,87 @@ export function Header() {
               </Button>
             </div>
           )}
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleLocaleToggle}
+              aria-label={localeToggleAria}
+              className="flex items-center gap-2"
+            >
+              <Globe className="h-4 w-4" aria-hidden="true" />
+              <span className="hidden sm:inline-block text-sm font-medium">
+                {localeToggleLabel}
+              </span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls={mobileMenuId}
+              aria-label={mobileToggleLabel}
+              onClick={() => setIsMobileMenuOpen(prev => !prev)}
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-5 w-5" aria-hidden="true" />
+              ) : (
+                <Menu className="h-5 w-5" aria-hidden="true" />
+              )}
+            </Button>
+          </div>
         </nav>
       </div>
+      {isMobileMenuOpen && (
+        <div
+          id={mobileMenuId}
+          className="md:hidden border-b border-border bg-background shadow-lg"
+          role="dialog"
+          aria-label={primaryNavLabel}
+        >
+          <div className="container space-y-4 py-4">
+            <div className="flex flex-col gap-2">
+              {NAV_LINKS.map(link => renderNavLink(link, true))}
+            </div>
+            {isAuthenticated ? (
+              <div className="flex flex-col gap-2">
+                <Link
+                  href="/profile"
+                  className="w-full rounded-lg border px-4 py-2 text-right text-sm"
+                >
+                  الملف الشخصي
+                </Link>
+                <Link
+                  href="/dashboard"
+                  className="w-full rounded-lg border px-4 py-2 text-right text-sm"
+                >
+                  لوحة التحكم
+                </Link>
+                <Button
+                  variant="destructive"
+                  className="justify-center"
+                  onClick={() => logout()}
+                >
+                  تسجيل الخروج
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <Button variant="ghost" asChild className="justify-center">
+                  <Link href="/login">تسجيل الدخول</Link>
+                </Button>
+                <Button asChild className="gradient-primary text-white justify-center">
+                  <Link href="/signup">إنشاء حساب</Link>
+                </Button>
+                <Button variant="outline" asChild className="justify-center">
+                  <Link href="/trial-accounts">الوضع التجريبي</Link>
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }
