@@ -21,7 +21,7 @@ import {
   X,
   Globe,
 } from "lucide-react";
-import { APP_LOGO, APP_TITLE } from "@/const";
+import { BrandMark } from "@/components/BrandMark";
 
 const NAV_LINKS = [
   { href: "/", labelKey: "nav.home", fallback: "الرئيسية" },
@@ -29,6 +29,12 @@ const NAV_LINKS = [
   { href: "/consulting", labelKey: "nav.consulting", fallback: "الاستشارات" },
   { href: "/pricing", labelKey: "nav.pricing", fallback: "الأسعار" },
   { href: "/contact", labelKey: "nav.contact", fallback: "تواصل معنا" },
+];
+
+const EXPERIENCE_SIGNALS = [
+  { label: "رضا العملاء", value: "4.9/5" },
+  { label: "متوسط التفعيل", value: "3 أيام" },
+  { label: "دعم مباشر", value: "24/7" },
 ];
 
 export function Header() {
@@ -96,15 +102,13 @@ export function Header() {
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <img src={APP_LOGO} alt={APP_TITLE} className="h-8 w-8" />
-          <span className="text-xl font-bold text-gradient-primary">
-            {APP_TITLE}
-          </span>
-        </Link>
+      <div className="container flex flex-col gap-2 py-2">
+        <div className="flex h-16 items-center justify-between gap-4">
+          <Link href="/" className="flex items-center gap-3" aria-label="العودة للرئيسية">
+            <BrandMark size="md" showTagline tagline="تجربة عملاء موحدة" />
+          </Link>
 
-        <nav className="flex w-auto items-center gap-4" aria-label={primaryNavLabel}>
+          <nav className="flex w-auto items-center gap-4" aria-label={primaryNavLabel}>
           <div className="hidden md:flex items-center gap-2">
             {NAV_LINKS.map(link => renderNavLink(link))}
           </div>
@@ -204,12 +208,30 @@ export function Header() {
             </Button>
           </div>
         </nav>
+        </div>
+
+        <div className="hidden md:flex items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-4 py-2 text-sm">
+          <div className="flex items-center gap-6">
+            {EXPERIENCE_SIGNALS.map(signal => (
+              <div key={signal.label} className="flex items-center gap-2 text-muted-foreground">
+                <span className="text-xs text-foreground/80">{signal.label}</span>
+                <span className="rounded-full bg-background px-3 py-1 text-xs font-semibold text-primary shadow-sm">
+                  {signal.value}
+                </span>
+              </div>
+            ))}
+          </div>
+          <Button asChild size="sm" className="gradient-primary text-white">
+            <Link href="/consulting/book" aria-label="احجز تجربة موجهة">
+              احجز تجربة موجهة
+            </Link>
+          </Button>
+        </div>
       </div>
       {isMobileMenuOpen && (
         <div
           id={mobileMenuId}
           className="md:hidden border-b border-border bg-background shadow-lg"
-          role="dialog"
           aria-label={primaryNavLabel}
         >
           <div className="container space-y-4 py-4">

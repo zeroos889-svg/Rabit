@@ -1,19 +1,19 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { APP_LOGO } from "@/const";
+import { BrandMark } from "@/components/BrandMark";
 import {
   Mail,
   Phone,
   MapPin,
-  Facebook,
-  Twitter,
-  Linkedin,
-  Instagram,
+  Share2,
+  MessagesSquare,
+  Network,
+  Globe2,
   Send,
   Shield,
   Lock,
-  Globe2,
+  Globe,
 } from "lucide-react";
 
 export function Footer() {
@@ -24,24 +24,8 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand & Description */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-12 w-12 rounded-2xl bg-white shadow-brand-glow flex items-center justify-center">
-                <img
-                  src={APP_LOGO}
-                  alt="Rabit"
-                  className="h-8 w-8"
-                  loading="lazy"
-                  width={32}
-                  height={32}
-                  sizes="32px"
-                />
-              </div>
-              <div>
-                <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                  HR Platform
-                </span>
-                <p className="text-2xl font-bold text-gradient-primary">رابِط</p>
-              </div>
+            <div className="mb-4">
+              <BrandMark size="lg" orientation="horizontal" showTagline tagline="حل موحد لتجربة الموارد البشرية" />
             </div>
             <p className="text-muted-foreground mb-6 leading-relaxed">
               مساعدك الذكي في إدارة الموارد البشرية. أدوات الذكاء الاصطناعي، الاستشارات، ولوحات المتابعة في تجربة واحدة متوافقة مع نظام العمل السعودي.
@@ -131,17 +115,19 @@ export function Footer() {
               <h5 className="font-medium mb-3">تابعنا</h5>
               <div className="flex gap-2">
                 {[
-                  { href: "https://twitter.com/rbithr", icon: Twitter },
-                  { href: "https://linkedin.com/company/rbithr", icon: Linkedin },
-                  { href: "https://instagram.com/rbithr", icon: Instagram },
-                  { href: "https://facebook.com/rbithr", icon: Facebook },
-                ].map(({ href, icon: Icon }) => (
+                  { href: "https://twitter.com/rbithr", icon: Share2, label: "تابعنا على تويتر" },
+                  { href: "https://linkedin.com/company/rbithr", icon: Network, label: "تابعنا على لينكدإن" },
+                  { href: "https://instagram.com/rbithr", icon: MessagesSquare, label: "تابعنا على إنستغرام" },
+                  { href: "https://facebook.com/rbithr", icon: Globe, label: "تابعنا على فيسبوك" },
+                ].map(({ href, icon: Icon, label }) => (
                   <a
                     key={href}
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="h-10 w-10 rounded-full gradient-primary flex items-center justify-center text-white hover:scale-110 transition-transform"
+                    aria-label={label}
+                    title={label}
                   >
                     <Icon className="h-4 w-4" />
                   </a>

@@ -199,6 +199,141 @@ const trialTiles = [
   },
 ];
 
+type ExperienceProfile = {
+  id: string;
+  label: string;
+  description: string;
+  kpis: { label: string; value: string; delta: string }[];
+  checklist: string[];
+  quote: string;
+  quoteAuthor: string;
+};
+
+const experienceProfiles: ExperienceProfile[] = [
+  {
+    id: "hr",
+    label: "فرق الموارد البشرية",
+    description: "يحتاج مسؤولو HR لرؤية لحظية لكل الطلبات والموافقات بدون مطاردة البريد أو ملفات Excel.",
+    kpis: [
+      { label: "متوسط إغلاق الطلب", value: "2.4 ساعة", delta: "-35%" },
+      { label: "الدقة القانونية", value: "99%", delta: "+9 نقاط" },
+      { label: "الوقت الموفر", value: "12 ساعة/أسبوع", delta: "-" },
+    ],
+    checklist: [
+      "تنبيهات ذكية قبل التصفية أو انتهاء العقود",
+      "مجلدات رقمية للموظفين مع سجلات تدقيق",
+      "تحليلات رضا الموظفين مرتبطة بكل طلب",
+    ],
+    quote: "استطعنا مراقبة كل ما يحدث في لحظة واحدة دون متابعة عبر الرسائل.",
+    quoteAuthor: "مديرة الموارد البشرية - شركة برمجيات",
+  },
+  {
+    id: "executive",
+    label: "الإدارة التنفيذية",
+    description: "تعتمد القيادات على لوحة واحدة ترى الصحة التشغيلية وتكلفة الموظف فوراً مع تنبيهات المخاطر.",
+    kpis: [
+      { label: "زمن اتخاذ القرار", value: "15 دقيقة", delta: "-60%" },
+      { label: "وضوح التكلفة", value: "+28%", delta: "تحسن" },
+      { label: "مخاطر متتبعة", value: "0 حرجة", delta: "-5" },
+    ],
+    checklist: [
+      "لوحات تجمع الرواتب، الالتزام، ونبض الموظفين",
+      "توقيعات رقمية موحدة لكل العقود",
+      "تقارير جاهزة للمجلس خلال ثوانٍ",
+    ],
+    quote: "الاجتماعات التنفيذية أصبحت أسرع لأن كل الأرقام حاضرة ومترابطة.",
+    quoteAuthor: "الرئيس التنفيذي للعمليات - مجموعة خدمات",
+  },
+  {
+    id: "employees",
+    label: "تجربة الموظف",
+    description: "واجهة عربية مبسطة تشرح الإجراءات وتُظهر حالة الطلب بدون الرجوع للدعم.",
+    kpis: [
+      { label: "معدل الرضا", value: "4.9 / 5", delta: "+0.6" },
+      { label: "طلبات ذاتية", value: "90%", delta: "+35%" },
+      { label: "وقت الاستجابة", value: "11 دقيقة", delta: "-72%" },
+    ],
+    checklist: [
+      "نماذج ذكية توضح السياسات قبل الإرسال",
+      "إشعارات واتساب وبريد مرتبطة بزمن SLA",
+      "لوحة متابعة شخصية للراتب، الإجازات، والمستندات",
+    ],
+    quote: "أصبحت أعرف أين وصل طلبي ومتى أستلم الرد بدون أي مكالمة.",
+    quoteAuthor: "موظفة مالية - منشأة تجزئة",
+  },
+];
+
+type JourneyMoment = {
+  title: string;
+  description: string;
+  metricLabel: string;
+  metricValue: string;
+  status: "done" | "active" | "next";
+};
+
+const journeyMoments: JourneyMoment[] = [
+  {
+    title: "التفعيل الأول",
+    description: "استيراد الموظفين والقوالب الجاهزة خلال جلسة واحدة مع خبير نجاح عملاء.",
+    metricLabel: "المدة",
+    metricValue: "90 دقيقة",
+    status: "done",
+  },
+  {
+    title: "أسبوع الانطلاقة",
+    description: "حملات تواصل تلقائية للموظفين وروابط لتسجيل الدخول التكميلي.",
+    metricLabel: "التبنّي",
+    metricValue: "82%",
+    status: "active",
+  },
+  {
+    title: "شهر التحسين",
+    description: "مراقبة نقاط الاحتياج وتعديل السياسات بسلاسة مع فريق الدعم.",
+    metricLabel: "طلبات الدعم",
+    metricValue: "3 فقط",
+    status: "next",
+  },
+];
+
+const experiencePromises = [
+  { label: "وقت التفعيل", value: "أقل من 3 أيام" },
+  { label: "الدعم", value: "استجابة خلال 5 دقائق" },
+  { label: "الشفافية", value: "لوحة متابعة لكل موظف" },
+];
+
+const journeyStatusStyles = {
+  done: {
+    label: "منجز",
+    badge: "bg-emerald-500/10 text-emerald-600",
+    dot: "bg-emerald-500",
+  },
+  active: {
+    label: "قيد التنفيذ",
+    badge: "bg-blue-500/10 text-blue-600",
+    dot: "bg-blue-500",
+  },
+  next: {
+    label: "التالي",
+    badge: "bg-slate-500/10 text-slate-600",
+    dot: "bg-slate-400",
+  },
+} as const;
+
+const timelineStatusMap = {
+  done: {
+    classes: "border-emerald-200 bg-emerald-50 text-emerald-900",
+    Icon: CheckCircle2,
+  },
+  active: {
+    classes: "border-blue-200 bg-blue-50 text-blue-900",
+    Icon: Zap,
+  },
+  pending: {
+    classes: "border-slate-200 bg-white text-slate-600",
+    Icon: Clock,
+  },
+} as const;
+
 type DemoScenario = {
   id: string;
   title: string;
@@ -525,6 +660,7 @@ export default function EnhancedHome() {
   const [heroImageError, setHeroImageError] = useState(false);
   const [activeDemoId, setActiveDemoId] = useState(() => demoScenarios[0]?.id ?? "automation");
   const [activeStepIndex, setActiveStepIndex] = useState(0);
+  const [activeExperienceId, setActiveExperienceId] = useState(() => experienceProfiles[0]?.id ?? "hr");
 
   useEffect(() => {
     setActiveStepIndex(0);
@@ -532,6 +668,7 @@ export default function EnhancedHome() {
 
   const activeDemo = demoScenarios.find(demo => demo.id === activeDemoId) ?? demoScenarios[0];
   const activeStep = activeDemo.steps[activeStepIndex] ?? activeDemo.steps[0];
+  const activeExperience = experienceProfiles.find(profile => profile.id === activeExperienceId) ?? experienceProfiles[0];
 
   return (
     <main
@@ -703,7 +840,17 @@ export default function EnhancedHome() {
                   className="relative rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 p-1 shadow-2xl"
                 >
                   <div className="rounded-xl bg-background p-8">
-                    {!heroImageError ? (
+                    {heroImageError ? (
+                      <div className="flex h-96 flex-col items-center justify-center gap-4 text-center text-primary/80">
+                        <Globe className="h-24 w-24" />
+                        <div className="space-y-1">
+                          <p className="text-lg font-semibold">منصة رابط للموارد البشرية</p>
+                          <p className="text-sm text-muted-foreground">
+                            يتعذر تحميل الرسم التوضيحي حالياً.
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
                       <img
                         src="/hero-illustration.svg"
                         alt="Rabit HR System overview"
@@ -715,16 +862,6 @@ export default function EnhancedHome() {
                         fetchPriority="high"
                         onError={() => setHeroImageError(true)}
                       />
-                    ) : (
-                      <div className="flex h-96 flex-col items-center justify-center gap-4 text-center text-primary/80">
-                        <Globe className="h-24 w-24" />
-                        <div className="space-y-1">
-                          <p className="text-lg font-semibold">منصة رابط للموارد البشرية</p>
-                          <p className="text-sm text-muted-foreground">
-                            يتعذر تحميل الرسم التوضيحي حالياً.
-                          </p>
-                        </div>
-                      </div>
                     )}
                   </div>
                 </motion.div>
@@ -791,6 +928,144 @@ export default function EnhancedHome() {
         </div>
       </section>
 
+          <section className="bg-gradient-to-br from-brand-50 via-white to-emerald-50 py-16 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950">
+            <div className="container mx-auto px-4 space-y-10">
+              <div className="mx-auto max-w-3xl text-center space-y-4">
+                <Badge className="mx-auto w-fit bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-200">
+                  تجربة العميل أولاً
+                </Badge>
+                <h2 className="text-4xl font-bold text-slate-900 dark:text-white">
+                  لوحة تحكم واضحة لكل رحلة عميل داخل رابط
+                </h2>
+                <p className="text-lg text-slate-600 dark:text-slate-300">
+                  اختر الشخصية التي تهمك وشاهد مباشرة المقاييس، الوعود الزمنية، والخطوات التي نلتزم بها لنجاح تجربة العملاء من التفعيل وحتى تبني الموظفين.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                {experiencePromises.map(promise => (
+                  <div
+                    key={promise.label}
+                    className="flex items-center gap-2 rounded-full border border-emerald-100 bg-white/80 px-4 py-2 text-sm font-medium text-emerald-700 shadow-sm dark:border-emerald-500/30 dark:bg-slate-900/60 dark:text-emerald-200"
+                  >
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-hidden="true" />
+                    <span>{promise.label}:</span>
+                    <span className="font-semibold text-slate-900 dark:text-white">{promise.value}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid gap-8 lg:grid-cols-[1.2fr,0.8fr]">
+                <div className="rounded-3xl border border-white/60 bg-white/90 p-6 shadow-xl backdrop-blur dark:border-slate-800 dark:bg-slate-950/70">
+                  <fieldset className="flex flex-wrap gap-3 border-0 p-0" aria-label="شرائح تجربة العميل">
+                    <legend className="sr-only">اختر تجربة العميل</legend>
+                    {experienceProfiles.map(profile => {
+                      const isActiveProfile = profile.id === activeExperienceId;
+                      return (
+                        <button
+                          key={profile.id}
+                          type="button"
+                          onClick={() => setActiveExperienceId(profile.id)}
+                          className={cn(
+                            "rounded-full border px-4 py-2 text-sm font-semibold transition-all",
+                            isActiveProfile
+                              ? "border-emerald-500 bg-emerald-500/10 text-emerald-700"
+                              : "border-slate-200 text-slate-500 hover:border-emerald-200"
+                          )}
+                        >
+                          {profile.label}
+                        </button>
+                      );
+                    })}
+                  </fieldset>
+
+                  <div className="mt-6 space-y-6">
+                    <p className="text-base text-slate-600 dark:text-slate-200">
+                      {activeExperience.description}
+                    </p>
+
+                    <div className="grid gap-4 sm:grid-cols-3">
+                      {activeExperience.kpis.map(kpi => (
+                        <div
+                          key={kpi.label}
+                          className="rounded-2xl border border-emerald-100 bg-emerald-50/50 p-4 text-right dark:border-emerald-500/20 dark:bg-slate-900"
+                        >
+                          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-600">
+                            {kpi.label}
+                          </p>
+                          <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-white">{kpi.value}</p>
+                          <p className="text-xs text-emerald-500">التغير {kpi.delta}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="rounded-2xl border border-dashed border-slate-200/80 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-900/70">
+                      <p className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-100">
+                        ما الذي نقدمه لتجربة عميل أفضل؟
+                      </p>
+                      <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                        {activeExperience.checklist.map(item => (
+                          <li key={item} className="flex items-start gap-2">
+                            <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-500" aria-hidden="true" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <blockquote className="rounded-2xl border border-emerald-100 bg-gradient-to-br from-white to-emerald-50/60 p-5 text-right shadow-inner dark:border-emerald-500/20 dark:from-slate-900 dark:to-slate-900">
+                      <p className="text-lg font-semibold text-slate-900 dark:text-white">“{activeExperience.quote}”</p>
+                      <p className="mt-2 text-sm text-emerald-600 dark:text-emerald-300">{activeExperience.quoteAuthor}</p>
+                    </blockquote>
+
+                    <Button asChild size="lg" className="gradient-primary text-white">
+                      <Link href="/contact">اطلب جلسة تصميم رحلة عميل</Link>
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900/80">
+                  <div className="mb-6 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-slate-500">خريطة رحلة العميل</p>
+                      <h3 className="text-2xl font-bold text-slate-900 dark:text-white">من أول يوم حتى التبني الكامل</h3>
+                    </div>
+                    <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-200">
+                      تحديث لحظي
+                    </Badge>
+                  </div>
+
+                  <div className="space-y-5">
+                    {journeyMoments.map(moment => {
+                      const status = journeyStatusStyles[moment.status];
+                      return (
+                        <div key={moment.title} className="rounded-2xl border border-slate-100 bg-white/90 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950/60">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                              <span className={cn("h-3 w-3 rounded-full", status.dot)} aria-hidden="true" />
+                              <p className="text-lg font-semibold text-slate-900 dark:text-white">{moment.title}</p>
+                            </div>
+                            <span className={cn("rounded-full px-3 py-1 text-xs font-semibold", status.badge)}>
+                              {status.label}
+                            </span>
+                          </div>
+                          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{moment.description}</p>
+                          <div className="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 dark:bg-slate-900/70 dark:text-white">
+                            {moment.metricLabel}: <span className="text-2xl font-bold text-primary ml-2">{moment.metricValue}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4 text-sm text-emerald-900 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-100">
+                    يتم تحديث هذه الخريطة بناءً على بيانات الاستخدام الفعلية وتنبيهات الدعم، ما يسمح لك بالبقاء قريباً من تجربة عملائك طوال الوقت.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
       <section className="border-y border-slate-100 bg-white/80">
         <div className="container mx-auto px-4 py-12 lg:py-16">
           <div className="grid gap-8 lg:grid-cols-2">
@@ -848,21 +1123,13 @@ export default function EnhancedHome() {
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[280px,1fr]">
-            <div
-              role="tablist"
-              aria-label="سيناريوهات العرض التفاعلي"
-              className="flex flex-col gap-3"
-            >
+            <div className="flex flex-col gap-3" aria-label="سيناريوهات العرض التفاعلي">
               {demoScenarios.map((scenario) => {
                 const isActive = scenario.id === activeDemoId;
                 return (
                   <button
                     key={scenario.id}
                     type="button"
-                    role="tab"
-                    id={`demo-tab-${scenario.id}`}
-                    aria-selected={isActive ? "true" : undefined}
-                    aria-controls={`demo-panel-${scenario.id}`}
                     onClick={() => setActiveDemoId(scenario.id)}
                     className={cn(
                       "rounded-2xl border border-white/15 px-4 py-4 text-left transition-all",
@@ -882,12 +1149,7 @@ export default function EnhancedHome() {
               })}
             </div>
 
-            <div
-              id={`demo-panel-${activeDemo.id}`}
-              role="tabpanel"
-              aria-labelledby={`demo-tab-${activeDemo.id}`}
-              className="rounded-3xl border border-white/10 bg-white text-slate-900 shadow-2xl"
-            >
+            <div className="rounded-3xl border border-white/10 bg-white text-slate-900 shadow-2xl">
               <div className="flex flex-col gap-8 p-6 lg:p-8">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
@@ -900,15 +1162,13 @@ export default function EnhancedHome() {
                 </div>
 
                 <div className="grid gap-6 lg:grid-cols-[260px,1fr]">
-                  <div className="space-y-3" role="listbox" aria-label="خطوات السيناريو">
+                  <div className="space-y-3" aria-label="خطوات السيناريو">
                     {activeDemo.steps.map((step, stepIndex) => {
                       const isStepActive = stepIndex === activeStepIndex;
                       return (
                         <button
                           key={`${activeDemo.id}-step-${stepIndex}`}
                           type="button"
-                          role="option"
-                          aria-selected={isStepActive ? "true" : undefined}
                           onClick={() => setActiveStepIndex(stepIndex)}
                           className={cn(
                             "w-full rounded-2xl border px-4 py-3 text-right transition-colors",
@@ -945,17 +1205,12 @@ export default function EnhancedHome() {
 
                     <div className="space-y-3">
                       {activeStep.timeline.map((checkpoint) => {
-                        const baseStyles =
-                          checkpoint.status === "done"
-                            ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-                            : checkpoint.status === "active"
-                              ? "border-blue-200 bg-blue-50 text-blue-900"
-                              : "border-slate-200 bg-white text-slate-600";
-                        const Icon = checkpoint.status === "done" ? CheckCircle2 : checkpoint.status === "active" ? Zap : Clock;
+                        const statusConfig = timelineStatusMap[checkpoint.status];
+                        const Icon = statusConfig.Icon;
                         return (
                           <div
                             key={`${activeStep.title}-${checkpoint.label}`}
-                            className={cn("flex items-start gap-3 rounded-2xl border px-3 py-3", baseStyles)}
+                            className={cn("flex items-start gap-3 rounded-2xl border px-3 py-3", statusConfig.classes)}
                           >
                             <Icon className="mt-1 h-4 w-4" aria-hidden="true" />
                             <div>
@@ -976,9 +1231,9 @@ export default function EnhancedHome() {
                   </div>
                 </div>
 
-                <div role="status" aria-live="polite" className="sr-only">
+                <output aria-live="polite" className="sr-only">
                   {`${activeDemo.title} – ${activeStep.title}`}
-                </div>
+                </output>
               </div>
             </div>
           </div>
