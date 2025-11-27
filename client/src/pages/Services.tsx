@@ -8,7 +8,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, PlayCircle, Shield, Sparkles, Star, Users } from "lucide-react";
-import { Link } from "wouter";
 import CTAButton from "@/components/CTAButton";
 
 const services = [

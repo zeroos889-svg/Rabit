@@ -1,6 +1,7 @@
-import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import DashboardLayout from "@/components/DashboardLayout";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -19,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -30,20 +31,33 @@ import {
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
-  Users,
-  Plus,
-  Search,
-  Filter,
-  Download,
-  Upload,
-  Mail,
-  Calendar,
+  Activity,
+  AlertTriangle,
+  ArrowRight,
   Briefcase,
-  Edit,
-  Trash2,
+  Calendar,
+  CheckCircle2,
+  Clock3,
+  Download,
   Eye,
-  MoreVertical,
   FileText,
+  Filter,
+  Mail,
+  MessageCircle,
+  MoreVertical,
+  PhoneCall,
+  Plus,
+  RefreshCcw,
+  ScrollText,
+  Search,
+  ShieldCheck,
+  SlidersHorizontal,
+  Target,
+  Trash2,
+  TrendingDown,
+  Upload,
+  UserPlus,
+  Users,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -54,8 +68,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import { MetricCard } from "@/components/design/MetricCard";
 
 const AddEmployeeDialog = lazy(() => import("./components/AddEmployeeDialog"));
+
+type EmployeeSegmentId = "all" | "active" | "on-leave";
 
 interface Employee {
   id: number;
@@ -232,7 +249,6 @@ const mockEmployees: Employee[] = [
     status: "active",
   },
 ];
-
 const departmentOptions = [
   "تقنية المعلومات",
   "المالية",
@@ -249,10 +265,11 @@ const useFilteredEmployees = (
   filterStatus: string
 ) => {
   return useMemo(() => {
-    const normalizedQuery = searchQuery.toLowerCase();
+    const normalizedQuery = searchQuery.trim().toLowerCase();
 
     return employees.filter((emp) => {
       const matchesSearch =
+        !normalizedQuery ||
         emp.name.toLowerCase().includes(normalizedQuery) ||
         emp.email.toLowerCase().includes(normalizedQuery) ||
         emp.position.toLowerCase().includes(normalizedQuery);
@@ -279,16 +296,21 @@ const DemoBanner = ({ isArabic, show, content, focusTarget, dismiss }: DemoBanne
   }
 
   return (
-    <Alert className="border-blue-200 bg-blue-50 text-slate-900 dark:border-blue-400/30 dark:bg-blue-950/30 dark:text-blue-50">
-      <AlertTitle>{content.title}</AlertTitle>
-      <AlertDescription>
+    <Alert className="border-sky-200 bg-sky-50 text-slate-800">
+      <AlertTitle className="flex flex-wrap items-center justify-between gap-3 text-base font-semibold">
+        <span>{content.title}</span>
+        <Badge variant="secondary" className="bg-white/80 text-sky-700">
+          {isArabic ? "وضع العرض" : "Guided tour"}
+        </Badge>
+      </AlertTitle>
+      <AlertDescription className="mt-4 space-y-4 text-sm">
         <p>{content.description}</p>
-        <ul className="mt-3 list-disc space-y-1 pr-5 text-xs text-slate-700 dark:text-slate-100">
+        <ul className="list-disc space-y-1 pr-5 text-slate-600">
           {content.checklist.map((item) => (
             <li key={item}>{item}</li>
           ))}
         </ul>
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-3">
           <Button size="sm" onClick={focusTarget}>
             {content.actionLabel}
           </Button>
@@ -320,117 +342,225 @@ const EmployeesPageHeader = ({
   onAddEmployee,
   departments,
 }: EmployeesPageHeaderProps) => (
-  <div className="flex justify-between items-start">
-    <div>
-      <h1 className="text-3xl font-bold flex items-center gap-2">
-        <Users className="w-8 h-8 text-blue-600" />
-        {isArabic ? "إدارة الموظفين" : "Employee Management"}
-      </h1>
-      <p className="text-gray-600 dark:text-gray-400 mt-1">
-        {isArabic ? "إدارة بيانات وحسابات الموظفين" : "Manage employee data and accounts"}
-      </p>
-    </div>
-
-    <div className="flex gap-2">
-      <Button variant="outline" onClick={onImport}>
-        <Upload className="w-4 h-4 ml-2" />
-        {isArabic ? "استيراد" : "Import"}
-      </Button>
-      <Button variant="outline" onClick={onExport}>
-        <Download className="w-4 h-4 ml-2" />
-        {isArabic ? "تصدير" : "Export"}
-      </Button>
-      <Dialog open={isAddDialogOpen} onOpenChange={onDialogChange}>
-        <DialogTrigger asChild>
-          <Button className="bg-gradient-to-r from-blue-600 to-purple-600">
-            <Plus className="w-4 h-4 ml-2" />
-            {isArabic ? "إضافة موظف" : "Add Employee"}
+  <Card className="border-0 bg-gradient-to-br from-[#0F172A] via-[#1F2A52] to-[#14238A] text-white shadow-[0_40px_120px_rgba(15,23,42,0.35)]">
+    <CardContent className="space-y-6 p-8">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="space-y-3 text-right">
+          <p className="text-sm uppercase tracking-[0.3em] text-sky-300">
+            {isArabic ? "لوحة الموارد البشرية" : "HR Command Center"}
+          </p>
+          <h1 className="flex items-center justify-end gap-3 text-3xl font-bold leading-tight md:text-4xl">
+            <Users className="h-9 w-9 text-sky-300" />
+            {isArabic ? "إدارة الموظفين" : "Employee Management"}
+          </h1>
+          <p className="max-w-2xl text-base text-white/80">
+            {isArabic
+              ? "راقب صحة القوى العاملة، النسب النظامية، وسير العمل اليومي في لوحة واحدة متصلة بالعمليات السعودية."
+              : "Monitor workforce health, compliance, and day-to-day execution from a single, Saudi-ready workspace."}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center justify-end gap-3 text-slate-900">
+          <Button variant="secondary" className="bg-white/10 text-white" onClick={onExport}>
+            <Download className="ml-2 h-4 w-4" />
+            {isArabic ? "تقرير ربع سنوي" : "Quarterly export"}
           </Button>
-        </DialogTrigger>
-        {isAddDialogOpen ? (
-          <Suspense
-            fallback={
-              <div className="p-8 text-center text-sm text-muted-foreground" aria-busy="true">
-                {isArabic ? "يتم تحميل نموذج الإضافة..." : "Loading add form..."}
-              </div>
-            }
-          >
-            <AddEmployeeDialog
-              isArabic={isArabic}
-              departments={departments}
-              onCancel={() => onDialogChange(false)}
-              onSubmit={onAddEmployee}
-            />
-          </Suspense>
-        ) : null}
-      </Dialog>
-    </div>
-  </div>
+          <Button variant="outline" className="border-white/40 text-white" onClick={onImport}>
+            <Upload className="ml-2 h-4 w-4" />
+            {isArabic ? "استيراد ملف" : "Import file"}
+          </Button>
+          <Button variant="ghost" className="text-emerald-300" asChild>
+            <a href="https://wa.me/966500000000" target="_blank" rel="noopener noreferrer">
+              <MessageCircle className="ml-2 h-4 w-4" />
+              {isArabic ? "تحدث مع خبير" : "Talk to an expert"}
+            </a>
+          </Button>
+          <Dialog open={isAddDialogOpen} onOpenChange={onDialogChange}>
+            <DialogTrigger asChild>
+              <Button className="bg-gradient-to-r from-emerald-400 to-sky-500 text-slate-900">
+                <Plus className="ml-2 h-4 w-4" />
+                {isArabic ? "إضافة موظف" : "Add employee"}
+              </Button>
+            </DialogTrigger>
+            {isAddDialogOpen ? (
+              <Suspense
+                fallback={
+                  <div className="p-8 text-center text-sm text-muted-foreground" aria-busy="true">
+                    {isArabic ? "يتم تحميل نموذج الإضافة..." : "Loading add form..."}
+                  </div>
+                }
+              >
+                <AddEmployeeDialog
+                  isArabic={isArabic}
+                  departments={departments}
+                  onCancel={() => onDialogChange(false)}
+                  onSubmit={onAddEmployee}
+                />
+              </Suspense>
+            ) : null}
+          </Dialog>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
 );
 
-type EmployeeStatsGridProps = {
-  isArabic: boolean;
-  employees: Employee[];
-  departments: string[];
+type EmployeesKpiGridProps = {
+  cards: { label: string; value: string; delta?: string; icon?: ReactNode; emphasis?: "primary" | "secondary" | "neutral" }[];
 };
 
-const EmployeeStatsGrid = ({ isArabic, employees, departments }: EmployeeStatsGridProps) => (
-  <div className="grid md:grid-cols-4 gap-6">
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-gray-600">
-          {isArabic ? "إجمالي الموظفين" : "Total Employees"}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="text-3xl font-bold">{employees.length}</div>
-        <p className="text-xs text-green-600 mt-1">{isArabic ? "+3 هذا الشهر" : "+3 this month"}</p>
-      </CardContent>
-    </Card>
-
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-gray-600">
-          {isArabic ? "نشطون" : "Active"}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="text-3xl font-bold text-green-600">
-          {employees.filter((e) => e.status === "active").length}
-        </div>
-        <p className="text-xs text-gray-600 mt-1">{isArabic ? "موظف نشط" : "active employees"}</p>
-      </CardContent>
-    </Card>
-
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-gray-600">
-          {isArabic ? "في إجازة" : "On Leave"}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="text-3xl font-bold text-yellow-600">
-          {employees.filter((e) => e.status === "on-leave").length}
-        </div>
-        <p className="text-xs text-gray-600 mt-1">{isArabic ? "موظف حالياً" : "employees currently"}</p>
-      </CardContent>
-    </Card>
-
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-gray-600">
-          {isArabic ? "الأقسام" : "Departments"}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="text-3xl font-bold text-blue-600">{departments.length}</div>
-        <p className="text-xs text-gray-600 mt-1">{isArabic ? "قسم نشط" : "active departments"}</p>
-      </CardContent>
-    </Card>
+const EmployeesKpiGrid = ({ cards }: EmployeesKpiGridProps) => (
+  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    {cards.map((card) => (
+      <MetricCard key={card.label} {...card} />
+    ))}
   </div>
 );
 
-type EmployeeFiltersCardProps = {
+const EmployeeInsightsRail = ({ isArabic }: { isArabic: boolean }) => {
+  const insights = [
+    {
+      title: isArabic ? "ملخص الامتثال" : "Compliance health",
+      description: isArabic
+        ? "آخر تحديث لملف نطاقات تم منذ 32 دقيقة"
+        : "Latest Nitaqat submission validated 32 minutes ago",
+      icon: <ShieldCheck className="h-5 w-5 text-emerald-500" />,
+      badge: isArabic ? "مستقر" : "Stable",
+    },
+    {
+      title: isArabic ? "تحذيرات الموارد" : "Workforce alerts",
+      description: isArabic
+        ? "3 تأشيرات عمل تحتاج الإحلال هذا الأسبوع"
+        : "3 work visas require replacement this week",
+      icon: <AlertTriangle className="h-5 w-5 text-amber-500" />,
+      badge: isArabic ? "يتطلب متابعة" : "Action needed",
+    },
+    {
+      title: isArabic ? "قنوات الدعم" : "Support channels",
+      description: isArabic
+        ? "تم الرد على 14 طلب خدمة خلال ساعتين"
+        : "14 service tickets resolved within 2h",
+      icon: <PhoneCall className="h-5 w-5 text-sky-500" />,
+      badge: isArabic ? "نشط" : "Live",
+    },
+  ];
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-3">
+      {insights.map((insight) => (
+        <Card key={insight.title} className="border-slate-200/70 shadow-sm">
+          <CardContent className="flex items-start gap-4 p-4">
+            <div className="rounded-2xl bg-slate-50 p-3 text-slate-900">
+              {insight.icon}
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs">
+                <Badge variant="outline" className="border-slate-200 text-slate-600">
+                  {insight.badge}
+                </Badge>
+              </div>
+              <p className="font-semibold text-slate-900">{insight.title}</p>
+              <p className="text-sm text-slate-600">{insight.description}</p>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+};
+
+const WorkforceFocusPanel = ({ isArabic }: { isArabic: boolean }) => {
+  const focusCards = [
+    {
+      title: isArabic ? "استبقاء المواهب" : "Talent retention",
+      metric: "1.8%",
+      meta: isArabic ? "معدل مغادرة خلال الربع" : "Quarterly attrition rate",
+      change: isArabic ? "-0.3% مقابل الربع السابق" : "-0.3% vs last quarter",
+      icon: <TrendingDown className="h-5 w-5 text-rose-500" />,
+    },
+    {
+      title: isArabic ? "الانضمام والتوطين" : "Onboarding & localization",
+      metric: "12",
+      meta: isArabic ? "موظفون تحت التدريب" : "Employees in onboarding",
+      change: isArabic ? "4 سعوديون قيد التوطين" : "4 Saudi hires localizing",
+      icon: <UserPlus className="h-5 w-5 text-emerald-500" />,
+    },
+    {
+      title: isArabic ? "سياسات قادمة" : "Policy reminders",
+      metric: isArabic ? "5 مستندات" : "5 policies",
+      meta: isArabic ? "تحتاج توقيع قبل 1 ديسمبر" : "Pending signature before Dec 1",
+      change: isArabic ? "أرسل تذكير" : "Send reminder",
+      icon: <ScrollText className="h-5 w-5 text-sky-500" />,
+    },
+  ];
+
+  return (
+    <Card className="border-slate-200/70">
+      <CardHeader className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <CardTitle>{isArabic ? "تركيز القوى العاملة" : "Workforce focus"}</CardTitle>
+          <CardDescription>
+            {isArabic
+              ? "تابع مؤشرات المغادرة، التوطين، والتنبيهات التشغيلية"
+              : "Track attrition, localization, and operational reminders"}
+          </CardDescription>
+        </div>
+        <Button variant="outline" className="gap-2 text-slate-600">
+          <RefreshCcw className="h-4 w-4" />
+          {isArabic ? "تحديث البيانات" : "Refresh data"}
+        </Button>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4 md:grid-cols-3">
+          {focusCards.map((card) => (
+            <div key={card.title} className="rounded-2xl border border-slate-100/80 bg-white/90 p-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="rounded-2xl bg-slate-50 p-2">{card.icon}</div>
+                <p className="text-sm font-semibold text-slate-500">{card.title}</p>
+              </div>
+              <p className="mt-4 text-3xl font-bold text-slate-900">{card.metric}</p>
+              <p className="text-sm text-slate-600">{card.meta}</p>
+              <p className="mt-2 text-xs text-emerald-600">{card.change}</p>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+type EmployeeSegmentChipsProps = {
+  segments: { id: EmployeeSegmentId; label: string; count: number; helper: string }[];
+  activeSegment: EmployeeSegmentId;
+  onSegmentSelect: (segment: EmployeeSegmentId) => void;
+};
+
+const EmployeeSegmentChips = ({ segments, activeSegment, onSegmentSelect }: EmployeeSegmentChipsProps) => (
+  <div className="flex flex-wrap gap-3">
+    {segments.map((segment) => {
+      const isActive = segment.id === activeSegment;
+      return (
+        <button
+          key={segment.id}
+          type="button"
+          onClick={() => onSegmentSelect(segment.id)}
+          className={cn(
+            "rounded-full border px-4 py-2 text-sm transition",
+            isActive
+              ? "border-slate-900 bg-slate-900 text-white shadow-lg"
+              : "border-slate-200 text-slate-600 hover:border-slate-300 hover:text-slate-900"
+          )}
+        >
+          <span className="font-semibold">{segment.label}</span>
+          <span className="mx-2 text-xs text-slate-400">•</span>
+          <span className="text-xs text-slate-500">{segment.count}</span>
+          <span className="ml-2 text-xs text-slate-400">{segment.helper}</span>
+        </button>
+      );
+    })}
+  </div>
+);
+
+type EmployeesCommandBarProps = {
   isArabic: boolean;
   searchQuery: string;
   onSearchChange: (value: string) => void;
@@ -441,7 +571,7 @@ type EmployeeFiltersCardProps = {
   departments: string[];
 };
 
-const EmployeeFiltersCard = ({
+const EmployeesCommandBar = ({
   isArabic,
   searchQuery,
   onSearchChange,
@@ -450,39 +580,57 @@ const EmployeeFiltersCard = ({
   filterStatus,
   onStatusChange,
   departments,
-}: EmployeeFiltersCardProps) => (
-  <Card>
-    <CardHeader>
-      <CardTitle className="text-lg">{isArabic ? "البحث والتصفية" : "Search & Filter"}</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <div className="grid md:grid-cols-4 gap-4">
-        <div className="md:col-span-2">
-          <Label htmlFor="employee-search" className="sr-only">
-            {isArabic ? "بحث الموظفين" : "Search employees"}
-          </Label>
-          <div className="relative">
-            <Search className="absolute right-3 top-3 h-4 w-4 text-gray-400" aria-hidden="true" />
-            <Input
-              id="employee-search"
-              type="search"
-              placeholder={
-                isArabic ? "ابحث بالاسم، البريد، أو المسمى الوظيفي..." : "Search by name, email, or position..."
-              }
-              className="pr-10"
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-            />
+}: EmployeesCommandBarProps) => (
+  <div className="sticky top-4 z-20">
+    <Card className="border border-slate-200/70 shadow-2xl shadow-slate-900/5 backdrop-blur">
+      <CardContent className="space-y-5 p-4 md:p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex-1">
+            <Label htmlFor="employee-search" className="sr-only">
+              {isArabic ? "بحث الموظفين" : "Search employees"}
+            </Label>
+            <div className="relative">
+              <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+              <Input
+                id="employee-search"
+                type="search"
+                placeholder={
+                  isArabic
+                    ? "ابحث بالاسم، البريد، أو المسمى..."
+                    : "Search by name, email, or title..."
+                }
+                className="bg-white/60 pr-10"
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+              />
+            </div>
+            <p className="mt-2 text-xs text-slate-500">
+              {isArabic
+                ? "يتم تحديث النتائج فوراً مع الحفاظ على الإعدادات باللغة العربية."
+                : "Results update in real time with Arabic-first formatting."}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Button variant="outline" className="gap-2">
+              <SlidersHorizontal className="h-4 w-4" />
+              {isArabic ? "إدارة القوالب" : "Workflow templates"}
+            </Button>
+            <Button variant="outline" className="gap-2">
+              <FileText className="h-4 w-4" />
+              {isArabic ? "تصدير مخصص" : "Custom export"}
+            </Button>
+            <Button variant="ghost" className="text-emerald-600" asChild>
+              <a href="tel:+966500000000" className="flex items-center gap-2">
+                <PhoneCall className="h-4 w-4" />
+                {isArabic ? "خط الدعم" : "Support line"}
+              </a>
+            </Button>
           </div>
         </div>
 
-        <div>
-          <Label htmlFor="department-filter" className="sr-only">
-            {isArabic ? "تصفية حسب القسم" : "Filter by department"}
-          </Label>
+        <div className="grid gap-3 md:grid-cols-3">
           <Select value={filterDepartment} onValueChange={onDepartmentChange}>
             <SelectTrigger id="department-filter" aria-label={isArabic ? "تصفية الأقسام" : "Department filter"}>
-              <Filter className="w-4 h-4 ml-2" aria-hidden="true" />
               <SelectValue placeholder={isArabic ? "جميع الأقسام" : "All Departments"} />
             </SelectTrigger>
             <SelectContent>
@@ -494,27 +642,343 @@ const EmployeeFiltersCard = ({
               ))}
             </SelectContent>
           </Select>
-        </div>
 
-        <div>
-          <Label htmlFor="status-filter" className="sr-only">
-            {isArabic ? "تصفية حسب الحالة" : "Filter by status"}
-          </Label>
           <Select value={filterStatus} onValueChange={onStatusChange}>
             <SelectTrigger id="status-filter" aria-label={isArabic ? "تصفية الحالات" : "Status filter"}>
-              <SelectValue placeholder={isArabic ? "جميع الحالات" : "All Statuses"} />
+              <SelectValue placeholder={isArabic ? "جميع الحالات" : "All statuses"} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{isArabic ? "جميع الحالات" : "All Statuses"}</SelectItem>
+              <SelectItem value="all">{isArabic ? "جميع الحالات" : "All statuses"}</SelectItem>
               <SelectItem value="active">{isArabic ? "نشط" : "Active"}</SelectItem>
-              <SelectItem value="on-leave">{isArabic ? "في إجازة" : "On Leave"}</SelectItem>
+              <SelectItem value="on-leave">{isArabic ? "في إجازة" : "On leave"}</SelectItem>
               <SelectItem value="terminated">{isArabic ? "منتهي" : "Terminated"}</SelectItem>
             </SelectContent>
           </Select>
+
+          <Button variant="outline" className="w-full gap-2 text-slate-600">
+            <Filter className="h-4 w-4" />
+            {isArabic ? "حفظ التصفية" : "Save smart filter"}
+          </Button>
         </div>
-      </div>
+
+        <div className="flex flex-wrap items-center gap-3 text-xs">
+          <Badge className="flex items-center gap-1 bg-emerald-50 text-emerald-700">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            {isArabic ? "نسبة السعودة 92%" : "Saudization at 92%"}
+          </Badge>
+          <Badge className="flex items-center gap-1 bg-sky-50 text-sky-700">
+            <Target className="h-3.5 w-3.5" />
+            {isArabic ? "ساعات العمل 1.8h" : "Workflow SLA 1.8h"}
+          </Badge>
+          <Badge className="flex items-center gap-1 bg-amber-50 text-amber-700">
+            <AlertTriangle className="h-3.5 w-3.5" />
+            {isArabic ? "3 حالات بانتظار الموافقة" : "3 cases pending approval"}
+          </Badge>
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+type EmployeeProfileDialogProps = {
+  employee: Employee | null;
+  isArabic: boolean;
+  onClose: () => void;
+};
+
+const BulkActionShortcuts = ({ isArabic }: { isArabic: boolean }) => (
+  <Card className="border-slate-200/70 bg-gradient-to-br from-white to-slate-50">
+    <CardHeader>
+      <CardTitle>{isArabic ? "إجراءات جماعية" : "Bulk actions"}</CardTitle>
+      <CardDescription>
+        {isArabic
+          ? "شغّل مهام الامتثال والرواتب المعتمدة في السعودية خلال ثوانٍ"
+          : "Trigger Saudi-compliant HR workflows in just a few clicks"}
+      </CardDescription>
+    </CardHeader>
+    <CardContent className="grid gap-3 md:grid-cols-3">
+      <Button variant="outline" className="h-auto flex-col items-start gap-2 text-left">
+        <span className="text-sm font-semibold text-slate-700">
+          {isArabic ? "إرسال ملف رواتب" : "Send payroll file"}
+        </span>
+        <span className="text-xs text-slate-500">
+          {isArabic ? "تصدير WPS وتوقيع خزينة" : "Export WPS + treasury approval"}
+        </span>
+      </Button>
+      <Button variant="outline" className="h-auto flex-col items-start gap-2 text-left">
+        <span className="text-sm font-semibold text-slate-700">
+          {isArabic ? "تحديث مسير الإجازات" : "Update leave roster"}
+        </span>
+        <span className="text-xs text-slate-500">
+          {isArabic ? "نمط موحد لجهات العمل" : "Unified format for ministries"}
+        </span>
+      </Button>
+      <Button className="h-auto flex-col items-start gap-2 bg-gradient-to-r from-emerald-500 to-sky-500 text-left">
+        <span className="text-sm font-semibold text-white">
+          {isArabic ? "إطلاق حملة تقييم" : "Launch review cycle"}
+        </span>
+        <span className="text-xs text-white/80">
+          {isArabic ? "مزامنة مع تمكين" : "Sync with Tamkeen"}
+        </span>
+      </Button>
     </CardContent>
   </Card>
+);
+
+const OperationsFeed = ({ isArabic }: { isArabic: boolean }) => {
+  const events = [
+    {
+      title: isArabic ? "تمت الموافقة على ترقية" : "Promotion approved",
+      detail: isArabic ? "للمدير التقني - ينتظر توقيع المالية" : "CTO promotion awaiting finance signature",
+      timestamp: isArabic ? "منذ 12 دقيقة" : "12m ago",
+      icon: <CheckCircle2 className="h-4 w-4 text-emerald-500" />,
+    },
+    {
+      title: isArabic ? "تصعيد رحلة دخول" : "Visa escalation",
+      detail: isArabic ? "تأشيرة فنية بحاجة لتحديث خطاب العمل" : "Technical visa requires updated sponsor letter",
+      timestamp: isArabic ? "قبل ساعة" : "1h ago",
+      icon: <AlertTriangle className="h-4 w-4 text-amber-500" />,
+    },
+    {
+      title: isArabic ? "تم إنشاء عقد" : "Contract generated",
+      detail: isArabic ? "عقد دوام جزئي لإدارة التسويق" : "Part-time contract for marketing lead",
+      timestamp: isArabic ? "اليوم 09:20" : "Today 09:20",
+      icon: <FileText className="h-4 w-4 text-sky-500" />,
+    },
+  ];
+
+  return (
+    <Card className="border-slate-200/70">
+      <CardHeader className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <CardTitle>{isArabic ? "آخر العمليات" : "Operations feed"}</CardTitle>
+          <CardDescription>
+            {isArabic ? "تحديثات مباشرة من الامتثال، الرواتب، والدعم" : "Live signals from compliance, payroll, and support"}
+          </CardDescription>
+        </div>
+        <Button variant="ghost" className="gap-2 text-slate-600">
+          {isArabic ? "عرض السجل" : "View full log"}
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {events.map((event) => (
+          <div key={event.title} className="flex items-start gap-3 rounded-2xl border border-slate-100 p-3">
+            <div className="rounded-full bg-slate-50 p-2">{event.icon}</div>
+            <div>
+              <p className="font-semibold text-slate-900">{event.title}</p>
+              <p className="text-sm text-slate-600">{event.detail}</p>
+            </div>
+            <span className="ml-auto text-xs text-slate-400">{event.timestamp}</span>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+};
+
+const EmployeeRiskPanel = ({ isArabic }: { isArabic: boolean }) => {
+  const risks = [
+    {
+      employee: "نورة سعيد العتيبي",
+      title: isArabic ? "إجازة متجاوزة" : "Leave extension",
+      detail: isArabic ? "بحاجة اعتماد إضافي من الرئيس التنفيذي" : "Requires CEO approval to extend",
+      badge: isArabic ? "عالي" : "High",
+      badgeClass: "bg-rose-50 text-rose-700",
+    },
+    {
+      employee: "محمد فهد الدوسري",
+      title: isArabic ? "تسوية عمولات" : "Commission reconciliation",
+      detail: isArabic ? "ينتظر إرفاق مستند المطابقة" : "Pending matched document upload",
+      badge: isArabic ? "متوسط" : "Medium",
+      badgeClass: "bg-amber-50 text-amber-700",
+    },
+  ];
+
+  return (
+    <Card className="border-slate-200/70">
+      <CardHeader className="flex flex-col gap-3">
+        <div>
+          <CardTitle>{isArabic ? "تنبيهات المخاطر" : "Risk alerts"}</CardTitle>
+          <CardDescription>
+            {isArabic ? "ملفات تحتاج متابعة مالية أو قانونية" : "Profiles needing finance or legal escalation"}
+          </CardDescription>
+        </div>
+        <Button variant="outline" className="gap-2 text-slate-600">
+          <ShieldCheck className="h-4 w-4" />
+          {isArabic ? "مزامنة مع الامتثال" : "Sync with compliance"}
+        </Button>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {risks.map((risk) => (
+          <div key={risk.employee} className="rounded-2xl border border-slate-100 p-4">
+            <div className="flex items-center justify-between">
+              <p className="font-semibold text-slate-900">{risk.employee}</p>
+              <Badge className={risk.badgeClass}>{risk.badge}</Badge>
+            </div>
+            <p className="mt-1 text-sm text-slate-600">{risk.title}</p>
+            <p className="text-xs text-slate-500">{risk.detail}</p>
+            <Button variant="ghost" className="mt-2 gap-2 text-emerald-600">
+              {isArabic ? "عرض الحالة" : "View case"}
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+};
+
+const WorkflowTimeline = ({ isArabic }: { isArabic: boolean }) => {
+  const steps = [
+    {
+      title: isArabic ? "تمت معالجة ملفات الرواتب" : "Payroll files processed",
+      detail: isArabic ? "WPS + ملف البنك تمت مزامنتهما" : "WPS + bank file synced",
+      status: "done" as const,
+    },
+    {
+      title: isArabic ? "مراجعة تأشيرة تقنية" : "Tech visa review",
+      detail: isArabic ? "بانتظار توقيع الموارد البشرية" : "Waiting for HR approval",
+      status: "active" as const,
+    },
+    {
+      title: isArabic ? "تذكير تقييم الأداء" : "Performance reminder",
+      detail: isArabic ? "سيتم الإرسال آلياً خلال 4 ساعات" : "Auto dispatch in 4 hours",
+      status: "pending" as const,
+    },
+  ];
+
+  const statusClasses = {
+    done: "bg-emerald-500",
+    active: "bg-sky-500",
+    pending: "bg-slate-300",
+  } as const;
+
+  return (
+    <Card className="border-slate-200/70">
+      <CardHeader>
+        <CardTitle>{isArabic ? "سير العمل الآلي" : "Workflow timeline"}</CardTitle>
+        <CardDescription>
+          {isArabic ? "مراحل الأتمتة الجارية والقادمة" : "Automation steps running next"}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ol className="space-y-4">
+          {steps.map((step, index) => (
+            <li key={step.title} className="flex items-start gap-4">
+              <div className="flex flex-col items-center">
+                <span className={cn("h-3 w-3 rounded-full", statusClasses[step.status])} />
+                {index < steps.length - 1 ? <span className="my-1 h-6 w-px bg-slate-200" /> : null}
+              </div>
+              <div>
+                <p className="font-semibold text-slate-900">{step.title}</p>
+                <p className="text-sm text-slate-600">{step.detail}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <Button variant="ghost" className="mt-4 gap-2 text-slate-600">
+          <RefreshCcw className="h-4 w-4" />
+          {isArabic ? "مزامنة الجدول" : "Sync schedule"}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+};
+
+const EmployeeProfileDialog = ({ employee, isArabic, onClose }: EmployeeProfileDialogProps) => (
+  <Dialog open={!!employee} onOpenChange={(open) => { if (!open) onClose(); }}>
+    {employee ? (
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between text-2xl">
+            <span>{employee.name}</span>
+            <Badge variant="outline">
+              {employee.department} · {employee.position}
+            </Badge>
+          </DialogTitle>
+          <DialogDescription>
+            {isArabic
+              ? "نظرة سريعة على حالة الموظف، تفاصيل العقد، وخيارات التواصل المباشر."
+              : "Quick view of employee status, contract context, and direct outreach options."}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-slate-200/70 p-4">
+              <p className="text-sm font-semibold text-slate-500">
+                {isArabic ? "التواصل" : "Contact"}
+              </p>
+              <div className="mt-3 space-y-2 text-sm text-slate-700">
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-slate-400" />
+                  {employee.email}
+                </div>
+                <div className="flex items-center gap-2">
+                  <PhoneCall className="h-4 w-4 text-slate-400" />
+                  {employee.phone}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-slate-400" />
+                  {isArabic ? "تاريخ البدء" : "Start date"}: {employee.startDate}
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/70 p-4">
+              <p className="text-sm font-semibold text-slate-500">
+                {isArabic ? "مؤشرات" : "Indicators"}
+              </p>
+              <div className="mt-3 space-y-2 text-sm text-slate-700">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                  {isArabic ? "متوافق مع نطاقات" : "Aligned with Nitaqat tier"}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Target className="h-4 w-4 text-sky-500" />
+                  {isArabic ? "خطة تطوير محدثة" : "Development plan updated"}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-slate-200/70 p-4">
+              <p className="text-sm font-semibold text-slate-500">
+                {isArabic ? "إجراءات سريعة" : "Quick actions"}
+              </p>
+              <div className="mt-3 grid gap-3">
+                <Button variant="outline" className="justify-between">
+                  {isArabic ? "إنشاء خطاب" : "Generate letter"}
+                  <FileText className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" className="justify-between">
+                  {isArabic ? "تحديث الحالة" : "Update status"}
+                  <Activity className="h-4 w-4" />
+                </Button>
+                <Button className="justify-between bg-gradient-to-r from-emerald-500 to-sky-500">
+                  {isArabic ? "حجز جلسة إرشاد" : "Book coaching session"}
+                  <Calendar className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/70 p-4">
+              <p className="text-sm font-semibold text-slate-500">
+                {isArabic ? "آخر الأنشطة" : "Recent activity"}
+              </p>
+              <ul className="mt-3 space-y-2 text-sm text-slate-700">
+                <li>{isArabic ? "تم اعتماد إجازة 12 نوفمبر" : "Leave approved on 12 Nov"}</li>
+                <li>{isArabic ? "تحديث هدف الأداء 2025" : "Performance goal 2025 refreshed"}</li>
+                <li>{isArabic ? "تم إرسال إشعار للمالية" : "Finance notified for payroll update"}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    ) : null}
+  </Dialog>
 );
 
 type EmployeesTableSectionProps = {
@@ -523,6 +987,7 @@ type EmployeesTableSectionProps = {
   totalEmployees: number;
   onEditEmployee: (employee: Employee) => void;
   onDeleteEmployee: (employee: Employee) => void;
+  onViewProfile: (employee: Employee) => void;
 };
 
 const EmployeesTableSection = ({
@@ -531,110 +996,125 @@ const EmployeesTableSection = ({
   totalEmployees,
   onEditEmployee,
   onDeleteEmployee,
+  onViewProfile,
 }: EmployeesTableSectionProps) => (
-  <Card>
-    <CardHeader>
-      <CardTitle>{isArabic ? "قائمة الموظفين" : "Employees List"}</CardTitle>
-      <CardDescription>
-        {isArabic
-          ? `عرض ${employees.length} من ${totalEmployees} موظف`
-          : `Showing ${employees.length} of ${totalEmployees} employees`}
-      </CardDescription>
+  <Card className="border-slate-200/70 shadow-xl">
+    <CardHeader className="gap-3 lg:flex lg:items-center lg:justify-between lg:space-y-0">
+      <div>
+        <CardTitle>{isArabic ? "قائمة الموظفين" : "Employees list"}</CardTitle>
+        <CardDescription>
+          {isArabic
+            ? `عرض ${employees.length} من ${totalEmployees} ملف`
+            : `Showing ${employees.length} of ${totalEmployees} profiles`}
+        </CardDescription>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Button variant="outline" size="sm" className="gap-1">
+          <Download className="h-3.5 w-3.5" />
+          {isArabic ? "تصدير الجدول" : "Export table"}
+        </Button>
+        <Button variant="outline" size="sm" className="gap-1">
+          <FileText className="h-3.5 w-3.5" />
+          {isArabic ? "سجل الإجراءات" : "Audit log"}
+        </Button>
+      </div>
     </CardHeader>
-    <CardContent>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{isArabic ? "الموظف" : "Employee"}</TableHead>
-            <TableHead>{isArabic ? "المسمى الوظيفي" : "Position"}</TableHead>
-            <TableHead>{isArabic ? "القسم" : "Department"}</TableHead>
-            <TableHead>{isArabic ? "تاريخ البدء" : "Start Date"}</TableHead>
-            <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
-            <TableHead className="text-center">{isArabic ? "الإجراءات" : "Actions"}</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {employees.map((employee) => (
-            <TableRow key={employee.id}>
-              <TableCell>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold">
-                    {employee.name.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="font-medium">{employee.name}</p>
-                    <div className="flex items-center gap-2 text-xs text-gray-600">
-                      <Mail className="w-3 h-3" />
-                      {employee.email}
+    <CardContent className="px-0">
+      {employees.length === 0 ? (
+        <div className="py-16 text-center text-sm text-muted-foreground">
+          <p className="font-medium text-slate-900">
+            {isArabic ? "لا توجد نتائج" : "No employees match these filters"}
+          </p>
+          <p className="mt-1 text-slate-500">
+            {isArabic ? "عدّل البحث أو استخدم قسم التصفية الذكي أعلاه." : "Adjust your search or update the smart filter above."}
+          </p>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{isArabic ? "الموظف" : "Employee"}</TableHead>
+                <TableHead>{isArabic ? "المسمى" : "Role"}</TableHead>
+                <TableHead>{isArabic ? "القسم" : "Department"}</TableHead>
+                <TableHead>{isArabic ? "تاريخ البدء" : "Start date"}</TableHead>
+                <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
+                <TableHead className="text-center">{isArabic ? "الإجراءات" : "Actions"}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {employees.map((employee) => (
+                <TableRow key={employee.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 to-indigo-600 text-sm font-bold text-white">
+                        {employee.name.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="font-medium text-slate-900">{employee.name}</p>
+                        <div className="flex items-center gap-2 text-xs text-slate-500">
+                          <Mail className="h-3 w-3" />
+                          {employee.email}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Briefcase className="w-4 h-4 text-gray-400" />
-                  {employee.position}
-                </div>
-              </TableCell>
-              <TableCell>{employee.department}</TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="w-4 h-4 text-gray-400" />
-                  {employee.startDate}
-                </div>
-              </TableCell>
-              <TableCell>
-                <StatusBadge status={employee.status} isArabic={isArabic} />
-              </TableCell>
-              <TableCell>
-                <div className="flex justify-center">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        aria-label={isArabic ? "فتح قائمة إجراءات الموظف" : "Open employee actions menu"}
-                        title={isArabic ? "إجراءات الموظف" : "Employee actions"}
-                      >
-                        <MoreVertical className="w-4 h-4" aria-hidden="true" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>{isArabic ? "الإجراءات" : "Actions"}</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => onEditEmployee(employee)}>
-                        <Edit className="w-4 h-4 ml-2" />
-                        {isArabic ? "تعديل" : "Edit"}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Eye className="w-4 h-4 ml-2" />
-                        {isArabic ? "عرض الملف الشخصي" : "View Profile"}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <FileText className="w-4 h-4 ml-2" />
-                        {isArabic ? "إنشاء خطاب" : "Generate Letter"}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-red-600" onClick={() => onDeleteEmployee(employee)}>
-                        <Trash2 className="w-4 h-4 ml-2" />
-                        {isArabic ? "حذف" : "Delete"}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <Briefcase className="h-4 w-4 text-slate-400" />
+                      {employee.position}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm text-slate-600">{employee.department}</div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <Calendar className="h-4 w-4 text-slate-400" />
+                      {employee.startDate}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge status={employee.status} isArabic={isArabic} />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>{isArabic ? "إجراءات" : "Actions"}</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => onEditEmployee(employee)}>
+                          <Edit className="ml-2 h-4 w-4" />
+                          {isArabic ? "تعديل" : "Edit"}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onViewProfile(employee)}>
+                          <Eye className="ml-2 h-4 w-4" />
+                          {isArabic ? "عرض الملف" : "View profile"}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <FileText className="ml-2 h-4 w-4" />
+                          {isArabic ? "سجل العقد" : "Contract"}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="text-red-600" onClick={() => onDeleteEmployee(employee)}>
+                          <Trash2 className="ml-2 h-4 w-4" />
+                          {isArabic ? "حذف" : "Delete"}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </CardContent>
   </Card>
 );
-
-type StatusBadgeProps = {
-  status: Employee["status"];
-  isArabic: boolean;
-};
 
 const StatusBadge = ({ status, isArabic }: StatusBadgeProps) => {
   const statusConfig = {
@@ -662,7 +1142,9 @@ export default function EmployeesManagement() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterDepartment, setFilterDepartment] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [activeSegment, setActiveSegment] = useState<EmployeeSegmentId>("all");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [focusedEmployee, setFocusedEmployee] = useState<Employee | null>(null);
   const { activeContent, showBanner, focusTarget, dismiss } = useEmployeeDemoExperience(isArabic);
 
   const employees = mockEmployees;
@@ -674,6 +1156,81 @@ export default function EmployeesManagement() {
     filterDepartment,
     filterStatus
   );
+
+  useEffect(() => {
+    if (filterStatus === "active" || filterStatus === "on-leave" || filterStatus === "all") {
+      setActiveSegment(filterStatus as EmployeeSegmentId);
+    } else {
+      setActiveSegment("all");
+    }
+  }, [filterStatus]);
+
+  const handleSegmentSelect = useCallback((segment: EmployeeSegmentId) => {
+    setActiveSegment(segment);
+    setFilterStatus(segment === "all" ? "all" : segment);
+  }, []);
+
+  const segmentChips = useMemo(() => {
+    const activeCount = employees.filter((emp) => emp.status === "active").length;
+    const onLeaveCount = employees.filter((emp) => emp.status === "on-leave").length;
+
+    return [
+      {
+        id: "all" as EmployeeSegmentId,
+        label: isArabic ? "كل الموظفين" : "All employees",
+        count: employees.length,
+        helper: isArabic ? "عرض كامل" : "Full view",
+      },
+      {
+        id: "active" as EmployeeSegmentId,
+        label: isArabic ? "نشط" : "Active",
+        count: activeCount,
+        helper: isArabic ? "جاهز للعمل" : "Ready to work",
+      },
+      {
+        id: "on-leave" as EmployeeSegmentId,
+        label: isArabic ? "في إجازة" : "On leave",
+        count: onLeaveCount,
+        helper: isArabic ? "متابعة العودة" : "Return tracking",
+      },
+    ];
+  }, [employees, isArabic]);
+
+  const kpiCards = useMemo(() => {
+    const activeCount = employees.filter((emp) => emp.status === "active").length;
+    const onLeaveCount = employees.filter((emp) => emp.status === "on-leave").length;
+
+    return [
+      {
+        label: isArabic ? "إجمالي القوة العاملة" : "Total workforce",
+        value: `${employees.length}`,
+        delta: isArabic ? "+3 هذا الشهر" : "+3 this month",
+        icon: <Users className="h-4 w-4 text-sky-500" />,
+        emphasis: "primary" as const,
+      },
+      {
+        label: isArabic ? "نسبة السعودة" : "Saudization",
+        value: "92%",
+        delta: isArabic ? "المستهدف 85%" : "Target 85%",
+        icon: <Target className="h-4 w-4 text-emerald-400" />,
+        emphasis: "secondary" as const,
+      },
+      {
+        label: isArabic ? "الموظفون النشطون" : "Active employees",
+        value: `${activeCount}`,
+        delta: isArabic ? `${onLeaveCount} في إجازة` : `${onLeaveCount} on leave`,
+        icon: <Activity className="h-4 w-4 text-slate-500" />,
+        emphasis: "neutral" as const,
+      },
+      {
+        label: isArabic ? "متوسط زمن الإجراء" : "Avg. HR SLA",
+        value: "1.8h",
+        delta: isArabic ? "خلال هدف ساعتين" : "Inside 2h target",
+        icon: <Clock3 className="h-4 w-4 text-indigo-500" />,
+        emphasis: "neutral" as const,
+      },
+    ];
+  }, [employees, isArabic]);
 
   const handleAddEmployee = () => {
     toast.success(isArabic ? "تم إضافة الموظف بنجاح" : "Employee added successfully");
@@ -704,6 +1261,8 @@ export default function EmployeesManagement() {
     toast.info(isArabic ? "جاري استيراد البيانات..." : "Importing data...");
   };
 
+  const handleCloseProfile = () => setFocusedEmployee(null);
+
   return (
     <DashboardLayout userType="company">
       <div className="space-y-6">
@@ -725,9 +1284,13 @@ export default function EmployeesManagement() {
           departments={departments}
         />
 
-        <EmployeeStatsGrid isArabic={isArabic} employees={employees} departments={departments} />
+        <EmployeesKpiGrid cards={kpiCards} />
 
-        <EmployeeFiltersCard
+        <EmployeeInsightsRail isArabic={isArabic} />
+
+        <WorkforceFocusPanel isArabic={isArabic} />
+
+        <EmployeesCommandBar
           isArabic={isArabic}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -738,13 +1301,31 @@ export default function EmployeesManagement() {
           departments={departments}
         />
 
+        <EmployeeSegmentChips
+          segments={segmentChips}
+          activeSegment={activeSegment}
+          onSegmentSelect={handleSegmentSelect}
+        />
+
+        <BulkActionShortcuts isArabic={isArabic} />
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          <EmployeeRiskPanel isArabic={isArabic} />
+          <WorkflowTimeline isArabic={isArabic} />
+        </div>
+
         <EmployeesTableSection
           isArabic={isArabic}
           employees={filteredEmployees}
           totalEmployees={employees.length}
           onEditEmployee={handleEditEmployee}
           onDeleteEmployee={handleDeleteEmployee}
+          onViewProfile={setFocusedEmployee}
         />
+
+        <OperationsFeed isArabic={isArabic} />
+
+        <EmployeeProfileDialog employee={focusedEmployee} isArabic={isArabic} onClose={handleCloseProfile} />
       </div>
     </DashboardLayout>
   );

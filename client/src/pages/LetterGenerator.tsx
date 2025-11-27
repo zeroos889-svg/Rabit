@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { trpc } from "@/lib/trpc";
 import {
   Card,
@@ -19,7 +18,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
@@ -36,7 +34,6 @@ import {
   Calendar,
   UserX,
   Wand2,
-  ArrowRight,
   ChevronLeft,
   History,
   Trash2,
@@ -444,8 +441,6 @@ const getCategoryLabel = (key?: string | null) => {
 };
 
 export default function LetterGenerator() {
-  const { t, i18n } = useTranslation();
-  const isRTL = i18n.language === "ar";
   const { isAuthenticated } = useAuth();
   const utils = trpc.useUtils();
   const historyQueryInput = { limit: HISTORY_LIMIT } as const;

@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { createSafeRichTextProps } from "@/lib/sanitize";
 import { Separator } from "@/components/ui/separator";
 import {
   Bot,
@@ -127,6 +128,15 @@ const DEFAULT_FIELDS: TemplateField[] = [
   { key: "issueDate", label: "تاريخ الإصدار" },
 ];
 
+/**
+ * Helper to get label from parsed placeholder item
+ */
+function getPlaceholderLabel(item: Record<string, unknown>): string {
+  if (typeof item?.label === "string") return item.label;
+  if (typeof item?.key === "string") return item.key;
+  return "حقل";
+}
+
 const parsePlaceholderSchema = (schema?: string | null): TemplateField[] => {
   if (!schema) return [];
   try {
@@ -135,12 +145,7 @@ const parsePlaceholderSchema = (schema?: string | null): TemplateField[] => {
       return parsed
         .map((item: Record<string, unknown>) => ({
           key: typeof item?.key === "string" ? item.key : "",
-          label:
-            typeof item?.label === "string"
-              ? item.label
-              : typeof item?.key === "string"
-              ? item.key
-              : "حقل",
+          label: getPlaceholderLabel(item),
           placeholder: typeof item?.placeholder === "string" ? item.placeholder : undefined,
           required: typeof item?.required === "boolean" ? item.required : undefined,
           type: typeof item?.type === "string" ? item.type : undefined,
@@ -151,12 +156,7 @@ const parsePlaceholderSchema = (schema?: string | null): TemplateField[] => {
       return (parsed.fields as Record<string, unknown>[])
         .map(field => ({
           key: typeof field?.key === "string" ? field.key : "",
-          label:
-            typeof field?.label === "string"
-              ? field.label
-              : typeof field?.key === "string"
-              ? field.key
-              : "حقل",
+          label: getPlaceholderLabel(field),
           placeholder:
             typeof field?.placeholder === "string" ? field.placeholder : undefined,
           required: typeof field?.required === "boolean" ? field.required : undefined,
@@ -189,8 +189,8 @@ const normalizeTemplateRecord = (template: TemplateApiModel): TemplateOption => 
 
 const toSnakeCase = (value: string) =>
   value
-    .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
-    .replace(/[-\s]+/g, "_")
+    .replaceAll(/([a-z0-9])([A-Z])/g, "$1_$2")
+    .replaceAll(/[-\s]+/g, "_")
     .toLowerCase();
 
 const applyVariablesToBody = (body: string, variables: Record<string, string>) => {
@@ -201,30 +201,34 @@ const applyVariablesToBody = (body: string, variables: Record<string, string>) =
         key,
         key.toLowerCase(),
         toSnakeCase(key),
-        key.replace(/_/g, ""),
-        toSnakeCase(key).replace(/_/g, ""),
+        key.replaceAll("_", ""),
+        toSnakeCase(key).replaceAll("_", ""),
       ])
     );
     return variants.reduce((result, token) => {
-      const regex = new RegExp(`{{\s*${token}\s*}}`, "gi");
-      return result.replace(regex, value);
+      const regex = new RegExp(`{{\\s*${token}\\s*}}`, "gi");
+      return result.replaceAll(regex, value);
     }, acc);
   }, body);
 };
 
-const toneToStyleMap: Record<"رسمي" | "شبه رسمي" | "ودي", "formal" | "semi-formal" | "friendly"> = {
+type ToneType = "رسمي" | "شبه رسمي" | "ودي";
+type StyleType = "formal" | "semi-formal" | "friendly";
+type DocumentLanguage = "ar" | "en" | "both";
+
+const toneToStyleMap: Record<ToneType, StyleType> = {
   رسمي: "formal",
   "شبه رسمي": "semi-formal",
   ودي: "friendly",
 };
 
-const languageLabelMap: Record<"ar" | "en" | "both", string> = {
+const languageLabelMap: Record<DocumentLanguage, string> = {
   ar: "العربية",
   en: "English",
   both: "ثنائي",
 };
 
-const isDocumentLanguage = (value: string): value is "ar" | "en" | "both" =>
+const isDocumentLanguage = (value: string): value is DocumentLanguage =>
   value === "ar" || value === "en" || value === "both";
 
 const isToneOption = (value: string): value is "رسمي" | "شبه رسمي" | "ودي" =>
@@ -287,9 +291,9 @@ export default function DocumentGenerator() {
     if (!templateFields.length) return;
     setVariables(prev => {
       const updated: Record<string, string> = {};
-      templateFields.forEach(field => {
+      for (const field of templateFields) {
         updated[field.key] = prev[field.key] || "";
-      });
+      }
       return updated;
     });
   }, [templateFields]);
@@ -402,7 +406,7 @@ export default function DocumentGenerator() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    const safeTitle = (template?.title || "document").replace(/[^a-zA-Z0-9\u0600-\u06FF]+/g, "-");
+    const safeTitle = (template?.title || "document").replaceAll(/[^a-zA-Z0-9\u0600-\u06FF]+/g, "-");
     link.download = `${safeTitle || "document"}.${isHtml ? "html" : "txt"}`;
     link.click();
     URL.revokeObjectURL(url);
@@ -624,7 +628,7 @@ export default function DocumentGenerator() {
                 {previewHtml ? (
                   <div
                     className="prose prose-sm max-w-none rtl text-right"
-                    dangerouslySetInnerHTML={{ __html: previewHtml }}
+                    dangerouslySetInnerHTML={createSafeRichTextProps(previewHtml)}
                   />
                 ) : (
                   <pre className="whitespace-pre-wrap text-sm leading-6">{previewText || fallbackBody}</pre>

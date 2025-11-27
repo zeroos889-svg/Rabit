@@ -7,6 +7,25 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
 import { Calendar, Clock, CheckCircle2, User } from "lucide-react";
 
+// Define types inline
+interface ConsultingType {
+  id: number;
+  nameAr: string;
+  descriptionAr: string;
+  duration: number;
+  price?: number;
+  basePriceSAR?: number;
+  slaHours?: number;
+}
+
+interface Consultant {
+  id: number;
+  fullNameAr?: string;
+  bioAr?: string;
+  mainSpecialization?: string;
+  yearsOfExperience?: number;
+}
+
 export default function ConsultingBook() {
   const { data: typesData, isLoading: loadingTypes } =
     trpc.consultant.getConsultationTypes.useQuery();
@@ -50,7 +69,7 @@ export default function ConsultingBook() {
                   ))}
                 </div>
               ) : (
-                typesData?.types?.map((type: any) => (
+                typesData?.types?.map((type: ConsultingType) => (
                   <div
                     key={type.id}
                     className="flex items-start justify-between p-3 rounded-lg border bg-white"
@@ -100,7 +119,7 @@ export default function ConsultingBook() {
                   ))}
                 </div>
               ) : (
-                consultantsData?.consultants?.slice(0, 4).map((consultant: any) => (
+                consultantsData?.consultants?.slice(0, 4).map((consultant: Consultant) => (
                   <div
                     key={consultant.id}
                     className="flex items-start justify-between p-3 rounded-lg border bg-white"

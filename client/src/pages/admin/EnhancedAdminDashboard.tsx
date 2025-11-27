@@ -56,7 +56,6 @@ interface DashboardStats {
   revenueGrowth: number;
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function EnhancedAdminDashboard() {
   const { i18n } = useTranslation();
   const isArabic = i18n.language === "ar";

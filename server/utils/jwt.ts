@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
+import { env } from "./env";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-this";
 const JWT_EXPIRES_IN = "7d"; // Token valid for 7 days
 
 export interface TokenPayload {
@@ -13,7 +13,7 @@ export interface TokenPayload {
  * Generate JWT token
  */
 export function generateToken(payload: TokenPayload): string {
-  return jwt.sign(payload, JWT_SECRET, {
+  return jwt.sign(payload, env.getJwtSecret(), {
     expiresIn: JWT_EXPIRES_IN,
   });
 }
@@ -23,7 +23,7 @@ export function generateToken(payload: TokenPayload): string {
  */
 export function verifyToken(token: string): TokenPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as TokenPayload;
+    return jwt.verify(token, env.getJwtSecret()) as TokenPayload;
   } catch {
     return null;
   }

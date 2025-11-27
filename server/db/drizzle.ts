@@ -4,18 +4,14 @@ import type { Pool, PoolOptions } from "mysql2/promise";
 import { drizzle } from "drizzle-orm/mysql2";
 import type { MySql2Database } from "drizzle-orm/mysql2";
 import * as schema from "../../drizzle/schema";
+import { env } from "../utils/env";
 
 let pool: Pool | null = null;
 let db: MySql2Database<typeof schema> | null = null;
 
 function buildPoolOptions(): PoolOptions {
-  const url = process.env.DATABASE_URL;
-  if (!url) {
-    throw new Error(
-      "DATABASE_URL is not configured. Please set it in your environment variables."
-    );
-  }
-
+  const url = env.getDatabaseUrl();
+  
   const parsed = new URL(url);
   const shouldUseSslParam = parsed.searchParams.get("ssl") ?? parsed.searchParams.get("sslmode");
   const shouldUseSsl =

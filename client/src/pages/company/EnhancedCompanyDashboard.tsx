@@ -23,7 +23,7 @@ import {
   UserPlus,
   AlertCircle,
   Settings,
-  Activity,
+  Activity as ActivityIcon,
   Calendar,
   Bell,
   BarChart3,
@@ -83,7 +83,6 @@ interface Activity {
   user?: string;
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function EnhancedCompanyDashboard() {
   const { i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
@@ -203,7 +202,7 @@ export default function EnhancedCompanyDashboard() {
       case "ticket":
         return <AlertCircle className="h-4 w-4 text-orange-600" />;
       default:
-        return <Activity className="h-4 w-4" />;
+        return <ActivityIcon className="h-4 w-4" />;
     }
   };
 
@@ -397,7 +396,7 @@ export default function EnhancedCompanyDashboard() {
               <Card className="lg:col-span-2">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Activity className="h-5 w-5" />
+                    <ActivityIcon className="h-5 w-5" />
                     {isArabic ? "النشاط الأخير" : "Recent Activity"}
                   </CardTitle>
                 </CardHeader>

@@ -8,19 +8,19 @@ import { useI18n } from "@/hooks/useI18n";
 
 interface TransTextProps {
   /** Translation key / مفتاح الترجمة */
-  tKey: string;
+  readonly tKey: string;
   /** Default text if translation not found / النص الافتراضي إذا لم توجد الترجمة */
-  defaultText?: string;
+  readonly defaultText?: string;
   /** Variables to interpolate / المتغيرات للاستبدال */
-  values?: Record<string, any>;
+  readonly values?: Record<string, unknown>;
   /** HTML element to render / عنصر HTML للعرض */
-  as?: keyof JSX.IntrinsicElements;
+  readonly as?: keyof JSX.IntrinsicElements;
   /** CSS classes / الأنماط */
-  className?: string;
+  readonly className?: string;
   /** Whether to render as HTML / هل يتم العرض كـ HTML */
-  html?: boolean;
+  readonly html?: boolean;
   /** Fallback component if translation fails / مكون بديل عند الفشل */
-  fallback?: React.ReactNode;
+  readonly fallback?: React.ReactNode;
 }
 
 /**
@@ -44,17 +44,23 @@ export function TransText({
   className,
   html = false,
   fallback,
-}: TransTextProps) {
+}: Readonly<TransTextProps>) {
   const { t } = useI18n();
 
   try {
     const translatedText = t(tKey, defaultText, values);
 
     if (html) {
+      // Import sanitization dynamically to avoid circular deps
+      const sanitized = translatedText
+        .replaceAll(/<script[^>]*>.*?<\/script>/gi, '')
+        .replaceAll(/on\w+="[^"]*"/gi, '')
+        .replaceAll(/javascript:/gi, '');
+      
       return (
         <Component
           className={className}
-          dangerouslySetInnerHTML={{ __html: translatedText }}
+          dangerouslySetInnerHTML={{ __html: sanitized }}
         />
       );
     }
@@ -75,7 +81,7 @@ export function TransText({
  * Shorthand for TransText with <p> tag
  * اختصار لـ TransText مع وسم <p>
  */
-export function TransParagraph(props: Omit<TransTextProps, "as">) {
+export function TransParagraph(props: Readonly<Omit<TransTextProps, "as">>) {
   return <TransText {...props} as="p" />;
 }
 
@@ -83,7 +89,7 @@ export function TransParagraph(props: Omit<TransTextProps, "as">) {
  * Shorthand for TransText with <h1> tag
  * اختصار لـ TransText مع وسم <h1>
  */
-export function TransHeading1(props: Omit<TransTextProps, "as">) {
+export function TransHeading1(props: Readonly<Omit<TransTextProps, "as">>) {
   return <TransText {...props} as="h1" />;
 }
 
@@ -91,7 +97,7 @@ export function TransHeading1(props: Omit<TransTextProps, "as">) {
  * Shorthand for TransText with <h2> tag
  * اختصار لـ TransText مع وسم <h2>
  */
-export function TransHeading2(props: Omit<TransTextProps, "as">) {
+export function TransHeading2(props: Readonly<Omit<TransTextProps, "as">>) {
   return <TransText {...props} as="h2" />;
 }
 
@@ -99,7 +105,7 @@ export function TransHeading2(props: Omit<TransTextProps, "as">) {
  * Shorthand for TransText with <h3> tag
  * اختصار لـ TransText مع وسم <h3>
  */
-export function TransHeading3(props: Omit<TransTextProps, "as">) {
+export function TransHeading3(props: Readonly<Omit<TransTextProps, "as">>) {
   return <TransText {...props} as="h3" />;
 }
 
@@ -107,6 +113,6 @@ export function TransHeading3(props: Omit<TransTextProps, "as">) {
  * Shorthand for TransText with <button> text
  * اختصار لـ TransText مع نص زر
  */
-export function TransButton(props: Omit<TransTextProps, "as">) {
+export function TransButton(props: Readonly<Omit<TransTextProps, "as">>) {
   return <TransText {...props} as="span" />;
 }

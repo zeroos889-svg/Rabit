@@ -45,10 +45,11 @@ function ChartContainer({
   >["children"];
 }) {
   const uniqueId = React.useId();
-  const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
+  const chartId = `chart-${id || uniqueId.replaceAll(":", "")}`;
+  const contextValue = React.useMemo(() => ({ config }), [config]);
 
   return (
-    <ChartContext.Provider value={{ config }}>
+    <ChartContext.Provider value={contextValue}>
       <div
         data-slot="chart"
         data-chart={chartId}
@@ -158,7 +159,7 @@ function ChartTooltipContent({
     const itemConfig = getPayloadConfigFromPayload(config, item, key);
     const value =
       !labelKey && typeof label === "string"
-        ? config[label as keyof typeof config]?.label || label
+        ? config[label]?.label || label
         : itemConfig?.label;
 
     if (labelFormatter) {
@@ -197,7 +198,7 @@ function ChartTooltipContent({
         className
       )}
     >
-      {!nestLabel ? tooltipLabel : null}
+      {nestLabel ? null : tooltipLabel}
       <div className="grid gap-1.5">
         {payload
           .filter(item => item.type !== "none")
@@ -206,7 +207,7 @@ function ChartTooltipContent({
             const itemConfig = getPayloadConfigFromPayload(config, item, key);
             const indicatorColor =
               color ||
-              (item.payload as Record<string, any> | undefined)?.fill ||
+              (item.payload as Record<string, unknown>)?.fill ||
               item.color;
 
             return (
@@ -275,19 +276,21 @@ function ChartTooltipContent({
 
 const ChartLegend = RechartsPrimitive.Legend;
 
+interface ChartLegendContentProps {
+  readonly className?: string;
+  readonly hideIcon?: boolean;
+  readonly payload?: Array<{ type?: string; dataKey?: string; value?: string; color?: string }>;
+  readonly verticalAlign?: "top" | "bottom" | "middle";
+  readonly nameKey?: string;
+}
+
 function ChartLegendContent({
   className,
   hideIcon = false,
   payload,
   verticalAlign = "bottom",
   nameKey,
-}: {
-  className?: string;
-  hideIcon?: boolean;
-  payload?: any[];
-  verticalAlign?: "top" | "bottom" | "middle";
-  nameKey?: string;
-}) {
+}: ChartLegendContentProps) {
   const { config } = useChart();
 
   if (!payload?.length) {
@@ -369,7 +372,7 @@ function getPayloadConfigFromPayload(
 
   return configLabelKey in config
     ? config[configLabelKey]
-    : config[key as keyof typeof config];
+    : config[key];
 }
 
 export {

@@ -105,6 +105,9 @@ vi.mock("@/lib/trpc", () => ({
 
 vi.mock("@/const", () => ({
   APP_LOGO: "/LOGO.svg",
+  APP_TITLE: "رابِط",
+  TRIAL_MESSAGE: "الوصول الكامل بدون بطاقة",
+  IS_TRIAL_MODE: true,
   getLoginUrl: () => mockGetLoginUrl(),
 }));
 

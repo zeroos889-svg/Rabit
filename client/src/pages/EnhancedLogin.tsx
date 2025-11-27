@@ -39,7 +39,6 @@ import {
   clearTrialProfileSelection,
 } from "@/lib/trialProfiles";
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function EnhancedLogin() {
   const { i18n } = useTranslation();
   const isArabic = i18n.language === "ar";

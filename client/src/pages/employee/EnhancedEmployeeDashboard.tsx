@@ -68,7 +68,6 @@ interface Document {
   size: string;
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function EnhancedEmployeeDashboard() {
   const { i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
@@ -182,7 +181,6 @@ export default function EnhancedEmployeeDashboard() {
     }
   };
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   const getStatusBadge = (status: Task["status"] | LeaveRequest["status"]) => {
     const isCompleted = status === "completed";
     const isApproved = status === "approved";

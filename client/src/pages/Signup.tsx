@@ -34,12 +34,10 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
-import { Link } from "wouter";
-import { APP_LOGO } from "@/const";
-import { getLoginUrl } from "@/const";
+import { Link, useLocation } from "wouter";
+import { APP_LOGO, getLoginUrl } from "@/const";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
-import { useLocation } from "wouter";
 import analytics from "@/lib/analytics";
 
 type SignupFormData = {
@@ -123,6 +121,16 @@ const getValidationErrors = (
       ? ""
       : t("signup.validation.confirmPassword"),
 });
+
+/**
+ * Helper function to get password strength color class
+ */
+function getPasswordStrengthColor(score: number): string {
+  if (score >= 4) return "bg-emerald-500";
+  if (score === 3) return "bg-amber-500";
+  if (score === 2) return "bg-orange-500";
+  return "bg-destructive";
+}
 
 export default function Signup() {
   const { t } = useTranslation();
@@ -690,17 +698,10 @@ export default function Signup() {
 
               <div className="space-y-1">
                 <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  {/* Dynamic width requires inline style for password strength indicator */}
                   <div
-                    className={`h-full transition-all ${
-                      passwordStrength.score >= 4
-                        ? "bg-emerald-500"
-                        : passwordStrength.score === 3
-                        ? "bg-amber-500"
-                        : passwordStrength.score === 2
-                        ? "bg-orange-500"
-                        : "bg-destructive"
-                    }`}
-                    style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
+                    className={`h-full transition-all ${getPasswordStrengthColor(passwordStrength.score)}`}
+                    style={{ width: `${(passwordStrength.score / 5) * 100}%` }} // eslint-disable-line react/forbid-dom-props
                   />
                 </div>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -726,10 +727,10 @@ export default function Signup() {
                   <Checkbox
                     id="terms"
                     checked={agreements.terms}
-                    onCheckedChange={checked =>
+                    onCheckedChange={(checked) =>
                       setAgreements({
                         ...agreements,
-                        terms: checked as boolean,
+                        terms: checked === true,
                       })
                     }
                     required
@@ -754,10 +755,10 @@ export default function Signup() {
                   <Checkbox
                     id="privacy"
                     checked={agreements.privacy}
-                    onCheckedChange={checked =>
+                    onCheckedChange={(checked) =>
                       setAgreements({
                         ...agreements,
-                        privacy: checked as boolean,
+                        privacy: checked === true,
                       })
                     }
                     required
@@ -782,10 +783,10 @@ export default function Signup() {
                   <Checkbox
                     id="cookies"
                     checked={agreements.cookies}
-                    onCheckedChange={checked =>
+                    onCheckedChange={(checked) =>
                       setAgreements({
                         ...agreements,
-                        cookies: checked as boolean,
+                        cookies: checked === true,
                       })
                     }
                     required
@@ -877,7 +878,7 @@ export default function Signup() {
                   src="https://www.google.com/favicon.ico"
                   alt="Google"
                   className="h-4 w-4 ml-2"
-                />
+                />{" "}
                 Google
               </Button>
 

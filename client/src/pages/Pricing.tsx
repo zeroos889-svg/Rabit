@@ -33,6 +33,51 @@ import {
 import { Link } from "wouter";
 import { Footer } from "@/components/Footer";
 
+/**
+ * Helper component to render comparison table cell value
+ */
+interface ComparisonCellProps {
+  value: boolean | string;
+  valueKey?: string;
+  includedLabel: string;
+  excludedLabel: string;
+  t: (key: string) => string;
+  isFontSemibold?: boolean;
+}
+
+function ComparisonCellValue({ 
+  value, 
+  valueKey, 
+  includedLabel, 
+  excludedLabel, 
+  t, 
+  isFontSemibold = false 
+}: Readonly<ComparisonCellProps>) {
+  if (typeof value === "boolean") {
+    if (value) {
+      return (
+        <>
+          <Check className="h-5 w-5 text-green-500 mx-auto" aria-hidden="true" />
+          <span className="sr-only">{includedLabel}</span>
+        </>
+      );
+    }
+    return (
+      <>
+        <X className="h-5 w-5 text-gray-300 mx-auto" aria-hidden="true" />
+        <span className="sr-only">{excludedLabel}</span>
+      </>
+    );
+  }
+  
+  const textClass = isFontSemibold ? "text-sm font-semibold" : "text-sm";
+  return (
+    <span className={textClass}>
+      {valueKey ? t(valueKey) : value}
+    </span>
+  );
+}
+
 type PlanFeature = {
   nameKey?: string;
   name?: string;
@@ -297,27 +342,28 @@ export default function Pricing() {
 
             <CardContent className="space-y-6">
               <div className="space-y-3">
-                {pricingPlans.employee.features.map((feature, index) => (
-                  <div key={index} className="flex items-start gap-3">
+                {pricingPlans.employee.features.map((feature) => (
+                  <div key={feature.nameKey || feature.name} className="flex items-start gap-3">
                     {feature.included ? (
                       <Check
                         className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5"
-                        aria-label={includedLabel}
-                        role="img"
-                        focusable="false"
+                        aria-hidden="true"
                       />
                     ) : (
                       <X
                         className="h-5 w-5 text-gray-300 flex-shrink-0 mt-0.5"
-                        aria-label={excludedLabel}
-                        role="img"
-                        focusable="false"
+                        aria-hidden="true"
                       />
                     )}
                     <span
-                      className={`text-sm ${!feature.included ? "text-muted-foreground line-through" : ""}`}
+                      className={`text-sm ${feature.included ? "" : "text-muted-foreground line-through"}`}
                     >
                       {feature.nameKey ? t(feature.nameKey) : feature.name}
+                      {feature.included ? (
+                        <span className="sr-only"> - {includedLabel}</span>
+                      ) : (
+                        <span className="sr-only"> - {excludedLabel}</span>
+                      )}
                     </span>
                   </div>
                 ))}
@@ -387,27 +433,28 @@ export default function Pricing() {
 
             <CardContent className="space-y-6">
               <div className="space-y-3">
-                {pricingPlans.freelancer.features.map((feature, index) => (
-                  <div key={index} className="flex items-start gap-3">
+                {pricingPlans.freelancer.features.map((feature) => (
+                  <div key={feature.nameKey || feature.name} className="flex items-start gap-3">
                     {feature.included ? (
                       <Check
                         className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5"
-                        aria-label={includedLabel}
-                        role="img"
-                        focusable="false"
+                        aria-hidden="true"
                       />
                     ) : (
                       <X
                         className="h-5 w-5 text-gray-300 flex-shrink-0 mt-0.5"
-                        aria-label={excludedLabel}
-                        role="img"
-                        focusable="false"
+                        aria-hidden="true"
                       />
                     )}
                     <span
-                      className={`text-sm ${!feature.included ? "text-muted-foreground line-through" : ""}`}
+                      className={`text-sm ${feature.included ? "" : "text-muted-foreground line-through"}`}
                     >
                       {feature.nameKey ? t(feature.nameKey) : feature.name}
+                      {feature.included ? (
+                        <span className="sr-only"> - {includedLabel}</span>
+                      ) : (
+                        <span className="sr-only"> - {excludedLabel}</span>
+                      )}
                     </span>
                   </div>
                 ))}
@@ -474,6 +521,7 @@ export default function Pricing() {
                   })();
 
                   return (
+                  /* eslint-disable-next-line jsx-a11y/role-supports-aria-props */
                   <button
                       key={tier.id}
                       type="button"
@@ -509,16 +557,15 @@ export default function Pricing() {
               </div>
 
               <div className="space-y-3">
-                {pricingPlans.company.features.map((feature, index) => (
-                  <div key={index} className="flex items-start gap-3">
+                {pricingPlans.company.features.map((feature) => (
+                  <div key={feature.nameKey || feature.name} className="flex items-start gap-3">
                     <Check
                       className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5"
-                      aria-label={includedLabel}
-                      role="img"
-                      focusable="false"
+                      aria-hidden="true"
                     />
                     <span className="text-sm">
                       {feature.nameKey ? t(feature.nameKey) : feature.name}
+                      <span className="sr-only"> - {includedLabel}</span>
                     </span>
                   </div>
                 ))}
@@ -663,85 +710,39 @@ export default function Pricing() {
                       </tr>
                     </thead>
                     <tbody>
-                      {comparisonRows.map((row, index) => (
-                        <tr key={index} className="border-b hover:bg-gray-50">
+                      {comparisonRows.map((row) => (
+                        <tr key={row.nameKey || row.name} className="border-b hover:bg-gray-50">
                           <td className="p-4">
                             {row.nameKey ? t(row.nameKey) : row.name}
                           </td>
                           <td className="p-4 text-center">
-                            {typeof row.employee === "boolean" ? (
-                              row.employee ? (
-                                <Check
-                                  className="h-5 w-5 text-green-500 mx-auto"
-                                  aria-label={includedLabel}
-                                  role="img"
-                                  focusable="false"
-                                />
-                              ) : (
-                                <X
-                                  className="h-5 w-5 text-gray-300 mx-auto"
-                                  aria-label={excludedLabel}
-                                  role="img"
-                                  focusable="false"
-                                />
-                              )
-                            ) : (
-                              <span className="text-sm">
-                                {row.employeeKey
-                                  ? t(row.employeeKey)
-                                  : row.employee}
-                              </span>
-                            )}
+                            <ComparisonCellValue
+                              value={row.employee}
+                              valueKey={row.employeeKey}
+                              includedLabel={includedLabel}
+                              excludedLabel={excludedLabel}
+                              t={t}
+                            />
                           </td>
                           <td className="p-4 text-center bg-purple-50">
-                            {typeof row.freelancer === "boolean" ? (
-                              row.freelancer ? (
-                                <Check
-                                  className="h-5 w-5 text-green-500 mx-auto"
-                                  aria-label={includedLabel}
-                                  role="img"
-                                  focusable="false"
-                                />
-                              ) : (
-                                <X
-                                  className="h-5 w-5 text-gray-300 mx-auto"
-                                  aria-label={excludedLabel}
-                                  role="img"
-                                  focusable="false"
-                                />
-                              )
-                            ) : (
-                              <span className="text-sm font-semibold">
-                                {row.freelancerKey
-                                  ? t(row.freelancerKey)
-                                  : row.freelancer}
-                              </span>
-                            )}
+                            <ComparisonCellValue
+                              value={row.freelancer}
+                              valueKey={row.freelancerKey}
+                              includedLabel={includedLabel}
+                              excludedLabel={excludedLabel}
+                              t={t}
+                              isFontSemibold
+                            />
                           </td>
                           <td className="p-4 text-center">
-                            {typeof row.company === "boolean" ? (
-                              row.company ? (
-                                <Check
-                                  className="h-5 w-5 text-green-500 mx-auto"
-                                  aria-label={includedLabel}
-                                  role="img"
-                                  focusable="false"
-                                />
-                              ) : (
-                                <X
-                                  className="h-5 w-5 text-gray-300 mx-auto"
-                                  aria-label={excludedLabel}
-                                  role="img"
-                                  focusable="false"
-                                />
-                              )
-                            ) : (
-                              <span className="text-sm font-semibold">
-                                {row.companyKey
-                                  ? t(row.companyKey)
-                                  : row.company}
-                              </span>
-                            )}
+                            <ComparisonCellValue
+                              value={row.company}
+                              valueKey={row.companyKey}
+                              includedLabel={includedLabel}
+                              excludedLabel={excludedLabel}
+                              t={t}
+                              isFontSemibold
+                            />
                           </td>
                         </tr>
                       ))}

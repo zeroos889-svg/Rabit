@@ -20,12 +20,23 @@ import {
 } from "lucide-react";
 
 interface DashboardLayoutProps {
-  children: ReactNode;
-  userType?: string;
-  title?: string;
+  readonly children: ReactNode;
+  readonly userType?: string;
+  readonly title?: string;
 }
 
-export default function DashboardLayout({ children, userType = "company", title }: DashboardLayoutProps) {
+function getUserTypeTitle(userType: string): string {
+  switch (userType) {
+    case "employee":
+      return "لوحة الموظف";
+    case "consultant":
+      return "لوحة المستشار";
+    default:
+      return "لوحة الشركة";
+  }
+}
+
+export default function DashboardLayout({ children, userType = "company", title }: Readonly<DashboardLayoutProps>) {
   const [location] = useLocation();
   const { t } = useTranslation();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -130,14 +141,15 @@ export default function DashboardLayout({ children, userType = "company", title 
           <p className="text-sm font-semibold text-muted-foreground">رابِط HR</p>
           {(title || userType) && (
             <span className="text-xs text-muted-foreground/80">
-              {title || (userType === "employee" ? "لوحة الموظف" : userType === "consultant" ? "لوحة المستشار" : "لوحة الشركة")}
+              {title || getUserTypeTitle(userType)}
             </span>
           )}
         </div>
+        {/* eslint-disable-next-line jsx-a11y/role-supports-aria-props */}
         <button
           type="button"
           onClick={() => setIsMobileNavOpen(prev => !prev)}
-          aria-expanded={isMobileNavOpen ? "true" : "false"}
+          aria-expanded={isMobileNavOpen}
           aria-controls={navId}
           aria-label={mobileToggleLabel}
           className="inline-flex items-center justify-center rounded-full border border-border p-2 text-sm font-medium"
@@ -165,17 +177,17 @@ export default function DashboardLayout({ children, userType = "company", title 
             {menuItems.map((item) => {
               const isActive = location?.startsWith(item.href);
               return (
-                <Link key={item.href} href={item.href}>
-                  <a
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
-                    aria-current={isActive ? "page" : undefined}
-                    onClick={() => setIsMobileNavOpen(false)}
-                  >
-                    <item.icon className="w-5 h-5 opacity-75 group-hover:opacity-100" aria-hidden="true" />
-                    <span className="text-sm font-medium opacity-90 group-hover:opacity-100">
-                      {item.label}
-                    </span>
-                  </a>
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                  aria-current={isActive ? "page" : undefined}
+                  onClick={() => setIsMobileNavOpen(false)}
+                >
+                  <item.icon className="w-5 h-5 opacity-75 group-hover:opacity-100" aria-hidden="true" />
+                  <span className="text-sm font-medium opacity-90 group-hover:opacity-100">
+                    {item.label}
+                  </span>
                 </Link>
               );
             })}

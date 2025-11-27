@@ -9,16 +9,16 @@ import { useState, useEffect } from "react";
  */
 export function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState<boolean>(() => {
-    if (typeof window !== "undefined") {
-      return window.matchMedia(query).matches;
+    if (globalThis.window !== undefined) {
+      return globalThis.matchMedia(query).matches;
     }
     return false;
   });
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (globalThis.window === undefined) return;
 
-    const mediaQuery = window.matchMedia(query);
+    const mediaQuery = globalThis.matchMedia(query);
 
     // Update state
     setMatches(mediaQuery.matches);
@@ -28,16 +28,9 @@ export function useMediaQuery(query: string): boolean {
       setMatches(event.matches);
     };
 
-    // Modern browsers
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener("change", handler);
-      return () => mediaQuery.removeEventListener("change", handler);
-    }
-    // Legacy browsers
-    else {
-      mediaQuery.addListener(handler);
-      return () => mediaQuery.removeListener(handler);
-    }
+    // Use modern addEventListener API
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
   }, [query]);
 
   return matches;
@@ -55,6 +48,24 @@ export const breakpoints = {
 } as const;
 
 /**
+ * Helper function to determine current breakpoint
+ */
+function getCurrentBreakpoint(
+  is2Xl: boolean,
+  isXl: boolean,
+  isLg: boolean,
+  isMd: boolean,
+  isSm: boolean
+): "2xl" | "xl" | "lg" | "md" | "sm" | "xs" {
+  if (is2Xl) return "2xl";
+  if (isXl) return "xl";
+  if (isLg) return "lg";
+  if (isMd) return "md";
+  if (isSm) return "sm";
+  return "xs";
+}
+
+/**
  * Predefined hooks for common breakpoints
  */
 export function useBreakpoint() {
@@ -65,17 +76,7 @@ export function useBreakpoint() {
   const is2Xl = useMediaQuery(breakpoints["2xl"]);
 
   // Determine current breakpoint
-  const current = is2Xl
-    ? "2xl"
-    : isXl
-      ? "xl"
-      : isLg
-        ? "lg"
-        : isMd
-          ? "md"
-          : isSm
-            ? "sm"
-            : "xs";
+  const current = getCurrentBreakpoint(is2Xl, isXl, isLg, isMd, isSm);
 
   return {
     isSm,
@@ -98,13 +99,13 @@ export function useTouchDevice(): boolean {
   const [isTouch, setIsTouch] = useState<boolean>(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (globalThis.window === undefined) return;
 
     const hasTouchScreen =
-      "ontouchstart" in window ||
+      "ontouchstart" in globalThis ||
       navigator.maxTouchPoints > 0 ||
-      // @ts-ignore
-      (navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 0);
+      // Legacy IE support
+      ("msMaxTouchPoints" in navigator && (navigator as unknown as { msMaxTouchPoints: number }).msMaxTouchPoints > 0);
 
     setIsTouch(hasTouchScreen);
   }, []);

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "wouter";
 import { BackButton } from "@/components/BackButton";
@@ -33,7 +33,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
-import { getDashboardPath } from "@/lib/navigation";
+import type { AuthResponse, Package } from "@/shared/types/consulting";
 
 type CompanyForm = {
   companyName: string;
@@ -52,25 +52,38 @@ type CompanyForm = {
   packageId?: number | null;
 };
 
+type Agreements = {
+  terms: boolean;
+  privacy: boolean;
+  marketing: boolean;
+};
+
 const DRAFT_KEY = "rabit-company-signup-draft";
+
+/**
+ * Helper function to get step card styles based on state
+ */
+function getStepCardStyles(active: boolean, done: boolean): string {
+  if (active) {
+    return "border-purple-500 bg-purple-50 text-purple-800";
+  }
+  if (done) {
+    return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  }
+  return "border-slate-200 bg-white text-slate-600";
+}
 
 const StepCard = ({
   title,
   active,
   done,
 }: {
-  title: string;
-  active: boolean;
-  done: boolean;
+  readonly title: string;
+  readonly active: boolean;
+  readonly done: boolean;
 }) => (
   <div
-    className={`p-3 rounded-lg border flex items-center gap-2 text-sm ${
-      active
-        ? "border-purple-500 bg-purple-50 text-purple-800"
-        : done
-        ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-        : "border-slate-200 bg-white text-slate-600"
-    }`}
+    className={`p-3 rounded-lg border flex items-center gap-2 text-sm ${getStepCardStyles(active, done)}`}
   >
     {done ? (
       <CheckCircle2 className="h-4 w-4" />
@@ -80,6 +93,475 @@ const StepCard = ({
     <span>{title}</span>
   </div>
 );
+
+// ========== Step Components ==========
+
+interface StepCompanyInfoProps {
+  readonly formData: CompanyForm;
+  readonly setFormData: React.Dispatch<React.SetStateAction<CompanyForm>>;
+  readonly isLoading: boolean;
+  readonly isArabic: boolean;
+}
+
+function StepCompanyInfo({ formData, setFormData, isLoading, isArabic }: StepCompanyInfoProps) {
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="companyName">
+          {isArabic ? "اسم الشركة" : "Company Name"} *
+        </Label>
+        <div className="relative">
+          <Building2 className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+          <Input
+            id="companyName"
+            type="text"
+            placeholder={isArabic ? "شركة الموارد البشرية المتحدة" : "Rabit HR Solutions"}
+            className="pr-10"
+            value={formData.companyName}
+            onChange={e => setFormData(prev => ({ ...prev, companyName: e.target.value }))}
+            disabled={isLoading}
+          />
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="tradeNumber">
+            {isArabic ? "السجل التجاري" : "Trade license"}
+          </Label>
+          <Input
+            id="tradeNumber"
+            type="text"
+            placeholder="1010xxxx"
+            value={formData.tradeNumber}
+            onChange={e => setFormData(prev => ({ ...prev, tradeNumber: e.target.value }))}
+            disabled={isLoading}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="taxNumber">
+            {isArabic ? "الرقم الضريبي" : "Tax number"}
+          </Label>
+          <Input
+            id="taxNumber"
+            type="text"
+            placeholder="3xx-xxxx-xxxxxx"
+            value={formData.taxNumber}
+            onChange={e => setFormData(prev => ({ ...prev, taxNumber: e.target.value }))}
+            disabled={isLoading}
+          />
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="industry">
+            {isArabic ? "القطاع" : "Industry"}
+          </Label>
+          <Input
+            id="industry"
+            type="text"
+            placeholder={isArabic ? "تقنية / خدمات / تصنيع" : "Tech / Services / Manufacturing"}
+            value={formData.industry}
+            onChange={e => setFormData(prev => ({ ...prev, industry: e.target.value }))}
+            disabled={isLoading}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="companySize">
+            {isArabic ? "حجم الشركة" : "Company Size"}
+          </Label>
+          <div className="relative">
+            <Users className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              id="companySize"
+              type="text"
+              placeholder={isArabic ? "11-50 موظف" : "11-50 employees"}
+              className="pr-10"
+              value={formData.companySize}
+              onChange={e => setFormData(prev => ({ ...prev, companySize: e.target.value }))}
+              disabled={isLoading}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="website">
+            {isArabic ? "الموقع الإلكتروني" : "Website"}
+          </Label>
+          <div className="relative">
+            <Globe className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              id="website"
+              type="url"
+              placeholder="https://company.com"
+              className="pr-10"
+              value={formData.website}
+              onChange={e => setFormData(prev => ({ ...prev, website: e.target.value }))}
+              disabled={isLoading}
+              dir="ltr"
+            />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="location">
+            {isArabic ? "الموقع" : "Location"}
+          </Label>
+          <div className="relative">
+            <MapPin className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              id="location"
+              type="text"
+              placeholder={isArabic ? "الرياض، السعودية" : "Riyadh, Saudi Arabia"}
+              className="pr-10"
+              value={formData.location}
+              onChange={e => setFormData(prev => ({ ...prev, location: e.target.value }))}
+              disabled={isLoading}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface StepOwnerDetailsProps {
+  readonly formData: CompanyForm;
+  readonly setFormData: React.Dispatch<React.SetStateAction<CompanyForm>>;
+  readonly isLoading: boolean;
+  readonly isArabic: boolean;
+  readonly showPassword: boolean;
+  readonly setShowPassword: React.Dispatch<React.SetStateAction<boolean>>;
+  readonly showConfirmPassword: boolean;
+  readonly setShowConfirmPassword: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function StepOwnerDetails({
+  formData,
+  setFormData,
+  isLoading,
+  isArabic,
+  showPassword,
+  setShowPassword,
+  showConfirmPassword,
+  setShowConfirmPassword,
+}: StepOwnerDetailsProps) {
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="contactName">
+          {isArabic ? "اسم المسؤول" : "Contact Person"} *
+        </Label>
+        <div className="relative">
+          <User className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+          <Input
+            id="contactName"
+            type="text"
+            placeholder={isArabic ? "أحمد محمد" : "Ahmad Mohammed"}
+            className="pr-10"
+            value={formData.contactName}
+            onChange={e => setFormData(prev => ({ ...prev, contactName: e.target.value }))}
+            disabled={isLoading}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="jobTitle">
+          {isArabic ? "المسمى الوظيفي" : "Job Title"}
+        </Label>
+        <Input
+          id="jobTitle"
+          type="text"
+          placeholder={isArabic ? "مدير موارد بشرية" : "HR Manager"}
+          value={formData.jobTitle}
+          onChange={e => setFormData(prev => ({ ...prev, jobTitle: e.target.value }))}
+          disabled={isLoading}
+        />
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="phone">
+            {isArabic ? "رقم الجوال" : "Phone Number"} *
+          </Label>
+          <div className="relative">
+            <Phone className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              id="phone"
+              type="tel"
+              placeholder="05XXXXXXXX"
+              className="pr-10"
+              value={formData.phone}
+              onChange={e => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+              disabled={isLoading}
+              dir="ltr"
+            />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="email">
+            {isArabic ? "البريد الإلكتروني" : "Email"} *
+          </Label>
+          <div className="relative">
+            <Mail className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              id="email"
+              type="email"
+              placeholder="admin@company.com"
+              className="pr-10"
+              value={formData.email}
+              onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              disabled={isLoading}
+              dir="ltr"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="password">
+            {isArabic ? "كلمة المرور" : "Password"} *
+          </Label>
+          <div className="relative">
+            <Lock className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="••••••••"
+              className="pr-10 pl-10"
+              value={formData.password}
+              onChange={e => setFormData(prev => ({ ...prev, password: e.target.value }))}
+              disabled={isLoading}
+            />
+            <button
+              type="button"
+              className="absolute left-3 top-2.5 text-gray-500"
+              onClick={() => setShowPassword(prev => !prev)}
+              aria-label={isArabic ? "عرض كلمة المرور" : "Show password"}
+            >
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="confirmPassword">
+            {isArabic ? "تأكيد كلمة المرور" : "Confirm Password"} *
+          </Label>
+          <div className="relative">
+            <Lock className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              id="confirmPassword"
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="••••••••"
+              className="pr-10 pl-10"
+              value={formData.confirmPassword}
+              onChange={e => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+              disabled={isLoading}
+            />
+            <button
+              type="button"
+              className="absolute left-3 top-2.5 text-gray-500"
+              onClick={() => setShowConfirmPassword(prev => !prev)}
+              aria-label={isArabic ? "عرض كلمة المرور" : "Show password"}
+            >
+              {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface StepPackageReviewProps {
+  readonly formData: CompanyForm;
+  readonly setFormData: React.Dispatch<React.SetStateAction<CompanyForm>>;
+  readonly agreements: Agreements;
+  readonly setAgreements: React.Dispatch<React.SetStateAction<Agreements>>;
+  readonly isLoading: boolean;
+  readonly isArabic: boolean;
+  readonly loadingPackages: boolean;
+  readonly packages: Package[] | undefined;
+}
+
+function StepPackageReview({
+  formData,
+  setFormData,
+  agreements,
+  setAgreements,
+  isLoading,
+  isArabic,
+  loadingPackages,
+  packages,
+}: StepPackageReviewProps) {
+  const handlePackageSelect = (pkgId: number) => {
+    setFormData(prev => ({ ...prev, packageId: pkgId }));
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <p className="text-sm text-muted-foreground mb-2">
+          {isArabic
+            ? "اختر الباقة المناسبة. يمكن تغييرها لاحقاً من الإعدادات."
+            : "Pick a package; you can switch later from settings."}
+        </p>
+        {loadingPackages ? (
+          <PackageSkeletons />
+        ) : (
+          <PackageList
+            packages={packages}
+            selectedPackageId={formData.packageId}
+            onSelect={handlePackageSelect}
+            isArabic={isArabic}
+          />
+        )}
+      </div>
+
+      <Separator />
+
+      <AgreementsSection
+        agreements={agreements}
+        setAgreements={setAgreements}
+        isLoading={isLoading}
+        isArabic={isArabic}
+      />
+    </div>
+  );
+}
+
+function PackageSkeletons() {
+  return (
+    <div className="grid gap-3 md:grid-cols-2">
+      {[1, 2].map(i => (
+        <Card key={`skeleton-${i}`} className="p-4">
+          <Skeleton className="h-5 w-32 mb-2" />
+          <Skeleton className="h-4 w-24 mb-4" />
+          <Skeleton className="h-10 w-full" />
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+interface PackageListProps {
+  readonly packages: Package[] | undefined;
+  readonly selectedPackageId: number | null | undefined;
+  readonly onSelect: (id: number) => void;
+  readonly isArabic: boolean;
+}
+
+function PackageList({ packages, selectedPackageId, onSelect, isArabic }: PackageListProps) {
+  if (!packages?.length) return null;
+
+  return (
+    <div className="grid gap-3 md:grid-cols-2">
+      {packages.map(pkg => (
+        <PackageCard
+          key={pkg.id}
+          pkg={pkg}
+          isSelected={selectedPackageId === pkg.id}
+          onSelect={onSelect}
+          isArabic={isArabic}
+        />
+      ))}
+    </div>
+  );
+}
+
+interface PackageCardProps {
+  readonly pkg: Package;
+  readonly isSelected: boolean;
+  readonly onSelect: (id: number) => void;
+  readonly isArabic: boolean;
+}
+
+function PackageCard({ pkg, isSelected, onSelect, isArabic }: PackageCardProps) {
+  const borderClass = isSelected
+    ? "border-purple-500 shadow"
+    : "border-transparent hover:border-slate-200";
+
+  return (
+    <Card
+      className={`p-4 cursor-pointer border-2 ${borderClass}`}
+      onClick={() => onSelect(pkg.id)}
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <CardTitle className="text-lg">{pkg.name}</CardTitle>
+          {pkg.description && (
+            <CardDescription className="mt-1 text-sm">{pkg.description}</CardDescription>
+          )}
+        </div>
+        <Badge variant="secondary" className="text-xs">
+          SLA {pkg.slaHours || 24}h
+        </Badge>
+      </div>
+      <div className="mt-3">
+        <div className="text-2xl font-bold text-purple-700">
+          {pkg.priceSAR ?? pkg.price ?? 0} ريال
+        </div>
+        {pkg.duration && (
+          <p className="text-xs text-muted-foreground">
+            {isArabic ? "مدة الجلسة" : "Session length"} ~ {pkg.duration} {isArabic ? "دقيقة" : "min"}
+          </p>
+        )}
+      </div>
+    </Card>
+  );
+}
+
+interface AgreementsSectionProps {
+  readonly agreements: Agreements;
+  readonly setAgreements: React.Dispatch<React.SetStateAction<Agreements>>;
+  readonly isLoading: boolean;
+  readonly isArabic: boolean;
+}
+
+function AgreementsSection({ agreements, setAgreements, isLoading, isArabic }: AgreementsSectionProps) {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center space-x-2 rtl:space-x-reverse">
+        <Checkbox
+          id="terms"
+          checked={agreements.terms}
+          onCheckedChange={checked => setAgreements(prev => ({ ...prev, terms: Boolean(checked) }))}
+          disabled={isLoading}
+        />
+        <Label htmlFor="terms" className="text-sm">
+          {isArabic ? "أوافق على الشروط والأحكام" : "I agree to the terms and conditions"}
+        </Label>
+      </div>
+      <div className="flex items-center space-x-2 rtl:space-x-reverse">
+        <Checkbox
+          id="privacy"
+          checked={agreements.privacy}
+          onCheckedChange={checked => setAgreements(prev => ({ ...prev, privacy: Boolean(checked) }))}
+          disabled={isLoading}
+        />
+        <Label htmlFor="privacy" className="text-sm">
+          {isArabic ? "أوافق على سياسة الخصوصية" : "I agree to the privacy policy"}
+        </Label>
+      </div>
+      <div className="flex items-center space-x-2 rtl:space-x-reverse">
+        <Checkbox
+          id="marketing"
+          checked={agreements.marketing}
+          onCheckedChange={checked => setAgreements(prev => ({ ...prev, marketing: Boolean(checked) }))}
+          disabled={isLoading}
+        />
+        <Label htmlFor="marketing" className="text-sm">
+          {isArabic ? "أرغب في استلام تحديثات وعروض" : "I want to receive updates and offers"}
+        </Label>
+      </div>
+    </div>
+  );
+}
 
 export default function SignupCompany() {
   const { t, i18n } = useTranslation();
@@ -154,7 +636,7 @@ export default function SignupCompany() {
   }, [formData.packageId, packagesData]);
 
   const registerMutation = trpc.auth.register.useMutation({
-    onSuccess: (data: any) => {
+    onSuccess: (data: AuthResponse) => {
       toast.success(
         isArabic
           ? "تم إنشاء حساب الشركة بنجاح"
@@ -172,13 +654,6 @@ export default function SignupCompany() {
     },
     onSettled: () => setIsLoading(false),
   });
-
-  const selectedPackage = useMemo(
-    () =>
-      packagesData?.packages?.find(pkg => pkg.id === formData.packageId) ||
-      null,
-    [packagesData, formData.packageId]
-  );
 
   const validateStep = (step: number) => {
     if (step === 0) {
@@ -247,429 +722,41 @@ export default function SignupCompany() {
   const renderStepContent = () => {
     if (currentStep === 0) {
       return (
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="companyName">
-              {isArabic ? "اسم الشركة" : "Company Name"} *
-            </Label>
-            <div className="relative">
-              <Building2 className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
-              <Input
-                id="companyName"
-                type="text"
-                placeholder={
-                  isArabic
-                    ? "شركة الموارد البشرية المتحدة"
-                    : "Rabit HR Solutions"
-                }
-                className="pr-10"
-                value={formData.companyName}
-                onChange={e =>
-                  setFormData({
-                    ...formData,
-                    companyName: e.target.value,
-                  })
-                }
-                disabled={isLoading}
-              />
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="tradeNumber">
-                {isArabic ? "السجل التجاري" : "Trade license"}
-              </Label>
-              <Input
-                id="tradeNumber"
-                type="text"
-                placeholder="1010xxxx"
-                value={formData.tradeNumber}
-                onChange={e =>
-                  setFormData({ ...formData, tradeNumber: e.target.value })
-                }
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="taxNumber">
-                {isArabic ? "الرقم الضريبي" : "Tax number"}
-              </Label>
-              <Input
-                id="taxNumber"
-                type="text"
-                placeholder="3xx-xxxx-xxxxxx"
-                value={formData.taxNumber}
-                onChange={e =>
-                  setFormData({ ...formData, taxNumber: e.target.value })
-                }
-                disabled={isLoading}
-              />
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="industry">
-                {isArabic ? "القطاع" : "Industry"}
-              </Label>
-              <Input
-                id="industry"
-                type="text"
-                placeholder={
-                  isArabic
-                    ? "تقنية / خدمات / تصنيع"
-                    : "Tech / Services / Manufacturing"
-                }
-                value={formData.industry}
-                onChange={e =>
-                  setFormData({ ...formData, industry: e.target.value })
-                }
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="companySize">
-                {isArabic ? "حجم الشركة" : "Company Size"}
-              </Label>
-              <div className="relative">
-                <Users className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="companySize"
-                  type="text"
-                  placeholder={isArabic ? "11-50 موظف" : "11-50 employees"}
-                  className="pr-10"
-                  value={formData.companySize}
-                  onChange={e =>
-                    setFormData({
-                      ...formData,
-                      companySize: e.target.value,
-                    })
-                  }
-                  disabled={isLoading}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="website">
-                {isArabic ? "الموقع الإلكتروني" : "Website"}
-              </Label>
-              <div className="relative">
-                <Globe className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="website"
-                  type="url"
-                  placeholder="https://company.com"
-                  className="pr-10"
-                  value={formData.website}
-                  onChange={e =>
-                    setFormData({ ...formData, website: e.target.value })
-                  }
-                  disabled={isLoading}
-                  dir="ltr"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="location">
-                {isArabic ? "الموقع" : "Location"}
-              </Label>
-              <div className="relative">
-                <MapPin className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="location"
-                  type="text"
-                  placeholder={
-                    isArabic ? "الرياض، السعودية" : "Riyadh, Saudi Arabia"
-                  }
-                  className="pr-10"
-                  value={formData.location}
-                  onChange={e =>
-                    setFormData({ ...formData, location: e.target.value })
-                  }
-                  disabled={isLoading}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        <StepCompanyInfo
+          formData={formData}
+          setFormData={setFormData}
+          isLoading={isLoading}
+          isArabic={isArabic}
+        />
       );
     }
 
     if (currentStep === 1) {
       return (
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="contactName">
-              {isArabic ? "اسم المسؤول" : "Contact Person"} *
-            </Label>
-            <div className="relative">
-              <User className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
-              <Input
-                id="contactName"
-                type="text"
-                placeholder={isArabic ? "أحمد محمد" : "Ahmad Mohammed"}
-                className="pr-10"
-                value={formData.contactName}
-                onChange={e =>
-                  setFormData({
-                    ...formData,
-                    contactName: e.target.value,
-                  })
-                }
-                disabled={isLoading}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="jobTitle">
-              {isArabic ? "المسمى الوظيفي" : "Job Title"}
-            </Label>
-            <Input
-              id="jobTitle"
-              type="text"
-              placeholder={isArabic ? "مدير موارد بشرية" : "HR Manager"}
-              value={formData.jobTitle}
-              onChange={e =>
-                setFormData({ ...formData, jobTitle: e.target.value })
-              }
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="phone">
-                {isArabic ? "رقم الجوال" : "Phone Number"} *
-              </Label>
-              <div className="relative">
-                <Phone className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="05XXXXXXXX"
-                  className="pr-10"
-                  value={formData.phone}
-                  onChange={e =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
-                  disabled={isLoading}
-                  dir="ltr"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">
-                {isArabic ? "البريد الإلكتروني" : "Email"} *
-              </Label>
-              <div className="relative">
-                <Mail className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="admin@company.com"
-                  className="pr-10"
-                  value={formData.email}
-                  onChange={e =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  disabled={isLoading}
-                  dir="ltr"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="password">
-                {isArabic ? "كلمة المرور" : "Password"} *
-              </Label>
-              <div className="relative">
-                <Lock className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  className="pr-10 pl-10"
-                  value={formData.password}
-                  onChange={e =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  className="absolute left-3 top-2.5 text-gray-500"
-                  onClick={() => setShowPassword(prev => !prev)}
-                  aria-label={isArabic ? "عرض كلمة المرور" : "Show password"}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">
-                {isArabic ? "تأكيد كلمة المرور" : "Confirm Password"} *
-              </Label>
-              <div className="relative">
-                <Lock className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  className="pr-10 pl-10"
-                  value={formData.confirmPassword}
-                  onChange={e =>
-                    setFormData({
-                      ...formData,
-                      confirmPassword: e.target.value,
-                    })
-                  }
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  className="absolute left-3 top-2.5 text-gray-500"
-                  onClick={() => setShowConfirmPassword(prev => !prev)}
-                  aria-label={isArabic ? "عرض كلمة المرور" : "Show password"}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <StepOwnerDetails
+          formData={formData}
+          setFormData={setFormData}
+          isLoading={isLoading}
+          isArabic={isArabic}
+          showPassword={showPassword}
+          setShowPassword={setShowPassword}
+          showConfirmPassword={showConfirmPassword}
+          setShowConfirmPassword={setShowConfirmPassword}
+        />
       );
     }
 
     return (
-      <div className="space-y-4">
-        <div>
-          <p className="text-sm text-muted-foreground mb-2">
-            {isArabic
-              ? "اختر الباقة المناسبة. يمكن تغييرها لاحقاً من الإعدادات."
-              : "Pick a package; you can switch later from settings."}
-          </p>
-          {loadingPackages ? (
-            <div className="grid gap-3 md:grid-cols-2">
-              {[1, 2].map(i => (
-                <Card key={i} className="p-4">
-                  <Skeleton className="h-5 w-32 mb-2" />
-                  <Skeleton className="h-4 w-24 mb-4" />
-                  <Skeleton className="h-10 w-full" />
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="grid gap-3 md:grid-cols-2">
-              {packagesData?.packages?.map(pkg => (
-                <Card
-                  key={pkg.id}
-                  className={`p-4 cursor-pointer border-2 ${
-                    formData.packageId === pkg.id
-                      ? "border-purple-500 shadow"
-                      : "border-transparent hover:border-slate-200"
-                  }`}
-                  onClick={() =>
-                    setFormData(prev => ({ ...prev, packageId: pkg.id }))
-                  }
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-lg">
-                        {(pkg as any).name}
-                      </CardTitle>
-                      {(pkg as any).description && (
-                        <CardDescription className="mt-1 text-sm">
-                          {(pkg as any).description}
-                        </CardDescription>
-                      )}
-                    </div>
-                    <Badge variant="secondary" className="text-xs">
-                      SLA {pkg.slaHours || 24}h
-                    </Badge>
-                  </div>
-                  <div className="mt-3">
-                    <div className="text-2xl font-bold text-purple-700">
-                      {(pkg as any).priceSAR ?? (pkg as any).price ?? 0} ريال
-                    </div>
-                    {(pkg as any).duration && (
-                      <p className="text-xs text-muted-foreground">
-                        {isArabic ? "مدة الجلسة" : "Session length"} ~{" "}
-                        {(pkg as any).duration} {isArabic ? "دقيقة" : "min"}
-                      </p>
-                    )}
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <Separator />
-
-        <div className="space-y-3">
-          <div className="flex items-center space-x-2 rtl:space-x-reverse">
-            <Checkbox
-              id="terms"
-              checked={agreements.terms}
-              onCheckedChange={checked =>
-                setAgreements(prev => ({ ...prev, terms: Boolean(checked) }))
-              }
-              disabled={isLoading}
-            />
-            <Label htmlFor="terms" className="text-sm">
-              {isArabic
-                ? "أوافق على الشروط والأحكام"
-                : "I agree to the terms and conditions"}
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2 rtl:space-x-reverse">
-            <Checkbox
-              id="privacy"
-              checked={agreements.privacy}
-              onCheckedChange={checked =>
-                setAgreements(prev => ({ ...prev, privacy: Boolean(checked) }))
-              }
-              disabled={isLoading}
-            />
-            <Label htmlFor="privacy" className="text-sm">
-              {isArabic
-                ? "أوافق على سياسة الخصوصية"
-                : "I agree to the privacy policy"}
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2 rtl:space-x-reverse">
-            <Checkbox
-              id="marketing"
-              checked={agreements.marketing}
-              onCheckedChange={checked =>
-                setAgreements(prev => ({ ...prev, marketing: Boolean(checked) }))
-              }
-              disabled={isLoading}
-            />
-            <Label htmlFor="marketing" className="text-sm">
-              {isArabic
-                ? "أرغب في استلام تحديثات وعروض"
-                : "I want to receive updates and offers"}
-            </Label>
-          </div>
-        </div>
-      </div>
+      <StepPackageReview
+        formData={formData}
+        setFormData={setFormData}
+        agreements={agreements}
+        setAgreements={setAgreements}
+        isLoading={isLoading}
+        isArabic={isArabic}
+        loadingPackages={loadingPackages}
+        packages={packagesData?.packages}
+      />
     );
   };
 

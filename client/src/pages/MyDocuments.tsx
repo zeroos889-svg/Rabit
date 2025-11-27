@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { createSafeRichTextProps } from "@/lib/sanitize";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,15 @@ import type { AppRouter } from "../../../server/routers";
 const MAX_DOCUMENTS = 200;
 const RECENT_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const SAFE_TITLE_REGEX = /[^0-9A-Za-z\u0600-\u06FF\s-_]/g;
+
+/**
+ * Helper to get document language label
+ */
+function getLanguageLabel(lang: string | null | undefined): string {
+  if (lang === "ar") return "العربية";
+  if (lang === "en") return "الإنجليزية";
+  return "ثنائي";
+}
 
 type RouterOutputs = inferRouterOutputs<AppRouter>;
 type GeneratedDocument = RouterOutputs["documentGenerator"]["getMyDocuments"]["documents"][number];
@@ -71,7 +81,7 @@ const getDocTitle = (doc: GeneratedDocument) => {
 
 const getDocSnippet = (doc: GeneratedDocument, maxLength = 140) => {
   const raw = doc.outputText || doc.content || doc.outputHtml || "";
-  const plain = typeof raw === "string" ? raw.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ") : "";
+  const plain = typeof raw === "string" ? raw.replaceAll(/<[^>]+>/g, " ").replaceAll(/\s+/g, " ") : "";
   if (!plain) return "—";
   return plain.length > maxLength ? `${plain.slice(0, maxLength)}…` : plain;
 };
@@ -94,7 +104,7 @@ const DocumentPreviewDialog = ({ document, open, onOpenChange }: PreviewDialogPr
             {document.outputHtml ? (
               <div
                 className="space-y-4 text-right leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: document.outputHtml }}
+                dangerouslySetInnerHTML={createSafeRichTextProps(document.outputHtml)}
               />
             ) : (
               <pre className="whitespace-pre-wrap text-sm text-right leading-relaxed">{document.outputText ?? document.content ?? "لا توجد بيانات لعرضها"}</pre>
@@ -206,11 +216,11 @@ export default function MyDocuments() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-  const safeTitle = getDocTitle(doc).replace(SAFE_TITLE_REGEX, "").trim() || "document";
+  const safeTitle = getDocTitle(doc).replaceAll(SAFE_TITLE_REGEX, "").trim() || "document";
       link.download = `${safeTitle}-${doc.id}.${isHtml ? "html" : "txt"}`;
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
+      link.remove();
       URL.revokeObjectURL(url);
       toast.success("تم تجهيز المستند للتحميل");
     } catch {
@@ -224,6 +234,32 @@ export default function MyDocuments() {
   };
 
   const isEmptyState = filteredDocuments.length === 0;
+
+  // Unique skeleton keys for loading state
+  const skeletonKeys = ["skeleton-doc-1", "skeleton-doc-2", "skeleton-doc-3"];
+
+  // Helper function to render document list content
+  const renderDocumentListContent = () => {
+    if (isLoading) {
+      return (
+        <div className="space-y-3">
+          {skeletonKeys.map((key) => (
+            <Skeleton key={key} className="h-24 w-full rounded-2xl" />
+          ))}
+        </div>
+      );
+    }
+
+    if (isEmptyState) {
+      return (
+        <div className="rounded-2xl border border-dashed p-8 text-center text-muted-foreground">
+          لا توجد مستندات مطابقة لخيارات البحث الحالية. قم بتوليد مستند جديد أو عدّل عوامل التصفية.
+        </div>
+      );
+    }
+
+    return null; // Table will be rendered separately
+  };
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -301,17 +337,7 @@ export default function MyDocuments() {
                   </div>
                 </div>
 
-                {isLoading ? (
-                  <div className="space-y-3">
-                    {Array.from({ length: 3 }).map((_, idx) => (
-                      <Skeleton key={idx} className="h-24 w-full rounded-2xl" />
-                    ))}
-                  </div>
-                ) : isEmptyState ? (
-                  <div className="rounded-2xl border border-dashed p-8 text-center text-muted-foreground">
-                    لا توجد مستندات مطابقة لخيارات البحث الحالية. قم بتوليد مستند جديد أو عدّل عوامل التصفية.
-                  </div>
-                ) : (
+                {renderDocumentListContent() || (
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -343,11 +369,7 @@ export default function MyDocuments() {
                             <TableCell>
                               {doc.lang && (
                                 <Badge variant="outline">
-                                  {doc.lang === "ar"
-                                    ? "العربية"
-                                    : doc.lang === "en"
-                                    ? "الإنجليزية"
-                                    : "ثنائي"}
+                                  {getLanguageLabel(doc.lang)}
                                 </Badge>
                               )}
                             </TableCell>

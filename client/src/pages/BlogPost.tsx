@@ -12,10 +12,8 @@ import {
   Bookmark,
   ThumbsUp,
   MessageCircle,
-  Facebook,
-  Twitter,
-  Linkedin,
 } from "lucide-react";
+import { FaFacebookF, FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
 import { Link, useParams } from "wouter";
 import { Footer } from "@/components/Footer";
 
@@ -402,7 +400,7 @@ export default function BlogPost() {
               <div
                 className="leading-relaxed"
                 dangerouslySetInnerHTML={{
-                  __html: post.content.replace(/\n/g, "<br/>"),
+                  __html: post.content.replaceAll("\n", "<br/>"),
                 }}
               />
             </CardContent>
@@ -432,14 +430,14 @@ export default function BlogPost() {
                   <span className="text-sm text-muted-foreground ml-2">
                     مشاركة:
                   </span>
-                  <Button variant="outline" size="icon">
-                    <Facebook className="h-4 w-4" />
+                  <Button variant="outline" size="icon" aria-label="مشاركة على فيسبوك">
+                    <FaFacebookF className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="icon">
-                    <Twitter className="h-4 w-4" />
+                  <Button variant="outline" size="icon" aria-label="مشاركة على X">
+                    <FaXTwitter className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="icon">
-                    <Linkedin className="h-4 w-4" />
+                  <Button variant="outline" size="icon" aria-label="مشاركة على لينكدإن">
+                    <FaLinkedinIn className="h-4 w-4" />
                   </Button>
                 </div>
               </div>

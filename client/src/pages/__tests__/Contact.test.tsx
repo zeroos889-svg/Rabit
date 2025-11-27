@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * @vitest-environment jsdom
  */
@@ -10,8 +9,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import Contact from "../Contact";
 
 type MutationOptions = {
-  onSuccess?: () => void;
-  onError?: () => void;
+  onSuccess?: (data: { id: string }, variables: unknown, context: unknown) => void;
+  onError?: (error: Error, variables: unknown, context: unknown) => void;
 };
 
 const mutateSpy = vi.fn();
