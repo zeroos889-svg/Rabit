@@ -25,6 +25,11 @@ import { useARIAEnhancer, useARIAValidation } from "./lib/ariaUtils";
 import { useAnalytics, usePageTracking } from "./hooks/useAnalytics";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 
+const ENABLE_DEMO_PAGES = import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEMOS === "true";
+const loadDemoPage = <T extends ComponentType<any>>(
+  factory: () => Promise<{ default: T }>
+) => (ENABLE_DEMO_PAGES ? lazy(factory) : null);
+
 // Loading component - Enhanced with better UX
 const PageLoader = () => <LoadingSpinner fullScreen text="جاري التحميل..." />;
 
@@ -126,7 +131,7 @@ const DataProtectionContact = lazy(
   () => import("./pages/DataProtectionContact")
 );
 const Compliance = lazy(() => import("./pages/Compliance"));
-const ComponentShowcase = lazy(() => import("./pages/ComponentShowcase"));
+const ComponentShowcase = loadDemoPage(() => import("./pages/ComponentShowcase"));
 
 // Admin pages
 const AdminUsers = lazy(() => import("./pages/admin/Users"));
@@ -153,9 +158,9 @@ const MoyasarCallback = lazy(() => import("./pages/MoyasarCallback"));
 const TapCallback = lazy(() => import("./pages/TapCallback"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const PaymentFailed = lazy(() => import("./pages/PaymentFailed"));
-const AIChat = lazy(() => import("./pages/AIChat"));
-const AIAnalytics = lazy(() => import("./pages/AIAnalytics"));
-const AIPerformanceEvaluator = lazy(() => import("./pages/AIPerformanceEvaluator"));
+const AIChat = loadDemoPage(() => import("./pages/AIChat"));
+const AIAnalytics = loadDemoPage(() => import("./pages/AIAnalytics"));
+const AIPerformanceEvaluator = loadDemoPage(() => import("./pages/AIPerformanceEvaluator"));
 
 const DashboardRedirect = () => {
   const { user, loading } = useAuth({ redirectOnUnauthenticated: true });
@@ -400,9 +405,15 @@ function Router() {
   <Route path="/pricing" component={Pricing} />
   <Route path="/trial-accounts" component={TrialAccounts} />
   <Route path="/trial" component={TrialAccounts} />
-        <Route path="/ai/chat" component={AIChat} />
-        <Route path="/ai/analytics" component={AIAnalytics} />
-        <Route path="/ai/performance-evaluator" component={AIPerformanceEvaluator} />
+        {AIChat && (
+          <Route path="/ai/chat" component={AIChat} />
+        )}
+        {AIAnalytics && (
+          <Route path="/ai/analytics" component={AIAnalytics} />
+        )}
+        {AIPerformanceEvaluator && (
+          <Route path="/ai/performance-evaluator" component={AIPerformanceEvaluator} />
+        )}
         <Route
           path="/dashboard"
           component={DashboardRedirect}
@@ -606,7 +617,7 @@ function Router() {
         <Route path="/verify-decision" component={VerifyDecision} />
         <Route path="/services" component={Services} />
         <Route path="/brand-preview" component={BrandPreview} />
-        {import.meta.env.DEV && (
+        {ComponentShowcase && (
           <Route path="/dev/showcase" component={ComponentShowcase} />
         )}
         <Route path={"/404"} component={NotFound} />
