@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DashboardLayout from "@/components/DashboardLayout";
 import {
@@ -16,6 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BarChart3,
@@ -33,11 +35,92 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+const reportDemoExperienceIds = ["compliance"] as const;
+type ReportDemoExperienceId = (typeof reportDemoExperienceIds)[number];
+
+type ReportDemoExperienceContent = {
+  title: string;
+  description: string;
+  checklist: string[];
+  actionLabel: string;
+  focusTargetId?: string;
+};
+
+const useReportDemoExperience = (isArabic: boolean) => {
+  const [experience, setExperience] = useState<ReportDemoExperienceId | null>(null);
+  const [showBanner, setShowBanner] = useState(false);
+
+  useEffect(() => {
+    const locationRef = globalThis.location;
+    if (!locationRef) return;
+
+    const params = new globalThis.URLSearchParams(locationRef.search ?? "");
+    const experienceParam = params.get("experience");
+
+    if (experienceParam && (reportDemoExperienceIds as readonly string[]).includes(experienceParam)) {
+      setExperience(experienceParam as ReportDemoExperienceId);
+      setShowBanner(true);
+
+      params.delete("experience");
+      const nextSearch = params.toString();
+      const basePath = locationRef.pathname ?? "";
+      const hashSuffix = locationRef.hash ?? "";
+      const searchSuffix = nextSearch ? `?${nextSearch}` : "";
+      const nextUrl = `${basePath}${searchSuffix}${hashSuffix}`;
+      globalThis.history?.replaceState?.({}, "", nextUrl);
+    }
+  }, []);
+
+  const content = useMemo<Record<ReportDemoExperienceId, ReportDemoExperienceContent>>(
+    () => ({
+      compliance: {
+        title: isArabic ? "جولة الامتثال مفعّلة" : "Compliance tour active",
+        description: isArabic
+          ? "تأكد من اختيار الفترة الزمنية الصحيحة ثم استعرض علامات التقدم لمعرفة ما إذا كانت التزاماتك في المسار الصحيح."
+          : "Pick the correct reporting window and review the highlights to confirm deadlines stay on track.",
+        checklist: isArabic
+          ? [
+              "ابدأ بتحديد الفترة الزمنية من القائمة العلوية",
+              "انتقل إلى تبويب نظرة عامة لعرض الاتجاهات",
+              "استخدم البطاقات السفلية لتوثيق أي مخاطر",
+            ]
+          : [
+              "Start by selecting the reporting period above",
+              "Switch to the overview tab to inspect trends",
+              "Use the lower cards to log any risks",
+            ],
+        actionLabel: isArabic ? "حدد الفترة الزمنية" : "Set reporting period",
+        focusTargetId: "report-period-select",
+      },
+    }),
+    [isArabic]
+  );
+
+  const activeContent = experience ? content[experience] : null;
+
+  const focusTarget = useCallback(() => {
+    if (!activeContent?.focusTargetId || typeof document === "undefined") return;
+    const element = document.getElementById(activeContent.focusTargetId);
+    element?.focus();
+    element?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [activeContent]);
+
+  const dismiss = useCallback(() => setShowBanner(false), []);
+
+  return { activeContent, showBanner: showBanner && !!activeContent, focusTarget, dismiss };
+};
+
 export default function ReportsManagement() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
   const [reportPeriod, setReportPeriod] = useState("month");
   const [reportType, setReportType] = useState("overview");
+  const { activeContent, showBanner, focusTarget, dismiss } = useReportDemoExperience(isArabic);
+
+  const handleDemoAction = () => {
+    setReportType("overview");
+    focusTarget();
+  };
 
   // Mock data for charts
   const employeeData = {
@@ -90,6 +173,28 @@ export default function ReportsManagement() {
   return (
     <DashboardLayout userType="company">
       <div className="space-y-6">
+        {showBanner && activeContent && (
+          <Alert className="border-amber-200 bg-amber-50 text-slate-900 dark:border-amber-400/30 dark:bg-amber-900/30 dark:text-amber-50">
+            <AlertTitle>{activeContent.title}</AlertTitle>
+            <AlertDescription>
+              <p>{activeContent.description}</p>
+              <ul className="mt-3 list-disc space-y-1 pr-5 text-xs text-amber-900 dark:text-amber-100">
+                {activeContent.checklist.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button size="sm" onClick={handleDemoAction}>
+                  {activeContent.actionLabel}
+                </Button>
+                <Button size="sm" variant="ghost" onClick={dismiss}>
+                  {isArabic ? "إخفاء الدليل" : "Hide guide"}
+                </Button>
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Header */}
         <div className="flex justify-between items-start">
           <div>
@@ -105,25 +210,34 @@ export default function ReportsManagement() {
           </div>
 
           <div className="flex gap-2">
-            <Select value={reportPeriod} onValueChange={setReportPeriod}>
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="week">
-                  {isArabic ? "هذا الأسبوع" : "This Week"}
-                </SelectItem>
-                <SelectItem value="month">
-                  {isArabic ? "هذا الشهر" : "This Month"}
-                </SelectItem>
-                <SelectItem value="quarter">
-                  {isArabic ? "هذا الربع" : "This Quarter"}
-                </SelectItem>
-                <SelectItem value="year">
-                  {isArabic ? "هذا العام" : "This Year"}
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <div>
+              <Label htmlFor="report-period-select" className="sr-only">
+                {isArabic ? "تغيير الفترة الزمنية" : "Change report period"}
+              </Label>
+              <Select value={reportPeriod} onValueChange={setReportPeriod}>
+                <SelectTrigger
+                  id="report-period-select"
+                  className="w-40"
+                  aria-label={isArabic ? "الفترة الزمنية للتقرير" : "Report period"}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="week">
+                    {isArabic ? "هذا الأسبوع" : "This Week"}
+                  </SelectItem>
+                  <SelectItem value="month">
+                    {isArabic ? "هذا الشهر" : "This Month"}
+                  </SelectItem>
+                  <SelectItem value="quarter">
+                    {isArabic ? "هذا الربع" : "This Quarter"}
+                  </SelectItem>
+                  <SelectItem value="year">
+                    {isArabic ? "هذا العام" : "This Year"}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
             <Button
               variant="outline"
@@ -310,12 +424,17 @@ export default function ReportsManagement() {
                             {dept.employees} {isArabic ? "موظف" : "employees"}
                           </span>
                         </div>
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                          <div
-                            className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full"
-                            style={{ width: `${dept.performance}%` }}
-                          />
-                        </div>
+                        <progress
+                          className="w-full h-2 rounded-full bg-gray-200 dark:bg-gray-700 accent-blue-600"
+                          value={dept.performance}
+                          max={100}
+                          aria-valuetext={`${dept.performance}%`}
+                          aria-label={
+                            isArabic
+                              ? `أداء قسم ${dept.name}`
+                              : `${dept.name} performance`
+                          }
+                        />
                         <span className="text-xs text-gray-500">
                           {dept.performance}% {isArabic ? "أداء" : "performance"}
                         </span>

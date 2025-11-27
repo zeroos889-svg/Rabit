@@ -222,8 +222,8 @@ const demoScenarios: DemoScenario[] = [
     title: "أتمتة الموارد البشرية",
     summary: "حوّل طلبات الإجازات والعقود إلى سير عمل تلقائي مع إشعارات دقيقة.",
     highlight: "توفير 6 ساعات أسبوعياً",
-    ctaHref: "/trial-accounts",
-    ctaLabel: "شاهد السيرة العملية",
+    ctaHref: "/dashboard/employees?experience=automation",
+    ctaLabel: "جرّبها داخل لوحة الموظفين",
     steps: [
       {
         title: "ضبط سياسات الموافقات",
@@ -277,8 +277,8 @@ const demoScenarios: DemoScenario[] = [
     title: "تجربة الموظف الذاتية",
     summary: "اجعل الموظفين ينهون طلباتهم دون الرجوع للدعم مع تعقب فوري.",
     highlight: "90% من الطلبات ذاتية",
-    ctaHref: "/signup",
-    ctaLabel: "منح صلاحيات الموظفين",
+    ctaHref: "/dashboard/employees?experience=self-service",
+    ctaLabel: "افتح تجربة الخدمة الذاتية",
     steps: [
       {
         title: "واجهة الطلب الذكي",
@@ -332,8 +332,8 @@ const demoScenarios: DemoScenario[] = [
     title: "متابعة الامتثال",
     summary: "راقب العقود والتنبيهات القانونية مع لوحة زمنية واضحة.",
     highlight: "صفر مخالفات تأخير",
-    ctaHref: "/contact",
-    ctaLabel: "اطلب مراجعة امتثال",
+    ctaHref: "/dashboard/reports?experience=compliance",
+    ctaLabel: "استعرض لوحة التقارير",
     steps: [
       {
         title: "جدول الالتزامات",

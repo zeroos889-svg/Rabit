@@ -165,6 +165,7 @@
     "jsdom": "^27.2.0",
     "picomatch": "^4.0.3",
     "postcss": "^8.4.49",
+    "rollup-plugin-visualizer": "^5.14.0",
     "supertest": "^7.1.4",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.20.6",
