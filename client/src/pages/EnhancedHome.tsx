@@ -5,13 +5,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
-import { 
-  AnimatedSection, 
-  FadeIn, 
+import {
+  AnimatedSection,
+  FadeIn,
   StaggerContainer,
   StaggerItem,
-  AnimatedCard
+  AnimatedCard,
 } from "@/components/ui/animated-card";
+import { Section } from "@/components/design/Section";
+import { MetricCard } from "@/components/design/MetricCard";
+import { TrustIndicators } from "@/components/design/TrustIndicators";
+import { metrics as designMetrics } from "@/design/tokens";
 import {
   AudienceBenefitCard,
   type AudienceBenefit,
@@ -47,6 +51,7 @@ import {
   Layers,
   ArrowUpRight,
   PauseCircle,
+  MessageCircle,
   type LucideIcon,
 } from "lucide-react";
 const LazyFooter = lazy(() => import("@/components/Footer").then((module) => ({ default: module.Footer })));
@@ -870,255 +875,125 @@ export default function EnhancedHome() {
       className="min-h-screen bg-gradient-to-br from-background via-background to-muted"
     >
       {/* Hero Section - Enhanced */}
-      <section className="relative overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/20 dark:via-purple-950/20 dark:to-pink-950/20" />
-          <motion.div
-            animate={{
-              scale: [1, 1.2, 1],
-              rotate: [0, 90, 0],
-            }}
-            transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-            className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-gradient-to-br from-blue-400/20 to-purple-400/20 blur-3xl"
-          />
-          <motion.div
-            animate={{
-              scale: [1, 1.3, 1],
-              rotate: [0, -90, 0],
-            }}
-            transition={{
-              duration: 25,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-            className="absolute -bottom-20 -left-20 h-96 w-96 rounded-full bg-gradient-to-br from-purple-400/20 to-pink-400/20 blur-3xl"
-          />
-        </div>
+      <Section id="hero" background="glow" className="relative overflow-hidden">
+        <div className="grid items-center gap-12 lg:grid-cols-2">
+          <FadeIn direction="left">
+            <div className="space-y-8">
+              <Badge className="inline-flex w-auto items-center gap-2 rounded-full border border-white/40 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm">
+                <Zap className="h-4 w-4 text-blue-500" />
+                منصة الموارد البشرية الموثوقة للمنشآت السعودية
+              </Badge>
 
-        <div className="container mx-auto px-4 py-20 lg:py-32">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            {/* Hero Content */}
-            <FadeIn direction="left">
-              <div className="space-y-8">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Badge className="mb-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                    <Zap className="mr-2 h-4 w-4" />
-                    منصة الموارد البشرية المخصصة للشركات السعودية والخليجية
-                  </Badge>
-                </motion.div>
-
-                <motion.h1
+              <div className="space-y-4 text-right">
+                <h1
                   id="enhanced-home-hero-title"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-5xl font-bold leading-tight tracking-tight lg:text-7xl"
+                  className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white md:text-5xl lg:text-6xl"
                 >
-                  <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    رابط
-                  </span>
-                  <br />
-                  <span className="text-foreground">
-                    يوحد عمليات الموارد البشرية ويكشف الفوضى المخفية
-                  </span>
-                </motion.h1>
+                  رابط يوحد كل عمليات الموارد البشرية ويقدم لوحات جاهزة للامتثال المحلي
+                </h1>
+                <p className="text-lg text-slate-600 dark:text-slate-200">
+                  منصة عربية مصممة لواقع السوق السعودي؛ تربط حضور الموظفين، العقود، الرواتب، والامتثال في لوحة واحدة مدعومة بالذكاء الاصطناعي والتكاملات الحكومية.
+                </p>
+              </div>
 
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-xl text-muted-foreground lg:text-2xl"
-                >
-                  ربط هو مساعد الموارد البشرية الذي يجمع حضور الموظفين، المستندات، والتقارير التنفيذية في منصة عربية جاهزة للامتثال.
-                  مصمم لفرق HR في الشركات الصغيرة والمتوسطة بالسعودية والخليج ليعالج العمل اليدوي، البيانات المتفرقة، وغياب الرؤى.
-                </motion.p>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.35 }}
-                  className="rounded-2xl border border-primary/10 bg-background/80 p-6 shadow-lg"
-                >
-                  <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-primary">
-                    لماذا نختلف عن الأنظمة الكلاسيكية؟
-                  </p>
-                  <ul className="space-y-3 text-base text-muted-foreground">
-                    {heroValueBullets.map(point => (
-                      <li key={point.title} className="flex gap-3">
-                        <CheckCircle2 className="mt-1 h-5 w-5 text-primary" />
-                        <span>
-                          <span className="font-semibold text-foreground">{point.title}:</span> {point.description}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.45 }}
-                  className="flex flex-wrap gap-4"
-                >
-                  <Button
-                    size="lg"
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-lg shadow-xl transition-all hover:scale-105 hover:shadow-2xl"
-                    asChild
-                  >
-                    <Link href="/signup">
-                      ابدأ مجاناً
-                      <ArrowRight className="mr-2 h-5 w-5" />
-                    </Link>
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-2 text-lg transition-all hover:scale-105"
-                  >
-                    <Play className="ml-2 h-5 w-5" />
-                    شاهد الفيديو التوضيحي
-                  </Button>
-                </motion.div>
-
-                {/* Hero Stats */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="grid grid-cols-2 gap-4 pt-8 md:grid-cols-4"
-                >
-                  {heroStats.map((stat, index) => (
-                    <motion.div
-                      key={stat.label}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.6 + index * 0.1 }}
-                      className="text-center"
-                    >
-                      <div className="mb-2 flex justify-center">
-                        <stat.icon className="h-6 w-6 text-primary" />
-                      </div>
-                      <div className="text-2xl font-bold">{stat.value}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {stat.label}
-                      </div>
-                    </motion.div>
+              <div className="rounded-2xl border border-slate-100/80 bg-white/80 p-6 shadow-[0_30px_80px_rgba(15,23,42,0.08)] dark:border-slate-800/60 dark:bg-slate-900/50">
+                <p className="mb-4 text-sm font-semibold tracking-[0.3em] text-sky-500">
+                  لماذا تختارنا فرق الموارد البشرية؟
+                </p>
+                <ul className="space-y-4 text-base text-slate-600 dark:text-slate-200">
+                  {heroValueBullets.map((point) => (
+                    <li key={point.title} className="flex gap-3 text-right">
+                      <CheckCircle2 className="mt-1 h-5 w-5 text-emerald-500" />
+                      <span>
+                        <span className="font-semibold text-slate-900 dark:text-white">{point.title}:</span> {point.description}
+                      </span>
+                    </li>
                   ))}
-                </motion.div>
+                </ul>
               </div>
-            </FadeIn>
 
-            {/* Hero Image/Illustration */}
-            <FadeIn direction="right" delay={0.3}>
-              <div className="relative">
-                <motion.div
-                  animate={{
-                    y: [0, -20, 0],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="relative rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 p-1 shadow-2xl"
+              <div className="flex flex-wrap gap-4">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-lg text-white shadow-[0_20px_60px_rgba(31,83,255,0.35)]"
+                  asChild
                 >
-                  <div className="rounded-xl bg-background p-8">
-                    {heroImageError ? (
-                      <div className="flex h-96 flex-col items-center justify-center gap-4 text-center text-primary/80">
-                        <Globe className="h-24 w-24" />
-                        <div className="space-y-1">
-                          <p className="text-lg font-semibold">منصة رابط للموارد البشرية</p>
-                          <p className="text-sm text-muted-foreground">
-                            يتعذر تحميل الرسم التوضيحي حالياً.
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <img
-                        src="/hero-illustration.svg"
-                        alt="Rabit HR System overview"
-                        className="h-auto w-full"
-                        width={960}
-                        height={720}
-                        loading="eager"
-                        decoding="async"
-                        fetchPriority="high"
-                        onError={() => setHeroImageError(true)}
-                      />
-                    )}
-                  </div>
-                </motion.div>
-
-                {/* Floating Cards */}
-                <motion.div
-                  animate={{
-                    y: [0, 15, 0],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="absolute -left-8 top-20 hidden lg:block"
-                >
-                  <Card className="shadow-xl">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="rounded-full bg-green-500/10 p-2">
-                          <TrendingUp className="h-5 w-5 text-green-500" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium">إنتاجية أعلى</div>
-                          <div className="text-2xl font-bold text-green-500">
-                            +45%
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-
-                <motion.div
-                  animate={{
-                    y: [0, -15, 0],
-                  }}
-                  transition={{
-                    duration: 3.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="absolute -right-8 bottom-20 hidden lg:block"
-                >
-                  <Card className="shadow-xl">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="rounded-full bg-blue-500/10 p-2">
-                          <Clock className="h-5 w-5 text-blue-500" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium">توفير الوقت</div>
-                          <div className="text-2xl font-bold text-blue-500">
-                            70%
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                  <Link href="/signup">
+                    جرّب لوحة التحكم الآن
+                    <ArrowRight className="mr-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" className="text-lg">
+                  <Play className="ml-2 h-5 w-5" />
+                  شاهد الجولة التفاعلية
+                </Button>
+                <Button size="lg" variant="ghost" className="text-lg text-emerald-600" asChild>
+                  <Link href="https://wa.me/966500000000" target="_blank" rel="noreferrer">
+                    <MessageCircle className="ml-2 h-5 w-5" />
+                    تحدث مع خبير عبر واتساب
+                  </Link>
+                </Button>
               </div>
-            </FadeIn>
-          </div>
+
+              <div className="grid gap-4 md:grid-cols-3">
+                {designMetrics.heroStats.map((stat, index) => (
+                  <MetricCard key={stat.label} label={stat.label} value={stat.value} delta={stat.delta} emphasis={index === 1 ? "secondary" : "neutral"} />
+                ))}
+              </div>
+
+              <TrustIndicators badges={designMetrics.trustBadges} subtle />
+            </div>
+          </FadeIn>
+
+          <FadeIn direction="right">
+            <div className="relative">
+              <div className="relative overflow-hidden rounded-[32px] border border-white/30 bg-gradient-to-b from-[#0F172A] via-[#1F2A52] to-[#14238A] p-8 text-white shadow-[0_40px_120px_rgba(15,23,42,0.45)]">
+                <div className="flex items-center justify-between text-sm text-white/80">
+                  <span>لوحة الامتثال المباشر</span>
+                  <Badge variant="outline" className="border-white/30 bg-white/10 text-white">
+                    تحديث كل 15 ثانية
+                  </Badge>
+                </div>
+
+                <div className="mt-8 grid gap-4">
+                  {heroStats.map((stat) => (
+                    <div key={stat.label} className="flex items-center justify-between rounded-2xl border border-white/15 bg-white/5 p-4">
+                      <div>
+                        <p className="text-sm text-white/70">{stat.label}</p>
+                        <p className="text-2xl font-bold text-white">{stat.value}</p>
+                      </div>
+                      <div className="rounded-full bg-white/10 p-3">
+                        <stat.icon className="h-5 w-5" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 rounded-2xl bg-white/10 p-4 text-sm text-white">
+                  <p className="mb-2 text-base font-semibold">جاهزية التكاملات الحكومية</p>
+                  <ul className="space-y-1 text-white/80">
+                    <li className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-emerald-400" /> منصة قوى ووزارة الموارد البشرية
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-emerald-400" /> هيئة الزكاة والضريبة والجمارك (e-Invoice)
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-emerald-400" /> التأمينات الاجتماعية وملفات الأجور
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="pointer-events-none absolute -left-10 top-10 hidden max-w-xs rounded-2xl bg-white/90 p-5 text-slate-700 shadow-2xl lg:block">
+                <p className="text-sm font-semibold">استجابة فريق الدعم</p>
+                <p className="text-2xl font-bold text-emerald-600">5 دقائق</p>
+                <p className="text-xs text-slate-500">متوسط وقت الرد على استفسارات العملاء في السعودية</p>
+              </div>
+            </div>
+          </FadeIn>
         </div>
-      </section>
+      </Section>
 
       <section
         className="border-y border-slate-100/80 bg-slate-50/70 py-16 dark:border-slate-800 dark:bg-slate-900/40"
