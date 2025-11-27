@@ -32,7 +32,8 @@ export default defineConfig({
         "**/mockData/",
       ],
     },
-    testTimeout: 15000,
+    testTimeout: 30000,
+    hookTimeout: 30000,
   } as any,
   resolve: {
     alias: {

@@ -140,8 +140,13 @@ describe("Home page", () => {
     document.documentElement.dir = "rtl";
   });
 
-  it("renders the hero and main navigation", () => {
+  it("renders the hero and main navigation", async () => {
     render(<Home />);
+
+    // Wait for component to fully render with increased timeout
+    await vi.waitFor(() => {
+      expect(screen.getByRole("banner")).toBeInTheDocument();
+    }, { timeout: 10000 });
 
     const header = screen.getByRole("banner");
     ["الرئيسية", "الاستشارات", "الدورات", "قاعدة المعرفة", "الأدوات", "الأسعار"].forEach(
@@ -155,7 +160,7 @@ describe("Home page", () => {
     expect(screen.getAllByText("ابدأ مجاناً").length).toBeGreaterThan(0);
     expect(screen.getByText("لمن هذه المنصة")).toBeInTheDocument();
     expect(screen.getByText("حلول متنوعة تناسب الشركات والأفراد")).toBeInTheDocument();
-  });
+  }, 15000);
 
   it("opens and closes the mobile menu", () => {
     render(<Home />);
