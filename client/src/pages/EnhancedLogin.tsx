@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import {
   Mail,
   Lock,
@@ -29,6 +30,14 @@ import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { APP_LOGO } from "@/const";
 import { cn } from "@/lib/utils";
+import {
+  TRIAL_PROFILES,
+  type TrialProfile,
+  getTrialProfileById,
+  readTrialProfileSelection,
+  storeTrialProfileSelection,
+  clearTrialProfileSelection,
+} from "@/lib/trialProfiles";
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function EnhancedLogin() {
@@ -38,6 +47,7 @@ export default function EnhancedLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [activeTrialProfile, setActiveTrialProfile] = useState<TrialProfile | null>(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -54,7 +64,55 @@ export default function EnhancedLogin() {
       setFormData(prev => ({ ...prev, email: savedEmail }));
       setRememberMe(true);
     }
+
+    if (typeof window !== "undefined") {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const trialId = params.get("trial");
+        let profile: TrialProfile | null | undefined = getTrialProfileById(trialId);
+        if (!profile) {
+          profile = readTrialProfileSelection();
+        }
+
+        if (trialId) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        if (profile) {
+          applyTrialProfile(profile, { persist: false, silent: true });
+        }
+      } catch (error) {
+        console.warn("Failed to hydrate trial profile", error);
+      }
+    }
   }, []);
+
+  const applyTrialProfile = (
+    profile: TrialProfile,
+    options: { persist?: boolean; silent?: boolean } = {}
+  ) => {
+    setFormData({ email: profile.demoEmail, password: profile.demoPassword });
+    setRememberMe(true);
+    setActiveTrialProfile(profile);
+    if (options.persist) {
+      storeTrialProfileSelection(profile.id);
+    }
+    if (!options.silent) {
+      toast.success(isArabic ? "تم تعبئة البيانات التجريبية" : "Demo credentials auto-filled");
+    }
+  };
+
+  const handleTrialSelection = (profileId: string) => {
+    const profile = getTrialProfileById(profileId);
+    if (!profile) return;
+    applyTrialProfile(profile, { persist: true });
+  };
+
+  const clearTrialSelection = () => {
+    setActiveTrialProfile(null);
+    clearTrialProfileSelection();
+    setFormData({ email: "", password: "" });
+  };
 
   const validateForm = () => {
     const errors: { email?: string; password?: string } = {};
@@ -177,6 +235,46 @@ export default function EnhancedLogin() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            <div className="mb-6 space-y-3">
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>{isArabic ? "اختر حساباً تجريبياً" : "Choose a trial persona"}</span>
+                {activeTrialProfile && (
+                  <Badge variant="outline" className="flex items-center gap-2">
+                    {activeTrialProfile.title}
+                    <button
+                      type="button"
+                      className="text-xs text-red-500"
+                      onClick={clearTrialSelection}
+                    >
+                      {isArabic ? "إزالة" : "Clear"}
+                    </button>
+                  </Badge>
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {TRIAL_PROFILES.map(profile => {
+                  const isActive = activeTrialProfile?.id === profile.id;
+                  return (
+                    <button
+                      key={profile.id}
+                      type="button"
+                      onClick={() => handleTrialSelection(profile.id)}
+                      className={cn(
+                        "rounded-xl border p-3 text-start transition hover:border-primary/60",
+                        isActive
+                          ? "border-primary bg-primary/5 text-primary"
+                          : "border-muted"
+                      )}
+                    >
+                      <p className="text-sm font-semibold">{profile.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {profile.subtitle}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
             <form onSubmit={handleLogin} className="space-y-4">
               {/* Email */}
               <div className="space-y-2">

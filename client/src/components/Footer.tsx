@@ -18,43 +18,45 @@ import {
 
 export function Footer() {
   return (
-    <footer className="border-t bg-gradient-to-br from-brand-50 via-white to-brand-100 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
-      <div className="container py-12">
-        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+    <footer className="relative border-t bg-brand-surface/50 dark:bg-slate-950/70">
+      <div className="absolute inset-0 bg-gradient-to-br from-white/70 via-transparent to-brand-50 dark:from-slate-900/60 dark:via-slate-950/30 dark:to-brand-900/30" />
+      <div className="container relative py-12 space-y-12">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand & Description */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <img
-                src={APP_LOGO}
-                alt="Rabit"
-                className="h-10 w-10"
-                loading="lazy"
-                width={40}
-                height={40}
-                sizes="40px"
-              />
-              <span className="text-2xl font-bold text-gradient-primary">
-                رابِط
-              </span>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-12 w-12 rounded-2xl bg-white shadow-brand-glow flex items-center justify-center">
+                <img
+                  src={APP_LOGO}
+                  alt="Rabit"
+                  className="h-8 w-8"
+                  loading="lazy"
+                  width={32}
+                  height={32}
+                  sizes="32px"
+                />
+              </div>
+              <div>
+                <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+                  HR Platform
+                </span>
+                <p className="text-2xl font-bold text-gradient-primary">رابِط</p>
+              </div>
             </div>
             <p className="text-muted-foreground mb-6 leading-relaxed">
-              مساعدك الذكي في إدارة الموارد البشرية. نوفر أدوات متقدمة بتقنية
-              الذكاء الاصطناعي لتسهيل عمل HR وتوفير الوقت والجهد، مع التوافق
-              الكامل مع نظام العمل السعودي.
+              مساعدك الذكي في إدارة الموارد البشرية. أدوات الذكاء الاصطناعي، الاستشارات، ولوحات المتابعة في تجربة واحدة متوافقة مع نظام العمل السعودي.
             </p>
 
             {/* Newsletter */}
-            <div>
-              <h4 className="font-semibold mb-3">اشترك في النشرة البريدية</h4>
-              <div className="flex gap-2">
-                <Input placeholder="بريدك الإلكتروني" className="text-right" />
-                <Button
-                  size="icon"
-                  className="gradient-primary flex-shrink-0"
-                >
+            <div className="rounded-2xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur dark:bg-slate-900/60 dark:border-slate-800">
+              <h4 className="font-semibold mb-3 text-foreground">اشترك في النشرة البريدية</h4>
+              <div className="flex gap-2 flex-col sm:flex-row">
+                <Input placeholder="بريدك الإلكتروني" className="text-right flex-1" />
+                <Button size="icon" className="gradient-primary flex-shrink-0 shadow-brand-glow">
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
+              <p className="text-xs text-muted-foreground mt-2">أخبار الامتثال والتحديثات القانونية مباشرة إلى بريدك.</p>
             </div>
           </div>
 
@@ -62,54 +64,17 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4 text-lg">روابط سريعة</h4>
             <ul className="space-y-3 text-muted-foreground">
-              <li>
-                <Link
-                  href="/"
-                  className="hover:text-primary transition-colors flex items-center gap-2"
-                >
-                  الرئيسية
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/about"
-                  className="hover:text-primary transition-colors flex items-center gap-2"
-                >
-                  من نحن
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/services"
-                  className="hover:text-primary transition-colors flex items-center gap-2"
-                >
-                  الخدمات
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/pricing"
-                  className="hover:text-primary transition-colors flex items-center gap-2"
-                >
-                  الباقات والأسعار
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/blog"
-                  className="hover:text-primary transition-colors flex items-center gap-2"
-                >
-                  المدونة
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="hover:text-primary transition-colors flex items-center gap-2"
-                >
-                  اتصل بنا
-                </Link>
-              </li>
+              {[{ href: "/", label: "الرئيسية" }, { href: "/about", label: "من نحن" }, { href: "/services", label: "الخدمات" }, { href: "/pricing", label: "الباقات والأسعار" }, { href: "/blog", label: "المدونة" }, { href: "/contact", label: "اتصل بنا" }].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-white/80 hover:text-brand-700 transition-colors dark:hover:bg-slate-900/70"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-brand-400" />
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -117,78 +82,16 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4 text-lg">الخدمات</h4>
             <ul className="space-y-3 text-muted-foreground">
-              <li>
-                <Link
-                  href="/consulting"
-                  className="hover:text-primary transition-colors"
-                >
-                  الاستشارات القانونية
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/courses"
-                  className="hover:text-primary transition-colors"
-                >
-                  الدورات التدريبية
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/knowledge-base"
-                  className="hover:text-primary transition-colors"
-                >
-                  قاعدة المعرفة
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/tools/end-of-service"
-                  className="hover:text-primary transition-colors"
-                >
-                  حاسبة نهاية الخدمة
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/tools/leave-calculator"
-                  className="hover:text-primary transition-colors"
-                >
-                  حاسبة الإجازات
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/tools/letter-generator"
-                  className="hover:text-primary transition-colors"
-                >
-                  مولد الخطابات
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/verify-decision"
-                  className="hover:text-primary transition-colors"
-                >
-                  التحقق القانوني
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/faq"
-                  className="hover:text-primary transition-colors"
-                >
-                  الأسئلة الشائعة
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/privacy"
-                  className="hover:text-primary transition-colors"
-                >
-                  سياسة الخصوصية
-                </Link>
-              </li>
+              {[{ href: "/consulting", label: "الاستشارات القانونية" }, { href: "/courses", label: "الدورات التدريبية" }, { href: "/knowledge-base", label: "قاعدة المعرفة" }, { href: "/tools/end-of-service", label: "حاسبة نهاية الخدمة" }, { href: "/tools/leave-calculator", label: "حاسبة الإجازات" }, { href: "/tools/letter-generator", label: "مولد الخطابات" }, { href: "/verify-decision", label: "التحقق القانوني" }, { href: "/faq", label: "الأسئلة الشائعة" }].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="hover:text-brand-700 transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -197,15 +100,10 @@ export function Footer() {
             <h4 className="font-semibold mb-4 text-lg">تواصل معنا</h4>
             <ul className="space-y-4 text-muted-foreground">
               <li className="flex items-start gap-3">
-                <Mail className="h-5 w-5 text-brand-600 flex-shrink-0 mt-0.5" />
+                <Mail className="h-5 w-5 text-brand-500 flex-shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-medium text-foreground mb-1">
-                    البريد الإلكتروني
-                  </div>
-                  <a
-                    href="mailto:info@rbithr.com"
-                    className="hover:text-primary transition-colors"
-                  >
+                  <div className="font-medium text-foreground mb-1">البريد الإلكتروني</div>
+                  <a href="mailto:info@rbithr.com" className="hover:text-brand-700 transition-colors">
                     info@rbithr.com
                   </a>
                 </div>
@@ -213,123 +111,96 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <Phone className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-medium text-foreground mb-1">
-                    الهاتف / واتساب
-                  </div>
-                  <a
-                    href="tel:0570700355"
-                    className="hover:text-primary transition-colors"
-                  >
+                  <div className="font-medium text-foreground mb-1">الهاتف / واتساب</div>
+                  <a href="tel:0570700355" className="hover:text-brand-700 transition-colors">
                     0570700355
                   </a>
                 </div>
               </li>
               <li className="flex items-start gap-3">
-              <MapPin className="h-5 w-5 text-brand-500 flex-shrink-0 mt-0.5" />
-              <div>
-                <div className="font-medium text-foreground mb-1">الموقع</div>
-                <span>الرياض، المملكة العربية السعودية</span>
-              </div>
-            </li>
-          </ul>
+                <MapPin className="h-5 w-5 text-brand-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-medium text-foreground mb-1">الموقع</div>
+                  <span>الرياض، المملكة العربية السعودية</span>
+                </div>
+              </li>
+            </ul>
 
-          {/* Social Media */}
+            {/* Social Media */}
             <div className="mt-6">
               <h5 className="font-medium mb-3">تابعنا</h5>
               <div className="flex gap-2">
-                <a
-                  href="https://twitter.com/rbithr"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="h-10 w-10 rounded-full gradient-primary flex items-center justify-center text-white hover:scale-110 transition-transform"
-                >
-                  <Twitter className="h-4 w-4" />
-                </a>
-                <a
-                  href="https://linkedin.com/company/rbithr"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="h-10 w-10 rounded-full bg-gradient-to-br from-brand-600 to-brand-700 flex items-center justify-center text-white hover:scale-110 transition-transform"
-                >
-                  <Linkedin className="h-4 w-4" />
-                </a>
-                <a
-                  href="https://instagram.com/rbithr"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="h-10 w-10 rounded-full bg-gradient-to-br from-rose-500 to-brand-500 flex items-center justify-center text-white hover:scale-110 transition-transform"
-                >
-                  <Instagram className="h-4 w-4" />
-                </a>
-                <a
-                  href="https://facebook.com/rbithr"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="h-10 w-10 rounded-full bg-gradient-to-br from-brand-500 to-brand-800 flex items-center justify-center text-white hover:scale-110 transition-transform"
-                >
-                  <Facebook className="h-4 w-4" />
-                </a>
+                {[
+                  { href: "https://twitter.com/rbithr", icon: Twitter },
+                  { href: "https://linkedin.com/company/rbithr", icon: Linkedin },
+                  { href: "https://instagram.com/rbithr", icon: Instagram },
+                  { href: "https://facebook.com/rbithr", icon: Facebook },
+                ].map(({ href, icon: Icon }) => (
+                  <a
+                    key={href}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10 w-10 rounded-full gradient-primary flex items-center justify-center text-white hover:scale-110 transition-transform"
+                  >
+                    <Icon className="h-4 w-4" />
+                  </a>
+                ))}
               </div>
+            </div>
+          </div>
+
+          {/* Security */}
+          <div>
+            <h4 className="font-semibold mb-4 text-lg">الأمان والامتثال</h4>
+            <div className="space-y-3 text-sm text-muted-foreground">
+              {[{
+                icon: Shield,
+                title: "SSL & ISO 27001",
+                desc: "اتصالات مشفرة وتشغيل متوافق مع معايير أمن المعلومات",
+              },
+              {
+                icon: Lock,
+                title: "SOC 2 Controls",
+                desc: "ضوابط حماية البيانات وتدقيق مستمر",
+              },
+              {
+                icon: Globe2,
+                title: "مناطق بيانات",
+                desc: "خيارات data_region: sa-gcc | eu | us",
+              }].map(({ icon: Icon, title, desc }) => (
+                <div
+                  key={title}
+                  className="flex items-start gap-3 p-3 rounded-xl border border-white/60 bg-white/80 dark:bg-slate-900/60 dark:border-slate-800"
+                >
+                  <Icon className="h-5 w-5 text-brand-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-foreground">{title}</p>
+                    <p>{desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-  <div className="border-t pt-8 border-white/40 dark:border-slate-800">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-muted-foreground text-center md:text-right">
-              © {new Date().getFullYear()} رابِط. جميع الحقوق محفوظة.
-            </p>
-            <div className="flex gap-6 text-sm text-muted-foreground">
-              <Link
-                href="/privacy"
-                className="hover:text-primary transition-colors"
-              >
-                سياسة الخصوصية
+        <div className="border-t border-white/60 dark:border-slate-800 pt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <p className="text-sm text-muted-foreground text-center md:text-right">
+            © {new Date().getFullYear()} رابِط. جميع الحقوق محفوظة.
+          </p>
+          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground justify-center">
+            {[
+              { href: "/privacy", label: "سياسة الخصوصية" },
+              { href: "/terms", label: "الشروط والأحكام" },
+              { href: "/cookies", label: "سياسة الكوكيز" },
+            ].map((link) => (
+              <Link key={link.href} href={link.href} className="hover:text-brand-700 transition-colors">
+                {link.label}
               </Link>
-              <Link
-                href="/terms"
-                className="hover:text-primary transition-colors"
-              >
-                الشروط والأحكام
-              </Link>
-              <Link
-                href="/cookies"
-                className="hover:text-primary transition-colors"
-              >
-                سياسة الكوكيز
-              </Link>
-            </div>
+            ))}
           </div>
         </div>
-
-          {/* Security Badges */}
-          <div>
-            <h4 className="font-semibold mb-4 text-lg">الأمان والامتثال</h4>
-            <div className="space-y-3 text-sm text-muted-foreground">
-              <div className="flex items-start gap-3 p-3 rounded-lg border bg-white/60 dark:bg-slate-900/60">
-                <Shield className="h-5 w-5 text-emerald-500 mt-0.5" />
-                <div>
-                  <p className="font-medium text-foreground">SSL & ISO 27001</p>
-                  <p>اتصالات آمنة ومعايير إدارة أمن المعلومات.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-3 rounded-lg border bg-white/60 dark:bg-slate-900/60">
-                <Lock className="h-5 w-5 text-brand-600 mt-0.5" />
-                <div>
-                  <p className="font-medium text-foreground">SOC 2 Controls</p>
-                  <p>ضوابط حماية البيانات وسجل تدقيق شامل.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-3 rounded-lg border bg-white/60 dark:bg-slate-900/60">
-                <Globe2 className="h-5 w-5 text-brand-500 mt-0.5" />
-                <div>
-                  <p className="font-medium text-foreground">مناطق بيانات</p>
-                  <p>خيارات data_region: sa-gcc | eu | us.</p>
-                </div>
-              </div>
-            </div>
-          </div>
       </div>
     </footer>
   );

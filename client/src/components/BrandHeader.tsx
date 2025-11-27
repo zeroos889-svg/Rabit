@@ -17,6 +17,7 @@ const nav: NavItem[] = [
   { href: "/consulting", labelAr: "الاستشارات", labelEn: "Consulting" },
   { href: "/tools", labelAr: "الأدوات", labelEn: "Tools" },
   { href: "/pricing", labelAr: "الأسعار", labelEn: "Pricing" },
+  { href: "/trial-accounts", labelAr: "حسابات تجريبية", labelEn: "Trials" },
   { href: "/knowledge-base", labelAr: "المعرفة", labelEn: "Knowledge" },
 ];
 
@@ -33,8 +34,8 @@ export function BrandHeader() {
   return (
     <header
       className={cn(
-        "brand-header relative z-40 backdrop-blur-xl supports-[backdrop-filter]:bg-white/80 dark:supports-[backdrop-filter]:bg-slate-900/80",
-        "border-b border-white/40 dark:border-slate-800/60"
+        "brand-header relative z-40 backdrop-blur-xl supports-[backdrop-filter]:bg-white/85 dark:supports-[backdrop-filter]:bg-slate-950/80",
+        "border-b border-white/60 dark:border-slate-800/60 shadow-sm"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
@@ -42,7 +43,7 @@ export function BrandHeader() {
           <img
             src={APP_LOGO}
             alt="Rabit Logo"
-            className="h-10 w-10 rounded-2xl shadow-brand-glow group-hover:scale-105 transition-transform"
+            className="h-10 w-10 rounded-2xl shadow-brand-glow ring-1 ring-white/60 group-hover:scale-105 transition-transform"
           />
           <div className="flex flex-col leading-tight">
             <span className="text-sm font-semibold text-slate-500">Rabit</span>
@@ -59,17 +60,17 @@ export function BrandHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="group relative text-sm text-slate-700 dark:text-slate-100 hover:text-brand-600 dark:hover:text-brand-300 transition-colors"
+              className="group relative text-sm text-slate-600 dark:text-slate-100 transition-colors"
             >
               {isArabic ? item.labelAr : item.labelEn}
-              <span className="absolute -bottom-1 left-0 h-px w-0 bg-gradient-primary transition-all duration-200 group-hover:w-full" />
+              <span className="absolute -bottom-1 left-0 h-0.5 w-full origin-left scale-x-0 rounded-full bg-gradient-primary transition-transform duration-200 group-hover:scale-x-100" />
             </Link>
           ))}
         </nav>
         <div className="flex items-center gap-3">
           <Link
             href="/consulting/book"
-            className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold bg-white/80 text-brand-700 shadow-brand-soft hover:shadow-brand-glow transition-all dark:bg-brand-600/90 dark:text-white"
+            className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold border border-brand-100/70 bg-brand-surface/90 text-brand-700 shadow-brand-soft hover:shadow-brand-glow transition-all dark:bg-brand-700/30 dark:text-white dark:border-brand-600/60"
           >
             {isArabic ? "اطلب خدمة" : "Book service"}
           </Link>
@@ -77,14 +78,14 @@ export function BrandHeader() {
           {user ? (
             <Link
               href={dashboardPath}
-              className="px-4 py-2 rounded-full text-sm font-semibold bg-white text-brand-700 shadow-brand-soft hover:shadow-brand-glow transition-shadow dark:bg-brand-600 dark:text-white"
+              className="px-4 py-2 rounded-full text-sm font-semibold border border-white/70 bg-white/90 text-brand-700 shadow-brand-soft hover:shadow-brand-glow transition-shadow dark:bg-slate-900/70 dark:text-white dark:border-brand-700/50"
             >
               {isArabic ? "لوحة التحكم" : "Dashboard"}
             </Link>
           ) : (
             <Link
               href="/login"
-              className="px-3 py-1.5 rounded-full text-sm font-semibold bg-white text-brand-700 shadow-brand-soft hover:shadow-brand-glow transition-shadow dark:bg-brand-600 dark:text-white"
+              className="px-3 py-1.5 rounded-full text-sm font-semibold border border-brand-100/70 bg-white/90 text-brand-700 shadow-brand-soft hover:-translate-y-0.5 hover:shadow-brand-glow transition-all dark:bg-slate-900/60 dark:text-white"
             >
               {isArabic ? "تسجيل الدخول" : "Login"}
             </Link>
@@ -93,7 +94,7 @@ export function BrandHeader() {
           {!user && !loading && (
             <Link
               href="/signup"
-              className="px-4 py-2 rounded-full text-sm font-semibold gradient-primary shadow-brand-glow hover:opacity-90 transition-opacity"
+              className="px-4 py-2 rounded-full text-sm font-semibold gradient-primary shadow-brand-glow hover:opacity-90 hover:-translate-y-0.5 transition-all"
             >
               {isArabic ? "إنشاء حساب" : "Sign Up"}
             </Link>
@@ -102,7 +103,7 @@ export function BrandHeader() {
           {user && (
             <Link
               href="/services"
-              className="px-4 py-2 rounded-full text-sm font-semibold gradient-primary shadow-brand-glow hover:opacity-90 transition-opacity"
+              className="px-4 py-2 rounded-full text-sm font-semibold gradient-primary shadow-brand-glow hover:opacity-90 hover:-translate-y-0.5 transition-all"
             >
               {isArabic ? "الخدمات" : "Services"}
             </Link>

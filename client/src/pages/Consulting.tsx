@@ -32,6 +32,7 @@ import {
   Users,
   Video,
   Wand2,
+  ArrowRight,
 } from "lucide-react";
 import { Link } from "wouter";
 
@@ -315,6 +316,42 @@ const guarantees = [
     title: "ضمان رضا",
     description: "استرداد كامل عند عدم الرضا وبديل مجاني عند تجاوز الـ SLA.",
     icon: BadgeCheck,
+  },
+];
+
+const completionChecklist = [
+  {
+    title: "صفحة حجز موحدة",
+    detail: "تم ربط خطوات اختيار المستشار، الملفات المطلوبة، والدفعات في واجهة واحدة بدون صفحات مكررة.",
+    icon: Layers,
+  },
+  {
+    title: "غرف استشارة محدثة",
+    detail: "غرفة الدردشة والصوت والفيديو متصلة بمساعد الذكاء الاصطناعي، مع حفظ تلقائي للمرفقات.",
+    icon: MessageSquare,
+  },
+  {
+    title: "لوحات متابعة SLA",
+    detail: "المشرف يرى حالات التأخير، التنبيهات، وضمان الرضا مباشرة بعد كل جلسة.",
+    icon: Gauge,
+  },
+];
+
+const trialExperiences = [
+  {
+    title: "شخصية الشركة",
+    body: "اختبر تجربة HR الكاملة، من إرسال الطلب حتى الموافقة على التوصيات داخل لوحة التحكم.",
+    href: "/trial-accounts",
+  },
+  {
+    title: "شخصية المستشار",
+    body: "عاين تقويم الحجوزات، التسعير الديناميكي، وتقييمات العملاء في بيئة آمنة.",
+    href: "/trial-accounts",
+  },
+  {
+    title: "شخصية الموظف",
+    body: "تابع حالة الاستشارة من بوابة الموظف مع إشعارات بالعربية والإنجليزية.",
+    href: "/trial-accounts",
   },
 ];
 
@@ -877,6 +914,72 @@ export default function Consulting() {
               </div>
             </CardHeader>
           </Card>
+        </div>
+      </section>
+
+      <section className="py-16 bg-white border-y">
+        <div className="container space-y-10">
+          <div className="text-center space-y-3">
+            <Badge className="px-3">استكمال الصفحات</Badge>
+            <h2 className="text-3xl font-bold">كل صفحات منصة الاستشارات أصبحت متصلة</h2>
+            <p className="text-muted-foreground max-w-3xl mx-auto">
+              الحجز الجديد، غرف الاستشارة، ولوحات المتابعة مرتبطة الآن بمسار تسجيل الدخول والتجربة المجانية لتقليل القفز بين الصفحات.
+            </p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {completionChecklist.map(item => (
+              <Card key={item.title} className="h-full border-indigo-50">
+                <CardHeader className="space-y-3">
+                  <div className="h-11 w-11 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center">
+                    <item.icon className="h-5 w-5" />
+                  </div>
+                  <CardTitle className="text-xl">{item.title}</CardTitle>
+                  <CardDescription className="text-sm leading-relaxed">
+                    {item.detail}
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-14 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 text-white">
+        <div className="container space-y-10">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <Badge className="bg-white/10 border-white/20 text-white">
+                تجارب الدخول الجديدة
+              </Badge>
+              <h2 className="text-3xl font-bold mt-3">اختر شخصية واستكمل الرحلة خلال دقائق</h2>
+              <p className="text-white/80 max-w-2xl">
+                الحسابات التجريبية المضافة حديثاً تجهز البريد، كلمة المرور، ومسار التسجيل الصحيح لكل دور حتى يمكنك اختبار المنصة دون إعداد مسبق.
+              </p>
+            </div>
+            <Button size="lg" variant="secondary" asChild>
+              <Link href="/trial-accounts">انتقل لصفحة الحسابات التجريبية</Link>
+            </Button>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {trialExperiences.map(exp => (
+              <Card key={exp.title} className="bg-white/10 border-white/10 h-full">
+                <CardHeader>
+                  <CardTitle className="text-xl text-white">{exp.title}</CardTitle>
+                  <CardDescription className="text-white/70">
+                    {exp.body}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="ghost" className="text-white px-0" asChild>
+                    <Link href={exp.href}>
+                      جرّب الآن
+                      <ArrowRight className="mr-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
 

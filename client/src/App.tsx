@@ -144,6 +144,7 @@ const AdminSecurityIncidents = lazy(
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Services = lazy(() => import("./pages/Services"));
 const BrandPreview = lazy(() => import("./pages/BrandPreview"));
+const TrialAccounts = lazy(() => import("./pages/TrialAccounts"));
 const VerifyDecision = lazy(() => import("./pages/VerifyDecision"));
 const Payment = lazy(() => import("./pages/Payment"));
 const Checkout = lazy(() => import("./pages/Checkout"));
@@ -396,7 +397,9 @@ function Router() {
         />
         <Route path={"/tools/leave-calculator"} component={LeaveCalculator} />
         <Route path={"/tools/letter-generator"} component={LetterGenerator} />
-        <Route path="/pricing" component={Pricing} />
+  <Route path="/pricing" component={Pricing} />
+  <Route path="/trial-accounts" component={TrialAccounts} />
+  <Route path="/trial" component={TrialAccounts} />
         <Route path="/ai/chat" component={AIChat} />
         <Route path="/ai/analytics" component={AIAnalytics} />
         <Route path="/ai/performance-evaluator" component={AIPerformanceEvaluator} />

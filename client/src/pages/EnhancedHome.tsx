@@ -41,6 +41,9 @@ import {
   TrendingUp,
   Globe,
   Clock,
+  Sparkles,
+  Layers,
+  ArrowUpRight,
 } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { FAQSection } from "@/components/FAQSection";
@@ -173,6 +176,24 @@ const heroValueBullets = [
   {
     title: "قرارات أسرع بدون عمل يدوي",
     description: "ذكاء تشغيلي يحول البيانات إلى رؤى فورية للمديرين ويقلل الروتين بنسبة كبيرة.",
+  },
+];
+
+const trialTiles = [
+  {
+    title: "حسابات فورية",
+    description: "اختيار شخصية (مشرف، شركة، مستشار، موظف) يملأ الحقول ويأخذك إلى الصفحات المكتملة.",
+    icon: Sparkles,
+  },
+  {
+    title: "تجربة الاستشارات",
+    description: "ربط مباشر مع صفحات الحجز الجديدة، الدردشة، وجدولة المستشارين حتى في الوضع التجريبي.",
+    icon: Layers,
+  },
+  {
+    title: "تسجيل+دخول موحد",
+    description: "استمرارية البيانات بين صفحة الحسابات التجريبية وتسجيل الدخول/التسجيل المطور.",
+    icon: ArrowUpRight,
   },
 ];
 
@@ -552,6 +573,48 @@ export default function EnhancedHome() {
                 </motion.div>
               </div>
             </FadeIn>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-slate-100 bg-white/80">
+        <div className="container mx-auto px-4 py-12 lg:py-16">
+          <div className="grid gap-8 lg:grid-cols-2">
+            <div className="space-y-4">
+              <Badge className="bg-brand-100 text-brand-800">
+                حسابات تجريبية جاهزة
+              </Badge>
+              <h2 className="text-3xl font-bold">
+                انتقل لصفحات مكتملة بثلاث نقرات فقط
+              </h2>
+              <p className="text-muted-foreground">
+                صفحة الحسابات التجريبية الجديدة توفّر شخصيات جاهزة (مشرف، شركة، مستشار، موظف) وتربطك مباشرة بتجربة تسجيل الدخول والتسجيل المطورة بالإضافة لمنصة الاستشارات.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Button size="lg" className="gradient-primary text-white shadow-lg" asChild>
+                  <Link href="/trial-accounts">استعرض الحسابات التجريبية</Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/consulting">
+                    منصة الاستشارات
+                    <ArrowUpRight className="mr-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {trialTiles.map(tile => (
+                <Card key={tile.title} className="border-brand-50 bg-brand-surface/30">
+                  <CardContent className="space-y-3 p-4">
+                    <div className="h-10 w-10 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center">
+                      <tile.icon className="h-5 w-5" />
+                    </div>
+                    <p className="font-semibold text-sm">{tile.title}</p>
+                    <p className="text-xs text-muted-foreground">{tile.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         </div>
       </section>

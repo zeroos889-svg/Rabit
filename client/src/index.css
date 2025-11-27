@@ -16,60 +16,60 @@ body {
 /* متغيرات الألوان الأساسية للعلامة */
 :root {
   /* Shadcn-style semantic tokens */
-  --background: 217 44% 98%;
-  --foreground: 222 47% 11%;
+  --background: 223 55% 98%;
+  --foreground: 230 45% 12%;
   --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
+  --card-foreground: 230 45% 12%;
   --popover: 0 0% 100%;
-  --popover-foreground: 222 47% 11%;
-  --primary: 219 88% 56%;
-  --primary-foreground: 210 100% 97%;
-  --secondary: 218 55% 95%;
-  --secondary-foreground: 222 47% 18%;
-  --muted: 217 44% 92%;
-  --muted-foreground: 223 27% 35%;
-  --accent: 197 92% 54%;
+  --popover-foreground: 230 45% 12%;
+  --primary: 228 96% 60%;
+  --primary-foreground: 214 100% 98%;
+  --secondary: 227 60% 94%;
+  --secondary-foreground: 229 39% 24%;
+  --muted: 226 38% 91%;
+  --muted-foreground: 224 22% 38%;
+  --accent: 195 92% 64%;
   --accent-foreground: 208 100% 98%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217 34% 90%;
-  --input: 217 34% 90%;
-  --ring: 219 88% 56%;
+  --destructive: 2 73% 55%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 225 32% 88%;
+  --input: 225 32% 88%;
+  --ring: 228 96% 60%;
   --radius: 1rem;
 
   /* Brand ramps */
-  --brand-color: #1f8dff;
-  --brand-accent: #35c6ff;
-  --brand-deep: #0b3dc2;
-  --brand-surface: #e7f2ff;
-  --brand-gradient: linear-gradient(135deg,#35c6ff 0%,#1f8dff 45%,#0b3dc2 100%);
+  --brand-color: #3b62ff;
+  --brand-accent: #45d5ff;
+  --brand-deep: #1c37a7;
+  --brand-surface: #eef4ff;
+  --brand-gradient: linear-gradient(135deg,#45d5ff 0%,#3b62ff 45%,#1c37a7 100%);
 }
 
 :root.dark {
-  --background: 223 36% 6%;
+  --background: 228 32% 7%;
   --foreground: 210 40% 96%;
-  --card: 222 41% 9%;
+  --card: 231 33% 11%;
   --card-foreground: 210 40% 96%;
-  --popover: 222 41% 9%;
+  --popover: 231 33% 11%;
   --popover-foreground: 210 40% 96%;
-  --primary: 207 100% 75%;
-  --primary-foreground: 223 36% 8%;
-  --secondary: 220 26% 18%;
+  --primary: 220 93% 73%;
+  --primary-foreground: 229 54% 10%;
+  --secondary: 231 26% 20%;
   --secondary-foreground: 210 40% 96%;
-  --muted: 223 24% 16%;
-  --muted-foreground: 217 18% 65%;
-  --accent: 199 92% 65%;
-  --accent-foreground: 223 36% 8%;
-  --destructive: 0 62% 55%;
+  --muted: 227 22% 18%;
+  --muted-foreground: 219 15% 70%;
+  --accent: 194 84% 68%;
+  --accent-foreground: 229 54% 10%;
+  --destructive: 2 68% 58%;
   --destructive-foreground: 222 41% 96%;
-  --border: 222 26% 22%;
-  --input: 222 26% 22%;
-  --ring: 207 100% 75%;
-  --brand-color: #52b7ff;
-  --brand-accent: #8ae2ff;
-  --brand-deep: #1a2b6f;
-  --brand-surface: #0d162e;
-  --brand-gradient: linear-gradient(135deg,#52b7ff 0%,#1d6fff 45%,#132860 100%);
+  --border: 230 18% 26%;
+  --input: 230 18% 26%;
+  --ring: 220 93% 73%;
+  --brand-color: #7da0ff;
+  --brand-accent: #66e0ff;
+  --brand-deep: #121b42;
+  --brand-surface: #0a1024;
+  --brand-gradient: linear-gradient(135deg,#7da0ff 0%,#4f7bff 50%,#1a1f4f 100%);
 }
 
 
@@ -104,25 +104,25 @@ body {
 .brand-section {
   position: relative;
   overflow: hidden;
-  background: radial-gradient(circle at top,#eff6ff,transparent 55%);
+  background: radial-gradient(circle at top,#eef4ff,transparent 55%);
 }
 .brand-section::before {
   content:'';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(17, 96, 242, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(59, 98, 255, 0.14) 0%, transparent 70%);
   opacity: 0.5;
 }
 
 .shadow-glow,
 .shadow-brand-glow {
-  box-shadow: 0 12px 35px rgba(31, 141, 255, 0.25);
+  box-shadow: 0 12px 35px rgba(59, 98, 255, 0.25);
 }
 
 .brand-chip {
-  background-color: rgba(31, 141, 255, 0.1);
+  background-color: rgba(59, 98, 255, 0.12);
   color: var(--brand-deep);
-  border: 1px solid rgba(31, 141, 255, 0.3);
+  border: 1px solid rgba(59, 98, 255, 0.35);
 }
 
 .brand-header {

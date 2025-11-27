@@ -12,9 +12,9 @@ export function Badge({
 }: BadgeProps) {
   const styles = {
     default:
-      "bg-primary text-primary-foreground border border-transparent shadow-sm",
+      "bg-brand-100 text-brand-800 border border-brand-200 shadow-sm",
     outline:
-      "border border-border text-foreground",
+      "border border-brand-200 text-brand-700",
     success:
       "bg-green-600 text-white border border-green-600 dark:bg-green-500 dark:border-green-500",
     destructive:

@@ -30,6 +30,12 @@ import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { APP_LOGO } from "@/const";
+import {
+  TRIAL_PROFILES,
+  type TrialProfile,
+  getTrialProfileById,
+  storeTrialProfileSelection,
+} from "@/lib/trialProfiles";
 
 export default function Register() {
   const { t } = useTranslation();
@@ -43,6 +49,7 @@ export default function Register() {
     phoneNumber: "",
     userType: "individual" as "employee" | "individual" | "company" | "consultant",
   });
+  const [selectedTemplate, setSelectedTemplate] = useState<TrialProfile | null>(null);
 
   const registerMutation = trpc.auth.register.useMutation({
     onSuccess: (data) => {
@@ -101,6 +108,21 @@ export default function Register() {
     registerMutation.mutate(formData);
   };
 
+  const applyTrialTemplate = (templateId: string) => {
+    const profile = getTrialProfileById(templateId);
+    if (!profile) return;
+    setFormData(prev => ({
+      ...prev,
+      email: profile.demoEmail,
+      password: profile.demoPassword,
+      name: profile.title,
+      userType: profile.suggestedUserType,
+    }));
+    setSelectedTemplate(profile);
+    storeTrialProfileSelection(profile.id);
+    toast.success("تم تجهيز البيانات التجريبية لهذا النموذج");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20 py-12 px-4 sm:px-6 lg:px-8">
       <BackButton />
@@ -127,6 +149,30 @@ export default function Register() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            <div className="mb-6 space-y-2">
+              <p className="text-sm text-muted-foreground">
+                {t("register.trialPrompt", "يمكنك استخدام قالب حساب تجريبي لملء الحقول تلقائياً")}
+              </p>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {TRIAL_PROFILES.map(profile => (
+                  <button
+                    key={profile.id}
+                    type="button"
+                    onClick={() => applyTrialTemplate(profile.id)}
+                    className={`rounded-xl border p-3 text-start transition hover:border-primary/60 ${
+                      selectedTemplate?.id === profile.id
+                        ? "border-primary bg-primary/5"
+                        : "border-muted"
+                    }`}
+                  >
+                    <div className="text-sm font-semibold">{profile.title}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {profile.subtitle}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
             <form onSubmit={handleRegister} className="space-y-4">
               {/* Name */}
               <div className="space-y-2">
