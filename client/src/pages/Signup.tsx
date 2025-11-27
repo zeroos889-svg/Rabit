@@ -5,6 +5,8 @@ import {
   type FormEvent,
   type MouseEvent,
 } from "react";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/ui/button";
 import {
@@ -57,6 +59,8 @@ type SignupFormErrors = {
   confirmPassword: string;
 };
 
+type PasswordStrengthLevel = "empty" | "weak" | "medium" | "good" | "strong";
+
 const validateEmail = (email: string) =>
   /\S+@\S+\.\S+/.test(email.trim().toLowerCase());
 
@@ -88,34 +92,40 @@ const getPasswordStrength = (password: string) => {
     (/[^A-Za-z0-9]/.test(password) ? 1 : 0);
 
   if (!password) {
-    return { score: 0, label: "أدخل كلمة مرور قوية" };
+    return { score: 0, level: "empty" as PasswordStrengthLevel };
   }
 
-  if (score <= 2) return { score, label: "ضعيفة" };
-  if (score === 3) return { score, label: "متوسطة" };
-  if (score === 4) return { score, label: "جيدة" };
-  return { score, label: "قوية" };
+  if (score <= 2) return { score, level: "weak" as const };
+  if (score === 3) return { score, level: "medium" as const };
+  if (score === 4) return { score, level: "good" as const };
+  return { score, level: "strong" as const };
 };
 
-const getValidationErrors = (data: SignupFormData): SignupFormErrors => ({
+const getValidationErrors = (
+  data: SignupFormData,
+  t: TFunction,
+): SignupFormErrors => ({
   fullName:
     data.fullName.trim().length < 3
-      ? "الاسم يجب أن يكون 3 أحرف على الأقل"
+      ? t("signup.validation.fullName")
       : "",
-  email: validateEmail(data.email) ? "" : "البريد الإلكتروني غير صالح",
+  email: validateEmail(data.email)
+    ? ""
+    : t("signup.validation.email"),
   phone: validatePhone(data.phone)
     ? ""
-    : "أدخل رقم جوال سعودي يبدأ بـ 05 من 10 أرقام",
+    : t("signup.validation.phone"),
   password: validatePassword(data.password)
     ? ""
-    : "كلمة المرور يجب أن تكون 8 أحرف وتحتوي على أرقام ورموز",
+    : t("signup.validation.password"),
   confirmPassword:
     data.password === data.confirmPassword
       ? ""
-      : "كلمتا المرور غير متطابقتين",
+      : t("signup.validation.confirmPassword"),
 });
 
 export default function Signup() {
+  const { t } = useTranslation();
   const [location, setLocation] = useLocation();
   const [accountType, setAccountType] = useState<
     "company" | "freelancer" | "employee"
@@ -131,7 +141,7 @@ export default function Signup() {
 
   const registerMutation = trpc.auth.register.useMutation({
     onSuccess: data => {
-      toast.success("تم إنشاء الحساب بنجاح! يرجى تسجيل الدخول");
+      toast.success(t("signup.toast.success"));
       // Save user data to localStorage
       localStorage.setItem("registeredUser", JSON.stringify(data.user));
       analytics.auth.signUp("email", data.user?.userType || accountType);
@@ -141,7 +151,7 @@ export default function Signup() {
       }, 1500);
     },
     onError: error => {
-      toast.error(error.message || "فشل في إنشاء الحساب");
+      toast.error(error.message || t("signup.toast.error"));
       setIsLoading(false);
     },
     onSettled: () => setIsLoading(false),
@@ -173,16 +183,22 @@ export default function Signup() {
     { title: string; points: string[] }
   > = {
     company: {
-      title: "مناسب للشركات النامية",
-      points: ["إدارة الموظفين", "لوحة تحكم شاملة", "تذاكر ودعم HR"],
+      title: t("signup.benefits.company.title"),
+      points: t("signup.benefits.company.points", {
+        returnObjects: true,
+      }) as string[],
     },
     freelancer: {
-      title: "للمستقلين المحترفين",
-      points: ["تتبع العملاء", "مولد الخطابات الذكي", "تقارير شهرية"],
+      title: t("signup.benefits.freelancer.title"),
+      points: t("signup.benefits.freelancer.points", {
+        returnObjects: true,
+      }) as string[],
     },
     employee: {
-      title: "للاستخدام الشخصي",
-      points: ["إدارة الإجازات", "سجل الرواتب", "مساعد قانوني"],
+      title: t("signup.benefits.employee.title"),
+      points: t("signup.benefits.employee.points", {
+        returnObjects: true,
+      }) as string[],
     },
   };
 
@@ -201,55 +217,10 @@ export default function Signup() {
     agreements.terms &&
     agreements.privacy &&
     agreements.cookies &&
-    Object.values(getValidationErrors(formData)).every(error => !error);
-
-  function validateEmail(email: string) {
-    return /\S+@\S+\.\S+/.test(email.trim().toLowerCase());
-  }
-
-  function validatePhone(phone: string) {
-    return /^05\d{8}$/.test(phone);
-  }
-
-  const normalizeSaudiPhone = (value: string) => {
-    let digits = value.replace(/\D/g, "");
-    if (digits.startsWith("966")) {
-      digits = digits.slice(3);
-    }
-    if (!digits.startsWith("0") && digits.startsWith("5")) {
-      digits = `0${digits}`;
-    }
-    return digits.slice(0, 10);
-  };
-
-  function validatePassword(password: string) {
-    return (
-      password.length >= 8 &&
-      /[A-Za-z]/.test(password) &&
-      /\d/.test(password) &&
-      /[^A-Za-z0-9]/.test(password)
-    );
-  }
-
-  function getPasswordStrength(password: string) {
-    const score =
-      (password.length >= 8 ? 1 : 0) +
-      (/[A-Z]/.test(password) ? 1 : 0) +
-      (/[a-z]/.test(password) ? 1 : 0) +
-      (/\d/.test(password) ? 1 : 0) +
-      (/[^A-Za-z0-9]/.test(password) ? 1 : 0);
-
-    if (!password) {
-      return { score: 0, label: "أدخل كلمة مرور قوية" };
-    }
-    if (score <= 2) return { score, label: "ضعيفة" };
-    if (score === 3) return { score, label: "متوسطة" };
-    if (score === 4) return { score, label: "جيدة" };
-    return { score, label: "قوية" };
-  }
+    Object.values(getValidationErrors(formData, t)).every(error => !error);
 
   const validateForm = () => {
-    const nextErrors = getValidationErrors(formData);
+    const nextErrors = getValidationErrors(formData, t);
     setFormErrors(nextErrors);
     focusFirstError(nextErrors);
     return Object.values(nextErrors).every(error => !error);
@@ -264,8 +235,11 @@ export default function Signup() {
 
   const isSubmitting = isLoading || registerMutation.isLoading;
   const passwordStrength = getPasswordStrength(formData.password);
+  const passwordStrengthLabel = t(
+    `signup.passwordStrength.labels.${passwordStrength.level}`,
+  );
   const handleBlurValidate = (field: keyof typeof formData) => {
-    const errors = getValidationErrors(formData);
+    const errors = getValidationErrors(formData, t);
     if (errors[field]) {
       setFormErrors(prev => ({ ...prev, [field]: errors[field] }));
     }
@@ -293,21 +267,21 @@ export default function Signup() {
 
   const requirementStates = [
     {
-      label: "إكمال البيانات الأساسية",
+      label: t("signup.readiness.requirements.basicInfo"),
       ok: Boolean(formData.fullName && formData.email && formData.phone),
     },
     {
-      label: "كلمة مرور قوية (8 أحرف وأرقام ورمز)",
+      label: t("signup.readiness.requirements.strongPassword"),
       ok: validatePassword(formData.password),
     },
     {
-      label: "تطابق كلمة المرور والتأكيد",
+      label: t("signup.readiness.requirements.matchingPasswords"),
       ok:
         Boolean(formData.password) &&
         formData.password === formData.confirmPassword,
     },
     {
-      label: "الموافقة على الشروط والسياسات",
+      label: t("signup.readiness.requirements.acceptPolicies"),
       ok: agreements.terms && agreements.privacy && agreements.cookies,
     },
   ];
@@ -318,13 +292,13 @@ export default function Signup() {
     e.preventDefault();
 
     if (!agreements.terms || !agreements.privacy || !agreements.cookies) {
-      toast.error("يرجى الموافقة على الإقرارات الإلزامية أولاً");
+      toast.error(t("signup.toast.agreementsRequired"));
       return;
     }
 
     const isValid = validateForm();
     if (!isValid) {
-      toast.error("يرجى تصحيح الحقول المعلّمة قبل المتابعة");
+      toast.error(t("signup.toast.fixFields"));
       return;
     }
 
@@ -349,7 +323,7 @@ export default function Signup() {
 
   const handleSocialSignup = (provider: string) => {
     if (!agreements.terms || !agreements.privacy || !agreements.cookies) {
-      toast.error("يرجى الموافقة على الإقرارات قبل التسجيل");
+      toast.error(t("signup.toast.agreementsBeforeSocial"));
       return;
     }
 
@@ -389,15 +363,15 @@ export default function Signup() {
                 رابِط
               </span>
             </Link>
-            <CardTitle className="text-3xl">إنشاء حساب جديد</CardTitle>
+            <CardTitle className="text-3xl">{t("signup.title")}</CardTitle>
             <CardDescription className="text-base">
-              ابدأ رحلتك مع مساعد الموارد البشرية الذكي
+              {t("signup.subtitle")}
             </CardDescription>
 
             {/* Free Month Offer */}
             <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg">
               <p className="text-sm font-semibold text-blue-700">
-                🎁 عرض خاص: شهر مجاني عند التسجيل الآن!
+                {t("signup.offer.special")}
               </p>
             </div>
           </CardHeader>
@@ -406,7 +380,9 @@ export default function Signup() {
             <form className="space-y-6" onSubmit={handleSignup}>
             {/* Account Type Selection */}
             <div className="space-y-3">
-              <Label className="text-base font-semibold">نوع الحساب *</Label>
+              <Label className="text-base font-semibold">
+                {t("signup.accountType.label")}
+              </Label>
               <RadioGroup
                 value={accountType}
                 onValueChange={(value: "company" | "freelancer" | "employee") =>
@@ -425,9 +401,11 @@ export default function Signup() {
                     <div className="flex items-center gap-2">
                       <Building2 className="h-5 w-5 text-primary" />
                       <div>
-                        <p className="font-medium">شركة</p>
+                        <p className="font-medium">
+                          {t("signup.accountType.company.label")}
+                        </p>
                         <p className="text-xs text-muted-foreground">
-                          إدارة الموظفين
+                          {t("signup.accountType.company.desc")}
                         </p>
                       </div>
                     </div>
@@ -444,9 +422,11 @@ export default function Signup() {
                     <div className="flex items-center gap-2">
                       <Briefcase className="h-5 w-5 text-primary" />
                       <div>
-                        <p className="font-medium">مستقل HR</p>
+                        <p className="font-medium">
+                          {t("signup.accountType.freelancer.label")}
+                        </p>
                         <p className="text-xs text-muted-foreground">
-                          مستشار موارد بشرية
+                          {t("signup.accountType.freelancer.desc")}
                         </p>
                       </div>
                     </div>
@@ -463,9 +443,11 @@ export default function Signup() {
                     <div className="flex items-center gap-2">
                       <UserCircle className="h-5 w-5 text-primary" />
                       <div>
-                        <p className="font-medium">موظف</p>
+                        <p className="font-medium">
+                          {t("signup.accountType.employee.label")}
+                        </p>
                         <p className="text-xs text-muted-foreground">
-                          استخدام شخصي
+                          {t("signup.accountType.employee.desc")}
                         </p>
                       </div>
                     </div>
@@ -492,7 +474,7 @@ export default function Signup() {
                   </div>
                 </div>
                 <span className="text-xs text-muted-foreground">
-                  يمكنك التبديل لاحقاً من الإعدادات
+                  {t("signup.accountType.note")}
                 </span>
               </div>
             </div>
@@ -501,12 +483,14 @@ export default function Signup() {
             <div className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="fullName">الاسم الكامل *</Label>
+                  <Label htmlFor="fullName">
+                    {t("signup.form.fullName.label")}
+                  </Label>
                   <div className="relative">
                     <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="fullName"
-                      placeholder="أدخل اسمك الكامل"
+                      placeholder={t("signup.form.fullName.placeholder")}
                       className={`pr-10 ${
                         formErrors.fullName
                           ? "border-destructive focus-visible:ring-destructive"
@@ -529,13 +513,15 @@ export default function Signup() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone">رقم الجوال *</Label>
+                  <Label htmlFor="phone">
+                    {t("signup.form.phone.label")}
+                  </Label>
                   <div className="relative">
                     <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="phone"
                       type="tel"
-                      placeholder="05xxxxxxxx"
+                      placeholder={t("signup.form.phone.placeholder")}
                       className={`pr-10 ${
                         formErrors.phone
                           ? "border-destructive focus-visible:ring-destructive"
@@ -555,7 +541,7 @@ export default function Signup() {
                     />
                   </div>
                   <div className="text-xs text-muted-foreground flex items-center justify-between">
-                    <span>تنسيق سعودي: يبدأ بـ 05</span>
+                    <span>{t("signup.form.phone.hint")}</span>
                     {formErrors.phone && (
                       <span className="text-destructive">
                         {formErrors.phone}
@@ -566,13 +552,15 @@ export default function Signup() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">البريد الإلكتروني *</Label>
+                <Label htmlFor="email">
+                  {t("signup.form.email.label")}
+                </Label>
                 <div className="relative">
                   <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="email"
                     type="email"
-                    placeholder="example@company.com"
+                    placeholder={t("signup.form.email.placeholder")}
                     className={`pr-10 ${
                       formErrors.email
                         ? "border-destructive focus-visible:ring-destructive"
@@ -595,12 +583,14 @@ export default function Signup() {
 
               {accountType === "company" && (
                 <div className="space-y-2">
-                  <Label htmlFor="company">اسم الشركة (اختياري)</Label>
+                  <Label htmlFor="company">
+                    {t("signup.form.company.label")}
+                  </Label>
                   <div className="relative">
                     <Building2 className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="company"
-                      placeholder="اسم شركتك"
+                      placeholder={t("signup.form.company.placeholder")}
                       className="pr-10"
                       autoComplete="organization"
                       value={formData.company}
@@ -612,7 +602,9 @@ export default function Signup() {
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="password">كلمة المرور *</Label>
+                  <Label htmlFor="password">
+                    {t("signup.form.password.label")}
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -638,7 +630,9 @@ export default function Signup() {
                       onClick={() => setShowPassword(prev => !prev)}
                       className="absolute left-3 top-2.5 text-xs text-primary underline-offset-2 hover:underline"
                     >
-                      {showPassword ? "إخفاء" : "إظهار"}
+                      {showPassword
+                        ? t("signup.form.password.hide")
+                        : t("signup.form.password.show")}
                     </button>
                   </div>
                   {formErrors.password && (
@@ -649,7 +643,9 @@ export default function Signup() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">تأكيد كلمة المرور *</Label>
+                  <Label htmlFor="confirmPassword">
+                    {t("signup.form.confirmPassword.label")}
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -679,7 +675,9 @@ export default function Signup() {
                       }
                       className="absolute left-3 top-2.5 text-xs text-primary underline-offset-2 hover:underline"
                     >
-                      {showConfirmPassword ? "إخفاء" : "إظهار"}
+                      {showConfirmPassword
+                        ? t("signup.form.password.hide")
+                        : t("signup.form.password.show")}
                     </button>
                   </div>
                   {formErrors.confirmPassword && (
@@ -706,8 +704,12 @@ export default function Signup() {
                   />
                 </div>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>قوة كلمة المرور: {passwordStrength.label}</span>
-                  <span>استخدم أحرف كبيرة وصغيرة وأرقام ورمز</span>
+                  <span>
+                    {t("signup.passwordStrength.prefix", {
+                      label: passwordStrengthLabel,
+                    })}
+                  </span>
+                  <span>{t("signup.passwordStrength.hint")}</span>
                 </div>
               </div>
             </div>
@@ -716,7 +718,7 @@ export default function Signup() {
             <div className="space-y-3 border-t pt-4">
               <Label className="text-base font-semibold flex items-center gap-2">
                 <Shield className="h-5 w-5 text-primary" />
-                الإقرارات الإلزامية *
+                {t("signup.agreements.title")}
               </Label>
 
               <div className="space-y-3">
@@ -736,15 +738,15 @@ export default function Signup() {
                     htmlFor="terms"
                     className="text-sm leading-relaxed cursor-pointer"
                   >
-                    أوافق على{" "}
+                    {t("signup.agreements.terms.prefix")}{" "}
                     <Link
                       href="/terms"
                       target="_blank"
                       className="text-primary hover:underline font-medium"
                     >
-                      الشروط والأحكام
+                      {t("signup.agreements.terms.link")}
                     </Link>{" "}
-                    الخاصة بمنصة رابِط
+                    {t("signup.agreements.terms.suffix")}
                   </label>
                 </div>
 
@@ -764,16 +766,15 @@ export default function Signup() {
                     htmlFor="privacy"
                     className="text-sm leading-relaxed cursor-pointer"
                   >
-                    أوافق على{" "}
+                    {t("signup.agreements.privacy.prefix")}{" "}
                     <Link
                       href="/privacy-policy"
                       target="_blank"
                       className="text-primary hover:underline font-medium"
                     >
-                      سياسة الخصوصية
+                      {t("signup.agreements.privacy.link")}
                     </Link>{" "}
-                    وأفهم كيفية معالجة بياناتي وفقاً لنظام حماية البيانات
-                    الشخصية السعودي (PDPL)
+                    {t("signup.agreements.privacy.suffix")}
                   </label>
                 </div>
 
@@ -793,15 +794,15 @@ export default function Signup() {
                     htmlFor="cookies"
                     className="text-sm leading-relaxed cursor-pointer"
                   >
-                    أوافق على{" "}
+                    {t("signup.agreements.cookies.prefix")}{" "}
                     <Link
                       href="/cookies-policy"
                       target="_blank"
                       className="text-primary hover:underline font-medium"
                     >
-                      سياسة الكوكيز
+                      {t("signup.agreements.cookies.link")}
                     </Link>{" "}
-                    واستخدام ملفات تعريف الارتباط
+                    {t("signup.agreements.cookies.suffix")}
                   </label>
                 </div>
               </div>
@@ -817,11 +818,11 @@ export default function Signup() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  جاري إنشاء الحساب...
+                  {t("signup.submit.loading")}
                 </>
               ) : (
                 <>
-                  إنشاء الحساب
+                  {t("signup.submit.cta")}
                   <ArrowRight className="mr-2 h-4 w-4" />
                 </>
               )}
@@ -829,7 +830,7 @@ export default function Signup() {
 
             <div className="grid gap-2 rounded-lg border bg-muted/30 p-3">
               <p className="text-xs font-semibold text-muted-foreground">
-                جاهزية الإرسال
+                {t("signup.readiness.title")}
               </p>
               <div className="grid gap-1.5 sm:grid-cols-2">
                 {requirementStates.map(req => (
@@ -859,7 +860,7 @@ export default function Signup() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-background px-2 text-muted-foreground">
-                  أو التسجيل عبر
+                  {t("signup.social.divider")}
                 </span>
               </div>
             </div>
@@ -915,12 +916,12 @@ export default function Signup() {
 
             {/* Login Link */}
             <p className="text-center text-sm text-muted-foreground">
-              لديك حساب بالفعل؟{" "}
+              {t("signup.loginPrompt")} {" "}
               <Link
                 href="/login"
                 className="text-primary hover:underline font-medium"
               >
-                تسجيل الدخول
+                {t("signup.loginLink")}
               </Link>
             </p>
             </form>

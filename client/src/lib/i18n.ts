@@ -357,7 +357,145 @@ const resources = {
       "login.needHelp": "تحتاج مساعدة؟",
 
       // Signup
-      "signup.error": "تعذر إكمال التسجيل",
+      signup: {
+        error: "تعذر إكمال التسجيل",
+        title: "إنشاء حساب جديد",
+        subtitle: "ابدأ رحلتك مع مساعد الموارد البشرية الذكي",
+        offer: {
+          special: "🎁 عرض خاص: شهر مجاني عند التسجيل الآن!",
+        },
+        accountType: {
+          label: "نوع الحساب *",
+          company: {
+            label: "شركة",
+            desc: "إدارة الموظفين",
+          },
+          freelancer: {
+            label: "مستقل HR",
+            desc: "مستشار موارد بشرية",
+          },
+          employee: {
+            label: "موظف",
+            desc: "استخدام شخصي",
+          },
+          note: "يمكنك التبديل لاحقاً من الإعدادات",
+        },
+        benefits: {
+          company: {
+            title: "مناسب للشركات النامية",
+            points: [
+              "إدارة الموظفين",
+              "لوحة تحكم شاملة",
+              "تذاكر ودعم HR",
+            ],
+          },
+          freelancer: {
+            title: "للمستقلين المحترفين",
+            points: [
+              "تتبع العملاء",
+              "مولد الخطابات الذكي",
+              "تقارير شهرية",
+            ],
+          },
+          employee: {
+            title: "للاستخدام الشخصي",
+            points: [
+              "إدارة الإجازات",
+              "سجل الرواتب",
+              "مساعد قانوني",
+            ],
+          },
+        },
+        form: {
+          fullName: {
+            label: "الاسم الكامل *",
+            placeholder: "أدخل اسمك الكامل",
+          },
+          phone: {
+            label: "رقم الجوال *",
+            placeholder: "05xxxxxxxx",
+            hint: "تنسيق سعودي: يبدأ بـ 05",
+          },
+          email: {
+            label: "البريد الإلكتروني *",
+            placeholder: "example@company.com",
+          },
+          company: {
+            label: "اسم الشركة (اختياري)",
+            placeholder: "اسم شركتك",
+          },
+          password: {
+            label: "كلمة المرور *",
+            show: "إظهار",
+            hide: "إخفاء",
+          },
+          confirmPassword: {
+            label: "تأكيد كلمة المرور *",
+          },
+        },
+        passwordStrength: {
+          labels: {
+            empty: "أدخل كلمة مرور قوية",
+            weak: "ضعيفة",
+            medium: "متوسطة",
+            good: "جيدة",
+            strong: "قوية",
+          },
+          prefix: "قوة كلمة المرور: {{label}}",
+          hint: "استخدم أحرف كبيرة وصغيرة وأرقام ورمز",
+        },
+        toast: {
+          success: "تم إنشاء الحساب بنجاح! يرجى تسجيل الدخول",
+          error: "فشل في إنشاء الحساب",
+          agreementsRequired: "يرجى الموافقة على الإقرارات الإلزامية أولاً",
+          fixFields: "يرجى تصحيح الحقول المعلّمة قبل المتابعة",
+          agreementsBeforeSocial: "يرجى الموافقة على الإقرارات قبل التسجيل",
+        },
+        validation: {
+          fullName: "الاسم يجب أن يكون 3 أحرف على الأقل",
+          email: "البريد الإلكتروني غير صالح",
+          phone: "أدخل رقم جوال سعودي يبدأ بـ 05 من 10 أرقام",
+          password: "كلمة المرور يجب أن تكون 8 أحرف وتحتوي على أرقام ورموز",
+          confirmPassword: "كلمتا المرور غير متطابقتين",
+        },
+        agreements: {
+          title: "الإقرارات الإلزامية *",
+          terms: {
+            prefix: "أوافق على",
+            link: "الشروط والأحكام",
+            suffix: "الخاصة بمنصة رابِط",
+          },
+          privacy: {
+            prefix: "أوافق على",
+            link: "سياسة الخصوصية",
+            suffix:
+              "وأفهم كيفية معالجة بياناتي وفقاً لنظام حماية البيانات الشخصية السعودي (PDPL)",
+          },
+          cookies: {
+            prefix: "أوافق على",
+            link: "سياسة الكوكيز",
+            suffix: "واستخدام ملفات تعريف الارتباط",
+          },
+        },
+        submit: {
+          loading: "جاري إنشاء الحساب...",
+          cta: "إنشاء الحساب",
+        },
+        readiness: {
+          title: "جاهزية الإرسال",
+          requirements: {
+            basicInfo: "إكمال البيانات الأساسية",
+            strongPassword: "كلمة مرور قوية (8 أحرف وأرقام ورمز)",
+            matchingPasswords: "تطابق كلمة المرور والتأكيد",
+            acceptPolicies: "الموافقة على الشروط والسياسات",
+          },
+        },
+        social: {
+          divider: "أو التسجيل عبر",
+        },
+        loginPrompt: "لديك حساب بالفعل؟",
+        loginLink: "تسجيل الدخول",
+      },
 
       // Misc pages
       "dashboard.tasks.title": "إدارة المهام",
@@ -701,7 +839,144 @@ const resources = {
       "login.contactSupport": "Contact support",
       "login.needHelp": "Need help?",
 
-      "signup.error": "Unable to complete signup",
+      signup: {
+        error: "Unable to complete signup",
+        title: "Create a new account",
+        subtitle: "Start your journey with the smart HR assistant",
+        offer: {
+          special: "🎁 Special offer: Get a free month when you sign up now!",
+        },
+        accountType: {
+          label: "Account type *",
+          company: {
+            label: "Company",
+            desc: "Employee management",
+          },
+          freelancer: {
+            label: "HR Freelancer",
+            desc: "HR consultant",
+          },
+          employee: {
+            label: "Employee",
+            desc: "Personal use",
+          },
+          note: "You can switch later from settings",
+        },
+        benefits: {
+          company: {
+            title: "Perfect for growing teams",
+            points: [
+              "Employee management",
+              "Full control dashboard",
+              "HR tickets & support",
+            ],
+          },
+          freelancer: {
+            title: "For professional consultants",
+            points: [
+              "Client tracking",
+              "AI letter generator",
+              "Monthly reports",
+            ],
+          },
+          employee: {
+            title: "For personal use",
+            points: [
+              "Leave management",
+              "Payroll log",
+              "Legal assistant",
+            ],
+          },
+        },
+        form: {
+          fullName: {
+            label: "Full name *",
+            placeholder: "Enter your full name",
+          },
+          phone: {
+            label: "Mobile number *",
+            placeholder: "05xxxxxxxx",
+            hint: "Saudi format: starts with 05",
+          },
+          email: {
+            label: "Email *",
+            placeholder: "example@company.com",
+          },
+          company: {
+            label: "Company name (optional)",
+            placeholder: "Your company name",
+          },
+          password: {
+            label: "Password *",
+            show: "Show",
+            hide: "Hide",
+          },
+          confirmPassword: {
+            label: "Confirm password *",
+          },
+        },
+        passwordStrength: {
+          labels: {
+            empty: "Enter a strong password",
+            weak: "Weak",
+            medium: "Average",
+            good: "Good",
+            strong: "Strong",
+          },
+          prefix: "Password strength: {{label}}",
+          hint: "Use uppercase, lowercase, numbers, and a symbol",
+        },
+        toast: {
+          success: "Account created successfully! Please log in",
+          error: "Could not create account",
+          agreementsRequired: "Please accept the mandatory acknowledgements first",
+          fixFields: "Please fix the highlighted fields before continuing",
+          agreementsBeforeSocial: "Please accept the acknowledgements before registering",
+        },
+        validation: {
+          fullName: "Name must be at least 3 characters",
+          email: "Invalid email address",
+          phone: "Enter a Saudi mobile number starting with 05 and 10 digits",
+          password: "Password must be 8 characters and include numbers & symbols",
+          confirmPassword: "Passwords do not match",
+        },
+        agreements: {
+          title: "Mandatory acknowledgements *",
+          terms: {
+            prefix: "I agree to",
+            link: "Terms & Conditions",
+            suffix: "of the Rabit platform",
+          },
+          privacy: {
+            prefix: "I agree to",
+            link: "Privacy Policy",
+            suffix: "and understand how my data is processed under the Saudi PDPL",
+          },
+          cookies: {
+            prefix: "I agree to",
+            link: "Cookies Policy",
+            suffix: "and the use of cookies",
+          },
+        },
+        submit: {
+          loading: "Creating your account...",
+          cta: "Create account",
+        },
+        readiness: {
+          title: "Submission readiness",
+          requirements: {
+            basicInfo: "Complete basic details",
+            strongPassword: "Strong password (8 chars, numbers & symbol)",
+            matchingPasswords: "Password and confirmation match",
+            acceptPolicies: "Accepted terms and policies",
+          },
+        },
+        social: {
+          divider: "or sign up with",
+        },
+        loginPrompt: "Already have an account?",
+        loginLink: "Log in",
+      },
       "dashboard.tasks.title": "Tasks management",
     },
   },
