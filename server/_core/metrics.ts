@@ -37,28 +37,10 @@ interface MetricsConfig {
   prefix: string;
 }
 
-interface RequestMetricsLabels {
-  method: string;
-  route: string;
-  status_code: string;
-  api_version?: string;
-}
-
 interface RateLimitMetricsLabels {
   limiter_type: 'endpoint' | 'user' | 'ip' | 'custom';
   endpoint?: string;
   action: 'allowed' | 'blocked';
-}
-
-interface ErrorMetricsLabels {
-  error_type: string;
-  endpoint: string;
-  method: string;
-}
-
-interface BusinessMetricsLabels {
-  operation: string;
-  status: 'success' | 'failure';
 }
 
 // ============================================================================
@@ -305,6 +287,17 @@ const cacheHitRate = new promClient.Gauge({
   registers: [register],
 });
 
+/**
+ * Counter: Cache lookups by TTL tier
+ * عداد: عمليات قراءة الذاكرة المؤقتة حسب مستوى TTL
+ */
+const cacheLookupsByTtl = new promClient.Counter({
+  name: `${config.prefix}cache_lookups_total`,
+  help: 'Cache lookups grouped by TTL tier and result',
+  labelNames: ['cache_key_prefix', 'ttl_tier', 'result'] as const,
+  registers: [register],
+});
+
 // ============================================================================
 // Database Metrics / مقاييس قاعدة البيانات
 // ============================================================================
@@ -424,7 +417,8 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
   res.on('finish', () => {
     const duration = (Date.now() - start) / 1000;
     const statusCode = res.statusCode.toString();
-    const apiVersion = (req as any).apiVersion || 'v1';
+    const requestWithVersion = req as Request & { apiVersion?: string };
+    const apiVersion = requestWithVersion.apiVersion || 'v1';
 
     // Decrement active requests
     httpRequestsActive.dec({ method, route });
@@ -593,6 +587,24 @@ export function trackCacheMiss(keyPrefix: string): void {
   if (!config.enabled) return;
 
   cacheMisses.inc({ cache_key_prefix: keyPrefix });
+}
+
+/**
+ * Track cache lookup outcome with TTL tier
+ * تتبع نتيجة قراءة الذاكرة المؤقتة حسب مستوى TTL
+ */
+export function trackCacheLookup(
+  keyPrefix: string,
+  ttlTier: string,
+  result: 'hit' | 'miss'
+): void {
+  if (!config.enabled) return;
+
+  cacheLookupsByTtl.inc({
+    cache_key_prefix: keyPrefix,
+    ttl_tier: ttlTier,
+    result,
+  });
 }
 
 /**

@@ -8,6 +8,7 @@ import { ENV } from "./env";
 import { logger } from "./logger";
 import {
   trackCacheHit,
+  trackCacheLookup,
   trackCacheMiss,
   updateCacheHitRate,
 } from "./metrics";
@@ -17,6 +18,30 @@ type RedisClient = Redis | InMemoryRedis;
 
 // Redis client instance (singleton pattern)
 let redisClient: RedisClient | null = null;
+
+type CacheTtlTierLabel =
+  | "temporary"
+  | "realtime"
+  | "short"
+  | "frequent"
+  | "medium"
+  | "long"
+  | "very_long"
+  | "custom";
+
+const TTL_TIER_BY_SECONDS: Record<number, CacheTtlTierLabel> = {
+  30: "temporary",
+  60: "realtime",
+  300: "short",
+  900: "frequent",
+  1800: "medium",
+  3600: "long",
+  86400: "very_long",
+};
+
+const resolveCacheTtlTier = (seconds: number): CacheTtlTierLabel => {
+  return TTL_TIER_BY_SECONDS[seconds] ?? "custom";
+};
 
 class InMemoryRedis {
   private readonly store = new Map<string, { value: string; timeout?: NodeJS.Timeout }>();
@@ -66,7 +91,10 @@ class InMemoryRedis {
     return "OK";
   }
 
-  async info(_section?: string) {
+  async info(section?: string) {
+    if (section) {
+      // Section argument is ignored in the in-memory mock implementation
+    }
     // Mock info response for memory section
     return "used_memory_human:1.00M";
   }
@@ -84,8 +112,10 @@ class InMemoryRedis {
     return "OK";
   }
 
-  on(_event: string, _cb: (...args: any[]) => void) {
-    // No-op for mock
+  on(...args: Parameters<Redis['on']>) {
+    if (args.length > 0) {
+      // Listener registration is intentionally ignored in the mock implementation
+    }
     return this;
   }
 }
@@ -149,11 +179,11 @@ export function getRedisClient(): RedisClient {
  */
 export class CacheManager {
   private readonly redis: RedisClient;
-  private readonly defaultTTL = 3600; // 1 hour default
+  private readonly defaultTTL: number;
 
   constructor(ttl?: number) {
     this.redis = getRedisClient();
-    if (ttl) (this as any).defaultTTL = ttl;
+    this.defaultTTL = typeof ttl === "number" && ttl > 0 ? ttl : 3600;
   }
 
   /**
@@ -162,7 +192,7 @@ export class CacheManager {
    * @param value - Value to cache (سيتم تحويله لـ JSON)
    * @param ttl - Time to live بالثواني (اختياري)
    */
-  async set(key: string, value: any, ttl?: number): Promise<void> {
+  async set(key: string, value: unknown, ttl?: number): Promise<void> {
     const serialized = JSON.stringify(value);
     const expiry = ttl || this.defaultTTL;
 
@@ -237,17 +267,32 @@ export class CacheManager {
     callback: () => Promise<T>,
     ttl?: number
   ): Promise<T> {
+    const namespace = key.split(":")[0] || "default";
+    const explicitTtl = typeof ttl === "number" ? ttl : undefined;
+    const resolvedTtl = explicitTtl ?? this.defaultTTL;
+    const ttlTier = resolveCacheTtlTier(resolvedTtl);
+
     // محاولة استرجاع من الـ cache
     const cached = await this.get<T>(key);
     if (cached !== null) {
+      trackCacheLookup(namespace, ttlTier, "hit");
       return cached;
     }
+
+    trackCacheLookup(namespace, ttlTier, "miss");
 
     // إذا لم توجد، استدعاء الـ callback
     const value = await callback();
 
-    // حفظ النتيجة في الـ cache
-    await this.set(key, value, ttl);
+    // حفظ النتيجة في الـ cache مع تحمّل أخطاء Redis
+    try {
+      await this.set(key, value, explicitTtl);
+    } catch (error) {
+      logger.warn('📦 Cache: Failed to store value after computation', {
+        key,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
 
     return value;
   }
@@ -458,6 +503,19 @@ export const CACHE_KEYS = {
     `consultations:consultant:${consultantId}`,
   CONSULTATION_TYPES: "consultation:types",
   COMPANY_INFO: (companyId: number) => `company:${companyId}:info`,
+  DASHBOARD_COMPANY_OVERVIEW: () => "dashboard:company:overview",
+  DASHBOARD_EMPLOYEE_OVERVIEW: () => "dashboard:employee:overview",
+  DASHBOARD_EXECUTIVE_METRICS: () => "dashboard:executive:metrics",
+  DASHBOARD_EXECUTIVE_OVERVIEW: () => "dashboard:executive:overview",
+  REPORT_OVERVIEW: (rangeKey: string) => `report:overview:${rangeKey}`,
+  REPORT_KPIS: (rangeKey: string) => `report:kpis:${rangeKey}`,
+  REPORT_TIMESERIES: (rangeKey: string) => `report:timeseries:${rangeKey}`,
+  REPORT_DISTRIBUTION: (rangeKey: string) => `report:distribution:${rangeKey}`,
+  REPORT_EXPORT: (reportType: string, rangeKey: string) =>
+    `report:export:${reportType}:${rangeKey}`,
+  ATTENDANCE_TIMELINE: (rangeKey: string) => `attendance:timeline:${rangeKey}`,
+  SEARCH_RESULTS: (namespace: string, hash: string) =>
+    `search:${namespace}:${hash}`,
 };
 
 /**
@@ -468,6 +526,10 @@ export const CACHE_TTL = {
   MEDIUM: 1800, // 30 minutes
   LONG: 3600, // 1 hour
   VERY_LONG: 86400, // 24 hours
+  STATIC: 3600, // مستوى 1: بيانات ثابتة
+  FREQUENT: 900, // مستوى 2: وصول متكرر (15 دقيقة)
+  REALTIME: 60, // مستوى 3: إحصائيات فورية (1 دقيقة)
+  TEMPORARY: 30, // مستوى 4: نتائج مؤقتة/بحث (30 ثانية)
 };
 
 /**

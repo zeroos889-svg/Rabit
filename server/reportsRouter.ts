@@ -1,7 +1,14 @@
 import { protectedProcedure, router, adminProcedure } from "./_core/trpc";
+import { createHash } from "crypto";
 import { z } from "zod";
+import { cache, CACHE_KEYS, CACHE_TTL } from "./_core/cache";
+import { logger } from "./_core/logger";
 
 type DateRange = { from?: Date; to?: Date };
+
+type DateCompatibleKey<T> = {
+  [K in keyof T]: T[K] extends Date | string | number ? K : never;
+}[keyof T];
 
 const dateRangeInput = z
   .object({
@@ -27,6 +34,33 @@ const isWithinRange = (date: Date, range: DateRange) => {
   if (range.from && date < range.from) return false;
   if (range.to && date > range.to) return false;
   return true;
+};
+
+const buildRangeIdentifier = (range: DateRange) => {
+  if (!range.from && !range.to) return "all";
+  const from = range.from ? range.from.toISOString().slice(0, 10) : "min";
+  const to = range.to ? range.to.toISOString().slice(0, 10) : "max";
+  return `${from}:${to}`;
+};
+
+const hashRange = (range: DateRange) =>
+  createHash("sha1").update(buildRangeIdentifier(range)).digest("hex");
+
+const withReportCache = async <T>(
+  key: string,
+  builder: () => T,
+  ttl: number,
+  context: string
+): Promise<T> => {
+  try {
+    return await cache.getOrSet(key, async () => builder(), ttl);
+  } catch (error) {
+    logger.warn(`reports.${context} cache unavailable, bypassing Redis`, {
+      key,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return builder();
+  }
 };
 
 // Hand-curated sample data to power dashboards until real DB wiring lands
@@ -226,17 +260,27 @@ const chatSessions: ChatSession[] = [
   { id: 1, createdAt: "2024-01-04", responseMinutes: 4, intent: "leave", csat: 4.6 },
   { id: 2, createdAt: "2024-01-05", responseMinutes: 6, intent: "contracts", csat: 4.8 },
   { id: 3, createdAt: "2024-02-01", responseMinutes: 5, intent: "eosb", csat: 4.2 },
-  { id: 4, createdAt: "2024-02-12", responseMinutes: 7, intent: "policies", csat: 4.0 },
+  { id: 4, createdAt: "2024-02-12", responseMinutes: 7, intent: "policies", csat: 4 },
   { id: 5, createdAt: "2024-02-22", responseMinutes: 9, intent: "leave", csat: 3.9 },
   { id: 6, createdAt: "2024-03-02", responseMinutes: 4, intent: "contracts", csat: 4.7 },
   { id: 7, createdAt: "2024-03-08", responseMinutes: 5, intent: "eosb", csat: 4.3 },
   { id: 8, createdAt: "2024-03-18", responseMinutes: 3, intent: "leave", csat: 4.9 },
 ];
 
-const filterByRange = <T extends Record<string, any>>(items: T[], key: keyof T, range: DateRange) =>
-  items.filter(item => {
-    const date = new Date(item[key]);
-    return isWithinRange(date, range);
+const filterByRange = <T>(items: T[], key: DateCompatibleKey<T>, range: DateRange) =>
+  items.filter(entry => {
+    const rawValue = entry[key];
+    let dateValue: Date;
+
+    if (rawValue instanceof Date) {
+      dateValue = rawValue;
+    } else if (typeof rawValue === "number") {
+      dateValue = new Date(rawValue);
+    } else {
+      dateValue = new Date(String(rawValue));
+    }
+
+    return isWithinRange(dateValue, range);
   });
 
 const average = (values: number[]) => {
@@ -327,21 +371,21 @@ const buildTimeseries = (range: DateRange) => {
     return key;
   };
 
-  hiring.forEach(h => {
+  for (const h of hiring) {
     const key = touchMonth(new Date(h.date));
     monthMap[key].applications += 1;
     if (h.status === "hired") monthMap[key].hires += 1;
-  });
+  }
 
-  tickets.forEach(t => {
+  for (const t of tickets) {
     const key = touchMonth(new Date(t.createdAt));
     if (t.status === "closed") monthMap[key].ticketsClosed += 1;
-  });
+  }
 
-  chats.forEach(c => {
+  for (const c of chats) {
     const key = touchMonth(new Date(c.createdAt));
     monthMap[key].chats += 1;
-  });
+  }
 
   return Object.values(monthMap).sort((a, b) => a.month.localeCompare(b.month));
 };
@@ -351,34 +395,32 @@ const buildDistribution = (range: DateRange) => {
   const tickets = filterByRange(supportTickets, "createdAt", range);
   const chats = filterByRange(chatSessions, "createdAt", range);
 
-  const countBy = <T, K extends string | number>(
-    items: T[],
-    picker: (item: T) => K
-  ): Record<K, number> => {
-    return items.reduce((acc, item) => {
-      const key = picker(item);
-      acc[key] = (acc[key] || 0) + 1;
-      return acc;
-    }, {} as Record<K, number>);
+  const countBy = <T, K extends keyof T>(items: T[], key: K): Record<string, number> => {
+    const result: Record<string, number> = {};
+    for (const current of items) {
+      const bucket = String(current[key] ?? "unknown");
+      result[bucket] = (result[bucket] || 0) + 1;
+    }
+    return result;
   };
 
   return {
     hiringStages: {
       total: hiring.length,
-      counts: countBy(hiring, h => h.stage),
-      sources: countBy(hiring, h => h.source),
-      departments: countBy(hiring, h => h.department),
-      seniority: countBy(hiring, h => h.seniority),
+      counts: countBy(hiring, "stage"),
+      sources: countBy(hiring, "source"),
+      departments: countBy(hiring, "department"),
+      seniority: countBy(hiring, "seniority"),
     },
     supportCategories: {
       total: tickets.length,
-      counts: countBy(tickets, t => t.category),
+      counts: countBy(tickets, "category"),
       open: tickets.filter(t => t.status !== "closed").length,
       closed: tickets.filter(t => t.status === "closed").length,
     },
     chatIntents: {
       total: chats.length,
-      counts: countBy(chats, c => c.intent),
+      counts: countBy(chats, "intent"),
       avgCsat: average(chats.map(c => c.csat)),
     },
   };
@@ -394,7 +436,7 @@ const toCsv = (rows: Array<Record<string, string | number>>) => {
         .map(key => {
           const value = row[key];
           if (typeof value === "string" && value.includes(",")) {
-            return `"${value.replace(/"/g, '""')}"`;
+            return `"${value.replaceAll('"', '""')}"`;
           }
           return value;
         })
@@ -405,15 +447,49 @@ const toCsv = (rows: Array<Record<string, string | number>>) => {
 };
 
 export const reportsRouter = router({
-  overview: protectedProcedure.input(dateRangeInput).query(({ input }) => buildOverview(parseDateRange(input))),
+  overview: protectedProcedure.input(dateRangeInput).query(async ({ input }) => {
+    const range = parseDateRange(input);
+    const rangeKey = hashRange(range);
+    return withReportCache(
+      CACHE_KEYS.REPORT_OVERVIEW(rangeKey),
+      () => buildOverview(range),
+      CACHE_TTL.FREQUENT,
+      "overview"
+    );
+  }),
 
-  kpis: protectedProcedure.input(dateRangeInput).query(({ input }) => buildKpis(parseDateRange(input))),
+  kpis: protectedProcedure.input(dateRangeInput).query(async ({ input }) => {
+    const range = parseDateRange(input);
+    const rangeKey = hashRange(range);
+    return withReportCache(
+      CACHE_KEYS.REPORT_KPIS(rangeKey),
+      () => buildKpis(range),
+      CACHE_TTL.FREQUENT,
+      "kpis"
+    );
+  }),
 
-  timeseries: protectedProcedure.input(dateRangeInput).query(({ input }) => buildTimeseries(parseDateRange(input))),
+  timeseries: protectedProcedure.input(dateRangeInput).query(async ({ input }) => {
+    const range = parseDateRange(input);
+    const rangeKey = hashRange(range);
+    return withReportCache(
+      CACHE_KEYS.REPORT_TIMESERIES(rangeKey),
+      () => buildTimeseries(range),
+      CACHE_TTL.LONG,
+      "timeseries"
+    );
+  }),
 
-  distribution: protectedProcedure
-    .input(dateRangeInput)
-    .query(({ input }) => buildDistribution(parseDateRange(input))),
+  distribution: protectedProcedure.input(dateRangeInput).query(async ({ input }) => {
+    const range = parseDateRange(input);
+    const rangeKey = hashRange(range);
+    return withReportCache(
+      CACHE_KEYS.REPORT_DISTRIBUTION(rangeKey),
+      () => buildDistribution(range),
+      CACHE_TTL.LONG,
+      "distribution"
+    );
+  }),
 
   exportCSV: adminProcedure
     .input(
@@ -423,60 +499,68 @@ export const reportsRouter = router({
         to: z.string().optional(),
       })
     )
-    .mutation(({ input }) => {
+    .mutation(async ({ input }) => {
       const range = parseDateRange({ from: input.from, to: input.to });
       const filename = `${input.report}-report.csv`;
+      const cacheKey = CACHE_KEYS.REPORT_EXPORT(input.report, hashRange(range));
 
-      if (input.report === "hiring") {
-        const dist = buildDistribution(range);
-        const rows = Object.entries(dist.hiringStages.counts).map(([stage, count]) => ({
-          stage,
-          count,
-          sourceTop: Object.keys(dist.hiringStages.sources)[0] || "n/a",
-          seniorityTop: Object.keys(dist.hiringStages.seniority)[0] || "n/a",
-        }));
-        const csv = toCsv(rows);
-        return {
-          filename,
-          data: `data:text/csv;base64,${Buffer.from(csv).toString("base64")}`,
-        };
-      }
+      return withReportCache(
+        cacheKey,
+        () => {
+          if (input.report === "hiring") {
+            const dist = buildDistribution(range);
+            const rows = Object.entries(dist.hiringStages.counts).map(([stage, count]) => ({
+              stage,
+              count,
+              sourceTop: Object.keys(dist.hiringStages.sources)[0] || "n/a",
+              seniorityTop: Object.keys(dist.hiringStages.seniority)[0] || "n/a",
+            }));
+            const csv = toCsv(rows);
+            return {
+              filename,
+              data: `data:text/csv;base64,${Buffer.from(csv).toString("base64")}`,
+            };
+          }
 
-      if (input.report === "support") {
-        const dist = buildDistribution(range);
-        const rows = Object.entries(dist.supportCategories.counts).map(([category, count]) => ({
-          category,
-          count,
-          open: dist.supportCategories.open,
-          closed: dist.supportCategories.closed,
-        }));
-        const csv = toCsv(rows);
-        return {
-          filename,
-          data: `data:text/csv;base64,${Buffer.from(csv).toString("base64")}`,
-        };
-      }
+          if (input.report === "support") {
+            const dist = buildDistribution(range);
+            const rows = Object.entries(dist.supportCategories.counts).map(([category, count]) => ({
+              category,
+              count,
+              open: dist.supportCategories.open,
+              closed: dist.supportCategories.closed,
+            }));
+            const csv = toCsv(rows);
+            return {
+              filename,
+              data: `data:text/csv;base64,${Buffer.from(csv).toString("base64")}`,
+            };
+          }
 
-      const chats = filterByRange(chatSessions, "createdAt", range);
-      const rows = Object.entries(
-        chats.reduce((acc, chat) => {
-          const key = monthKey(new Date(chat.createdAt));
-          if (!acc[key]) acc[key] = { conversations: 0, responseTotal: 0, csatTotal: 0 };
-          acc[key].conversations += 1;
-          acc[key].responseTotal += chat.responseMinutes;
-          acc[key].csatTotal += chat.csat;
-          return acc;
-        }, {} as Record<string, { conversations: number; responseTotal: number; csatTotal: number }>)
-      ).map(([month, stats]) => ({
-        month,
-        conversations: stats.conversations,
-        avgResponse: Math.round((stats.responseTotal / stats.conversations) * 10) / 10,
-        avgCsat: Math.round((stats.csatTotal / stats.conversations) * 10) / 10,
-      }));
-      const csv = toCsv(rows);
-      return {
-        filename,
-        data: `data:text/csv;base64,${Buffer.from(csv).toString("base64")}`,
-      };
+          const chats = filterByRange(chatSessions, "createdAt", range);
+          const rows = Object.entries(
+            chats.reduce((acc, chat) => {
+              const key = monthKey(new Date(chat.createdAt));
+              if (!acc[key]) acc[key] = { conversations: 0, responseTotal: 0, csatTotal: 0 };
+              acc[key].conversations += 1;
+              acc[key].responseTotal += chat.responseMinutes;
+              acc[key].csatTotal += chat.csat;
+              return acc;
+            }, {} as Record<string, { conversations: number; responseTotal: number; csatTotal: number }>)
+          ).map(([month, stats]) => ({
+            month,
+            conversations: stats.conversations,
+            avgResponse: Math.round((stats.responseTotal / stats.conversations) * 10) / 10,
+            avgCsat: Math.round((stats.csatTotal / stats.conversations) * 10) / 10,
+          }));
+          const csv = toCsv(rows);
+          return {
+            filename,
+            data: `data:text/csv;base64,${Buffer.from(csv).toString("base64")}`,
+          };
+        },
+        CACHE_TTL.LONG,
+        `export.${input.report}`
+      );
     }),
 });
