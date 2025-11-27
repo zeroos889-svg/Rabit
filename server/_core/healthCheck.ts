@@ -61,7 +61,7 @@ async function checkDatabase(): Promise<ComponentHealth> {
 
   try {
     // Get database instance
-    const db = await getDb();
+    const db: unknown = await getDb();
 
     if (!db) {
       return {
@@ -294,12 +294,12 @@ export async function performHealthCheck(): Promise<HealthCheckResult> {
  */
 export async function simpleHealthCheck(): Promise<boolean> {
   try {
-    const db = await getDb();
+    const db: unknown = await getDb();
     if (!db) return false;
-    if (typeof db.execute === "function") {
+    if (hasExecute(db)) {
       await db.execute(sql`SELECT 1`);
-    } else if (typeof (db as any).query === "function") {
-      await (db as any).query("SELECT 1");
+    } else if (hasQuery(db)) {
+      await db.query("SELECT 1");
     } else {
       throw new TypeError("Database client does not support health check queries");
     }
