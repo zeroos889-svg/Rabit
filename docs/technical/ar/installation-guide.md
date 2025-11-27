@@ -84,7 +84,7 @@ VITE_OAUTH_PORTAL_URL=https://oauth.manus.im
 # التطبيق
 VITE_APP_ID=your_app_id_here
 VITE_APP_TITLE=رابِط - مساعد الموارد البشرية السعودي
-VITE_APP_LOGO=/rabit-logo.svg
+VITE_APP_LOGO=/LOGO.svg
 
 # Manus APIs
 BUILT_IN_FORGE_API_URL=https://forge.manus.im

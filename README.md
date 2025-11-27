@@ -1,5 +1,9 @@
 ﻿#  منصة رابِط - Rabit HR Platform
 
+<p align="center">
+  <img src="client/public/LOGO.svg" alt="Rabit Logo" width="280" />
+</p>
+
 <div dir="rtl">
 
 منصة **رابِط** هي منصة سعودية متكاملة لإدارة الموارد البشرية، مصممة خصيصاً للامتثال الكامل لنظام العمل السعودي.
@@ -82,7 +86,7 @@ npm run dev:full
 
 ## 📁 هيكل المشروع
 
-```
+```text
 Rabit/
 ├── client/                  # تطبيق React (Frontend)
 │   ├── src/
@@ -203,14 +207,14 @@ npm run db:generate      # توليد migrations
 ### إعداد Production
 
 1. تحديث متغيرات البيئة للـ production
-2. بناء المشروع:
+1. بناء المشروع:
 
 ```bash
 npm run build
 npm run build:server
 ```
 
-3. رفع على Vercel/Railway/DigitalOcean
+1. رفع على Vercel/Railway/DigitalOcean
 
 ### Docker (قريباً)
 

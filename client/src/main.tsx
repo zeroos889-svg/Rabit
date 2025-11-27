@@ -145,7 +145,7 @@ const trpcClient = trpc.createClient({
       transformer: superjson,
       headers() {
         const token = localStorage.getItem("authToken");
-        const baseHeaders = token
+        const baseHeaders: Record<string, string> = token
           ? {
               Authorization: `Bearer ${token}`,
             }

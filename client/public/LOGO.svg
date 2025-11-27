@@ -1,50 +1,61 @@
 <svg
-  width="512"
-  height="256"
-  viewBox="0 0 512 256"
+  width="768"
+  height="384"
+  viewBox="0 0 960 512"
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
 >
   <defs>
-    <linearGradient id="chainGradient" x1="40" y1="36" x2="200" y2="196" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#49A3FF" />
-      <stop offset="1" stop-color="#6DE2FF" />
+    <linearGradient id="brandChain" x1="96" y1="72" x2="344" y2="248" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6AD4FF" />
+      <stop offset="0.45" stop-color="#4F9DFF" />
+      <stop offset="1" stop-color="#1F53FF" />
     </linearGradient>
-    <linearGradient id="chainGradientLight" x1="32" y1="32" x2="192" y2="192" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#3B68FF" />
-      <stop offset="1" stop-color="#5CA4FF" />
-    </linearGradient>
-    <linearGradient id="textGradient" x1="220" y1="60" x2="460" y2="200" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#0E3A8A" />
-      <stop offset="1" stop-color="#1130C2" />
+    <linearGradient id="brandText" x1="420" y1="120" x2="820" y2="320" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#143FCE" />
+      <stop offset="1" stop-color="#092982" />
     </linearGradient>
   </defs>
 
-  <rect x="16" y="16" width="224" height="224" rx="64" fill="#F2F7FF" />
+  <!-- Linked rings icon -->
+  <g transform="translate(40 40)">
+    <path
+      d="M220 128h92c45.287 0 82 36.713 82 82s-36.713 82-82 82h-60"
+      stroke="url(#brandChain)"
+      stroke-width="36"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M268 210h-92c-45.287 0-82-36.713-82-82s36.713-82 82-82h60"
+      stroke="url(#brandChain)"
+      stroke-width="36"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      opacity="0.92"
+    />
+    <circle cx="256" cy="168" r="20" fill="#FFFFFF" opacity="0.85" />
+  </g>
 
-  <!-- Modern chain icon -->
-  <path
-    d="M96 70h68c29.823 0 54 24.177 54 54s-24.177 54-54 54h-46"
-    stroke="url(#chainGradient)"
-    stroke-width="26"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  />
-  <path
-    d="M148 134H80c-29.823 0-54-24.177-54-54s24.177-54 54-54h46"
-    stroke="url(#chainGradientLight)"
-    stroke-width="26"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  />
-  <circle cx="124" cy="102" r="18" fill="#FFFFFF" opacity="0.9" />
-
-  <!-- Bilingual logotype -->
-  <g fill="url(#textGradient)">
-    <text x="252" y="112" font-size="72" font-family="'Tajawal', 'Cairo', 'Noto Sans Arabic', sans-serif" font-weight="600">
+  <!-- Logotype -->
+  <g fill="url(#brandText)">
+    <text
+      x="420"
+      y="210"
+      font-size="140"
+      font-family="'Tajawal', 'Cairo', 'Noto Sans Arabic', sans-serif"
+      font-weight="600"
+    >
       رابط
     </text>
-    <text x="252" y="176" font-size="76" font-family="'Nunito', 'Segoe UI', 'Inter', sans-serif" font-weight="700" letter-spacing="1">
+    <text
+      x="420"
+      y="320"
+      font-size="148"
+      font-family="'Nunito', 'Segoe UI', 'Inter', sans-serif"
+      font-weight="700"
+      letter-spacing="1"
+    >
       Rabit
     </text>
   </g>

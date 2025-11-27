@@ -464,7 +464,7 @@ const fetchHiringEvents = async (range: DateRange): Promise<HiringEvent[]> => {
   const dbc = await getDrizzleDb();
   const filters = buildDateFilters(range.from, range.to, jobApplications.appliedAt);
 
-  let query = dbc
+  const baseQuery = dbc
     .select({
       id: jobApplications.id,
       appliedAt: jobApplications.appliedAt,
@@ -477,11 +477,11 @@ const fetchHiringEvents = async (range: DateRange): Promise<HiringEvent[]> => {
     .from(jobApplications)
     .leftJoin(jobs, eq(jobApplications.jobId, jobs.id));
 
-  if (filters.length) {
-    query = query.where(filters.length === 1 ? filters[0] : and(...filters));
-  }
+  const filteredQuery = filters.length
+    ? baseQuery.where(filters.length === 1 ? filters[0] : and(...filters))
+    : baseQuery;
 
-  const rows = await query.orderBy(desc(jobApplications.appliedAt)).limit(ANALYTICS_FETCH_LIMIT);
+  const rows = await filteredQuery.orderBy(desc(jobApplications.appliedAt)).limit(ANALYTICS_FETCH_LIMIT);
 
   return rows
     .map(row => {
@@ -514,7 +514,7 @@ const fetchSupportTickets = async (range: DateRange): Promise<SupportTicket[]> =
   const dbc = await getDrizzleDb();
   const filters = buildDateFilters(range.from, range.to, hrCases.createdAt);
 
-  let query = dbc
+  const baseQuery = dbc
     .select({
       id: hrCases.id,
       createdAt: hrCases.createdAt,
@@ -525,11 +525,11 @@ const fetchSupportTickets = async (range: DateRange): Promise<SupportTicket[]> =
     })
     .from(hrCases);
 
-  if (filters.length) {
-    query = query.where(filters.length === 1 ? filters[0] : and(...filters));
-  }
+  const filteredQuery = filters.length
+    ? baseQuery.where(filters.length === 1 ? filters[0] : and(...filters))
+    : baseQuery;
 
-  const rows = await query.orderBy(desc(hrCases.createdAt)).limit(ANALYTICS_FETCH_LIMIT);
+  const rows = await filteredQuery.orderBy(desc(hrCases.createdAt)).limit(ANALYTICS_FETCH_LIMIT);
 
   return rows.map(row => {
     const createdAt = row.createdAt ?? new Date();
@@ -551,7 +551,7 @@ const fetchChatSessions = async (range: DateRange): Promise<ChatSession[]> => {
   const dbc = await getDrizzleDb();
   const filters = buildDateFilters(range.from, range.to, chatConversations.createdAt);
 
-  let query = dbc
+  const baseQuery = dbc
     .select({
       id: chatConversations.id,
       createdAt: chatConversations.createdAt,
@@ -560,11 +560,11 @@ const fetchChatSessions = async (range: DateRange): Promise<ChatSession[]> => {
     })
     .from(chatConversations);
 
-  if (filters.length) {
-    query = query.where(filters.length === 1 ? filters[0] : and(...filters));
-  }
+  const filteredQuery = filters.length
+    ? baseQuery.where(filters.length === 1 ? filters[0] : and(...filters))
+    : baseQuery;
 
-  const conversations = await query.orderBy(desc(chatConversations.createdAt)).limit(CHAT_FETCH_LIMIT);
+  const conversations = await filteredQuery.orderBy(desc(chatConversations.createdAt)).limit(CHAT_FETCH_LIMIT);
   const convoIds = conversations.map(conv => conv.id).filter((id): id is number => typeof id === "number");
 
   if (!convoIds.length) {
