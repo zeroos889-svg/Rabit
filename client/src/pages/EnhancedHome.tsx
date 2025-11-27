@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -46,9 +46,11 @@ import {
   Sparkles,
   Layers,
   ArrowUpRight,
+  PauseCircle,
+  type LucideIcon,
 } from "lucide-react";
-import { Footer } from "@/components/Footer";
-import { FAQSection } from "@/components/FAQSection";
+const LazyFooter = lazy(() => import("@/components/Footer").then((module) => ({ default: module.Footer })));
+const LazyFAQSection = lazy(() => import("@/components/FAQSection").then((module) => ({ default: module.FAQSection })));
 
 const heroStats = [
   { value: "5000+", label: "عميل راضٍ", icon: Users },
@@ -519,6 +521,129 @@ const demoScenarios: DemoScenario[] = [
   },
 ];
 
+type GuidedDemoChapter = {
+  id: string;
+  duration: string;
+};
+
+type GuidedDemoChapterContent = {
+  title: string;
+  description: string;
+  highlights: { label: string; value: string }[];
+  focusPoints: string[];
+};
+
+type LocalizedGuidedDemoChapter = GuidedDemoChapter & GuidedDemoChapterContent;
+
+const guidedDemoChapters: GuidedDemoChapter[] = [
+  {
+    id: "overview",
+    duration: "00:12",
+  },
+  {
+    id: "automation-cards",
+    duration: "00:24",
+  },
+  {
+    id: "employee-journey",
+    duration: "00:42",
+  },
+  {
+    id: "compliance",
+    duration: "00:58",
+  },
+];
+
+type LiveMetricSeed = {
+  id: string;
+  icon: LucideIcon;
+  start: number;
+  minIncrement: number;
+  maxIncrement: number;
+  min?: number;
+  max?: number;
+  unit?: string;
+  decimals?: number;
+};
+
+type LiveMetric = LiveMetricSeed & {
+  value: number;
+};
+
+type LiveMetricCopy = {
+  label: string;
+  description: string;
+  trend: string;
+};
+
+const liveMetricSeeds: LiveMetricSeed[] = [
+  {
+    id: "live-consultations",
+    icon: Headphones,
+    start: 34,
+    minIncrement: 0,
+    maxIncrement: 3,
+    min: 20,
+    max: 60,
+  },
+  {
+    id: "journey-tracking",
+    icon: Users,
+    start: 1894,
+    minIncrement: 25,
+    maxIncrement: 70,
+    min: 1600,
+    max: 3200,
+  },
+  {
+    id: "automation-touches",
+    icon: Sparkles,
+    start: 312,
+    minIncrement: 8,
+    maxIncrement: 20,
+    min: 200,
+    max: 560,
+  },
+  {
+    id: "sla-success",
+    icon: Shield,
+    start: 98.2,
+    minIncrement: -0.25,
+    maxIncrement: 0.3,
+    min: 96.5,
+    max: 99.7,
+    unit: "%",
+    decimals: 1,
+  },
+];
+
+const randomBetween = (min: number, max: number) => Math.random() * (max - min) + min;
+
+const formatNumber = (value: number, decimals = 0, locale = "ar-SA") =>
+  new Intl.NumberFormat(locale, { maximumFractionDigits: decimals }).format(value);
+
+const getNextGuidedChapterId = (currentId: string) => {
+  if (guidedDemoChapters.length === 0) return currentId;
+  const currentIndex = guidedDemoChapters.findIndex((chapter) => chapter.id === currentId);
+  const nextIndex = (currentIndex + 1) % guidedDemoChapters.length;
+  return guidedDemoChapters[nextIndex]?.id ?? currentId;
+};
+
+const liveMetricSeedMap = new Map(liveMetricSeeds.map((seed) => [seed.id, seed] as const));
+
+const computeNextLiveMetric = (metric: LiveMetric): LiveMetric => {
+  const seed = liveMetricSeedMap.get(metric.id) ?? metric;
+  const delta = randomBetween(seed.minIncrement, seed.maxIncrement);
+  let nextValue = metric.value + delta;
+  if (typeof seed.min === "number") nextValue = Math.max(seed.min, nextValue);
+  if (typeof seed.max === "number") nextValue = Math.min(seed.max, nextValue);
+  const decimals = seed.decimals ?? 0;
+  return {
+    ...metric,
+    value: Number.parseFloat(nextValue.toFixed(decimals)),
+  };
+};
+
 const audienceBenefits: AudienceBenefit[] = [
   {
     audienceLabel: "لفرق الموارد البشرية",
@@ -656,19 +781,86 @@ const testimonials: Testimonial[] = [
 ];
 
 export default function EnhancedHome() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [heroImageError, setHeroImageError] = useState(false);
   const [activeDemoId, setActiveDemoId] = useState(() => demoScenarios[0]?.id ?? "automation");
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [activeExperienceId, setActiveExperienceId] = useState(() => experienceProfiles[0]?.id ?? "hr");
+  const [activeGuidedChapterId, setActiveGuidedChapterId] = useState(() => guidedDemoChapters[0]?.id ?? "overview");
+  const [isGuidedDemoPlaying, setIsGuidedDemoPlaying] = useState(false);
+  const [liveMetrics, setLiveMetrics] = useState<LiveMetric[]>(() =>
+    liveMetricSeeds.map((seed) => ({ ...seed, value: seed.start }))
+  );
+  const [lastMetricsUpdate, setLastMetricsUpdate] = useState(() => new Date());
+  const advanceGuidedChapter = useCallback(() => {
+    setActiveGuidedChapterId((currentId) => getNextGuidedChapterId(currentId));
+  }, []);
+  const advanceLiveMetrics = useCallback(() => {
+    setLiveMetrics((currentMetrics) => currentMetrics.map((metric) => computeNextLiveMetric(metric)));
+    setLastMetricsUpdate(new Date());
+  }, []);
 
   useEffect(() => {
     setActiveStepIndex(0);
   }, [activeDemoId]);
 
+  useEffect(() => {
+    if (!isGuidedDemoPlaying || guidedDemoChapters.length <= 1) {
+      return undefined;
+    }
+
+    const interval = setInterval(advanceGuidedChapter, 4500);
+    return () => clearInterval(interval);
+  }, [advanceGuidedChapter, isGuidedDemoPlaying]);
+
+  useEffect(() => {
+    const interval = setInterval(advanceLiveMetrics, 6000);
+    return () => clearInterval(interval);
+  }, [advanceLiveMetrics]);
+
+  const localizedGuidedChapters = useMemo<LocalizedGuidedDemoChapter[]>(() => {
+    return guidedDemoChapters.map((chapter) => {
+      const content = t(`enhancedHome.guidedDemo.chapters.${chapter.id}`, {
+        returnObjects: true,
+        defaultValue: {},
+      }) as Partial<GuidedDemoChapterContent>;
+
+      return {
+        ...chapter,
+        title: typeof content.title === "string" ? content.title : "",
+        description: typeof content.description === "string" ? content.description : "",
+        highlights: Array.isArray(content.highlights) ? content.highlights : [],
+        focusPoints: Array.isArray(content.focusPoints) ? content.focusPoints : [],
+      };
+    });
+  }, [t, i18n.language]);
+
   const activeDemo = demoScenarios.find(demo => demo.id === activeDemoId) ?? demoScenarios[0];
   const activeStep = activeDemo.steps[activeStepIndex] ?? activeDemo.steps[0];
   const activeExperience = experienceProfiles.find(profile => profile.id === activeExperienceId) ?? experienceProfiles[0];
+  const activeGuidedChapter = localizedGuidedChapters.find(chapter => chapter.id === activeGuidedChapterId) ?? localizedGuidedChapters[0];
+  const activeGuidedChapterIndex = Math.max(
+    localizedGuidedChapters.findIndex((chapter) => chapter.id === activeGuidedChapterId),
+    0
+  );
+  const guidedDemoProgress = localizedGuidedChapters.length
+    ? ((activeGuidedChapterIndex + 1) / localizedGuidedChapters.length) * 100
+    : 0;
+  const secondsSinceMetricsUpdate = Math.max(
+    1,
+    Math.round((Date.now() - lastMetricsUpdate.getTime()) / 1000)
+  );
+  const resolvedLocale = i18n.language?.startsWith("en") ? "en-US" : "ar-SA";
+  const liveMetricsSummary = liveMetrics
+    .map((metric) => {
+      const metricCopy = t(`enhancedHome.liveMetrics.cards.${metric.id}`, {
+        returnObjects: true,
+        defaultValue: {},
+      }) as Partial<LiveMetricCopy>;
+      const label = metricCopy.label ?? metric.id;
+      return `${label}: ${formatNumber(metric.value, metric.decimals ?? 0, resolvedLocale)}${metric.unit ?? ""}`;
+    })
+    .join(" • ");
 
   return (
     <main
@@ -925,6 +1117,249 @@ export default function EnhancedHome() {
               </div>
             </FadeIn>
           </div>
+        </div>
+      </section>
+
+      <section
+        className="border-y border-slate-100/80 bg-slate-50/70 py-16 dark:border-slate-800 dark:bg-slate-900/40"
+        data-testid="guided-demo-section"
+      >
+        <div className="container mx-auto grid gap-8 px-4 lg:grid-cols-[1.1fr,0.9fr]">
+          <div className="space-y-6">
+            <Badge className="bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-white">
+              {t("enhancedHome.guidedDemo.badge")}
+            </Badge>
+            <div className="space-y-3">
+              <h2 className="text-4xl font-bold text-slate-900 dark:text-white">{t("enhancedHome.guidedDemo.heading")}</h2>
+              <p className="text-lg text-slate-600 dark:text-slate-300">
+                {t("enhancedHome.guidedDemo.description")}
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-900/80">
+              <div className="flex items-center justify-between text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                <span>{t("enhancedHome.guidedDemo.modeLabel")}</span>
+                <span>{activeGuidedChapter.duration}</span>
+              </div>
+              <div className="mt-3 h-2 w-full rounded-full bg-slate-200/80 dark:bg-slate-800" aria-hidden="true">
+                <motion.div
+                  className="h-2 rounded-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600"
+                  initial={false}
+                  animate={{ width: `${guidedDemoProgress}%` }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                />
+              </div>
+
+              <div
+                className="relative mt-6 overflow-hidden rounded-2xl border border-slate-100 bg-slate-900 p-6 text-white shadow-lg dark:border-slate-800"
+                data-testid="guided-demo-stage"
+                data-active-chapter-id={activeGuidedChapter?.id}
+              >
+                <motion.div
+                  key={activeGuidedChapter.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35 }}
+                  className="space-y-3"
+                >
+                  <p className="text-xs uppercase tracking-[0.3em] text-white/60">{t("enhancedHome.guidedDemo.currentScene")}</p>
+                  <h3 className="text-2xl font-bold">{activeGuidedChapter.title}</h3>
+                  <p className="text-sm text-white/80">{activeGuidedChapter.description}</p>
+                </motion.div>
+
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {activeGuidedChapter.highlights.map((highlight) => (
+                    <div key={`${activeGuidedChapter.id}-${highlight.label}`} className="rounded-2xl bg-white/10 p-3">
+                      <p className="text-xs text-white/70">{highlight.label}</p>
+                      <p className="text-2xl font-semibold text-white">{highlight.value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {activeGuidedChapter.focusPoints.map((point) => (
+                    <span key={`${activeGuidedChapter.id}-${point}`} className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/80">
+                      {point}
+                    </span>
+                  ))}
+                </div>
+
+                <motion.div
+                  aria-hidden="true"
+                  animate={{ opacity: [0.4, 0.8, 0.4] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="pointer-events-none absolute inset-0 border border-white/5"
+                />
+              </div>
+
+              <div className="flex flex-wrap gap-3 pt-6">
+                <Button
+                  type="button"
+                  size="lg"
+                  onClick={() => setIsGuidedDemoPlaying((prev) => !prev)}
+                  className="flex-1 min-w-[180px] bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+                  data-testid="guided-demo-toggle"
+                >
+                  {isGuidedDemoPlaying ? (
+                    <>
+                      {t("enhancedHome.guidedDemo.pause")}
+                      <PauseCircle className="mr-2 h-5 w-5" />
+                    </>
+                  ) : (
+                    <>
+                      {t("enhancedHome.guidedDemo.play")}
+                      <Play className="mr-2 h-5 w-5" />
+                    </>
+                  )}
+                </Button>
+                <Button size="lg" variant="outline" asChild className="flex-1 min-w-[180px]">
+                  <Link href="/guided-tour">{t("enhancedHome.guidedDemo.fullTour")}</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900/90">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  {t("enhancedHome.guidedDemo.chaptersBadge")}
+                </p>
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+                  {t("enhancedHome.guidedDemo.chaptersHeading")}
+                </h3>
+              </div>
+              <Badge className={cn("text-xs", isGuidedDemoPlaying ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600") }>
+                {isGuidedDemoPlaying
+                  ? t("enhancedHome.guidedDemo.autoBadge.playing")
+                  : t("enhancedHome.guidedDemo.autoBadge.manual")}
+              </Badge>
+            </div>
+
+            <div className="space-y-3" aria-label={t("enhancedHome.guidedDemo.chaptersAriaLabel")}>
+              {localizedGuidedChapters.map((chapter, index) => {
+                const isActiveChapter = chapter.id === activeGuidedChapterId;
+                return (
+                  <button
+                    key={chapter.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveGuidedChapterId(chapter.id);
+                      setIsGuidedDemoPlaying(false);
+                    }}
+                    className={cn(
+                      "w-full rounded-2xl border px-4 py-4 text-right transition-all",
+                      isActiveChapter
+                        ? "border-blue-500 bg-blue-50 shadow-lg"
+                        : "border-slate-200 bg-white hover:border-blue-200"
+                    )}
+                    data-testid={`guided-demo-chapter-${chapter.id}`}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <span className={cn(
+                          "flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold",
+                          isActiveChapter ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"
+                        )}
+                        >
+                          {index + 1}
+                        </span>
+                        <div>
+                          <p className="text-base font-semibold text-slate-900">{chapter.title}</p>
+                          <p className="text-xs text-slate-500">{chapter.description}</p>
+                        </div>
+                      </div>
+                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{chapter.duration}</span>
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {chapter.focusPoints.map((point) => (
+                        <span key={`${chapter.id}-${point}-pill`} className="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-semibold text-slate-600">
+                          {point}
+                        </span>
+                      ))}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            <output aria-live="polite" className="sr-only">
+              {t("enhancedHome.guidedDemo.screenReaderSummary", { title: activeGuidedChapter?.title ?? "" })}
+            </output>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-slate-950 py-16 text-white" data-testid="live-metrics-section">
+        <div className="container mx-auto space-y-8 px-4">
+          <div className="flex flex-wrap items-center justify-between gap-6">
+            <div className="space-y-3">
+              <Badge className="bg-white/10 text-white">{t("enhancedHome.liveMetrics.badge")}</Badge>
+              <h2 className="text-4xl font-bold">{t("enhancedHome.liveMetrics.heading")}</h2>
+              <p className="max-w-2xl text-base text-white/80">
+                {t("enhancedHome.liveMetrics.description")}
+              </p>
+            </div>
+            <div className="rounded-3xl border border-white/15 bg-white/5 px-6 py-4 text-sm text-white/80">
+              <p className="font-semibold text-white">
+                {t("enhancedHome.liveMetrics.lastUpdated", { seconds: secondsSinceMetricsUpdate })}
+              </p>
+              <p className="text-xs text-white/70">{t("enhancedHome.liveMetrics.refreshHint")}</p>
+            </div>
+          </div>
+
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            {liveMetrics.map((metric) => {
+              const metricCopy = t(`enhancedHome.liveMetrics.cards.${metric.id}`, {
+                returnObjects: true,
+                defaultValue: {},
+              }) as Partial<LiveMetricCopy>;
+
+              return (
+                <Card
+                  key={metric.id}
+                  className="border-white/10 bg-white/5 text-left text-white shadow-2xl"
+                  data-testid="live-metric-card"
+                >
+                  <CardContent className="space-y-4 p-5">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10">
+                          <metric.icon className="h-5 w-5" aria-hidden="true" />
+                        </span>
+                        <div>
+                          <p className="text-sm font-semibold text-white/80">{metricCopy.label ?? ""}</p>
+                          <p className="text-xs text-white/60">{metricCopy.description ?? ""}</p>
+                        </div>
+                      </div>
+                      <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold text-emerald-200">
+                        {t("enhancedHome.liveMetrics.status.live")}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-4xl font-black tracking-tight">
+                        {formatNumber(metric.value, metric.decimals ?? 0, resolvedLocale)}
+                      </p>
+                      {metric.unit && (
+                        <span className="ml-2 text-lg font-semibold text-white/70">{metric.unit}</span>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-white/70">
+                      <span>{metricCopy.trend ?? ""}</span>
+                      <span className="inline-flex items-center gap-1 text-emerald-200">
+                        <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" aria-hidden="true" />{" "}
+                        {t("enhancedHome.liveMetrics.status.updated")}
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          <output aria-live="polite" className="sr-only">
+            {t("enhancedHome.liveMetrics.screenReaderSummary", { summary: liveMetricsSummary })}
+          </output>
         </div>
       </section>
 
@@ -1602,11 +2037,15 @@ export default function EnhancedHome() {
 
       {/* FAQ Section */}
       <AnimatedSection className="container mx-auto px-4 py-20">
-        <FAQSection />
+        <Suspense fallback={<div className="py-12 text-center text-sm text-muted-foreground">يتم تحميل قسم الأسئلة الشائعة...</div>}>
+          <LazyFAQSection />
+        </Suspense>
       </AnimatedSection>
 
       {/* Footer */}
-      <Footer />
+      <Suspense fallback={<div className="py-8 text-center text-sm text-muted-foreground">...يتم تحميل التذييل</div>}>
+        <LazyFooter />
+      </Suspense>
     </main>
   );
 }

@@ -15,6 +15,7 @@ import { getAuditStatsForUser, listAudit, listAuditForUser, recordAudit } from "
 import { notificationsRouter, publishNotification } from "./notificationsRouter";
 import { reportsRouter } from "./reportsRouter";
 import { dashboardRouter } from "./dashboardRouter";
+import { cache, CACHE_KEYS, CACHE_TTL } from "./_core/cache";
 import { sendEmail, sendPasswordResetEmail, sendEmailDetailed } from "./_core/email";
 import { validatePasswordStrength, hashPassword } from "./_core/password";
 import crypto from "node:crypto";
@@ -1457,12 +1458,31 @@ ${companyName ? `اسم الشركة: ${companyName}\n` : ""}
   profile: router({
     // Get current user profile
     getProfile: protectedProcedure.query(async ({ ctx }) => {
-      if (!ctx.user.openId) throw new TRPCError({ code: "UNAUTHORIZED" });
-      const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!ctx.user.openId || !ctx.user.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
       }
-      return { user };
+
+      const cacheKey = CACHE_KEYS.USER_PROFILE(ctx.user.id);
+
+      const loadProfile = async () => {
+        const record = await db.getUserByOpenId(ctx.user.openId!);
+        if (!record) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        }
+        return record;
+      };
+
+      try {
+        const user = await cache.getOrSet(cacheKey, loadProfile, CACHE_TTL.FREQUENT);
+        return { user };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
+        const fallback = await loadProfile();
+        return { user: fallback };
+      }
     }),
 
     // Update profile

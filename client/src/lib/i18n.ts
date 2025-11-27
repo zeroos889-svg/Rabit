@@ -190,6 +190,99 @@ const resources = {
       "faq.category.usage": "الاستخدام",
       "faq.category.security": "الأمان",
 
+      enhancedHome: {
+        guidedDemo: {
+          badge: "جولة تفاعلية مصغرة",
+          heading: "شاهد رابط يعمل في أقل من 90 ثانية",
+          description: "هذه الجولة المصغّرة تعرض كيف ينتقل فريقك من لوحة القيادة التنفيذية إلى رحلة الموظف والامتثال بدون مغادرة الصفحة.",
+          modeLabel: "وضع العرض",
+          currentScene: "المشهد الحالي",
+          play: "شغّل الجولة الآن",
+          pause: "أوقف العرض مؤقتاً",
+          fullTour: "شاهد الجولة الكاملة",
+          chaptersBadge: "مقاطع الجولة",
+          chaptersHeading: "اختر المشهد الذي يهمك",
+          autoBadge: {
+            playing: "تشغيل تلقائي",
+            manual: "وضع يدوي",
+          },
+          chaptersAriaLabel: "فصول الجولة التفاعلية",
+          screenReaderSummary: "الجولة المصغرة – {{title}}",
+          chapters: {
+            overview: {
+              title: "نظرة عامة فورية",
+              description: "استعرض لوحة القيادة التنفيذية مع التنبيهات والبطاقات الحرجة في وقت واحد.",
+              highlights: [
+                { label: "قرارات سريعة", value: "-60% زمن" },
+                { label: "تنبيهات نشطة", value: "12" },
+              ],
+              focusPoints: ["لوحة صحة التشغيل", "مقاييس الالتزام اللحظية"],
+            },
+            "automation-cards": {
+              title: "بطاقات الأتمتة",
+              description: "شاهد كيف تنتقل الطلبات بين المراجعات مع مؤشرات SLA الملوّنة.",
+              highlights: [
+                { label: "طلبات مغلقة", value: "18" },
+                { label: "SLA محققة", value: "98%" },
+              ],
+              focusPoints: ["تتبّع حالة الطلب", "حالة SLA الواضحة"],
+            },
+            "employee-journey": {
+              title: "رحلة الموظف",
+              description: "واجهة الموظف بالعربية تعرض الرواتب والإجازات وتحديثات المستندات.",
+              highlights: [
+                { label: "رضا الموظف", value: "4.9/5" },
+                { label: "طلبات ذاتية", value: "90%" },
+              ],
+              focusPoints: ["إشعارات متعددة القنوات", "تجربة عربية بالكامل"],
+            },
+            compliance: {
+              title: "الرصد والامتثال",
+              description: "تتبّع ملفات PDF، التوقيعات، وسجلات التدقيق مع تنبيه فوري عند المخاطر.",
+              highlights: [
+                { label: "تقارير جاهزة", value: "7" },
+                { label: "مخاطر حرجة", value: "0" },
+              ],
+              focusPoints: ["سجل تدقيق تلقائي", "تحميل الوثائق بنقرة"],
+            },
+          },
+        },
+        liveMetrics: {
+          badge: "مؤشرات CX اللحظية",
+          heading: "نقيس تجربة عملائك كل دقيقة",
+          description: "يتم جمع هذه المؤشرات من بيانات الدعم، الأتمتة، وسجلات الموظفين لتعرف مباشرة ما إذا كانت الرحلات تعمل كما هو مخطط.",
+          lastUpdated: "آخر تحديث قبل {{seconds}} ثانية",
+          refreshHint: "يتجدد تلقائياً بناءً على إيقاع البيانات اللحظي",
+          status: {
+            live: "مباشر الآن",
+            updated: "محدث",
+          },
+          screenReaderSummary: "ملخص المؤشرات الحية: {{summary}}",
+          cards: {
+            "live-consultations": {
+              label: "جلسات استشارة مباشرة الآن",
+              description: "خبراء الدعم القانوني المتصلون والمنشغلون حالياً.",
+              trend: "+5 خلال الساعة الماضية",
+            },
+            "journey-tracking": {
+              label: "موظفون يتابعون رحلتهم",
+              description: "عدد الموظفين الذين يتابعون حالة الطلبات في الوقت الفعلي.",
+              trend: "+320 اليوم",
+            },
+            "automation-touches": {
+              label: "طلبات مؤتمتة اليوم",
+              description: "طلبات أغلقت بالكامل عبر مسارات الأتمتة.",
+              trend: "+48 آخر 15 دقيقة",
+            },
+            "sla-success": {
+              label: "نسبة الالتزام بالـSLA",
+              description: "متوسط التزام الدعم بزمن الاستجابة المتفق عليه.",
+              trend: "إشعار مبكر عند 96%",
+            },
+          },
+        },
+      },
+
   // Contact page
   "contact.hero.badge": "رابِط معك على مدار الأسبوع",
   "contact.hero.title": "كل قنوات التواصل في مكان واحد",
@@ -675,6 +768,99 @@ const resources = {
       "faq.category.usage": "Usage",
       "faq.category.security": "Security",
 
+      enhancedHome: {
+        guidedDemo: {
+          badge: "Interactive mini tour",
+          heading: "See Rabit working in under 90 seconds",
+          description: "This compact tour shows how your team moves from the executive cockpit to the employee journey and compliance views without leaving the page.",
+          modeLabel: "Playback mode",
+          currentScene: "Current scene",
+          play: "Play the tour",
+          pause: "Pause autoplay",
+          fullTour: "Watch the full walkthrough",
+          chaptersBadge: "Tour chapters",
+          chaptersHeading: "Jump to any scene",
+          autoBadge: {
+            playing: "Autoplay on",
+            manual: "Manual mode",
+          },
+          chaptersAriaLabel: "Interactive tour chapters",
+          screenReaderSummary: "Mini tour – {{title}}",
+          chapters: {
+            overview: {
+              title: "Instant overview",
+              description: "Scan the executive dashboard with critical alerts and tiles at once.",
+              highlights: [
+                { label: "Faster decisions", value: "-60% time" },
+                { label: "Active alerts", value: "12" },
+              ],
+              focusPoints: ["Operational health board", "Live compliance KPIs"],
+            },
+            "automation-cards": {
+              title: "Automation cards",
+              description: "Watch requests move across reviewers with SLA-colored indicators.",
+              highlights: [
+                { label: "Closed requests", value: "18" },
+                { label: "SLA hit rate", value: "98%" },
+              ],
+              focusPoints: ["Request tracking", "Clear SLA status"],
+            },
+            "employee-journey": {
+              title: "Employee journey",
+              description: "Arabic employee view that surfaces payroll, leave, and document updates.",
+              highlights: [
+                { label: "Employee satisfaction", value: "4.9/5" },
+                { label: "Self-serve", value: "90%" },
+              ],
+              focusPoints: ["Multi-channel notifications", "Fully localized experience"],
+            },
+            compliance: {
+              title: "Monitoring & compliance",
+              description: "Track PDFs, signatures, and audit logs with instant risk alerts.",
+              highlights: [
+                { label: "Ready reports", value: "7" },
+                { label: "Critical risks", value: "0" },
+              ],
+              focusPoints: ["Automatic audit trail", "One-click document upload"],
+            },
+          },
+        },
+        liveMetrics: {
+          badge: "Live CX metrics",
+          heading: "We measure your customer experience every minute",
+          description: "Signals stream from support, automation, and employee logs so you instantly know if journeys stay on track.",
+          lastUpdated: "Last updated {{seconds}}s ago",
+          refreshHint: "Refreshes automatically with your live data cadence",
+          status: {
+            live: "Live now",
+            updated: "Updated",
+          },
+          screenReaderSummary: "Live metrics summary: {{summary}}",
+          cards: {
+            "live-consultations": {
+              label: "Live consultations",
+              description: "Customer success experts currently connected.",
+              trend: "+5 in the past hour",
+            },
+            "journey-tracking": {
+              label: "Employees tracking journeys",
+              description: "Employees following their case status in real time.",
+              trend: "+320 today",
+            },
+            "automation-touches": {
+              label: "Automation-led requests",
+              description: "Requests closed fully through automation paths.",
+              trend: "+48 last 15 minutes",
+            },
+            "sla-success": {
+              label: "SLA adherence",
+              description: "Average compliance with the agreed response time.",
+              trend: "Early alert at 96%",
+            },
+          },
+        },
+      },
+
   // Contact page
   "contact.hero.badge": "Rabit is with you all week",
   "contact.hero.title": "Talk to the Rabit team",
@@ -997,4 +1183,6 @@ i18n
     },
   });
 
-export default i18n;
+const configuredI18n = i18n;
+
+export default configuredI18n;
