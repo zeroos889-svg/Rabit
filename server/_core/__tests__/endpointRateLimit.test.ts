@@ -99,8 +99,8 @@ describe("Endpoint Rate Limiting", () => {
   });
 
   describe("Rate Limiter Behavior", () => {
-    it("should call next() on first request within limit", () => {
-      paymentRateLimiter(
+    it("should call next() on first request within limit", async () => {
+      await paymentRateLimiter(
         mockReq as Request,
         mockRes as Response,
         mockNext
@@ -108,8 +108,8 @@ describe("Endpoint Rate Limiting", () => {
       expect(mockNext).toHaveBeenCalled();
     });
 
-    it("should set rate limit headers", () => {
-      paymentRateLimiter(
+    it("should set rate limit headers", async () => {
+      await paymentRateLimiter(
         mockReq as Request,
         mockRes as Response,
         mockNext
@@ -117,9 +117,9 @@ describe("Endpoint Rate Limiting", () => {
       expect(mockRes.setHeader).toHaveBeenCalled();
     });
 
-    it("should skip rate limiting for health check paths", () => {
+    it("should skip rate limiting for health check paths", async () => {
       mockReq = { ...mockReq, path: "/health" };
-      paymentRateLimiter(
+      await paymentRateLimiter(
         mockReq as Request,
         mockRes as Response,
         mockNext
@@ -127,11 +127,11 @@ describe("Endpoint Rate Limiting", () => {
       expect(mockNext).toHaveBeenCalled();
     });
 
-    it("should skip rate limiting for development admin users when configured", () => {
+    it("should skip rate limiting for development admin users when configured", async () => {
       process.env.NODE_ENV = "development";
       (mockReq as any).user = { id: "1", role: "admin" };
 
-      paymentRateLimiter(
+      await paymentRateLimiter(
         mockReq as Request,
         mockRes as Response,
         mockNext
@@ -141,10 +141,10 @@ describe("Endpoint Rate Limiting", () => {
   });
 
   describe("Key Generation", () => {
-    it("should use user ID for authenticated requests", () => {
+    it("should use user ID for authenticated requests", async () => {
       (mockReq as any).user = { id: "user123" };
       
-      paymentRateLimiter(
+      await paymentRateLimiter(
         mockReq as Request,
         mockRes as Response,
         mockNext
@@ -154,10 +154,10 @@ describe("Endpoint Rate Limiting", () => {
       expect(mockNext).toHaveBeenCalled();
     });
 
-    it("should use IP address for unauthenticated requests", () => {
+    it("should use IP address for unauthenticated requests", async () => {
       mockReq = { ...mockReq, ip: "192.168.1.1" };
       
-      paymentRateLimiter(
+      await paymentRateLimiter(
         mockReq as Request,
         mockRes as Response,
         mockNext

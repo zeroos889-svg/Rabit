@@ -1,4 +1,6 @@
 import { trpc } from "@/lib/trpc";
+import { installCsrfFetchInterceptor, withCsrfHeader } from "@/lib/csrf";
+import { errorLogger } from "@/lib/errorLogger";
 import { UNAUTHED_ERR_MSG } from "@shared/const";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink, TRPCClientError } from "@trpc/client";
@@ -11,13 +13,20 @@ import "./index.css";
 import "./lib/i18n";
 
 const LOCALE_STORAGE_KEY = "rabithr:locale";
+type FetchInit = NonNullable<Parameters<typeof fetch>[1]>;
+
+installCsrfFetchInterceptor();
 
 // Register Service Worker for PWA support
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
-      .register("/sw.js")
-      .catch(err => console.warn("SW registration failed", err));
+          .register("/sw.js")
+          .catch(err =>
+            errorLogger.warn("Service worker registration failed", {
+              error: err instanceof Error ? err.message : String(err),
+            })
+          );
   });
 }
 
@@ -34,10 +43,10 @@ if (import.meta.env.VITE_SENTRY_DSN) {
       }),
     ],
     // Performance Monitoring
-    tracesSampleRate: import.meta.env.MODE === "production" ? 0.1 : 1.0,
+    tracesSampleRate: import.meta.env.MODE === "production" ? 0.1 : 1,
     // Session Replay
     replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
+    replaysOnErrorSampleRate: 1,
     // Additional options
     beforeSend(event) {
       // Don't send errors in development unless explicitly enabled
@@ -72,26 +81,40 @@ if (
     script.dataset.websiteId = import.meta.env.VITE_ANALYTICS_WEBSITE_ID;
     document.head.appendChild(script);
   } catch (error) {
-    console.warn("Failed to initialize analytics:", error);
+    errorLogger.warn("Failed to initialize analytics", {
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 }
 
 const queryClient = new QueryClient();
 
+const formatErrorDetail = (error: unknown): string => {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "string") return error;
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return "Unknown error";
+  }
+};
+
 const redirectToLoginIfUnauthorized = (error: unknown) => {
   if (!(error instanceof TRPCClientError)) return;
-  if (typeof window === "undefined") return;
+  if (globalThis.window === undefined) return;
 
   const isUnauthorized = error.message === UNAUTHED_ERR_MSG;
 
   if (!isUnauthorized) return;
 
   try {
-    window.location.href = getLoginUrl();
+    globalThis.location.href = getLoginUrl();
   } catch (err) {
-    console.error("Failed to redirect to login:", err);
+    errorLogger.error("Failed to redirect to login", {
+      detail: formatErrorDetail(err),
+    });
     // Fallback to login page
-    window.location.href = "/login";
+    globalThis.location.href = "/login";
   }
 };
 
@@ -99,7 +122,9 @@ queryClient.getQueryCache().subscribe(event => {
   if (event.type === "updated" && event.action.type === "error") {
     const error = event.query.state.error;
     redirectToLoginIfUnauthorized(error);
-    console.error("[API Query Error]", error);
+    errorLogger.error("API query error", {
+      detail: formatErrorDetail(error),
+    });
   }
 });
 
@@ -107,7 +132,9 @@ queryClient.getMutationCache().subscribe(event => {
   if (event.type === "updated" && event.action.type === "error") {
     const error = event.mutation.state.error;
     redirectToLoginIfUnauthorized(error);
-    console.error("[API Mutation Error]", error);
+    errorLogger.error("API mutation error", {
+      detail: formatErrorDetail(error),
+    });
   }
 });
 
@@ -118,17 +145,19 @@ const trpcClient = trpc.createClient({
       transformer: superjson,
       headers() {
         const token = localStorage.getItem("authToken");
-        return token
+        const baseHeaders = token
           ? {
               Authorization: `Bearer ${token}`,
             }
           : {};
+        return withCsrfHeader(baseHeaders);
       },
-      fetch(input, init) {
-        return globalThis.fetch(input, {
-          ...(init ?? {}),
-          credentials: "include",
-        });
+        fetch(input, init) {
+          const finalInit: FetchInit =
+            init === undefined
+              ? { credentials: "include" }
+              : { ...init, credentials: "include" };
+        return globalThis.fetch(input, finalInit);
       },
     }),
   ],

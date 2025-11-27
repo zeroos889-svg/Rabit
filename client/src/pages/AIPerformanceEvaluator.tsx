@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Loader2, Brain, TrendingUp, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { withCsrfHeader } from "@/lib/csrf";
 
 const evaluationSchema = z.object({
   employeeId: z.number(),
@@ -46,9 +47,18 @@ const evaluationSchema = z.object({
 
 type EvaluationForm = z.infer<typeof evaluationSchema>;
 
+interface EvaluationResult {
+  overallScore: number;
+  rating: string;
+  strengths?: string[];
+  weaknesses?: string[];
+  recommendations?: string[];
+  salaryRecommendation?: string;
+}
+
 export default function AIPerformanceEvaluator() {
   const [isLoading, setIsLoading] = useState(false);
-  const [evaluation, setEvaluation] = useState<any>(null);
+  const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<EvaluationForm>({
@@ -79,9 +89,9 @@ export default function AIPerformanceEvaluator() {
       // Call the AI evaluation endpoint
       const response = await fetch("/api/ai/evaluate-performance", {
         method: "POST",
-        headers: {
+        headers: withCsrfHeader({
           "Content-Type": "application/json",
-        },
+        }),
         body: JSON.stringify({
           ...data,
           metrics: {
@@ -104,7 +114,7 @@ export default function AIPerformanceEvaluator() {
         throw new Error("فشل في تقييم الأداء");
       }
 
-      const result = await response.json();
+      const result = (await response.json()) as EvaluationResult;
       setEvaluation(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : "حدث خطأ غير متوقع");

@@ -3,7 +3,7 @@
  * Provides granular rate limiting for different API endpoints
  */
 
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import type { Request, Response } from "express";
 import { logger } from "./logger";
 import { getRequestId } from "./requestTracking";
@@ -116,6 +116,15 @@ function skipRateLimit(req: Request): boolean {
   return false;
 }
 
+const buildRateLimitKey = (req: Request, scope?: string) => {
+  const userId = (req as any).user?.id;
+  if (userId) {
+    return scope ? `${scope}:user:${userId}` : `user:${userId}`;
+  }
+  const ipKey = ipKeyGenerator(req.ip ?? "");
+  return scope ? `${scope}:ip:${ipKey}` : `ip:${ipKey}`;
+};
+
 /**
  * Payment rate limiter
  */
@@ -127,11 +136,7 @@ export const paymentRateLimiter = rateLimit({
   legacyHeaders: false,
   skip: skipRateLimit,
   handler: rateLimitHandler,
-  keyGenerator: (req) => {
-    // Rate limit by user ID if authenticated, otherwise by IP
-    const userId = (req as any).user?.id;
-    return userId ? `user:${userId}` : `ip:${req.ip}`;
-  },
+  keyGenerator: (req) => buildRateLimitKey(req, "payment"),
 });
 
 /**
@@ -145,10 +150,7 @@ export const notificationRateLimiter = rateLimit({
   legacyHeaders: false,
   skip: skipRateLimit,
   handler: rateLimitHandler,
-  keyGenerator: (req) => {
-    const userId = (req as any).user?.id;
-    return userId ? `user:${userId}` : `ip:${req.ip}`;
-  },
+  keyGenerator: (req) => buildRateLimitKey(req, "notification"),
 });
 
 /**
@@ -162,10 +164,7 @@ export const uploadRateLimiter = rateLimit({
   legacyHeaders: false,
   skip: skipRateLimit,
   handler: rateLimitHandler,
-  keyGenerator: (req) => {
-    const userId = (req as any).user?.id;
-    return userId ? `user:${userId}` : `ip:${req.ip}`;
-  },
+  keyGenerator: (req) => buildRateLimitKey(req, "upload"),
 });
 
 /**
@@ -178,10 +177,7 @@ export const webhookRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: rateLimitHandler,
-  keyGenerator: (req) => {
-    // Webhooks typically come from external services, rate limit by IP
-    return `webhook:${req.ip}`;
-  },
+  keyGenerator: (req) => buildRateLimitKey(req, "webhook"),
 });
 
 /**
@@ -195,10 +191,7 @@ export const reportRateLimiter = rateLimit({
   legacyHeaders: false,
   skip: skipRateLimit,
   handler: rateLimitHandler,
-  keyGenerator: (req) => {
-    const userId = (req as any).user?.id;
-    return userId ? `report:user:${userId}` : `report:ip:${req.ip}`;
-  },
+  keyGenerator: (req) => buildRateLimitKey(req, "report"),
 });
 
 /**
@@ -212,10 +205,7 @@ export const searchRateLimiter = rateLimit({
   legacyHeaders: false,
   skip: skipRateLimit,
   handler: rateLimitHandler,
-  keyGenerator: (req) => {
-    const userId = (req as any).user?.id;
-    return userId ? `search:user:${userId}` : `search:ip:${req.ip}`;
-  },
+  keyGenerator: (req) => buildRateLimitKey(req, "search"),
 });
 
 /**
@@ -229,10 +219,7 @@ export const exportRateLimiter = rateLimit({
   legacyHeaders: false,
   skip: skipRateLimit,
   handler: rateLimitHandler,
-  keyGenerator: (req) => {
-    const userId = (req as any).user?.id;
-    return userId ? `export:user:${userId}` : `export:ip:${req.ip}`;
-  },
+  keyGenerator: (req) => buildRateLimitKey(req, "export"),
 });
 
 /**
@@ -246,10 +233,7 @@ export const emailRateLimiter = rateLimit({
   legacyHeaders: false,
   skip: skipRateLimit,
   handler: rateLimitHandler,
-  keyGenerator: (req) => {
-    const userId = (req as any).user?.id;
-    return userId ? `email:user:${userId}` : `email:ip:${req.ip}`;
-  },
+  keyGenerator: (req) => buildRateLimitKey(req, "email"),
 });
 
 /**

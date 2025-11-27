@@ -3,6 +3,7 @@
  * Monitors all system components and dependencies
  */
 
+import { sql } from "drizzle-orm";
 import { getDb } from "../db";
 
 export interface HealthCheckResult {
@@ -23,10 +24,34 @@ export interface ComponentHealth {
   status: "up" | "down" | "degraded";
   responseTime?: number;
   message?: string;
-  details?: any;
+  details?: Record<string, unknown>;
 }
 
 const startTime = Date.now();
+
+type ExecutableDb = {
+  execute: (query: unknown) => Promise<unknown>;
+};
+
+type QueryableDb = {
+  query: (query: string) => Promise<unknown>;
+};
+
+const hasExecute = (db: unknown): db is ExecutableDb =>
+  Boolean(db) && typeof (db as ExecutableDb).execute === "function";
+
+const hasQuery = (db: unknown): db is QueryableDb =>
+  Boolean(db) && typeof (db as QueryableDb).query === "function";
+
+const toErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "string") return error;
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return "Unknown error";
+  }
+};
 
 /**
  * Check database health
@@ -47,7 +72,13 @@ async function checkDatabase(): Promise<ComponentHealth> {
     }
 
     // Simple query to test connection
-    await db.execute();
+    if (hasExecute(db)) {
+      await db.execute(sql`SELECT 1`);
+    } else if (hasQuery(db)) {
+      await db.query("SELECT 1");
+    } else {
+      throw new TypeError("Database client does not support health check queries");
+    }
 
     const responseTime = Date.now() - start;
 
@@ -65,11 +96,11 @@ async function checkDatabase(): Promise<ComponentHealth> {
       responseTime,
       message: "Database is healthy",
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       status: "down",
       responseTime: Date.now() - start,
-      message: error.message,
+      message: toErrorMessage(error),
     };
   }
 }
@@ -95,11 +126,11 @@ async function checkRedis(): Promise<ComponentHealth> {
       responseTime,
       message: "Redis is healthy",
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       status: "down",
       responseTime: Date.now() - start,
-      message: error.message || "Redis not available",
+      message: toErrorMessage(error) || "Redis not available",
     };
   }
 }
@@ -109,8 +140,7 @@ async function checkRedis(): Promise<ComponentHealth> {
  */
 async function checkDisk(): Promise<ComponentHealth> {
   try {
-    const os = await import("os");
-    const fs = await import("fs");
+    const os = await import("node:os");
 
     // Get disk usage (simplified)
     const totalMem = os.totalmem();
@@ -130,10 +160,10 @@ async function checkDisk(): Promise<ComponentHealth> {
       message: "Disk space is healthy",
       details: { usedPercent: usedPercent.toFixed(2) },
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       status: "down",
-      message: error.message,
+      message: toErrorMessage(error),
     };
   }
 }
@@ -144,7 +174,6 @@ async function checkDisk(): Promise<ComponentHealth> {
 async function checkMemory(): Promise<ComponentHealth> {
   try {
     const used = process.memoryUsage();
-    const totalMem = require("os").totalmem();
     const heapPercent = (used.heapUsed / used.heapTotal) * 100;
 
     if (heapPercent > 90) {
@@ -168,10 +197,10 @@ async function checkMemory(): Promise<ComponentHealth> {
         rss: `${(used.rss / 1024 / 1024).toFixed(2)} MB`,
       },
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       status: "down",
-      message: error.message,
+      message: toErrorMessage(error),
     };
   }
 }
@@ -181,7 +210,7 @@ async function checkMemory(): Promise<ComponentHealth> {
  */
 async function checkCPU(): Promise<ComponentHealth> {
   try {
-    const os = await import("os");
+    const os = await import("node:os");
     const cpus = os.cpus();
     const loadAvg = os.loadavg();
 
@@ -189,16 +218,16 @@ async function checkCPU(): Promise<ComponentHealth> {
     let totalIdle = 0;
     let totalTick = 0;
 
-    cpus.forEach(cpu => {
+    for (const cpu of cpus) {
       for (const type in cpu.times) {
         totalTick += cpu.times[type as keyof typeof cpu.times];
       }
       totalIdle += cpu.times.idle;
-    });
+    }
 
     const avgIdle = totalIdle / cpus.length;
     const avgTotal = totalTick / cpus.length;
-    const cpuPercent = 100 - ~~((100 * avgIdle) / avgTotal);
+    const cpuPercent = 100 - Math.trunc((100 * avgIdle) / avgTotal);
 
     if (cpuPercent > 80) {
       return {
@@ -221,10 +250,10 @@ async function checkCPU(): Promise<ComponentHealth> {
         loadAvg: loadAvg.map(l => l.toFixed(2)),
       },
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       status: "down",
-      message: error.message,
+      message: toErrorMessage(error),
     };
   }
 }
@@ -242,12 +271,12 @@ export async function performHealthCheck(): Promise<HealthCheckResult> {
   };
 
   // Determine overall status
-  const statuses = Object.values(checks).map(c => c.status);
+  const statuses = new Set(Object.values(checks).map(c => c.status));
   let overallStatus: "healthy" | "degraded" | "unhealthy" = "healthy";
 
-  if (statuses.includes("down")) {
+  if (statuses.has("down")) {
     overallStatus = "unhealthy";
-  } else if (statuses.includes("degraded")) {
+  } else if (statuses.has("degraded")) {
     overallStatus = "degraded";
   }
 
@@ -267,7 +296,13 @@ export async function simpleHealthCheck(): Promise<boolean> {
   try {
     const db = await getDb();
     if (!db) return false;
-    await db.execute();
+    if (typeof db.execute === "function") {
+      await db.execute(sql`SELECT 1`);
+    } else if (typeof (db as any).query === "function") {
+      await (db as any).query("SELECT 1");
+    } else {
+      throw new TypeError("Database client does not support health check queries");
+    }
     return true;
   } catch {
     return false;

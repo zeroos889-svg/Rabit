@@ -23,11 +23,15 @@
 
 import { Server as HTTPServer } from "node:http";
 import { Server as SocketIOServer, Socket } from "socket.io";
+import { COOKIE_NAME } from "@shared/const";
 import { logger } from "./logger";
 import {
   setActiveWebSocketConnections,
   trackWebSocketMessage,
 } from "./metrics";
+import { verifySessionToken } from "./jwt";
+import { verifyToken as verifyLegacyToken } from "../utils/jwt";
+import * as db from "../db";
 
 // ============================================================================
 // Types and Interfaces / الأنواع والواجهات
@@ -37,7 +41,6 @@ interface AuthenticatedSocket extends Socket {
   userId?: number;
   userRole?: string;
   userName?: string;
-  companyId?: number;
 }
 
 interface UserPresence {
@@ -59,7 +62,7 @@ interface NotificationPayload {
   type: string;
   title: string;
   message: string;
-  data?: any;
+  data?: Record<string, unknown>;
   timestamp: Date;
 }
 
@@ -67,7 +70,7 @@ interface LiveUpdatePayload {
   type: string;
   entity: string;
   action: "create" | "update" | "delete";
-  data: any;
+  data: Record<string, unknown>;
   timestamp: Date;
 }
 
@@ -187,34 +190,61 @@ function setupEventHandlers(): void {
 }
 
 /**
+ * Extract cookie value from handshake header without extra deps
+ */
+function getCookieValue(header: string | string[] | undefined, key: string): string | null {
+  if (!header) return null;
+  const raw = Array.isArray(header) ? header.join("; ") : header;
+
+  for (const chunk of raw.split(";")) {
+    const part = chunk.trim();
+    if (!part) continue;
+    const separatorIndex = part.indexOf("=");
+    if (separatorIndex === -1) continue;
+
+    const cookieKey = part.substring(0, separatorIndex).trim();
+    if (cookieKey !== key) continue;
+
+    return part.substring(separatorIndex + 1);
+  }
+
+  return null;
+}
+
+/**
  * Authenticate socket connection
  * مصادقة اتصال Socket
  */
 async function authenticateSocket(socket: AuthenticatedSocket): Promise<boolean> {
   try {
-    // Get authentication token from handshake
-    const token = socket.handshake.auth.token || socket.handshake.headers.authorization;
+    const bearerHeader = socket.handshake.headers.authorization;
+    const bearer = bearerHeader?.startsWith("Bearer ")
+      ? bearerHeader.substring(7)
+      : undefined;
 
-    if (!token) {
-      logger.debug("🔌 WebSocket: No token provided");
-      return false;
+    const tokensToTry = ([
+      typeof socket.handshake.auth?.token === "string"
+        ? socket.handshake.auth.token
+        : undefined,
+      bearer,
+      getCookieValue(socket.handshake.headers.cookie, COOKIE_NAME),
+    ].filter(Boolean) as string[]);
+
+    for (const token of tokensToTry) {
+      const user = await resolveUserFromToken(token);
+      if (user) {
+        socket.userId = user.id;
+        socket.userRole = user.role ?? undefined;
+        socket.userName = user.name ?? undefined;
+        return true;
+      }
     }
 
-    // NOTE: Verify JWT token and extract user info in production
-    // For now, we'll use a placeholder implementation
-    const user = await verifyToken(token);
-
-    if (!user) {
-      return false;
-    }
-
-    // Attach user info to socket
-    socket.userId = user.id;
-    socket.userRole = user.role;
-    socket.userName = user.name;
-    socket.companyId = user.companyId;
-
-    return true;
+    logger.warn("🔌 WebSocket: Authentication failed", {
+      socketId: socket.id,
+      providedTokens: tokensToTry.length,
+    });
+    return false;
   } catch (error) {
     logger.error("🔌 WebSocket: Authentication error", {
       error: error instanceof Error ? error.message : String(error),
@@ -242,7 +272,7 @@ function setupSocketListeners(socket: AuthenticatedSocket): void {
     leaveRoom(socket, roomName);
   });
 
-  socket.on("room:message", (data: { room: string; message: any }) => {
+  socket.on("room:message", (data: { room: string; message: unknown }) => {
     sendRoomMessage(socket, data.room, data.message);
   });
 
@@ -277,11 +307,12 @@ function setupSocketListeners(socket: AuthenticatedSocket): void {
 function trackConnection(socket: AuthenticatedSocket): void {
   if (!socket.userId) return;
 
-  // Add to connected users
-  if (!connectedUsers.has(socket.userId)) {
-    connectedUsers.set(socket.userId, new Set());
+  let sockets = connectedUsers.get(socket.userId);
+  if (!sockets) {
+    sockets = new Set<string>();
+    connectedUsers.set(socket.userId, sockets);
   }
-  connectedUsers.get(socket.userId)!.add(socket.id);
+  sockets.add(socket.id);
 
   // Update presence
   updateUserPresence(socket, "online");
@@ -417,9 +448,15 @@ function joinRoom(socket: AuthenticatedSocket, roomName: string): void {
     createRoom(roomName);
   }
 
+  const room = rooms.get(roomName);
+  if (!room) {
+    logger.error("🔌 WebSocket: Failed to create room", { roomName });
+    return;
+  }
+
   // Join the room
   socket.join(roomName);
-  rooms.get(roomName)!.members.add(socket.id);
+  room.members.add(socket.id);
 
   // Notify room members
   socket.to(roomName).emit("room:member_joined", {
@@ -435,7 +472,7 @@ function joinRoom(socket: AuthenticatedSocket, roomName: string): void {
   });
 
   // Update metrics
-  setActiveWebSocketConnections(rooms.get(roomName)!.members.size, roomName);
+  setActiveWebSocketConnections(room.members.size, roomName);
 }
 
 /**
@@ -472,11 +509,11 @@ function leaveRoom(socket: AuthenticatedSocket, roomName: string): void {
  * Send message to room
  * إرسال رسالة لغرفة
  */
-function sendRoomMessage(socket: AuthenticatedSocket, roomName: string, message: any): void {
+function sendRoomMessage(socket: AuthenticatedSocket, roomName: string, message: unknown): void {
   if (!socket.userId) return;
 
   const room = rooms.get(roomName);
-  if (!room || !room.members.has(socket.id)) {
+  if (!room?.members.has(socket.id)) {
     logger.warn("🔌 WebSocket: User not in room", {
       userId: socket.userId,
       room: roomName,
@@ -533,7 +570,7 @@ export function sendNotificationToUser(userId: number, notification: Notificatio
   }
 
   for (const socketId of userSockets) {
-    io!.to(socketId).emit("notification", notification);
+    io.to(socketId).emit("notification", notification);
   }
 
   trackWebSocketMessage("notification", "direct");
@@ -716,23 +753,18 @@ export async function shutdownWebSocket(): Promise<void> {
 // ============================================================================
 
 /**
- * Verify JWT token (placeholder implementation)
- * التحقق من رمز JWT (تطبيق مؤقت)
+ * Resolve user from any supported token
  */
-async function verifyToken(token: string): Promise<{ id: number; role: string; name: string; companyId?: number } | null> {
+async function resolveUserFromToken(token: string) {
   try {
-    // NOTE: Implement actual JWT verification in production
-    // For now, return mock user for development
-    if (token === "dev-token") {
-      return {
-        id: 1,
-        role: "admin",
-        name: "Test User",
-        companyId: 1,
-      };
+    const sessionPayload = await verifySessionToken(token);
+    const fallbackPayload = sessionPayload ?? verifyLegacyToken(token);
+    if (!fallbackPayload?.userId) {
+      return null;
     }
 
-    return null;
+    const user = await db.getUserById(fallbackPayload.userId);
+    return user ?? null;
   } catch (error) {
     logger.error("🔌 WebSocket: Token verification error", {
       error: error instanceof Error ? error.message : String(error),
@@ -769,7 +801,7 @@ export function disconnectUser(userId: number, reason?: string): void {
   if (!userSockets) return;
 
   for (const socketId of userSockets) {
-    const socket = io!.sockets.sockets.get(socketId);
+    const socket = io.sockets.sockets.get(socketId);
     if (socket) {
       socket.disconnect(true);
       logger.info("🔌 WebSocket: User disconnected", {

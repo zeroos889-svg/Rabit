@@ -40,13 +40,88 @@ import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import analytics from "@/lib/analytics";
 
+type SignupFormData = {
+  fullName: string;
+  email: string;
+  phone: string;
+  company: string;
+  password: string;
+  confirmPassword: string;
+};
+
+type SignupFormErrors = {
+  fullName: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+};
+
+const validateEmail = (email: string) =>
+  /\S+@\S+\.\S+/.test(email.trim().toLowerCase());
+
+const validatePhone = (phone: string) => /^05\d{8}$/.test(phone);
+
+const normalizeSaudiPhone = (value: string) => {
+  let digits = value.replaceAll(/\D/g, "");
+  if (digits.startsWith("966")) {
+    digits = digits.slice(3);
+  }
+  if (!digits.startsWith("0") && digits.startsWith("5")) {
+    digits = `0${digits}`;
+  }
+  return digits.slice(0, 10);
+};
+
+const validatePassword = (password: string) =>
+  password.length >= 8 &&
+  /[A-Za-z]/.test(password) &&
+  /\d/.test(password) &&
+  /[^A-Za-z0-9]/.test(password);
+
+const getPasswordStrength = (password: string) => {
+  const score =
+    (password.length >= 8 ? 1 : 0) +
+    (/[A-Z]/.test(password) ? 1 : 0) +
+    (/[a-z]/.test(password) ? 1 : 0) +
+    (/\d/.test(password) ? 1 : 0) +
+    (/[^A-Za-z0-9]/.test(password) ? 1 : 0);
+
+  if (!password) {
+    return { score: 0, label: "أدخل كلمة مرور قوية" };
+  }
+
+  if (score <= 2) return { score, label: "ضعيفة" };
+  if (score === 3) return { score, label: "متوسطة" };
+  if (score === 4) return { score, label: "جيدة" };
+  return { score, label: "قوية" };
+};
+
+const getValidationErrors = (data: SignupFormData): SignupFormErrors => ({
+  fullName:
+    data.fullName.trim().length < 3
+      ? "الاسم يجب أن يكون 3 أحرف على الأقل"
+      : "",
+  email: validateEmail(data.email) ? "" : "البريد الإلكتروني غير صالح",
+  phone: validatePhone(data.phone)
+    ? ""
+    : "أدخل رقم جوال سعودي يبدأ بـ 05 من 10 أرقام",
+  password: validatePassword(data.password)
+    ? ""
+    : "كلمة المرور يجب أن تكون 8 أحرف وتحتوي على أرقام ورموز",
+  confirmPassword:
+    data.password === data.confirmPassword
+      ? ""
+      : "كلمتا المرور غير متطابقتين",
+});
+
 export default function Signup() {
   const [location, setLocation] = useLocation();
   const [accountType, setAccountType] = useState<
     "company" | "freelancer" | "employee"
   >("company");
   const [isLoading, setIsLoading] = useState(false);
-  const [formErrors, setFormErrors] = useState({
+  const [formErrors, setFormErrors] = useState<SignupFormErrors>({
     fullName: "",
     email: "",
     phone: "",
@@ -71,7 +146,7 @@ export default function Signup() {
     },
     onSettled: () => setIsLoading(false),
   });
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<SignupFormData>({
     fullName: "",
     email: "",
     phone: "",
@@ -117,24 +192,6 @@ export default function Signup() {
     cookies: false,
   });
 
-  const getValidationErrors = (data: typeof formData) => ({
-    fullName:
-      data.fullName.trim().length < 3
-        ? "الاسم يجب أن يكون 3 أحرف على الأقل"
-        : "",
-    email: validateEmail(data.email) ? "" : "البريد الإلكتروني غير صالح",
-    phone: validatePhone(data.phone)
-      ? ""
-      : "أدخل رقم جوال سعودي يبدأ بـ 05 من 10 أرقام",
-    password: validatePassword(data.password)
-      ? ""
-      : "كلمة المرور يجب أن تكون 8 أحرف وتحتوي على أرقام ورموز",
-    confirmPassword:
-      data.password === data.confirmPassword
-        ? ""
-        : "كلمتا المرور غير متطابقتين",
-  });
-
   const canSubmit =
     formData.fullName &&
     formData.email &&
@@ -146,10 +203,13 @@ export default function Signup() {
     agreements.cookies &&
     Object.values(getValidationErrors(formData)).every(error => !error);
 
-  const validateEmail = (email: string) =>
-    /\S+@\S+\.\S+/.test(email.trim().toLowerCase());
+  function validateEmail(email: string) {
+    return /\S+@\S+\.\S+/.test(email.trim().toLowerCase());
+  }
 
-  const validatePhone = (phone: string) => /^05\d{8}$/.test(phone);
+  function validatePhone(phone: string) {
+    return /^05\d{8}$/.test(phone);
+  }
 
   const normalizeSaudiPhone = (value: string) => {
     let digits = value.replace(/\D/g, "");
@@ -162,13 +222,16 @@ export default function Signup() {
     return digits.slice(0, 10);
   };
 
-  const validatePassword = (password: string) =>
-    password.length >= 8 &&
-    /[A-Za-z]/.test(password) &&
-    /\d/.test(password) &&
-    /[^A-Za-z0-9]/.test(password);
+  function validatePassword(password: string) {
+    return (
+      password.length >= 8 &&
+      /[A-Za-z]/.test(password) &&
+      /\d/.test(password) &&
+      /[^A-Za-z0-9]/.test(password)
+    );
+  }
 
-  const getPasswordStrength = (password: string) => {
+  function getPasswordStrength(password: string) {
     const score =
       (password.length >= 8 ? 1 : 0) +
       (/[A-Z]/.test(password) ? 1 : 0) +
@@ -179,12 +242,11 @@ export default function Signup() {
     if (!password) {
       return { score: 0, label: "أدخل كلمة مرور قوية" };
     }
-
     if (score <= 2) return { score, label: "ضعيفة" };
     if (score === 3) return { score, label: "متوسطة" };
     if (score === 4) return { score, label: "جيدة" };
     return { score, label: "قوية" };
-  };
+  }
 
   const validateForm = () => {
     const nextErrors = getValidationErrors(formData);
@@ -308,7 +370,7 @@ export default function Signup() {
     localStorage.setItem("pendingSocialSignup", JSON.stringify(socialData));
 
     // Redirect to OAuth
-    window.location.href = getLoginUrl();
+    globalThis.location.href = getLoginUrl();
   };
 
   return (
