@@ -19,7 +19,10 @@ RUN apk add --no-cache python3 make g++
 # Copy scripts first for postinstall hook
 COPY scripts ./scripts
 COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
-RUN npm ci --legacy-peer-deps --no-audit --no-fund && \
+
+# Fix npm optional dependencies bug for rollup
+RUN rm -f package-lock.json && \
+    npm install --legacy-peer-deps --no-audit --no-fund && \
     node scripts/patch-picomatch.cjs || true
 
 # ===========================================
