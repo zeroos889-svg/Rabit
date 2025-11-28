@@ -3,10 +3,10 @@
  * Distributed rate limiting using Redis for multi-instance support
  */
 
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
 import type { Request, Response } from "express";
-import { redis } from "./redisClient";
+import { getRedisClient } from "./redisClient";
 import { logger } from "./logger";
 import { getRequestId } from "./requestTracking";
 
@@ -14,6 +14,7 @@ import { getRequestId } from "./requestTracking";
  * Check if Redis is available for rate limiting
  */
 export function isRedisAvailable(): boolean {
+  const redis = getRedisClient();
   return redis !== null && redis.isOpen;
 }
 
@@ -126,21 +127,23 @@ function skipRedisRateLimit(req: Request): boolean {
 }
 
 /**
- * Smart key generation: use user ID if authenticated, otherwise IP
+ * Smart key generation: use user ID if authenticated, otherwise IP (with IPv6 support)
  */
 function generateRedisKey(req: Request): string {
   const user = (req as any).user;
   if (user && user.id) {
     return `user:${user.id}`;
   }
-  return `ip:${req.ip}`;
+  // Use ipKeyGenerator helper for proper IPv6 handling
+  return `ip:${ipKeyGenerator(req)}`;
 }
 
 /**
  * Create Redis store configuration
  */
 function createRedisStore(prefix: string) {
-  if (!isRedisAvailable()) {
+  const redis = getRedisClient();
+  if (!redis || !redis.isOpen) {
     logger.warn("Redis not available for rate limiting, using in-memory store", {
       context: "RedisRateLimit",
     });
@@ -151,7 +154,7 @@ function createRedisStore(prefix: string) {
     // @ts-expect-error - Type mismatch between redis versions
     client: redis,
     prefix,
-    sendCommand: (...args: string[]) => redis!.sendCommand(args),
+    sendCommand: (...args: string[]) => redis.sendCommand(args),
   });
 }
 
@@ -351,7 +354,8 @@ export function logRedisRateLimitConfig(): void {
  * Clear all rate limit data from Redis (useful for testing)
  */
 export async function clearRedisRateLimits(): Promise<void> {
-  if (!isRedisAvailable()) {
+  const redis = getRedisClient();
+  if (!redis || !redis.isOpen) {
     logger.warn("Redis not available, cannot clear rate limits", {
       context: "RedisRateLimit",
     });
@@ -362,9 +366,9 @@ export async function clearRedisRateLimits(): Promise<void> {
     const prefixes = Object.values(REDIS_RATE_LIMITS).map((limit) => limit.prefix);
     
     for (const prefix of prefixes) {
-      const keys = await redis!.keys(`${prefix}*`);
+      const keys = await redis.keys(`${prefix}*`);
       if (keys.length > 0) {
-        await redis!.del(keys);
+        await redis.del(keys);
         logger.info(`Cleared ${keys.length} rate limit keys`, {
           context: "RedisRateLimit",
           prefix,

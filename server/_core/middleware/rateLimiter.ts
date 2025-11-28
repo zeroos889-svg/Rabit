@@ -14,7 +14,7 @@
  * @module rateLimiter
  */
 
-import rateLimit, { type Options } from "express-rate-limit";
+import rateLimit, { type Options, ipKeyGenerator } from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
 import { type Request, type Response } from "express";
 import { getRedisInstance } from "../redis";
@@ -89,7 +89,7 @@ const rateLimitHandler = (
  */
 const skipTrustedIps = (req: Request): boolean => {
   const trustedIps = process.env.TRUSTED_IPS?.split(",") || [];
-  const clientIp = req.ip || req.socket.remoteAddress || "";
+  const clientIp = ipKeyGenerator(req);
   
   return trustedIps.includes(clientIp);
 };
@@ -117,7 +117,7 @@ export const generalLimiter = rateLimit({
   skip: skipTrustedIps,
   keyGenerator: (req) => {
     // استخدام IP + User ID (إذا كان متاح)
-    const ip = req.ip || req.socket.remoteAddress || "unknown";
+    const ip = ipKeyGenerator(req);
     const userId = (req as any).user?.id || "anonymous";
     return `${ip}:${userId}`;
   },
@@ -146,7 +146,7 @@ export const loginLimiter = rateLimit({
   skipSuccessfulRequests: true, // لا تحسب المحاولات الناجحة
   keyGenerator: (req) => {
     // استخدام email + IP للدقة
-    const ip = req.ip || req.socket.remoteAddress || "unknown";
+    const ip = ipKeyGenerator(req);
     const email = req.body?.email || "unknown";
     return `${ip}:${email}`;
   },
@@ -174,8 +174,7 @@ export const registerLimiter = rateLimit({
   handler: rateLimitHandler,
   skipSuccessfulRequests: true,
   keyGenerator: (req) => {
-    const ip = req.ip || req.socket.remoteAddress || "unknown";
-    return ip;
+    return ipKeyGenerator(req);
   },
 });
 
@@ -195,7 +194,7 @@ export const passwordResetLimiter = rateLimit({
   store: createRedisStore("password-reset"),
   handler: rateLimitHandler,
   keyGenerator: (req) => {
-    const ip = req.ip || req.socket.remoteAddress || "unknown";
+    const ip = ipKeyGenerator(req);
     const email = req.body?.email || "unknown";
     return `${ip}:${email}`;
   },
@@ -217,7 +216,7 @@ export const uploadLimiter = rateLimit({
   store: createRedisStore("upload"),
   handler: rateLimitHandler,
   keyGenerator: (req) => {
-    const ip = req.ip || req.socket.remoteAddress || "unknown";
+    const ip = ipKeyGenerator(req);
     const userId = (req as any).user?.id || "anonymous";
     return `${ip}:${userId}`;
   },
@@ -260,7 +259,7 @@ export const strictLimiter = rateLimit({
   store: createRedisStore("strict"),
   handler: rateLimitHandler,
   keyGenerator: (req) => {
-    const ip = req.ip || req.socket.remoteAddress || "unknown";
+    const ip = ipKeyGenerator(req);
     const userId = (req as any).user?.id || "anonymous";
     return `${ip}:${userId}`;
   },

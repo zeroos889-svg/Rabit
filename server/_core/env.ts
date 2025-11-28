@@ -85,8 +85,8 @@ export const ENV = {
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
 
-  // Redis Cache
-  redisUrl: process.env.REDIS_URL ?? "redis://localhost:6379",
+  // Redis Cache (optional)
+  redisUrl: process.env.REDIS_URL || null,
 
   // LLM Provider Order (optional)
   llmProviderOrder: process.env.LLM_PROVIDER_ORDER ?? "",

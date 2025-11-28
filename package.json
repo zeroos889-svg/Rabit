@@ -10,7 +10,7 @@
     "dev:server": "tsx server/_core/index.ts",
     "dev:both": "concurrently \"npm run dev\" \"npm run dev:backend\" --names \"VITE,API\" --prefix-colors \"blue,green\"",
     "build": "node scripts/vite-runner.mjs build && npm run build:server",
-    "start": "NODE_ENV=production node dist/index.js",
+    "start": "NODE_ENV=production tsx server/_core/index.ts",
     "build:server": "tsc -p server/tsconfig.json",
     "build:all": "npm run build && npm run build:server",
     "preview": "node scripts/vite-runner.mjs preview",

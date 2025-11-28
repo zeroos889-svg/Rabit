@@ -11,7 +11,7 @@
 
 import { Request, Response, NextFunction } from "express";
 import crypto from "crypto";
-import { redis } from "./redisClient";
+import { getRedisClient } from "./redisClient";
 import { logger } from "./logger";
 
 // Configuration constants
@@ -52,6 +52,7 @@ function isOriginAllowed(origin: string, host: string | string[] | undefined) {
  */
 async function initializeStorage(): Promise<void> {
   try {
+    const redis = getRedisClient();
     if (redis && redis.isOpen) {
       await redis.ping();
       useRedis = true;
@@ -88,6 +89,7 @@ async function storeCsrfToken(
   token: string,
   expiryMs: number
 ): Promise<void> {
+  const redis = getRedisClient();
   if (useRedis && redis && redis.isOpen) {
     try {
       const key = `${REDIS_PREFIX}${sessionId}`;
@@ -109,6 +111,7 @@ async function storeCsrfToken(
  * Get CSRF token from Redis or memory
  */
 async function getCsrfToken(sessionId: string): Promise<string | null> {
+  const redis = getRedisClient();
   if (useRedis && redis && redis.isOpen) {
     try {
       const key = `${REDIS_PREFIX}${sessionId}`;
@@ -138,6 +141,7 @@ async function getCsrfToken(sessionId: string): Promise<string | null> {
  * Delete CSRF token from Redis or memory
  */
 async function deleteCsrfToken(sessionId: string): Promise<void> {
+  const redis = getRedisClient();
   if (useRedis && redis && redis.isOpen) {
     try {
       const key = `${REDIS_PREFIX}${sessionId}`;

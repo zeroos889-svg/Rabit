@@ -1,7 +1,7 @@
 import { createClient } from "redis";
 import { logger } from "./logger";
 
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const REDIS_URL = process.env.REDIS_URL;
 
 let redisInstance: ReturnType<typeof createClient> | null = null;
 
@@ -9,6 +9,11 @@ let redisInstance: ReturnType<typeof createClient> | null = null;
  * Get or create Redis connection
  */
 export async function getRedis() {
+  if (!REDIS_URL) {
+    logger.warn("Redis not configured (REDIS_URL not set)", { context: "Redis" });
+    return null;
+  }
+  
   if (redisInstance?.isOpen) return redisInstance;
 
   try {

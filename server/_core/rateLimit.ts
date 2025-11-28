@@ -1,7 +1,7 @@
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import type { Request } from "express";
 import { logger } from "./logger";
-import { redis } from "./redisClient";
+import { getRedisClient } from "./redisClient";
 
 /**
  * Rate Limiting Middleware with Redis Store Support
@@ -32,6 +32,7 @@ function rateLimitHandler(req: Request, res: any) {
  */
 function isRedisAvailable(): boolean {
   try {
+    const redis = getRedisClient();
     return redis?.isReady ?? false;
   } catch {
     return false;
@@ -110,7 +111,7 @@ export const webhookLimiter = rateLimit({
   // Use a different key generator for webhooks (based on signature or source)
   keyGenerator: (req: Request) => {
     const signature = req.headers["x-webhook-signature"] || req.headers["x-signature"];
-    return signature ? `webhook:${signature}` : `webhook:${req.ip}`;
+    return signature ? `webhook:${signature}` : `webhook:${ipKeyGenerator(req)}`;
   },
 });
 

@@ -127,17 +127,19 @@ class InMemoryRedis {
  */
 export function getRedisClient(): RedisClient {
   if (!redisClient) {
+    const hasRedisUrl = !!ENV.redisUrl && ENV.redisUrl.length > 0;
     const useMock =
-      process.env.NODE_ENV === "test" && !process.env.REDIS_URL;
+      (process.env.NODE_ENV === "test" && !process.env.REDIS_URL) ||
+      !hasRedisUrl;
 
     if (useMock) {
       redisClient = new InMemoryRedis();
-      logger.info("Using in-memory Redis mock for tests", {
+      logger.info("Using in-memory cache (Redis not configured)", {
         context: "Cache",
       });
     } else {
-      // استخدام environment variable أو fallback للتطوير المحلي
-      const redisUrl = ENV.redisUrl || "redis://localhost:6379";
+      // استخدام environment variable
+      const redisUrl = ENV.redisUrl as string;
 
       redisClient = new Redis(redisUrl, {
         maxRetriesPerRequest: 3,
