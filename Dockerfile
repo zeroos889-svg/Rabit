@@ -12,11 +12,14 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 
+# Install build dependencies for native modules
+RUN apk add --no-cache python3 make g++
+
 # Install dependencies only when needed
 # Copy scripts first for postinstall hook
 COPY scripts ./scripts
 COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
-RUN npm ci --legacy-peer-deps --no-audit --no-fund --ignore-scripts && \
+RUN npm ci --legacy-peer-deps --no-audit --no-fund && \
     node scripts/patch-picomatch.cjs || true
 
 # ===========================================
