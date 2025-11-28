@@ -11,7 +11,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   Search,
   BookOpen,
-  FileText,
   Scale,
   Users,
   Calculator,

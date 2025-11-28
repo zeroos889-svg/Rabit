@@ -9,7 +9,6 @@ import {
   Send,
   CheckCircle2,
   Clock,
-  User,
   Mail,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";

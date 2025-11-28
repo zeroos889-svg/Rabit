@@ -3,6 +3,7 @@
  * مكون ترجمة متقدم مع دعم المتغيرات والتنسيق
  */
 
+import type { JSX } from "react";
 import React from "react";
 import { useI18n } from "@/hooks/useI18n";
 

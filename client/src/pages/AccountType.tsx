@@ -17,18 +17,16 @@ import {
   Check,
   ArrowRight,
   Sparkles,
-  Users,
-  FileText,
-  Calculator,
   MessageSquare,
   Shield,
   Zap,
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { type LucideIcon } from "lucide-react";
 
 interface AccountTypeOption {
   type: "company" | "consultant" | "employee";
-  icon: any;
+  icon: LucideIcon;
   title: string;
   titleEn: string;
   description: string;
@@ -45,7 +43,7 @@ interface AccountTypeOption {
 }
 
 export default function AccountType() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [, setLocation] = useLocation();
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const isArabic = i18n.language === "ar";

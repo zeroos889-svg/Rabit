@@ -1,7 +1,6 @@
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -12,7 +11,6 @@ import {
   Building2,
   Users,
   TrendingUp,
-  Clock,
   DollarSign,
   CheckCircle2,
   ArrowRight,
@@ -21,6 +19,7 @@ import {
   Target,
   Zap,
   Award,
+  Clock,
 } from "lucide-react";
 import { useLanguage } from "@/hooks/use-language";
 import { Link } from "wouter";

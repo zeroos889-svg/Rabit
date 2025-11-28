@@ -94,7 +94,7 @@ class Analytics {
 
     // Define gtag function
     analyticsGlobals.gtag = function gtag() {
-      // eslint-disable-next-line prefer-rest-params
+       
       analyticsGlobals.dataLayer?.push(arguments);
     };
 

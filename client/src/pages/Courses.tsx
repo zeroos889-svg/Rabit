@@ -17,14 +17,12 @@ import {
   Users,
   Star,
   Search,
-  Filter,
   Play,
   CheckCircle2,
   Award,
   TrendingUp,
   Briefcase,
   Scale,
-  FileText,
   Target,
 } from "lucide-react";
 import { Footer } from "@/components/Footer";

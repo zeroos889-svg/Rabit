@@ -26,7 +26,6 @@ import {
   Copy,
   Download,
   Edit,
-  Trash2,
   Star,
   Mail,
   FileSignature,

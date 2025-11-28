@@ -41,7 +41,7 @@ export const TRIAL_PROFILES: TrialProfile[] = [
       "اختبر أتمتة الحضور، إدارة العقود، والتقارير التشغيلية باستخدام بيانات تجريبية ثرية.",
     demoEmail: "demo.hr@rabithr.com",
     demoPassword: "Demo@12345",
-    dashboardPath: "/dashboard/company",
+    dashboardPath: "/company/dashboard",
     levelTag: "قياسي",
     highlights: [
       "قوالب عقود، سياسات، وتنبيهات جاهزة للسوق السعودي",

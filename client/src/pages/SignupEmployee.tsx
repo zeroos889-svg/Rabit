@@ -23,7 +23,6 @@ import {
   MapPin,
   Briefcase,
   FileText,
-  Upload,
   Sparkles,
   Chrome,
 } from "lucide-react";

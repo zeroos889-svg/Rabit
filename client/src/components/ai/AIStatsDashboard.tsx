@@ -39,7 +39,6 @@ import {
   Calculator,
   Scale,
   Building2,
-  Percent,
 } from "lucide-react";
 
 // Chart colors
@@ -52,7 +51,7 @@ const COLORS = {
   cyan: "#06b6d4",
 };
 
-const PIE_COLORS = ["#22c55e", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
+const _PIE_COLORS = ["#22c55e", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 // Sample data for GOSI contributions breakdown
 const gosiBreakdownData = [

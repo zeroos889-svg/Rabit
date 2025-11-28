@@ -16,7 +16,7 @@ declare global {
   }
   
   // Allow globalThis dynamic property access for analytics scripts
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const globalThis: typeof window & Record<string, any>;
 }
 

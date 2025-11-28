@@ -28,12 +28,14 @@ if (globalThis.window !== undefined) {
   });
 
   // Mock IntersectionObserver
+  type IntersectionObserverCallbackType = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => void;
+  
   class MockIntersectionObserver implements IntersectionObserver {
     readonly root: Element | Document | null = null;
     readonly rootMargin = '';
     readonly thresholds: ReadonlyArray<number> = [];
 
-    constructor(private readonly callback: IntersectionObserverCallback) {
+    constructor(private readonly callback: IntersectionObserverCallbackType) {
       this.callback = callback;
     }
 
@@ -59,8 +61,10 @@ if (globalThis.window !== undefined) {
   }
 
   // Mock ResizeObserver
+  type ResizeObserverCallbackType = (entries: ResizeObserverEntry[], observer: ResizeObserver) => void;
+  
   class MockResizeObserver implements ResizeObserver {
-    constructor(private readonly callback: ResizeObserverCallback) {
+    constructor(private readonly callback: ResizeObserverCallbackType) {
       this.callback = callback;
     }
 

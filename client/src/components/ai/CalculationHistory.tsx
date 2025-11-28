@@ -209,7 +209,7 @@ export function CalculationHistory() {
   const [filteredRecords, setFilteredRecords] = useState<AnyCalculationRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<CalculationType | 'all'>('all');
-  const [selectedRecord, setSelectedRecord] = useState<AnyCalculationRecord | null>(null);
+  const [_selectedRecord, setSelectedRecord] = useState<AnyCalculationRecord | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [stats, setStats] = useState<HistoryStats | null>(null);
 

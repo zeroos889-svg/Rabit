@@ -4,11 +4,9 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+
 import {
   MessageSquare,
   X,
@@ -21,7 +19,6 @@ import {
   FileText,
   Calculator,
   HelpCircle,
-  ArrowRight,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -46,7 +43,7 @@ interface QuickAction {
 }
 
 export function ChatWidget() {
-  const { t, i18n } = useTranslation();
+  const { t: _t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [conversationId, setConversationId] = useState<number | null>(null);

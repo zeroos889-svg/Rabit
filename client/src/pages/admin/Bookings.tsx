@@ -212,17 +212,17 @@ export default function AdminBookings() {
     setIsViewDialogOpen(true);
   };
 
-  const handleConfirmBooking = (bookingId: string) => {
+  const handleConfirmBooking = (_bookingId: string) => {
     toast.success("تم تأكيد الحجز بنجاح");
   };
 
-  const handleCancelBooking = (bookingId: string) => {
+  const handleCancelBooking = (_bookingId: string) => {
     if (confirm("هل أنت متأكد من إلغاء هذا الحجز؟")) {
       toast.success("تم إلغاء الحجز");
     }
   };
 
-  const handleCompleteBooking = (bookingId: string) => {
+  const handleCompleteBooking = (_bookingId: string) => {
     toast.success("تم تحديد الحجز كمكتمل");
   };
 

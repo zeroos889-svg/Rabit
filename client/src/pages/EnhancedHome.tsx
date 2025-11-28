@@ -44,8 +44,6 @@ import {
   Star,
   Zap,
   Award,
-  TrendingUp,
-  Globe,
   Clock,
   Sparkles,
   Layers,
@@ -787,7 +785,6 @@ const testimonials: Testimonial[] = [
 
 export default function EnhancedHome() {
   const { t, i18n } = useTranslation();
-  const [heroImageError, setHeroImageError] = useState(false);
   const [activeDemoId, setActiveDemoId] = useState(() => demoScenarios[0]?.id ?? "automation");
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [activeExperienceId, setActiveExperienceId] = useState(() => experienceProfiles[0]?.id ?? "hr");
@@ -838,7 +835,7 @@ export default function EnhancedHome() {
         focusPoints: Array.isArray(content.focusPoints) ? content.focusPoints : [],
       };
     });
-  }, [t, i18n.language]);
+  }, [t]);
 
   const activeDemo = demoScenarios.find(demo => demo.id === activeDemoId) ?? demoScenarios[0];
   const activeStep = activeDemo.steps[activeStepIndex] ?? activeDemo.steps[0];

@@ -28,11 +28,11 @@ import {
   Download,
   RefreshCw,
   Settings,
-  Filter,
   MoreHorizontal,
   Zap,
   Globe,
   Server,
+  Filter,
 } from "lucide-react";
 import { Link } from "wouter";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -199,14 +199,14 @@ export default function AdminDashboard() {
     storageUsage: 38,
   };
 
-  const recentActivities = [
+  const recentActivities = useMemo(() => [
     { id: 1, type: "user", message: "مستخدم جديد: شركة النور للتجارة", time: "منذ 5 دقائق", user: "admin@rabt.sa" },
     { id: 2, type: "subscription", message: "تجديد اشتراك باقة المؤسسات", time: "منذ 15 دقيقة", user: "billing@rabt.sa" },
     { id: 3, type: "security", message: "محاولة دخول مشبوهة - تم الحظر", time: "منذ 30 دقيقة" },
     { id: 4, type: "system", message: "تحديث قاعدة البيانات بنجاح", time: "منذ ساعة" },
     { id: 5, type: "user", message: "إضافة 25 موظف لشركة الفهد", time: "منذ ساعتين", user: "hr@alfahd.sa" },
     { id: 6, type: "subscription", message: "ترقية باقة من أساسية لمتقدمة", time: "منذ 3 ساعات" },
-  ];
+  ], []);
 
   const topCompanies = [
     { name: "شركة الفهد التجارية", employees: 450, plan: "مؤسسات", status: "active" },
@@ -220,7 +220,7 @@ export default function AdminDashboard() {
     return recentActivities.filter(activity => 
       activityFilter === "all" || activity.type === activityFilter
     );
-  }, [activityFilter]);
+  }, [activityFilter, recentActivities]);
 
   return (
     <DashboardLayout>

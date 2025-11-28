@@ -329,7 +329,7 @@ type EmployeesPageHeaderProps = {
   readonly onImport: () => void;
   readonly onExport: () => void;
   readonly isAddDialogOpen: boolean;
-  readonly onDialogChange: (_open: boolean) => void;
+  readonly onDialogChange: React.Dispatch<React.SetStateAction<boolean>>;
   readonly onAddEmployee: () => void;
   readonly departments: readonly string[];
 };
@@ -532,7 +532,7 @@ const WorkforceFocusPanel = ({ isArabic }: { isArabic: boolean }) => {
 type EmployeeSegmentChipsProps = {
   readonly segments: readonly { id: EmployeeSegmentId; label: string; count: number; helper: string }[];
   readonly activeSegment: EmployeeSegmentId;
-  readonly onSegmentSelect: (_segment: EmployeeSegmentId) => void;
+  readonly onSegmentSelect: (segment: EmployeeSegmentId) => void;
 };
 
 const EmployeeSegmentChips = ({ segments, activeSegment, onSegmentSelect }: EmployeeSegmentChipsProps) => (
@@ -564,11 +564,11 @@ const EmployeeSegmentChips = ({ segments, activeSegment, onSegmentSelect }: Empl
 type EmployeesCommandBarProps = {
   readonly isArabic: boolean;
   readonly searchQuery: string;
-  readonly onSearchChange: (_value: string) => void;
+  readonly onSearchChange: React.Dispatch<React.SetStateAction<string>>;
   readonly filterDepartment: string;
-  readonly onDepartmentChange: (_value: string) => void;
+  readonly onDepartmentChange: React.Dispatch<React.SetStateAction<string>>;
   readonly filterStatus: string;
-  readonly onStatusChange: (_value: string) => void;
+  readonly onStatusChange: React.Dispatch<React.SetStateAction<string>>;
   readonly departments: readonly string[];
 };
 
@@ -1032,9 +1032,9 @@ type EmployeesTableSectionProps = {
   readonly isArabic: boolean;
   readonly employees: readonly Employee[];
   readonly totalEmployees: number;
-  readonly onEditEmployee: (_employee: Employee) => void;
-  readonly onDeleteEmployee: (_employee: Employee) => void;
-  readonly onViewProfile: (_employee: Employee) => void;
+  readonly onEditEmployee: (emp: Employee) => void;
+  readonly onDeleteEmployee: (emp: Employee) => void;
+  readonly onViewProfile: (emp: Employee) => void;
 };
 
 const EmployeesTableSection = ({

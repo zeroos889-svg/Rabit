@@ -224,19 +224,19 @@ export default function AdminSubscriptions() {
     setIsViewDialogOpen(true);
   };
 
-  const handleRenewSubscription = (subId: string) => {
+  const handleRenewSubscription = (_subId: string) => {
     toast.success("تم تجديد الاشتراك بنجاح");
   };
 
-  const handlePauseSubscription = (subId: string) => {
+  const handlePauseSubscription = (_subId: string) => {
     toast.success("تم إيقاف الاشتراك مؤقتاً");
   };
 
-  const handleResumeSubscription = (subId: string) => {
+  const handleResumeSubscription = (_subId: string) => {
     toast.success("تم استئناف الاشتراك");
   };
 
-  const handleCancelSubscription = (subId: string) => {
+  const handleCancelSubscription = (_subId: string) => {
     if (confirm("هل أنت متأكد من إلغاء هذا الاشتراك؟")) {
       toast.success("تم إلغاء الاشتراك");
     }

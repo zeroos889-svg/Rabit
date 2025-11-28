@@ -41,7 +41,7 @@ export default function ConsultantLogin() {
       setTimeout(() => {
         const userType = data.user.userType;
         if (userType === "consultant" || userType === "individual") {
-          setLocation("/consultant/dashboard");
+          setLocation("/consultant-dashboard");
         } else {
           setLocation("/dashboard");
         }

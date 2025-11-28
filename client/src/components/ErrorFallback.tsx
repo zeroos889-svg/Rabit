@@ -15,7 +15,7 @@ export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps)
   // Log error to monitoring service in production
   if (process.env.NODE_ENV === "production") {
     // TODO: Integrate with error monitoring service (Sentry, LogRocket, etc.)
-    // eslint-disable-next-line no-console
+     
     console.error("Error caught by boundary:", error);
   }
 

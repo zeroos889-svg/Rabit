@@ -26,7 +26,6 @@ import {
   Users,
   DollarSign,
   TrendingUp,
-  TrendingDown,
   FileText,
   Briefcase,
   Clock,

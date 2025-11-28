@@ -236,7 +236,7 @@ export default function ConsultantRegister() {
           toast.error("تم التسجيل، لكن تعذر رفع بعض المستندات");
         }
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("حدث خطأ أثناء التسجيل. يرجى المحاولة مرة أخرى.");
     }
   };

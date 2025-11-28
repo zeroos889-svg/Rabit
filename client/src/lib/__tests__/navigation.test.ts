@@ -3,7 +3,7 @@ import { getDashboardPath } from "../navigation";
 
 describe("getDashboardPath", () => {
   it("routes admin to admin dashboard", () => {
-    expect(getDashboardPath({ role: "admin" })).toBe("/admin");
+    expect(getDashboardPath({ role: "admin" })).toBe("/admin/dashboard");
   });
 
   it("routes by userType with user role", () => {
@@ -12,8 +12,8 @@ describe("getDashboardPath", () => {
     expect(getDashboardPath({ role: "user", userType: "employee" })).toBe("/employee/dashboard");
   });
 
-  it("falls back to home when nothing matches", () => {
-    expect(getDashboardPath({})).toBe("/");
-    expect(getDashboardPath(null as unknown as any)).toBe("/");
+  it("falls back to dashboard when nothing matches", () => {
+    expect(getDashboardPath({})).toBe("/dashboard");
+    expect(getDashboardPath(null as unknown as any)).toBe("/dashboard");
   });
 });

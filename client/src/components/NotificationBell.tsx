@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,9 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Bell,
-  Check,
   CheckCheck,
-  Trash2,
   AlertCircle,
   Info,
   CheckCircle,

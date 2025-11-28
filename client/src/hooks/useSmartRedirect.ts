@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 
@@ -9,6 +9,25 @@ import { useAuth } from "@/_core/hooks/useAuth";
 export function useSmartRedirect() {
   const { user, isAuthenticated, loading } = useAuth();
   const [location, setLocation] = useLocation();
+
+  const redirectBasedOnRole = useCallback((role: string) => {
+    switch (role) {
+      case "admin":
+        setLocation("/admin/dashboard");
+        break;
+      case "company":
+        setLocation("/company/dashboard");
+        break;
+      case "consultant":
+        setLocation("/consultant-dashboard");
+        break;
+      case "employee":
+        setLocation("/employee/dashboard");
+        break;
+      default:
+        setLocation("/dashboard");
+    }
+  }, [setLocation]);
 
   useEffect(() => {
     if (loading) return;
@@ -33,26 +52,7 @@ export function useSmartRedirect() {
         redirectBasedOnRole(user.role);
       }
     }
-  }, [isAuthenticated, user, loading, location, setLocation]);
-
-  const redirectBasedOnRole = (role: string) => {
-    switch (role) {
-      case "admin":
-        setLocation("/admin");
-        break;
-      case "company":
-        setLocation("/dashboard");
-        break;
-      case "consultant":
-        setLocation("/consultant-dashboard");
-        break;
-      case "employee":
-        setLocation("/employee/dashboard");
-        break;
-      default:
-        setLocation("/");
-    }
-  };
+  }, [isAuthenticated, user, loading, location, setLocation, redirectBasedOnRole]);
 
   return { user, isAuthenticated, loading };
 }

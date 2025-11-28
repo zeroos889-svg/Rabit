@@ -21,7 +21,6 @@ import {
   EyeOff,
   Phone,
   User,
-  FileText,
   Sparkles,
   Chrome,
   Check,

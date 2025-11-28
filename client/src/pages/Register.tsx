@@ -69,17 +69,17 @@ export default function Register() {
       setTimeout(() => {
         switch (formData.userType) {
           case "company":
-            setLocation("/dashboard/company");
+            setLocation("/company/dashboard");
             break;
           case "consultant":
           case "individual":
-            setLocation("/dashboard/consultant");
+            setLocation("/consultant-dashboard");
             break;
           case "employee":
-            setLocation("/dashboard/employee");
+            setLocation("/employee/dashboard");
             break;
           default:
-            setLocation("/");
+            setLocation("/dashboard");
         }
       }, 500);
     },

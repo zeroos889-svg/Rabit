@@ -123,7 +123,7 @@ class ErrorLogger {
     });
   }
 
-  private sendToMonitoring(errorLog: ErrorLog): void {
+  private sendToMonitoring(_errorLog: ErrorLog): void {
     // Production monitoring integration would go here
     // For now, just a placeholder
   }
@@ -141,7 +141,7 @@ class ErrorLogger {
       }
       
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(errors));
-    } catch (e) {
+    } catch {
       // Silently fail if localStorage is not available
     }
   }
@@ -150,7 +150,7 @@ class ErrorLogger {
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
       return stored ? JSON.parse(stored) : [];
-    } catch (e) {
+    } catch {
       return [];
     }
   }
@@ -158,7 +158,7 @@ class ErrorLogger {
   clearStoredErrors(): void {
     try {
       localStorage.removeItem(this.STORAGE_KEY);
-    } catch (e) {
+    } catch {
       // Silently fail
     }
   }

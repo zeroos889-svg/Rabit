@@ -176,7 +176,7 @@ export function debounce<T extends (..._args: any[]) => any>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null;
+  let timeout: ReturnType<typeof setTimeout> | null = null;
 
   return function executedFunction(..._args: Parameters<T>) {
     const later = () => {
@@ -209,7 +209,7 @@ export function throttle<T extends (..._args: any[]) => any>(
 // Intersection Observer for lazy loading
 export function createIntersectionObserver(
   callback: (_entries: IntersectionObserverEntry[]) => void,
-  options?: IntersectionObserverInit
+  options?: { root?: Element | null; rootMargin?: string; threshold?: number | number[] }
 ): IntersectionObserver | null {
   if (typeof IntersectionObserver === "undefined") {
     console.warn("IntersectionObserver not supported");

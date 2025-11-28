@@ -660,7 +660,7 @@ function App() {
       // In production, send to analytics service
       if (process.env.NODE_ENV === "production") {
         // Send metrics to console for now - integrate with analytics service when ready
-        // eslint-disable-next-line no-console
+         
         console.log(`[Web Vitals] ${metric.name}: ${metric.value.toFixed(0)}`);
       }
     },

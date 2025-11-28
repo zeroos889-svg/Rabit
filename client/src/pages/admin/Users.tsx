@@ -192,15 +192,15 @@ export default function AdminUsers() {
     setIsViewDialogOpen(true);
   };
 
-  const handleActivateUser = (userId: number) => {
+  const handleActivateUser = (_userId: number) => {
     toast.success("تم تفعيل المستخدم بنجاح");
   };
 
-  const handleSuspendUser = (userId: number) => {
+  const handleSuspendUser = (_userId: number) => {
     toast.success("تم إيقاف المستخدم");
   };
 
-  const handleDeleteUser = (userId: number) => {
+  const handleDeleteUser = (_userId: number) => {
     if (confirm("هل أنت متأكد من حذف هذا المستخدم؟")) {
       toast.success("تم حذف المستخدم");
     }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/ui/button";
@@ -56,6 +56,21 @@ export default function EnhancedLogin() {
     password?: string;
   }>({});
 
+  const applyTrialProfile = useCallback((
+    profile: TrialProfile,
+    options: { persist?: boolean; silent?: boolean } = {}
+  ) => {
+    setFormData({ email: profile.demoEmail, password: profile.demoPassword });
+    setRememberMe(true);
+    setActiveTrialProfile(profile);
+    if (options.persist) {
+      storeTrialProfileSelection(profile.id);
+    }
+    if (!options.silent) {
+      toast.success(isArabic ? "تم تعبئة البيانات التجريبية" : "Demo credentials auto-filled");
+    }
+  }, [isArabic]);
+
   // Load saved email if remember me was checked
   useEffect(() => {
     const savedEmail = localStorage.getItem("rememberedEmail");
@@ -84,22 +99,7 @@ export default function EnhancedLogin() {
         console.warn("Failed to hydrate trial profile", error);
       }
     }
-  }, []);
-
-  const applyTrialProfile = (
-    profile: TrialProfile,
-    options: { persist?: boolean; silent?: boolean } = {}
-  ) => {
-    setFormData({ email: profile.demoEmail, password: profile.demoPassword });
-    setRememberMe(true);
-    setActiveTrialProfile(profile);
-    if (options.persist) {
-      storeTrialProfileSelection(profile.id);
-    }
-    if (!options.silent) {
-      toast.success(isArabic ? "تم تعبئة البيانات التجريبية" : "Demo credentials auto-filled");
-    }
-  };
+  }, [applyTrialProfile]);
 
   const handleTrialSelection = (profileId: string) => {
     const profile = getTrialProfileById(profileId);
@@ -161,7 +161,7 @@ export default function EnhancedLogin() {
         if (role === "admin") {
           setLocation("/admin/dashboard");
         } else if (userType === "company") {
-          setLocation("/dashboard/company");
+          setLocation("/company/dashboard");
         } else if (userType === "consultant") {
           setLocation("/consultant-dashboard");
         } else if (userType === "employee") {

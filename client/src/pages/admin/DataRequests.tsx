@@ -283,7 +283,7 @@ export default function AdminDataRequests() {
     setIsResponseDialogOpen(false);
   };
 
-  const handleStartProcessing = (requestId: string) => {
+  const handleStartProcessing = (_requestId: string) => {
     toast.success("تم بدء معالجة الطلب");
   };
 

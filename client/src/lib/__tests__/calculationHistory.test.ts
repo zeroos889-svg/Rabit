@@ -3,7 +3,7 @@
  * Tests for Calculation History
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -177,7 +177,7 @@ describe('calculationHistory', () => {
     });
 
     it('should return records sorted by timestamp (newest first)', () => {
-      const record1 = saveGOSIRecord(
+      saveGOSIRecord(
         { basicSalary: 10000, housingAllowance: 2500, isNonSaudi: false, employerContributionRate: 0.1175, employeeContributionRate: 0.0975 },
         { employeeContribution: 1218.75, employerContribution: 1468.75, totalContribution: 2687.50, totalInsurableSalary: 12500 }
       );

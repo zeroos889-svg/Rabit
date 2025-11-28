@@ -105,10 +105,10 @@ export function KeyboardShortcuts() {
     action?.perform();
   }, []);
 
-  const navigationHelper = (path: string) => () => {
+  const navigationHelper = useCallback((path: string) => () => {
     setCommandOpen(false);
     navigate(path);
-  };
+  }, [navigate]);
 
   const preferenceToast = (message: string) => {
     toast.success(message, { duration: 1600 });
@@ -268,7 +268,7 @@ export function KeyboardShortcuts() {
   }, [
     i18n,
     isArabic,
-    navigate,
+    navigationHelper,
     reducedMotion,
     switchable,
     theme,

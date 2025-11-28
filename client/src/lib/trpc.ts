@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { createTRPCReact } from "@trpc/react-query";
 import type { AnyRouter } from "@trpc/server";
 import type { ComponentType } from "react";

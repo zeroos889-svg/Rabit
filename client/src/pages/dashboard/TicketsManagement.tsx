@@ -45,7 +45,6 @@ import {
   Eye,
   Edit,
   Trash2,
-  TrendingUp,
   MoreVertical,
 } from "lucide-react";
 import {
@@ -74,7 +73,7 @@ interface Ticket {
 }
 
 export default function TicketsManagement() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");

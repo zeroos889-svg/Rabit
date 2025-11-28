@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 
 // Mock backend - returns dummy data for development
 export const mockBackend = {

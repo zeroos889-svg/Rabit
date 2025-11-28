@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
   Send,
-  Paperclip,
   Sparkles,
   CheckCircle2,
   Clock,
@@ -159,7 +158,7 @@ export default function ConsultationChat() {
   const calculateRemaining = () => {
     if (!booking?.createdAt) return null;
     const sla = booking.slaHours || booking.consultationType?.slaHours || 24;
-    const due = new Date(booking.createdAt as any);
+    const due = new Date(booking.createdAt as string);
     due.setHours(due.getHours() + sla);
     const diffMs = due.getTime() - Date.now();
     if (diffMs <= 0) return "انتهى الوقت المستهدف";
@@ -167,13 +166,15 @@ export default function ConsultationChat() {
     const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
     return `${hours} ساعة ${minutes} دقيقة`;
   };
-  const messages: ConsultationMessageRecord[] = (messagesData?.messages ??
-    []) as unknown as ConsultationMessageRecord[];
+  const messages: ConsultationMessageRecord[] = useMemo(() => 
+    (messagesData?.messages ?? []) as unknown as ConsultationMessageRecord[],
+    [messagesData?.messages]
+  );
 
   const slaInfo = (() => {
     if (!booking?.createdAt) return null;
     const sla = booking.slaHours || booking.consultationType?.slaHours || 24;
-    const created = new Date(booking.createdAt as any).getTime();
+    const created = new Date(booking.createdAt as string).getTime();
     const due = created + sla * 60 * 60 * 1000;
     const now = Date.now();
     const total = due - created;

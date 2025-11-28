@@ -42,12 +42,7 @@ import {
   Eye,
   Edit,
   Trash2,
-  FileText,
-  TrendingUp,
-  Clock,
   CheckCircle2,
-  XCircle,
-  User,
   Mail,
   Phone,
   Download,
@@ -86,7 +81,7 @@ interface Applicant {
 }
 
 export default function ATSManagement() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
   const [activeTab, setActiveTab] = useState("jobs");
   const [searchQuery, setSearchQuery] = useState("");

@@ -727,7 +727,7 @@ export default function Signup() {
                   {/* Dynamic width requires inline style for password strength indicator */}
                   <div
                     className={`h-full transition-all ${getPasswordStrengthColor(passwordStrength.score)}`}
-                    style={{ width: `${(passwordStrength.score / 5) * 100}%` }} // eslint-disable-line react/forbid-dom-props
+                    style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
                   />
                 </div>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">

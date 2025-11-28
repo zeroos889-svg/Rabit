@@ -42,7 +42,6 @@ import {
   Edit,
   Trash2,
   Eye,
-  Filter,
   Search,
 } from "lucide-react";
 import { toast } from "sonner";

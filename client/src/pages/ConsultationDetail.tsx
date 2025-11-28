@@ -14,7 +14,6 @@ import {
   Timer,
   AlertTriangle,
   Send,
-  Paperclip,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
@@ -90,8 +89,8 @@ export default function ConsultationDetail() {
   }
 
   const booking = data?.booking;
-  const attachments = (() => {
-    const raw = booking?.attachments as any;
+  const _attachments = (() => {
+    const raw = booking?.attachments as unknown;
     if (!raw) return [];
     if (Array.isArray(raw)) return raw;
     try {

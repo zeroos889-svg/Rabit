@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -170,7 +170,7 @@ export default function CaseStudies() {
 
         {/* Case Studies */}
         <div className="space-y-12">
-          {caseStudies.map((study, index) => (
+          {caseStudies.map((study, _index) => (
             <Card
               key={study.id}
               className="overflow-hidden hover:shadow-2xl transition-all duration-300"

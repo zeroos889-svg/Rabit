@@ -84,7 +84,7 @@ export default function ExecutiveDashboard() {
         hint: "المستهدف > 85%",
       },
     ];
-  }, [execEnabled, dataQuery.isLoading, dataQuery.data?.metrics]);
+  }, [execEnabled, dataQuery.data?.metrics]);
 
   return (
     <DashboardLayout>

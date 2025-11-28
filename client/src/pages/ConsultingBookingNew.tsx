@@ -37,7 +37,7 @@ import { Badge } from "@/components/ui/badge";
 
 export default function ConsultingBookingNew() {
   const { t } = useTranslation();
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
   const [step, setStep] = useState(1);
 
@@ -194,7 +194,7 @@ export default function ConsultingBookingNew() {
         toast.success(`تم رفع ${docType} بنجاح`);
       };
       reader.readAsDataURL(file);
-    } catch (error) {
+    } catch (_error) {
       toast.error("فشل رفع الملف");
     }
   };

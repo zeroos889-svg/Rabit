@@ -23,7 +23,6 @@ import {
   Users,
   Briefcase,
   Ticket,
-  TrendingUp,
   Calendar,
   FileText,
   Clock,

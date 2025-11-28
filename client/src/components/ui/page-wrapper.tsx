@@ -172,7 +172,7 @@ export function PageErrorState({
   title = "حدث خطأ",
   message = "عذراً، حدث خطأ أثناء تحميل الصفحة",
   onRetry,
-  className
+  className: _className
 }: PageErrorStateProps) {
   return (
     <ErrorState

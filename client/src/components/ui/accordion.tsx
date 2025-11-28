@@ -1,5 +1,4 @@
 
-import * as React from "react";
 import * as RadixAccordion from "@radix-ui/react-accordion";
 
 export const Accordion = RadixAccordion.Root;

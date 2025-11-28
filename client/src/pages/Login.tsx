@@ -18,7 +18,6 @@ import {
   Eye,
   EyeOff,
   Chrome,
-  Github,
   Linkedin,
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
@@ -52,22 +51,26 @@ export default function Login() {
 
       // Redirect based on user type
       setTimeout(() => {
-        switch (data.user?.userType) {
-          case "company":
-            setLocation("/dashboard/company");
-            break;
-          case "consultant":
-          case "individual":
-            setLocation("/dashboard/consultant");
-            break;
-          case "employee":
-            setLocation("/dashboard/employee");
-            break;
-          case "admin":
-            setLocation("/admin/dashboard");
-            break;
-          default:
-            setLocation("/");
+        const role = data.user?.role;
+        const userType = data.user?.userType;
+        
+        if (role === "admin") {
+          setLocation("/admin/dashboard");
+        } else {
+          switch (userType) {
+            case "company":
+              setLocation("/company/dashboard");
+              break;
+            case "consultant":
+            case "individual":
+              setLocation("/consultant-dashboard");
+              break;
+            case "employee":
+              setLocation("/employee/dashboard");
+              break;
+            default:
+              setLocation("/dashboard");
+          }
         }
       }, 500);
     },

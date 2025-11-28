@@ -1,5 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import { useState, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -127,8 +126,6 @@ const formatTimestamp = (dateInput?: string | Date | null) => {
 };
 
 export default function EndOfServiceCalculator() {
-  const { t, i18n } = useTranslation();
-  const isRTL = i18n.language === "ar";
   const { isAuthenticated } = useAuth();
   const utils = trpc.useUtils();
 
@@ -173,13 +170,6 @@ export default function EndOfServiceCalculator() {
 
     return { years, months, days };
   };
-
-  // Calculate in real-time
-  useEffect(() => {
-    if (salary && contractType && terminationReason && startDate && endDate) {
-      calculateEOSB();
-    }
-  }, [salary, contractType, terminationReason, startDate, endDate]);
 
   const calculateEOSB = async () => {
     const salaryNum = parseFloat(salary) || 0;

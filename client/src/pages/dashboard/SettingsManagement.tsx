@@ -51,7 +51,7 @@ import {
 import { toast } from "sonner";
 
 export default function SettingsManagement() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
 
   // Account Settings State

@@ -17,7 +17,6 @@ import {
   Sparkles,
   User,
   Loader2,
-  Download,
   Copy,
   ThumbsUp,
   ThumbsDown,
@@ -27,7 +26,6 @@ import {
   FileText,
   TrendingUp,
 } from "lucide-react";
-import { useAuth } from "@/_core/hooks/useAuth";
 import { useLanguage } from "@/hooks/use-language";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
@@ -43,8 +41,7 @@ interface Message {
 }
 
 export default function AIChat() {
-  const { user } = useAuth();
-  const { t, isArabic } = useLanguage();
+  const { isArabic } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -175,7 +172,7 @@ export default function AIChat() {
   };
 
   // Handle feedback
-  const handleFeedback = (messageId: string, positive: boolean) => {
+  const handleFeedback = (_messageId: string, _positive: boolean) => {
     toast.success(
       isArabic
         ? "شكراً لتقييمك. سنستخدمه لتحسين الخدمة"
