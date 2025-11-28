@@ -1,0 +1,194 @@
+{
+  "$schema": "../schemas/regulation.schema.json",
+  "id": "remote-work",
+  "name": {
+    "ar": "نظام العمل عن بُعد والعمل المرن",
+    "en": "Remote Work and Flexible Work System"
+  },
+  "authority": {
+    "ar": "وزارة الموارد البشرية والتنمية الاجتماعية",
+    "en": "Ministry of Human Resources and Social Development (MHRSD)"
+  },
+  "version": "2025",
+  "lastAmendment": "2025-01-01",
+  "status": "active",
+
+  "remoteWork": {
+    "overview": {
+      "ar": "العمل عن بُعد هو نمط عمل يؤدي فيه الموظف مهامه خارج مقر العمل التقليدي باستخدام وسائل الاتصال والتقنية",
+      "en": "Remote work is a work pattern where the employee performs duties outside the traditional workplace using communication and technology"
+    },
+    "registration": {
+      "platform": "بوابة العمل عن بُعد",
+      "platformEn": "Remote Work Portal",
+      "website": "https://telework.sa",
+      "ar": "يجب تسجيل عقود العمل عن بُعد في البوابة الإلكترونية",
+      "en": "Remote work contracts must be registered on the electronic portal"
+    },
+    "eligibleCategories": [
+      { "ar": "السعوديون والسعوديات", "en": "Saudi men and women" },
+      { "ar": "الأشخاص ذوو الإعاقة", "en": "People with disabilities" },
+      { "ar": "طلاب الجامعات", "en": "University students" },
+      { "ar": "ربات البيوت", "en": "Housewives" },
+      { "ar": "المتقاعدون", "en": "Retirees" }
+    ],
+    "nitaqatBenefits": {
+      "ar": "يُحتسب العامل عن بُعد في نطاقات المنشأة",
+      "en": "Remote worker is counted in establishment's Nitaqat",
+      "condition": {
+        "ar": "يجب أن يكون العقد موثقاً في البوابة",
+        "en": "Contract must be authenticated on portal"
+      }
+    },
+    "contractRequirements": [
+      { "ar": "تحديد طبيعة العمل عن بُعد", "en": "Specify remote work nature" },
+      { "ar": "تحديد ساعات العمل أو المهام المطلوبة", "en": "Specify working hours or required tasks" },
+      { "ar": "آلية التواصل والإشراف", "en": "Communication and supervision mechanism" },
+      { "ar": "توفير الأدوات والمعدات إن لزم", "en": "Provide tools and equipment if needed" },
+      { "ar": "حماية البيانات والمعلومات السرية", "en": "Data and confidential information protection" }
+    ],
+    "employerObligations": [
+      { "ar": "توفير بيئة عمل افتراضية مناسبة", "en": "Provide suitable virtual work environment" },
+      { "ar": "تدريب الموظف على أدوات العمل", "en": "Train employee on work tools" },
+      { "ar": "احترام خصوصية الموظف", "en": "Respect employee privacy" },
+      { "ar": "التسجيل في منصة العمل عن بُعد", "en": "Register on remote work platform" },
+      { "ar": "دفع الأجور في مواعيدها", "en": "Pay wages on time" }
+    ],
+    "employeeRights": [
+      { "ar": "الحصول على جميع المزايا كالموظف التقليدي", "en": "Receive all benefits like traditional employee" },
+      { "ar": "التأمينات الاجتماعية", "en": "Social insurance" },
+      { "ar": "الإجازات السنوية والمرضية", "en": "Annual and sick leave" },
+      { "ar": "بيئة عمل آمنة", "en": "Safe work environment" }
+    ]
+  },
+
+  "flexibleWork": {
+    "overview": {
+      "ar": "العمل المرن هو نمط عمل يُؤدى بموجب عقد عمل مرن بالساعة",
+      "en": "Flexible work is a work pattern performed under an hourly flexible work contract"
+    },
+    "registration": {
+      "platform": "بوابة العمل المرن",
+      "platformEn": "Flexible Work Portal",
+      "website": "https://mrn.sa",
+      "ar": "يجب تسجيل عقود العمل المرن في البوابة",
+      "en": "Flexible work contracts must be registered on portal"
+    },
+    "characteristics": [
+      {
+        "ar": "العمل بالساعة",
+        "en": "Work by hour",
+        "details": { "ar": "الأجر يُحتسب بالساعة لا بالشهر", "en": "Pay calculated hourly not monthly" }
+      },
+      {
+        "ar": "حد أقصى للساعات",
+        "en": "Maximum hours limit",
+        "details": { "ar": "95 ساعة شهرياً كحد أقصى لدى صاحب عمل واحد", "en": "Maximum 95 hours monthly with one employer" }
+      },
+      {
+        "ar": "تعدد أصحاب العمل",
+        "en": "Multiple employers",
+        "details": { "ar": "يمكن العمل لدى أكثر من صاحب عمل", "en": "Can work for multiple employers" }
+      }
+    ],
+    "minimumWage": {
+      "rate": 25,
+      "currency": "SAR",
+      "unit": "hour",
+      "ar": "الحد الأدنى للأجر بالساعة",
+      "en": "Minimum hourly wage"
+    },
+    "gosiExemption": {
+      "ar": "معفى من التأمينات الاجتماعية إذا كان أقل من 95 ساعة شهرياً",
+      "en": "Exempt from GOSI if less than 95 hours monthly"
+    },
+    "nitaqatCounting": {
+      "rule": 0.33,
+      "ar": "يُحتسب العامل المرن بثلث موظف في نطاقات",
+      "en": "Flexible worker counted as one-third employee in Nitaqat",
+      "condition": {
+        "ar": "يجب أن يعمل 168 ساعة فأكثر خلال 3 أشهر",
+        "en": "Must work 168 hours or more within 3 months"
+      }
+    },
+    "eligibility": {
+      "saudiOnly": true,
+      "ar": "حصري للسعوديين فقط",
+      "en": "Exclusive to Saudis only",
+      "ageRequirement": {
+        "min": 15,
+        "max": 65,
+        "ar": "العمر من 15 إلى 65 سنة",
+        "en": "Age from 15 to 65 years"
+      }
+    },
+    "prohibitedSectors": [
+      { "ar": "الأعمال الخطرة", "en": "Hazardous work" },
+      { "ar": "العمل في المناجم", "en": "Mining work" },
+      { "ar": "بعض الأعمال الصناعية الثقيلة", "en": "Some heavy industrial work" }
+    ]
+  },
+
+  "hybridWork": {
+    "overview": {
+      "ar": "نموذج يجمع بين العمل من المكتب والعمل عن بُعد",
+      "en": "Model combining office work and remote work"
+    },
+    "implementation": [
+      {
+        "ar": "تحديد أيام الحضور للمكتب",
+        "en": "Define office attendance days"
+      },
+      {
+        "ar": "تحديد أيام العمل عن بُعد",
+        "en": "Define remote work days"
+      },
+      {
+        "ar": "توثيق الترتيب في العقد",
+        "en": "Document arrangement in contract"
+      }
+    ],
+    "legalStatus": {
+      "ar": "يخضع لأحكام نظام العمل السعودي مع مراعاة طبيعة العمل",
+      "en": "Subject to Saudi Labor Law provisions considering work nature"
+    }
+  },
+
+  "complianceRequirements": [
+    {
+      "ar": "تسجيل جميع عقود العمل عن بُعد والمرن في المنصات الرسمية",
+      "en": "Register all remote and flexible contracts on official platforms"
+    },
+    {
+      "ar": "الالتزام بالحد الأدنى للأجور",
+      "en": "Comply with minimum wage"
+    },
+    {
+      "ar": "توفير بيئة عمل صحية وآمنة",
+      "en": "Provide healthy and safe work environment"
+    },
+    {
+      "ar": "احترام ساعات العمل والراحة",
+      "en": "Respect working hours and rest periods"
+    }
+  ],
+
+  "violations": [
+    {
+      "type": { "ar": "عدم تسجيل عقد العمل عن بُعد", "en": "Not registering remote work contract" },
+      "fine": { "min": 5000, "max": 20000, "currency": "SAR" }
+    },
+    {
+      "type": { "ar": "تجاوز الحد الأقصى للساعات المرنة", "en": "Exceeding maximum flexible hours" },
+      "fine": { "min": 10000, "max": 50000, "currency": "SAR" }
+    },
+    {
+      "type": { "ar": "دفع أقل من الحد الأدنى بالساعة", "en": "Paying below minimum hourly rate" },
+      "fine": { "min": 3000, "max": 10000, "currency": "SAR" },
+      "perEmployee": true
+    }
+  ],
+
+  "relatedRegulations": ["labor-law", "nitaqat", "gosi"],
+  "tags": ["عمل عن بعد", "عمل مرن", "هجين", "remote", "flexible", "hybrid", "telework"]
+}

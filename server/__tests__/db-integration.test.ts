@@ -6,8 +6,6 @@
  * Run with: pnpm test server/__tests__/db-integration.test.ts
  */
 
-/* eslint-disable no-console */
-
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import {
   getDb,
@@ -41,8 +39,7 @@ describe("Database Integration Tests - اختبارات التكامل مع قا
         const { users } = await import("../../drizzle/schema");
         const { eq } = await import("drizzle-orm");
         try {
-          const deleteBuilder = db.delete(users);
-          await deleteBuilder.where(eq(users.id, testUserId));
+          await db.delete(users).where(eq(users.id, testUserId));
           console.log(`[Cleanup] Test user ${testUserId} deleted`);
         } catch (error) {
           console.warn(`[Cleanup] Could not delete test user:`, error);
@@ -177,15 +174,17 @@ describe("Database Integration Tests - اختبارات التكامل مع قا
       );
       const { eq } = await import("drizzle-orm");
 
-      const consultantSelect = db.select();
-      const consultantFrom = consultantSelect.from(consultants);
-      const consultantWhere = consultantFrom.where(eq(consultants.status, "approved"));
-      const availableConsultants = await consultantWhere.limit(1);
+      const availableConsultants = await db
+        .select()
+        .from(consultants)
+        .where(eq(consultants.status, "approved"))
+        .limit(1);
 
-      const typeSelect = db.select();
-      const typeFrom = typeSelect.from(consultationTypes);
-      const typeWhere = typeFrom.where(eq(consultationTypes.isActive, true));
-      const availableTypes = await typeWhere.limit(1);
+      const availableTypes = await db
+        .select()
+        .from(consultationTypes)
+        .where(eq(consultationTypes.isActive, true))
+        .limit(1);
 
       if (availableConsultants.length === 0 || availableTypes.length === 0) {
         console.log(
@@ -223,8 +222,7 @@ describe("Database Integration Tests - اختبارات التكامل مع قا
       // Cleanup
       if (booking) {
         const { consultationBookings } = await import("../../drizzle/schema");
-        const deleteBookingBuilder = db.delete(consultationBookings);
-        await deleteBookingBuilder.where(eq(consultationBookings.id, bookingId));
+        await db.delete(consultationBookings).where(eq(consultationBookings.id, bookingId));
         console.log(`[Cleanup] Test booking ${bookingId} deleted`);
       }
     }, 15000);

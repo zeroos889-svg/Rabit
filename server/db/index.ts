@@ -629,30 +629,30 @@ const testUserSeeds: TestUserSeed[] = [
 
 // Minimal stub DB object used by health check/tests
 const fakeDb = {
-  delete() {
+  delete(_table?: unknown) {
     return {
-      where: async () => {
+      where: async (_condition?: unknown) => {
         return undefined;
       },
     };
   },
-  select() {
+  select(_fields?: unknown) {
     return {
-      from: () => {
+      from: (_table?: unknown) => {
         return {
-          where: () => {
+          where: (_condition?: unknown) => {
             return {
-              limit: async () => {
+              limit: async (_n?: number) => {
                 return [];
               },
             };
           },
-          limit: async () => {
+          limit: async (_n?: number) => {
             return [];
           },
         };
       },
-      limit: async () => {
+      limit: async (_n?: number) => {
         return [];
       },
     };

@@ -1,0 +1,526 @@
+{
+  "id": "pdpl",
+  "name": {
+    "ar": "نظام حماية البيانات الشخصية",
+    "en": "Personal Data Protection Law"
+  },
+  "authority": {
+    "ar": "الهيئة السعودية للبيانات والذكاء الاصطناعي (سدايا)",
+    "en": "Saudi Data & AI Authority (SDAIA)"
+  },
+  "version": "1.0",
+  "lastAmendment": "2024-09-14",
+  "effectiveDate": "2023-09-17",
+  "status": "active",
+  "tags": ["حماية البيانات", "الخصوصية", "data protection", "privacy", "PDPL"],
+  "overview": {
+    "ar": "نظام حماية البيانات الشخصية (PDPL) هو الإطار التنظيمي الرئيسي في المملكة العربية السعودية لحماية البيانات الشخصية. يهدف إلى حماية خصوصية الأفراد وتنظيم جمع ومعالجة ونقل وتخزين البيانات الشخصية.",
+    "en": "The Personal Data Protection Law (PDPL) is Saudi Arabia's principal data protection regulatory framework. It aims to protect individuals' privacy and regulate the collection, processing, transfer, and storage of personal data."
+  },
+  "scope": {
+    "ar": {
+      "includes": [
+        "جميع أنشطة معالجة البيانات الشخصية في المملكة",
+        "معالجة البيانات الشخصية للمقيمين في المملكة من خارجها",
+        "القطاعان العام والخاص",
+        "الأفراد والكيانات التي تعالج البيانات الشخصية"
+      ],
+      "excludes": [
+        "البيانات الشخصية للاستخدام الشخصي أو العائلي",
+        "البيانات المتعلقة بالأمن الوطني",
+        "البيانات المعالجة من قبل الجهات الأمنية"
+      ]
+    },
+    "en": {
+      "includes": [
+        "All personal data processing activities in Saudi Arabia",
+        "Processing personal data of residents from outside the Kingdom",
+        "Public and private sectors",
+        "Individuals and entities processing personal data"
+      ],
+      "excludes": [
+        "Personal data for personal or family use",
+        "Data related to national security",
+        "Data processed by security agencies"
+      ]
+    }
+  },
+  "principles": {
+    "ar": [
+      "المشروعية والشفافية",
+      "تحديد الغرض",
+      "تقليل البيانات",
+      "الدقة",
+      "تحديد مدة التخزين",
+      "السلامة والسرية",
+      "المساءلة"
+    ],
+    "en": [
+      "Lawfulness and Transparency",
+      "Purpose Limitation",
+      "Data Minimization",
+      "Accuracy",
+      "Storage Limitation",
+      "Integrity and Confidentiality",
+      "Accountability"
+    ]
+  },
+  "definitions": {
+    "personalData": {
+      "ar": "أي بيانات تتعلق بشخص طبيعي محدد أو يمكن تحديده بصورة مباشرة أو غير مباشرة",
+      "en": "Any data relating to an identified or identifiable natural person, directly or indirectly"
+    },
+    "sensitiveData": {
+      "ar": "البيانات التي تكشف عن الأصل العرقي، أو المعتقدات الدينية أو الفكرية، أو الحالة الصحية، أو البيانات الجينية أو الحيوية",
+      "en": "Data revealing racial or ethnic origin, religious or ideological beliefs, health status, or genetic or biometric data"
+    },
+    "dataController": {
+      "ar": "الجهة التي تحدد أغراض ووسائل معالجة البيانات الشخصية",
+      "en": "Entity that determines the purposes and means of personal data processing"
+    },
+    "dataProcessor": {
+      "ar": "الجهة التي تعالج البيانات الشخصية نيابة عن جهة التحكم",
+      "en": "Entity that processes personal data on behalf of the controller"
+    },
+    "dataSubject": {
+      "ar": "الشخص الطبيعي صاحب البيانات الشخصية",
+      "en": "Natural person whose personal data is being processed"
+    },
+    "consent": {
+      "ar": "موافقة صاحب البيانات الحرة والمحددة والمستنيرة والصريحة",
+      "en": "Free, specific, informed, and unambiguous consent of the data subject"
+    }
+  },
+  "dataSubjectRights": {
+    "article14": {
+      "title": {
+        "ar": "حق العلم",
+        "en": "Right to Know"
+      },
+      "content": {
+        "ar": [
+          "الحق في معرفة الأساس النظامي لجمع البيانات",
+          "الحق في معرفة الغرض من المعالجة",
+          "الحق في معرفة هوية جهة التحكم",
+          "الحق في معرفة الجهات المستلمة للبيانات"
+        ],
+        "en": [
+          "Right to know the legal basis for data collection",
+          "Right to know the purpose of processing",
+          "Right to know the identity of the controller",
+          "Right to know data recipients"
+        ]
+      }
+    },
+    "article15": {
+      "title": {
+        "ar": "حق الوصول",
+        "en": "Right of Access"
+      },
+      "content": {
+        "ar": [
+          "الحق في الحصول على نسخة من البيانات الشخصية",
+          "الحق في معرفة مصدر البيانات",
+          "يجب الرد خلال 30 يوم"
+        ],
+        "en": [
+          "Right to obtain a copy of personal data",
+          "Right to know data source",
+          "Response required within 30 days"
+        ]
+      }
+    },
+    "article16": {
+      "title": {
+        "ar": "حق التصحيح",
+        "en": "Right to Rectification"
+      },
+      "content": {
+        "ar": [
+          "الحق في تصحيح البيانات غير الدقيقة",
+          "الحق في إكمال البيانات الناقصة",
+          "يجب التصحيح فوراً دون تأخير غير مبرر"
+        ],
+        "en": [
+          "Right to correct inaccurate data",
+          "Right to complete incomplete data",
+          "Correction must be immediate without undue delay"
+        ]
+      }
+    },
+    "article17": {
+      "title": {
+        "ar": "حق الإتلاف",
+        "en": "Right to Erasure"
+      },
+      "content": {
+        "ar": [
+          "الحق في طلب حذف البيانات الشخصية",
+          "عند انتهاء الغرض من المعالجة",
+          "عند سحب الموافقة",
+          "عند عدم مشروعية المعالجة"
+        ],
+        "en": [
+          "Right to request deletion of personal data",
+          "When processing purpose has ended",
+          "When consent is withdrawn",
+          "When processing is unlawful"
+        ]
+      }
+    },
+    "article18": {
+      "title": {
+        "ar": "حق تقييد المعالجة",
+        "en": "Right to Restrict Processing"
+      },
+      "content": {
+        "ar": [
+          "الحق في تقييد معالجة البيانات",
+          "عند الاعتراض على دقة البيانات",
+          "عند عدم الحاجة للبيانات لكن صاحبها يحتاجها"
+        ],
+        "en": [
+          "Right to restrict data processing",
+          "When contesting data accuracy",
+          "When data not needed but subject needs it"
+        ]
+      }
+    },
+    "article19": {
+      "title": {
+        "ar": "حق نقل البيانات",
+        "en": "Right to Data Portability"
+      },
+      "content": {
+        "ar": [
+          "الحق في استلام البيانات بصيغة مهيكلة وشائعة الاستخدام",
+          "الحق في نقل البيانات إلى جهة أخرى",
+          "يشمل البيانات المقدمة من صاحبها"
+        ],
+        "en": [
+          "Right to receive data in structured, commonly used format",
+          "Right to transfer data to another controller",
+          "Includes data provided by the subject"
+        ]
+      }
+    },
+    "article20": {
+      "title": {
+        "ar": "حق الاعتراض",
+        "en": "Right to Object"
+      },
+      "content": {
+        "ar": [
+          "الحق في الاعتراض على معالجة البيانات",
+          "الحق في الاعتراض على التسويق المباشر",
+          "يجب إيقاف المعالجة ما لم توجد مصلحة مشروعة"
+        ],
+        "en": [
+          "Right to object to data processing",
+          "Right to object to direct marketing",
+          "Processing must stop unless legitimate interest exists"
+        ]
+      }
+    }
+  },
+  "legalBasis": {
+    "ar": [
+      "موافقة صاحب البيانات",
+      "تنفيذ عقد مع صاحب البيانات",
+      "الالتزام قانوني على جهة التحكم",
+      "حماية المصالح الحيوية لصاحب البيانات",
+      "المصلحة العامة",
+      "المصلحة المشروعة لجهة التحكم"
+    ],
+    "en": [
+      "Data subject's consent",
+      "Contract execution with data subject",
+      "Legal obligation on controller",
+      "Vital interests of data subject",
+      "Public interest",
+      "Legitimate interest of controller"
+    ]
+  },
+  "hrRelevance": {
+    "employeeData": {
+      "ar": {
+        "title": "بيانات الموظفين",
+        "requirements": [
+          "إخطار الموظفين بجمع بياناتهم وأغراض المعالجة",
+          "تحديد الأساس القانوني لمعالجة بيانات الموظفين",
+          "حفظ البيانات لفترة محددة بعد انتهاء العلاقة الوظيفية",
+          "تأمين بيانات الموظفين ضد الوصول غير المصرح به",
+          "منح الموظفين حق الوصول إلى بياناتهم"
+        ],
+        "dataTypes": [
+          "البيانات الشخصية الأساسية (الاسم، رقم الهوية، العنوان)",
+          "بيانات التوظيف (الراتب، المسمى الوظيفي، تاريخ التعيين)",
+          "البيانات البنكية",
+          "بيانات التأمينات الاجتماعية",
+          "السجلات الصحية",
+          "تقييمات الأداء"
+        ]
+      },
+      "en": {
+        "title": "Employee Data",
+        "requirements": [
+          "Notify employees of data collection and processing purposes",
+          "Determine legal basis for processing employee data",
+          "Retain data for specified period after employment ends",
+          "Secure employee data against unauthorized access",
+          "Grant employees access to their data"
+        ],
+        "dataTypes": [
+          "Basic personal data (name, ID, address)",
+          "Employment data (salary, job title, hire date)",
+          "Banking data",
+          "Social insurance data",
+          "Health records",
+          "Performance evaluations"
+        ]
+      }
+    },
+    "recruitment": {
+      "ar": {
+        "title": "التوظيف",
+        "requirements": [
+          "الحصول على موافقة المتقدمين على معالجة بياناتهم",
+          "حذف بيانات المتقدمين غير المقبولين خلال فترة معقولة",
+          "عدم جمع بيانات حساسة إلا للضرورة",
+          "إخطار المتقدمين بنتائج طلباتهم"
+        ]
+      },
+      "en": {
+        "title": "Recruitment",
+        "requirements": [
+          "Obtain applicant consent for data processing",
+          "Delete unsuccessful applicant data within reasonable period",
+          "Only collect sensitive data when necessary",
+          "Notify applicants of application results"
+        ]
+      }
+    },
+    "retentionPeriods": {
+      "ar": {
+        "employeeRecords": "10 سنوات بعد انتهاء العلاقة الوظيفية",
+        "payrollRecords": "10 سنوات",
+        "recruitmentRecords": "سنة واحدة للمتقدمين غير المقبولين",
+        "trainingRecords": "5 سنوات",
+        "disciplinaryRecords": "5 سنوات"
+      },
+      "en": {
+        "employeeRecords": "10 years after employment ends",
+        "payrollRecords": "10 years",
+        "recruitmentRecords": "1 year for unsuccessful applicants",
+        "trainingRecords": "5 years",
+        "disciplinaryRecords": "5 years"
+      }
+    }
+  },
+  "penalties": {
+    "categories": [
+      {
+        "violation": {
+          "ar": "نقل البيانات خارج المملكة دون إذن",
+          "en": "Data transfer outside Saudi Arabia without permission"
+        },
+        "penalty": {
+          "ar": "سجن حتى سنتين و/أو غرامة حتى 3 مليون ريال",
+          "en": "Up to 2 years imprisonment and/or fine up to 3 million SAR"
+        }
+      },
+      {
+        "violation": {
+          "ar": "الإفصاح عن البيانات الحساسة",
+          "en": "Disclosure of sensitive data"
+        },
+        "penalty": {
+          "ar": "سجن حتى سنتين و/أو غرامة حتى 3 مليون ريال",
+          "en": "Up to 2 years imprisonment and/or fine up to 3 million SAR"
+        }
+      },
+      {
+        "violation": {
+          "ar": "معالجة البيانات دون أساس قانوني",
+          "en": "Processing data without legal basis"
+        },
+        "penalty": {
+          "ar": "غرامة حتى 5 مليون ريال",
+          "en": "Fine up to 5 million SAR"
+        }
+      },
+      {
+        "violation": {
+          "ar": "عدم الإبلاغ عن خرق البيانات",
+          "en": "Failure to report data breach"
+        },
+        "penalty": {
+          "ar": "غرامة حتى 5 مليون ريال",
+          "en": "Fine up to 5 million SAR"
+        }
+      }
+    ],
+    "aggravatingFactors": {
+      "ar": [
+        "تكرار المخالفة",
+        "عدم التعاون مع الجهة المختصة",
+        "حجم البيانات المتأثرة",
+        "طبيعة البيانات (حساسة)"
+      ],
+      "en": [
+        "Repeat violations",
+        "Non-cooperation with authorities",
+        "Volume of affected data",
+        "Nature of data (sensitive)"
+      ]
+    }
+  },
+  "dataBreachNotification": {
+    "requirements": {
+      "ar": [
+        "إبلاغ الجهة المختصة خلال 72 ساعة من اكتشاف الخرق",
+        "إبلاغ أصحاب البيانات إذا كان الخرق يشكل خطراً عليهم",
+        "توثيق جميع خروقات البيانات",
+        "اتخاذ إجراءات تصحيحية فورية"
+      ],
+      "en": [
+        "Notify authorities within 72 hours of breach discovery",
+        "Notify data subjects if breach poses risk to them",
+        "Document all data breaches",
+        "Take immediate corrective measures"
+      ]
+    },
+    "notificationContent": {
+      "ar": [
+        "طبيعة الخرق",
+        "فئات البيانات المتأثرة",
+        "العدد التقريبي لأصحاب البيانات المتأثرين",
+        "العواقب المحتملة",
+        "الإجراءات المتخذة"
+      ],
+      "en": [
+        "Nature of breach",
+        "Categories of affected data",
+        "Approximate number of affected data subjects",
+        "Potential consequences",
+        "Measures taken"
+      ]
+    }
+  },
+  "crossBorderTransfer": {
+    "requirements": {
+      "ar": [
+        "الحصول على موافقة صاحب البيانات",
+        "وجود مستوى كافٍ من الحماية في الدولة المستقبلة",
+        "الالتزام بالاشتراطات التي تحددها الجهة المختصة",
+        "إبلاغ الجهة المختصة قبل النقل"
+      ],
+      "en": [
+        "Obtain data subject consent",
+        "Adequate protection level in receiving country",
+        "Comply with requirements set by competent authority",
+        "Notify competent authority before transfer"
+      ]
+    },
+    "exceptions": {
+      "ar": [
+        "تنفيذ عقد مع صاحب البيانات",
+        "حماية المصالح الحيوية",
+        "المصلحة العامة",
+        "الدفاع في دعوى قضائية"
+      ],
+      "en": [
+        "Contract execution with data subject",
+        "Vital interests protection",
+        "Public interest",
+        "Legal claims defense"
+      ]
+    }
+  },
+  "complianceRequirements": {
+    "dataProtectionOfficer": {
+      "ar": {
+        "required": "إلزامي للجهات الحكومية والجهات التي تعالج بيانات حساسة بكميات كبيرة",
+        "responsibilities": [
+          "مراقبة الامتثال للنظام",
+          "تقديم المشورة بشأن حماية البيانات",
+          "التعاون مع الجهة المختصة",
+          "التعامل مع طلبات أصحاب البيانات"
+        ]
+      },
+      "en": {
+        "required": "Mandatory for government entities and entities processing large volumes of sensitive data",
+        "responsibilities": [
+          "Monitor compliance with the law",
+          "Advise on data protection",
+          "Cooperate with competent authority",
+          "Handle data subject requests"
+        ]
+      }
+    },
+    "impactAssessment": {
+      "ar": {
+        "when": [
+          "المعالجة على نطاق واسع",
+          "معالجة البيانات الحساسة",
+          "استخدام تقنيات جديدة",
+          "المراقبة المنهجية للأفراد"
+        ],
+        "elements": [
+          "وصف العمليات المقترحة",
+          "تقييم الضرورة والتناسب",
+          "تقييم المخاطر على أصحاب البيانات",
+          "إجراءات التخفيف"
+        ]
+      },
+      "en": {
+        "when": [
+          "Large-scale processing",
+          "Sensitive data processing",
+          "New technology use",
+          "Systematic monitoring of individuals"
+        ],
+        "elements": [
+          "Description of proposed operations",
+          "Assessment of necessity and proportionality",
+          "Risk assessment for data subjects",
+          "Mitigation measures"
+        ]
+      }
+    },
+    "documentation": {
+      "ar": [
+        "سجل أنشطة المعالجة",
+        "سياسات حماية البيانات",
+        "إجراءات التعامل مع طلبات أصحاب البيانات",
+        "سجل خروقات البيانات",
+        "اتفاقيات معالجة البيانات"
+      ],
+      "en": [
+        "Processing activities record",
+        "Data protection policies",
+        "Data subject request procedures",
+        "Data breach log",
+        "Data processing agreements"
+      ]
+    }
+  },
+  "technicalMeasures": {
+    "ar": [
+      "التشفير",
+      "إخفاء الهوية",
+      "التحكم في الوصول",
+      "النسخ الاحتياطي",
+      "مراقبة الأمان",
+      "اختبار الاختراق"
+    ],
+    "en": [
+      "Encryption",
+      "Anonymization",
+      "Access control",
+      "Backup",
+      "Security monitoring",
+      "Penetration testing"
+    ]
+  }
+}

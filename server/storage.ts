@@ -1,6 +1,7 @@
 // Preconfigured storage helpers for Manus WebDev templates
 // Uses Cloudinary when CLOUDINARY_URL is set, otherwise falls back to the Forge storage proxy
 
+/* eslint-disable no-undef */
 import { ENV } from "./_core/env";
 import { logger } from "./_core/logger";
 import { v2 as cloudinary } from "cloudinary";

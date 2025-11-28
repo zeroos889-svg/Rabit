@@ -3,6 +3,7 @@
  * Prevents requests from hanging indefinitely with configurable timeouts
  */
 
+/* eslint-disable no-undef */
 import type { Request, Response, NextFunction } from "express";
 import { logger } from "./logger";
 import { getRequestId } from "./requestTracking";

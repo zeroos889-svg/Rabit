@@ -20,6 +20,8 @@
    - [Notifications / الإشعارات](#notifications-endpoints)
    - [Admin / لوحة التحكم](#admin-endpoints)
    - [Reports / التقارير](#reports-endpoints)
+   - [AI Tools / أدوات الذكاء الاصطناعي](#ai-tools-endpoints)
+   - [Knowledge Base / قاعدة المعرفة](#knowledge-base-endpoints)
 4. [Error Handling / معالجة الأخطاء](#error-handling)
 5. [Rate Limiting / حدود الاستخدام](#rate-limiting)
 6. [WebSocket Events / أحداث الاتصال الفوري](#websocket-events)
@@ -859,6 +861,454 @@ curl -X POST "http://localhost:5000/api/trpc/auth.register" \
 ---
 
 ## Error Handling / معالجة الأخطاء {#error-handling}
+
+### AI Tools Endpoints / نقاط أدوات الذكاء الاصطناعي {#ai-tools-endpoints}
+
+#### Financial Calculators / الآلات الحاسبة المالية
+
+##### `financialCalculator.calculateGOSI` - حساب التأمينات الاجتماعية
+
+**Method:** `mutation`
+
+**Input:**
+```typescript
+{
+  basicSalary: number;          // الراتب الأساسي
+  housingAllowance: number;     // بدل السكن
+  isNonSaudi: boolean;          // غير سعودي
+  employerContributionRate?: number;  // نسبة صاحب العمل (default: 0.1175)
+  employeeContributionRate?: number;  // نسبة الموظف (default: 0.0975)
+}
+```
+
+**Response:**
+```typescript
+{
+  employeeContribution: number;   // اشتراك الموظف
+  employerContribution: number;   // اشتراك صاحب العمل
+  totalContribution: number;      // الإجمالي
+  totalInsurableSalary: number;   // الراتب الخاضع للتأمين
+  breakdown: {
+    pension: { employee: number; employer: number };
+    annuities: { employer: number };
+    saned?: { employee: number; employer: number };
+  };
+}
+```
+
+**Example:**
+```bash
+curl -X POST "http://localhost:5000/api/trpc/financialCalculator.calculateGOSI" \
+  -H "Content-Type: application/json" \
+  -d '{"json": {"basicSalary": 10000, "housingAllowance": 2500, "isNonSaudi": false}}'
+```
+
+---
+
+##### `financialCalculator.calculateEOSB` - حساب نهاية الخدمة
+
+**Method:** `mutation`
+
+**Input:**
+```typescript
+{
+  basicSalary: number;          // الراتب الأساسي
+  allowances: number;           // البدلات
+  yearsOfService: number;       // سنوات الخدمة
+  terminationReason: "resignation" | "termination" | "contract_end" | "retirement";
+  contractType: "unlimited" | "limited";
+}
+```
+
+**Response:**
+```typescript
+{
+  totalAmount: number;           // المبلغ الإجمالي
+  yearsCalculation: string;      // تفصيل السنوات
+  eligibilityPercentage: number; // نسبة الاستحقاق
+  breakdown: {
+    firstFiveYears: number;      // أول 5 سنوات
+    afterFiveYears: number;      // بعد 5 سنوات
+    adjustedTotal: number;       // الإجمالي المعدل
+  };
+  warnings: string[];            // التنبيهات
+}
+```
+
+---
+
+##### `financialCalculator.calculateLeave` - حساب الإجازات
+
+**Method:** `mutation`
+
+**Input:**
+```typescript
+{
+  yearsOfService: number;    // سنوات الخدمة
+  usedDays: number;          // الأيام المستخدمة
+  carryOverDays: number;     // الأيام المرحلة
+  dailySalary: number;       // الراتب اليومي
+}
+```
+
+**Response:**
+```typescript
+{
+  annualEntitlement: number;  // الاستحقاق السنوي (21 أو 30)
+  remainingDays: number;      // الأيام المتبقية
+  totalAccrued: number;       // إجمالي المستحق
+  cashValue: number;          // القيمة النقدية
+  expiryDate: string;         // تاريخ انتهاء الصلاحية
+}
+```
+
+---
+
+#### Compliance Checker / فحص الامتثال
+
+##### `complianceChecker.checkCompliance` - فحص الامتثال الشامل
+
+**Method:** `mutation`
+
+**Input:**
+```typescript
+{
+  employeeData: {
+    name: string;
+    nationality: string;
+    salary: number;
+    contractType: string;
+    workingHours: number;
+  };
+  companyData: {
+    sector: string;
+    size: "small" | "medium" | "large";
+    totalEmployees: number;
+    saudiEmployees: number;
+  };
+}
+```
+
+**Response:**
+```typescript
+{
+  overallStatus: "compliant" | "non-compliant" | "warning";
+  score: number;
+  checks: Array<{
+    category: string;
+    status: "pass" | "fail" | "warning";
+    message: string;
+    regulation: string;
+  }>;
+  recommendations: string[];
+}
+```
+
+---
+
+##### `complianceChecker.checkSaudization` - فحص نسبة السعودة
+
+**Method:** `mutation`
+
+**Input:**
+```typescript
+{
+  sector: string;                // القطاع
+  companySize: "small" | "medium" | "large";
+  totalEmployees: number;        // إجمالي الموظفين
+  saudiEmployees: number;        // الموظفين السعوديين
+}
+```
+
+**Response:**
+```typescript
+{
+  currentPercentage: number;     // النسبة الحالية
+  requiredPercentage: number;    // النسبة المطلوبة
+  band: "platinum" | "green" | "yellow" | "red";
+  isCompliant: boolean;
+  shortfall: number;             // العجز (عدد الموظفين)
+  recommendations: string[];
+}
+```
+
+---
+
+##### `complianceChecker.checkWageProtection` - فحص حماية الأجور
+
+**Method:** `mutation`
+
+**Input:**
+```typescript
+{
+  employeeSalary: number;       // راتب الموظف
+  paymentDate: string;          // تاريخ الدفع
+  paymentMethod: "bank_transfer" | "cash" | "check";
+  contractSalary: number;       // الراتب في العقد
+}
+```
+
+**Response:**
+```typescript
+{
+  isCompliant: boolean;
+  issues: Array<{
+    type: string;
+    severity: "critical" | "warning";
+    message: string;
+  }>;
+  recommendations: string[];
+}
+```
+
+---
+
+#### Contract Generator / مولد العقود
+
+##### `contractGenerator.generate` - توليد عقد عمل
+
+**Method:** `mutation`
+
+**Input:**
+```typescript
+{
+  type: "unlimited" | "limited" | "part-time" | "remote" | "training";
+  employeeInfo: {
+    name: string;
+    nationalId: string;
+    nationality: string;
+  };
+  jobInfo: {
+    title: string;
+    department: string;
+    salary: number;
+  };
+  companyInfo: {
+    name: string;
+    crNumber: string;
+  };
+  terms: {
+    probationPeriod: number;    // أيام
+    noticePeriod: number;       // أيام
+    workingHours: number;       // ساعات
+  };
+}
+```
+
+**Response:**
+```typescript
+{
+  contractHtml: string;         // العقد بصيغة HTML
+  contractText: string;         // العقد نص عادي
+  clauses: Array<{
+    number: number;
+    title: string;
+    content: string;
+  }>;
+}
+```
+
+---
+
+#### Employee Analyzer / محلل الموظفين
+
+##### `employeeAnalyzer.analyzePerformance` - تحليل الأداء
+
+**Method:** `mutation`
+
+**Input:**
+```typescript
+{
+  employeeId: string;
+  metrics: {
+    attendance: number;         // 0-100
+    tasksCompleted: number;
+    qualityScore: number;       // 0-100
+  };
+  period: string;              // مثل: "2024-Q1"
+}
+```
+
+**Response:**
+```typescript
+{
+  overallScore: number;
+  rating: "excellent" | "good" | "satisfactory" | "needs_improvement";
+  strengths: string[];
+  improvementAreas: string[];
+  recommendations: string[];
+}
+```
+
+---
+
+##### `employeeAnalyzer.predictAttrition` - التنبؤ بالاستقالة
+
+**Method:** `mutation`
+
+**Input:**
+```typescript
+{
+  employeeId: string;
+  factors: {
+    tenure: number;             // سنوات
+    salaryGrowth: number;       // نسبة مئوية
+    promotions: number;
+    satisfactionScore: number;  // 1-5
+  };
+}
+```
+
+**Response:**
+```typescript
+{
+  riskLevel: "low" | "medium" | "high";
+  probability: number;          // 0-100
+  riskFactors: string[];
+  retentionStrategies: string[];
+}
+```
+
+---
+
+### Knowledge Base Endpoints / نقاط قاعدة المعرفة {#knowledge-base-endpoints}
+
+##### `knowledgeBase.getAllRegulations` - جميع الأنظمة
+
+**Method:** `query`
+
+**Response:**
+```typescript
+{
+  regulations: Array<{
+    id: string;
+    nameAr: string;
+    nameEn: string;
+    categoryAr: string;
+    categoryEn: string;
+    description: string;
+    lastUpdated: string;
+    articles: Array<{
+      number: string;
+      titleAr: string;
+      titleEn: string;
+      contentAr: string;
+      contentEn: string;
+    }>;
+  }>;
+}
+```
+
+---
+
+##### `knowledgeBase.getRegulation` - نظام محدد
+
+**Method:** `query`
+
+**Input:**
+```typescript
+{
+  id: string;   // مثل: "saudi-labor-law", "gosi", "nitaqat"
+}
+```
+
+**Response:**
+```typescript
+{
+  regulation: {
+    id: string;
+    nameAr: string;
+    nameEn: string;
+    // ... full regulation details
+  };
+}
+```
+
+---
+
+##### `knowledgeBase.searchRegulations` - البحث في الأنظمة
+
+**Method:** `query`
+
+**Input:**
+```typescript
+{
+  query: string;              // نص البحث
+  language?: "ar" | "en";     // لغة البحث
+  regulationIds?: string[];   // تحديد الأنظمة للبحث فيها
+}
+```
+
+**Response:**
+```typescript
+{
+  results: Array<{
+    regulationId: string;
+    regulationName: string;
+    articleNumber: string;
+    articleTitle: string;
+    excerpt: string;
+    relevanceScore: number;
+  }>;
+  totalResults: number;
+}
+```
+
+---
+
+##### `knowledgeBase.getArticle` - مادة محددة
+
+**Method:** `query`
+
+**Input:**
+```typescript
+{
+  regulationId: string;       // معرف النظام
+  articleNumber: string;      // رقم المادة
+}
+```
+
+**Response:**
+```typescript
+{
+  article: {
+    number: string;
+    titleAr: string;
+    titleEn: string;
+    contentAr: string;
+    contentEn: string;
+    notes?: string[];
+    relatedArticles?: string[];
+  };
+}
+```
+
+---
+
+##### `knowledgeBase.getSummary` - ملخص النظام
+
+**Method:** `query`
+
+**Input:**
+```typescript
+{
+  regulationId: string;
+}
+```
+
+**Response:**
+```typescript
+{
+  summary: {
+    totalArticles: number;
+    categories: string[];
+    keyTopics: string[];
+    lastUpdated: string;
+  };
+}
+```
+
+---
 
 ### Error Response Format
 

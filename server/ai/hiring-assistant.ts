@@ -1,9 +1,125 @@
 /**
  * AI Hiring Assistant - مساعد التوظيف الذكي
  * يستخدم الذكاء الاصطناعي لفحص السير الذاتية وتقييم المرشحين
+ * مع دعم كامل للأنظمة السعودية (نطاقات، قوى، نظام العمل)
  */
 
 import { invokeLLM, type Message } from "../_core/llm";
+import { loadRegulation } from "./knowledge-base-loader";
+
+// ============================================
+// Saudi Compliance Types
+// ============================================
+
+interface SaudiComplianceCheck {
+  nitaqatImpact: {
+    currentBand: string;
+    afterHiring: string;
+    recommendation: string;
+  };
+  workPermitRequired: boolean;
+  saudiPreference: boolean;
+  localizationRequirement?: {
+    required: boolean;
+    reason: string;
+    alternatives: string[];
+  };
+  qiwaCompliance: {
+    contractType: string;
+    registrationRequired: boolean;
+    notes: string[];
+  };
+}
+
+// ============================================
+// Knowledge Base Integration
+// ============================================
+
+function getLaborLaw() {
+  return loadRegulation('labor-law');
+}
+
+function getNitaqatRegulation() {
+  return loadRegulation('nitaqat');
+}
+
+function getQiwaRegulation() {
+  return loadRegulation('qiwa');
+}
+
+/**
+ * التحقق من متطلبات السعودة للوظيفة
+ */
+function checkSaudizationRequirements(
+  position: string,
+  sector: string,
+  isForSaudi: boolean
+): { required: boolean; reason: string; alternatives: string[] } {
+  const nitaqat = getNitaqatRegulation() as Record<string, any>;
+  const localizedJobs = nitaqat?.localizedJobs || nitaqat?.localizedProfessions || [];
+  
+  // التحقق من الوظائف المقصورة على السعوديين
+  const isLocalized = localizedJobs.some((job: string) => 
+    position.toLowerCase().includes(job.toLowerCase())
+  );
+  
+  if (isLocalized && !isForSaudi) {
+    return {
+      required: true,
+      reason: `الوظيفة "${position}" مقصورة على السعوديين حسب قرارات التوطين`,
+      alternatives: [
+        'توظيف مواطن سعودي',
+        'البحث عن وظيفة بديلة غير مقصورة',
+        'التقدم بطلب استثناء (إن أمكن)'
+      ]
+    };
+  }
+  
+  return { required: false, reason: '', alternatives: [] };
+}
+
+/**
+ * حساب تأثير التوظيف على نطاقات
+ */
+function calculateNitaqatImpact(
+  currentSaudis: number,
+  totalEmployees: number,
+  sector: string,
+  hiringCount: number,
+  hiringSaudis: number
+): { currentBand: string; afterHiring: string; recommendation: string } {
+  const nitaqat = getNitaqatRegulation() as Record<string, any>;
+  const bands = nitaqat?.bands || {};
+  
+  const currentRatio = totalEmployees > 0 ? (currentSaudis / totalEmployees) * 100 : 0;
+  const newTotal = totalEmployees + hiringCount;
+  const newSaudis = currentSaudis + hiringSaudis;
+  const newRatio = newTotal > 0 ? (newSaudis / newTotal) * 100 : 0;
+  
+  // تحديد النطاق الحالي والجديد
+  const getBand = (ratio: number): string => {
+    if (ratio >= (bands?.platinum?.min || 40)) return 'بلاتيني';
+    if (ratio >= (bands?.green_high?.min || 30)) return 'أخضر مرتفع';
+    if (ratio >= (bands?.green_mid?.min || 23)) return 'أخضر متوسط';
+    if (ratio >= (bands?.green_low?.min || 17)) return 'أخضر منخفض';
+    if (ratio >= (bands?.yellow?.min || 10)) return 'أصفر';
+    return 'أحمر';
+  };
+  
+  const currentBand = getBand(currentRatio);
+  const afterHiring = getBand(newRatio);
+  
+  let recommendation = '';
+  if (afterHiring === 'أحمر' || afterHiring === 'أصفر') {
+    recommendation = 'يُنصح بتوظيف سعوديين لتحسين نطاق الشركة';
+  } else if (newRatio > currentRatio) {
+    recommendation = 'التوظيف سيحسن نسبة السعودة';
+  } else {
+    recommendation = 'التوظيف لن يؤثر سلباً على النطاق';
+  }
+  
+  return { currentBand, afterHiring, recommendation };
+}
 
 // Helper function to simplify AI calls
 async function callAI(messages: Message[], maxTokens = 3000) {
@@ -578,6 +694,255 @@ Provide in JSON format:
       behavioral: [],
       situational: [],
       cultureF: [],
+    };
+  }
+}
+
+// ============================================
+// Saudi Compliance Functions
+// ============================================
+
+/**
+ * تقييم المرشح مع التحقق من الامتثال للأنظمة السعودية
+ */
+export async function evaluateCandidateWithCompliance(
+  resume: Resume,
+  jobRequirements: JobRequirements,
+  companyContext: {
+    sector: string;
+    currentSaudis: number;
+    totalEmployees: number;
+    currentNitaqatBand: string;
+  },
+  candidateNationality: 'saudi' | 'non_saudi',
+  language: "ar" | "en" = "ar"
+): Promise<{
+  evaluation: CandidateEvaluation;
+  compliance: SaudiComplianceCheck;
+  overallRecommendation: string;
+}> {
+  const isArabic = language === "ar";
+  const isSaudi = candidateNationality === 'saudi';
+  
+  // 1. التقييم الأساسي للمرشح
+  const evaluation = await evaluateCandidate(resume, jobRequirements, language);
+  
+  // 2. التحقق من متطلبات السعودة
+  const localizationCheck = checkSaudizationRequirements(
+    jobRequirements.title,
+    companyContext.sector,
+    isSaudi
+  );
+  
+  // 3. حساب تأثير التوظيف على نطاقات
+  const nitaqatImpact = calculateNitaqatImpact(
+    companyContext.currentSaudis,
+    companyContext.totalEmployees,
+    companyContext.sector,
+    1, // توظيف شخص واحد
+    isSaudi ? 1 : 0
+  );
+  
+  // 4. التحقق من متطلبات قوى
+  const qiwaCompliance = {
+    contractType: isSaudi ? 'عقد عمل سعودي' : 'عقد عمل وافد',
+    registrationRequired: true,
+    notes: [
+      'يجب تسجيل العقد في منصة قوى خلال 7 أيام من التوظيف',
+      isSaudi ? 'لا يتطلب تصريح عمل' : 'يتطلب تصريح عمل ساري المفعول',
+      'يجب الالتزام بالحد الأدنى للأجور'
+    ]
+  };
+  
+  // 5. بناء توصية شاملة
+  let overallRecommendation = '';
+  
+  if (localizationCheck.required) {
+    overallRecommendation = isArabic
+      ? `⚠️ تنبيه: ${localizationCheck.reason}. البدائل: ${localizationCheck.alternatives.join(', ')}`
+      : `⚠️ Warning: ${localizationCheck.reason}. Alternatives: ${localizationCheck.alternatives.join(', ')}`;
+  } else if (evaluation.recommendation === 'highly_recommended' || evaluation.recommendation === 'recommended') {
+    if (nitaqatImpact.afterHiring === 'أحمر' || nitaqatImpact.afterHiring === 'أصفر') {
+      overallRecommendation = isArabic
+        ? `المرشح مناسب فنياً، لكن يُنصح بتوظيف سعودي لتحسين نطاق الشركة (${nitaqatImpact.afterHiring})`
+        : `Candidate is technically suitable, but hiring a Saudi is recommended to improve Nitaqat band (${nitaqatImpact.afterHiring})`;
+    } else {
+      overallRecommendation = isArabic
+        ? `✅ المرشح مناسب ويتوافق مع متطلبات الامتثال`
+        : `✅ Candidate is suitable and complies with regulations`;
+    }
+  } else {
+    overallRecommendation = isArabic
+      ? `المرشح يحتاج لمراجعة إضافية. التقييم الفني: ${evaluation.recommendationAr}`
+      : `Candidate needs additional review. Technical assessment: ${evaluation.recommendation}`;
+  }
+  
+  return {
+    evaluation,
+    compliance: {
+      nitaqatImpact,
+      workPermitRequired: !isSaudi,
+      saudiPreference: !isSaudi && (nitaqatImpact.afterHiring === 'أحمر' || nitaqatImpact.afterHiring === 'أصفر'),
+      localizationRequirement: localizationCheck.required ? localizationCheck : undefined,
+      qiwaCompliance
+    },
+    overallRecommendation
+  };
+}
+
+/**
+ * حساب تكلفة التوظيف الإجمالية (شاملة رسوم العمالة)
+ */
+export function calculateHiringCost(
+  salary: number,
+  isSaudi: boolean,
+  includeGosi: boolean = true
+): {
+  monthlySalary: number;
+  gosiEmployer: number;
+  gosiEmployee: number;
+  expatLevyMonthly: number;
+  totalMonthlyCost: number;
+  annualCost: number;
+  breakdown: Record<string, number>;
+} {
+  const gosi = loadRegulation('gosi') as Record<string, any>;
+  const rates = isSaudi ? gosi?.rates?.saudi : gosi?.rates?.nonSaudi;
+  
+  const gosiEmployer = includeGosi ? salary * ((rates?.employer || 12) / 100) : 0;
+  const gosiEmployee = includeGosi ? salary * ((rates?.employee || 10) / 100) : 0;
+  
+  // رسوم المقابل المالي للوافدين (400 ريال شهرياً تقريباً)
+  const expatLevyMonthly = isSaudi ? 0 : 400;
+  
+  const totalMonthlyCost = salary + gosiEmployer + expatLevyMonthly;
+  
+  return {
+    monthlySalary: salary,
+    gosiEmployer,
+    gosiEmployee,
+    expatLevyMonthly,
+    totalMonthlyCost,
+    annualCost: totalMonthlyCost * 12,
+    breakdown: {
+      'الراتب الأساسي': salary,
+      'اشتراك GOSI (صاحب العمل)': gosiEmployer,
+      'اشتراك GOSI (الموظف)': gosiEmployee,
+      'رسوم المقابل المالي': expatLevyMonthly,
+      'إجمالي التكلفة الشهرية': totalMonthlyCost
+    }
+  };
+}
+
+/**
+ * توليد إعلان وظيفي متوافق مع الأنظمة السعودية
+ */
+export async function generateCompliantJobPosting(
+  jobRequirements: JobRequirements,
+  companyInfo: {
+    name: string;
+    industry: string;
+    size: string;
+    location: string;
+  },
+  preferences: {
+    saudiOnly?: boolean;
+    remoteAllowed?: boolean;
+    experienceRange?: { min: number; max: number };
+  },
+  language: "ar" | "en" = "ar"
+): Promise<{
+  posting: string;
+  complianceNotes: string[];
+  suggestedPlatforms: string[];
+}> {
+  const isArabic = language === "ar";
+  const laborLaw = getLaborLaw() as Record<string, any>;
+  
+  // التحقق من الوظائف المقصورة
+  const nitaqat = getNitaqatRegulation() as Record<string, any>;
+  const localizedJobs = nitaqat?.localizedJobs || [];
+  const isLocalized = localizedJobs.some((job: string) => 
+    jobRequirements.title.toLowerCase().includes(job.toLowerCase())
+  );
+  
+  const complianceNotes: string[] = [];
+  
+  if (isLocalized) {
+    complianceNotes.push(isArabic 
+      ? 'هذه الوظيفة مقصورة على السعوديين بموجب قرارات التوطين'
+      : 'This position is restricted to Saudi nationals per localization decisions');
+  }
+  
+  complianceNotes.push(isArabic
+    ? 'يجب الالتزام بالحد الأدنى للأجور حسب نظام العمل'
+    : 'Must comply with minimum wage requirements per Labor Law');
+  
+  if (preferences.remoteAllowed) {
+    complianceNotes.push(isArabic
+      ? 'العمل عن بُعد يتطلب تسجيل العقد في منصة قوى'
+      : 'Remote work requires contract registration in Qiwa platform');
+  }
+  
+  const systemPrompt = isArabic
+    ? `أنت كاتب محتوى موارد بشرية محترف في السعودية. اكتب إعلاناً وظيفياً جذاباً ومتوافقاً مع الأنظمة.`
+    : `You are a professional HR content writer in Saudi Arabia. Write an attractive job posting compliant with regulations.`;
+
+  const userPrompt = isArabic
+    ? `اكتب إعلاناً وظيفياً للوظيفة التالية:
+
+**الوظيفة:** ${jobRequirements.title}
+**الشركة:** ${companyInfo.name}
+**الموقع:** ${companyInfo.location}
+**الخبرة:** ${jobRequirements.minExperience}+ سنوات
+**المهارات:** ${jobRequirements.requiredSkills.join(', ')}
+${isLocalized ? '**ملاحظة:** الوظيفة مقصورة على السعوديين' : ''}
+${preferences.remoteAllowed ? '**نوع العمل:** يدعم العمل عن بُعد' : ''}
+
+اكتب إعلاناً احترافياً يتضمن:
+1. وصف الوظيفة
+2. المتطلبات
+3. المزايا
+4. طريقة التقديم`
+    : `Write a job posting for:
+
+**Position:** ${jobRequirements.title}
+**Company:** ${companyInfo.name}
+**Location:** ${companyInfo.location}
+**Experience:** ${jobRequirements.minExperience}+ years
+**Skills:** ${jobRequirements.requiredSkills.join(', ')}
+${isLocalized ? '**Note:** Position restricted to Saudi nationals' : ''}
+${preferences.remoteAllowed ? '**Work Type:** Remote work supported' : ''}
+
+Write a professional posting including:
+1. Job description
+2. Requirements
+3. Benefits
+4. How to apply`;
+
+  try {
+    const response = await callAI([
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ]);
+
+    return {
+      posting: response.content,
+      complianceNotes,
+      suggestedPlatforms: [
+        'منصة قوى (Qiwa)',
+        'طاقات (Taqat)',
+        'LinkedIn',
+        'Indeed Saudi Arabia',
+        'Bayt.com'
+      ]
+    };
+  } catch (error) {
+    console.error("Job Posting Error:", error);
+    return {
+      posting: isArabic ? 'حدث خطأ في توليد الإعلان' : 'Error generating posting',
+      complianceNotes,
+      suggestedPlatforms: []
     };
   }
 }

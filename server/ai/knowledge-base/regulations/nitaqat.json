@@ -1,0 +1,304 @@
+{
+  "$schema": "../schemas/regulation.schema.json",
+  "id": "nitaqat",
+  "name": {
+    "ar": "نظام نطاقات",
+    "en": "Nitaqat (Saudization Program)"
+  },
+  "authority": {
+    "ar": "وزارة الموارد البشرية والتنمية الاجتماعية",
+    "en": "Ministry of Human Resources and Social Development (MHRSD)"
+  },
+  "version": "2025",
+  "lastAmendment": "2025-01-01",
+  "status": "active",
+
+  "overview": {
+    "ar": "برنامج نطاقات هو نظام تحفيزي لتوظيف السعوديين يصنف منشآت القطاع الخاص حسب نسب التوطين",
+    "en": "Nitaqat is an incentive program for Saudi employment that classifies private sector establishments based on localization ratios"
+  },
+
+  "bands": [
+    {
+      "name": { "ar": "البلاتيني", "en": "Platinum" },
+      "color": "#E5E4E2",
+      "minPercentage": null,
+      "description": {
+        "ar": "أعلى مستويات التوطين - امتيازات كاملة",
+        "en": "Highest localization levels - Full privileges"
+      },
+      "privileges": {
+        "ar": [
+          "تأشيرات عمل فورية",
+          "نقل الخدمات من جميع النطاقات",
+          "إصدار تأشيرات للنشاطات المتعددة",
+          "تغيير المهن بدون قيود"
+        ],
+        "en": [
+          "Instant work visas",
+          "Transfer services from all bands",
+          "Issue visas for multiple activities",
+          "Profession change without restrictions"
+        ]
+      }
+    },
+    {
+      "name": { "ar": "الأخضر المرتفع", "en": "High Green" },
+      "color": "#006400",
+      "minPercentage": null,
+      "description": {
+        "ar": "نسب توطين جيدة جداً",
+        "en": "Very good localization ratios"
+      },
+      "privileges": {
+        "ar": [
+          "تأشيرات عمل متاحة",
+          "نقل خدمات من الأخضر والأصفر والأحمر",
+          "معظم الخدمات متاحة"
+        ],
+        "en": [
+          "Work visas available",
+          "Transfer services from green, yellow, red",
+          "Most services available"
+        ]
+      }
+    },
+    {
+      "name": { "ar": "الأخضر المتوسط", "en": "Medium Green" },
+      "color": "#008000",
+      "minPercentage": null,
+      "description": {
+        "ar": "نسب توطين جيدة",
+        "en": "Good localization ratios"
+      }
+    },
+    {
+      "name": { "ar": "الأخضر المنخفض", "en": "Low Green" },
+      "color": "#90EE90",
+      "minPercentage": null,
+      "description": {
+        "ar": "الحد الأدنى المطلوب للتوطين",
+        "en": "Minimum required localization"
+      }
+    },
+    {
+      "name": { "ar": "الأصفر", "en": "Yellow" },
+      "color": "#FFFF00",
+      "description": {
+        "ar": "أقل من الحد الأدنى - تحتاج تحسين",
+        "en": "Below minimum - Needs improvement"
+      },
+      "restrictions": {
+        "ar": [
+          "تأشيرات محدودة",
+          "لا يمكن نقل خدمات من الأخضر",
+          "بعض الخدمات مقيدة"
+        ],
+        "en": [
+          "Limited visas",
+          "Cannot transfer services from green",
+          "Some services restricted"
+        ]
+      }
+    },
+    {
+      "name": { "ar": "الأحمر", "en": "Red" },
+      "color": "#FF0000",
+      "description": {
+        "ar": "نسب توطين ضعيفة جداً - قيود شديدة",
+        "en": "Very poor localization ratios - Severe restrictions"
+      },
+      "restrictions": {
+        "ar": [
+          "لا تأشيرات جديدة",
+          "لا نقل خدمات",
+          "إيقاف معظم الخدمات",
+          "مهلة للتصحيح"
+        ],
+        "en": [
+          "No new visas",
+          "No service transfers",
+          "Most services suspended",
+          "Correction deadline given"
+        ]
+      }
+    }
+  ],
+
+  "sectorRequirements2025": [
+    {
+      "sector": { "ar": "التجزئة", "en": "Retail" },
+      "size": "small",
+      "employees": "1-9",
+      "minPercentage": 30
+    },
+    {
+      "sector": { "ar": "التجزئة", "en": "Retail" },
+      "size": "medium",
+      "employees": "10-49",
+      "minPercentage": 35
+    },
+    {
+      "sector": { "ar": "التجزئة", "en": "Retail" },
+      "size": "large",
+      "employees": "50+",
+      "minPercentage": 40
+    },
+    {
+      "sector": { "ar": "البناء والتشييد", "en": "Construction" },
+      "size": "small",
+      "employees": "1-9",
+      "minPercentage": 8
+    },
+    {
+      "sector": { "ar": "البناء والتشييد", "en": "Construction" },
+      "size": "medium",
+      "employees": "10-49",
+      "minPercentage": 10
+    },
+    {
+      "sector": { "ar": "البناء والتشييد", "en": "Construction" },
+      "size": "large",
+      "employees": "50+",
+      "minPercentage": 12
+    },
+    {
+      "sector": { "ar": "الصناعة", "en": "Manufacturing" },
+      "size": "small",
+      "employees": "1-9",
+      "minPercentage": 15
+    },
+    {
+      "sector": { "ar": "الصناعة", "en": "Manufacturing" },
+      "size": "medium",
+      "employees": "10-49",
+      "minPercentage": 20
+    },
+    {
+      "sector": { "ar": "الصناعة", "en": "Manufacturing" },
+      "size": "large",
+      "employees": "50+",
+      "minPercentage": 25
+    },
+    {
+      "sector": { "ar": "تقنية المعلومات", "en": "Information Technology" },
+      "size": "all",
+      "employees": "all",
+      "minPercentage": 25,
+      "notes": { "ar": "قطاع مستهدف بنسب أعلى", "en": "Targeted sector with higher ratios" }
+    },
+    {
+      "sector": { "ar": "الاتصالات", "en": "Telecommunications" },
+      "size": "all",
+      "employees": "all",
+      "minPercentage": 30
+    },
+    {
+      "sector": { "ar": "البنوك والتمويل", "en": "Banking & Finance" },
+      "size": "all",
+      "employees": "all",
+      "minPercentage": 85,
+      "notes": { "ar": "من أعلى نسب التوطين المطلوبة", "en": "One of the highest required ratios" }
+    }
+  ],
+
+  "countingRules": {
+    "fullSaudi": {
+      "count": 1.0,
+      "ar": "سعودي بدوام كامل",
+      "en": "Full-time Saudi"
+    },
+    "partTimeSaudi": {
+      "count": 0.5,
+      "ar": "سعودي بدوام جزئي",
+      "en": "Part-time Saudi"
+    },
+    "studentSaudi": {
+      "count": 0.5,
+      "ar": "طالب سعودي",
+      "en": "Saudi student"
+    },
+    "disabledSaudi": {
+      "count": 4.0,
+      "ar": "سعودي من ذوي الإعاقة",
+      "en": "Disabled Saudi",
+      "conditions": { "ar": "يتم احتسابه بأربعة سعوديين", "en": "Counted as four Saudis" }
+    },
+    "exCriminal": {
+      "count": 2.0,
+      "ar": "سجين سابق مؤهل",
+      "en": "Rehabilitated former prisoner",
+      "conditions": { "ar": "برنامج إعادة التأهيل", "en": "Rehabilitation program" }
+    },
+    "remoteWorker": {
+      "count": 1.0,
+      "ar": "عامل عن بُعد",
+      "en": "Remote worker",
+      "conditions": { "ar": "مسجل في برنامج العمل عن بُعد", "en": "Registered in remote work program" }
+    }
+  },
+
+  "wageThresholds2025": {
+    "fullCount": {
+      "minWage": 4000,
+      "currency": "SAR",
+      "ar": "الحد الأدنى للاحتساب الكامل",
+      "en": "Minimum for full count"
+    },
+    "halfCount": {
+      "wageRange": { "min": 3000, "max": 3999 },
+      "currency": "SAR",
+      "ar": "يحتسب بنصف عامل",
+      "en": "Counted as half worker"
+    },
+    "noCount": {
+      "maxWage": 2999,
+      "currency": "SAR",
+      "ar": "لا يحتسب في نطاقات",
+      "en": "Not counted in Nitaqat"
+    }
+  },
+
+  "exemptions": [
+    {
+      "type": { "ar": "المنشآت الصغيرة جداً", "en": "Very small establishments" },
+      "condition": { "ar": "أقل من 5 موظفين في بعض الأنشطة", "en": "Less than 5 employees in some activities" }
+    },
+    {
+      "type": { "ar": "المنشآت الناشئة", "en": "Startups" },
+      "condition": { "ar": "السنة الأولى من التأسيس", "en": "First year of establishment" }
+    },
+    {
+      "type": { "ar": "المهن المستثناة", "en": "Exempt professions" },
+      "condition": { "ar": "مهن لا يتوفر لها سعوديون مؤهلون", "en": "Professions with no qualified Saudis" }
+    }
+  ],
+
+  "violations": [
+    {
+      "type": { "ar": "التوطين الوهمي", "en": "Fake Saudization" },
+      "description": {
+        "ar": "تسجيل سعوديين لا يعملون فعلياً",
+        "en": "Registering Saudis who don't actually work"
+      },
+      "penalty": {
+        "ar": "غرامة تصل إلى 100,000 ريال وإيقاف الخدمات",
+        "en": "Fine up to 100,000 SAR and service suspension"
+      }
+    },
+    {
+      "type": { "ar": "عدم دفع الرواتب", "en": "Non-payment of salaries" },
+      "description": {
+        "ar": "تسجيل موظف بدون دفع راتبه",
+        "en": "Registering employee without paying salary"
+      },
+      "penalty": {
+        "ar": "إلغاء الاحتساب وغرامة",
+        "en": "Count cancellation and fine"
+      }
+    }
+  ],
+
+  "relatedRegulations": ["labor-law", "wps-mudad", "qiwa"],
+  "tags": ["توطين", "سعودة", "نطاقات", "saudization", "nitaqat", "localization", "employment"]
+}

@@ -14,6 +14,7 @@
  * @module middleware
  */
 
+/* eslint-disable no-undef */
 import type { Request, Response, NextFunction, RequestHandler } from "express";
 import { verifySessionToken } from "../_core/jwt";
 import { COOKIE_NAME } from "@shared/const";

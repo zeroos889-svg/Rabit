@@ -3,6 +3,7 @@
  * Provides connection pool monitoring, health checks, and optimization
  */
 
+/* eslint-disable no-undef */
 import { execute } from "../db/index";
 import { logger } from "./logger";
 

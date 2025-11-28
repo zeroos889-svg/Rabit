@@ -1,0 +1,201 @@
+{
+  "$schema": "../schemas/regulation.schema.json",
+  "id": "qiwa",
+  "name": {
+    "ar": "منصة قوى",
+    "en": "Qiwa Platform"
+  },
+  "authority": {
+    "ar": "وزارة الموارد البشرية والتنمية الاجتماعية",
+    "en": "Ministry of Human Resources and Social Development (MHRSD)"
+  },
+  "website": "https://qiwa.sa",
+  "version": "2025",
+  "lastAmendment": "2025-03-01",
+  "status": "active",
+
+  "overview": {
+    "ar": "منصة قوى هي البوابة الإلكترونية الموحدة لخدمات سوق العمل السعودي، توفر خدمات إلكترونية للمنشآت والأفراد",
+    "en": "Qiwa is the unified electronic portal for Saudi labor market services, providing e-services for establishments and individuals"
+  },
+
+  "contractAuthentication": {
+    "overview": {
+      "ar": "نظام التوثيق الإلكتروني لعقود العمل يهدف إلى حفظ حقوق جميع أطراف العلاقة التعاقدية",
+      "en": "Electronic contract authentication system aims to protect the rights of all parties in the contractual relationship"
+    },
+    "phases2025": [
+      {
+        "phase": 1,
+        "ar": "إلزامي لجميع العقود الجديدة",
+        "en": "Mandatory for all new contracts",
+        "startDate": "2024-08-01"
+      },
+      {
+        "phase": 2,
+        "ar": "توثيق العقود القائمة للمنشآت الكبيرة (500+ موظف)",
+        "en": "Authentication of existing contracts for large establishments (500+ employees)",
+        "startDate": "2025-01-01"
+      },
+      {
+        "phase": 3,
+        "ar": "توثيق العقود القائمة للمنشآت المتوسطة (50-499 موظف)",
+        "en": "Authentication of existing contracts for medium establishments (50-499 employees)",
+        "startDate": "2025-04-01"
+      },
+      {
+        "phase": 4,
+        "ar": "توثيق العقود القائمة لجميع المنشآت",
+        "en": "Authentication of existing contracts for all establishments",
+        "startDate": "2025-07-01"
+      }
+    ],
+    "requiredFields": [
+      { "ar": "اسم صاحب العمل", "en": "Employer name" },
+      { "ar": "اسم الموظف", "en": "Employee name" },
+      { "ar": "رقم الهوية", "en": "ID number" },
+      { "ar": "المسمى الوظيفي", "en": "Job title" },
+      { "ar": "الراتب الأساسي", "en": "Basic salary" },
+      { "ar": "بدل السكن", "en": "Housing allowance" },
+      { "ar": "بدل النقل", "en": "Transportation allowance" },
+      { "ar": "البدلات الأخرى", "en": "Other allowances" },
+      { "ar": "تاريخ بداية العقد", "en": "Contract start date" },
+      { "ar": "مدة العقد", "en": "Contract duration" },
+      { "ar": "ساعات العمل", "en": "Working hours" },
+      { "ar": "أيام الإجازة السنوية", "en": "Annual leave days" }
+    ],
+    "employeeAcceptance": {
+      "deadline": 7,
+      "unit": "days",
+      "ar": "يجب على الموظف قبول أو رفض العقد خلال 7 أيام من تاريخ إرساله",
+      "en": "Employee must accept or reject contract within 7 days of sending"
+    }
+  },
+
+  "services": {
+    "establishment": [
+      {
+        "name": { "ar": "إصدار تأشيرات العمل", "en": "Work visa issuance" },
+        "description": { "ar": "طلب تأشيرات عمل جديدة", "en": "Request new work visas" }
+      },
+      {
+        "name": { "ar": "نقل الخدمات", "en": "Service transfer" },
+        "description": { "ar": "نقل خدمات العمالة بين المنشآت", "en": "Transfer worker services between establishments" }
+      },
+      {
+        "name": { "ar": "تغيير المهنة", "en": "Profession change" },
+        "description": { "ar": "تغيير مهنة العامل", "en": "Change worker's profession" }
+      },
+      {
+        "name": { "ar": "إصدار رخص العمل", "en": "Work permit issuance" },
+        "description": { "ar": "إصدار وتجديد رخص العمل", "en": "Issue and renew work permits" }
+      },
+      {
+        "name": { "ar": "إدارة العقود", "en": "Contract management" },
+        "description": { "ar": "توثيق وإدارة عقود العمل", "en": "Authenticate and manage employment contracts" }
+      },
+      {
+        "name": { "ar": "خدمات التأشيرات", "en": "Visa services" },
+        "description": { "ar": "إصدار وإلغاء تأشيرات الخروج والعودة", "en": "Issue and cancel exit/re-entry visas" }
+      }
+    ],
+    "individual": [
+      {
+        "name": { "ar": "الاطلاع على بيانات العقد", "en": "View contract data" },
+        "description": { "ar": "استعراض تفاصيل عقد العمل", "en": "Review employment contract details" }
+      },
+      {
+        "name": { "ar": "طلب نقل الخدمات", "en": "Request service transfer" },
+        "description": { "ar": "طلب الانتقال لصاحب عمل جديد", "en": "Request transfer to new employer" }
+      },
+      {
+        "name": { "ar": "تحديث البيانات", "en": "Update data" },
+        "description": { "ar": "تحديث البيانات الشخصية والمهنية", "en": "Update personal and professional data" }
+      },
+      {
+        "name": { "ar": "الشكاوى والنزاعات", "en": "Complaints and disputes" },
+        "description": { "ar": "تقديم شكوى أو نزاع عمالي", "en": "File labor complaint or dispute" }
+      }
+    ]
+  },
+
+  "workerTransfer": {
+    "conditions2025": [
+      {
+        "ar": "انتهاء العقد أو فترة التجربة",
+        "en": "Contract or probation period ended"
+      },
+      {
+        "ar": "مرور 12 شهراً على العقد الحالي (للعقود محددة المدة)",
+        "en": "12 months passed on current contract (for fixed-term contracts)"
+      },
+      {
+        "ar": "عدم صرف الراتب لمدة 3 أشهر (نقل بدون موافقة)",
+        "en": "Salary not paid for 3 months (transfer without approval)"
+      },
+      {
+        "ar": "موافقة صاحب العمل الحالي",
+        "en": "Current employer approval"
+      }
+    ],
+    "noticePeriodsNew2025": {
+      "employeeNotice": {
+        "period": 30,
+        "unit": "days",
+        "ar": "فترة الإشعار للموظف قبل الانتقال",
+        "en": "Employee notice period before transfer"
+      },
+      "employerResponse": {
+        "period": 15,
+        "unit": "days",
+        "ar": "مهلة رد صاحب العمل على طلب النقل",
+        "en": "Employer response period for transfer request"
+      }
+    }
+  },
+
+  "occupationSaudization": {
+    "overview": {
+      "ar": "قرارات توطين المهن تحدد مهن مقصورة على السعوديين",
+      "en": "Occupation localization decisions specify professions restricted to Saudis"
+    },
+    "saudiOnlyOccupations2025": [
+      { "ar": "مدير موارد بشرية", "en": "HR Manager" },
+      { "ar": "أخصائي موارد بشرية", "en": "HR Specialist" },
+      { "ar": "أمين صندوق", "en": "Cashier" },
+      { "ar": "موظف استقبال", "en": "Receptionist" },
+      { "ar": "حارس أمن", "en": "Security guard" },
+      { "ar": "سكرتير", "en": "Secretary" },
+      { "ar": "مترجم", "en": "Translator" },
+      { "ar": "مشرف مخازن", "en": "Warehouse supervisor" },
+      { "ar": "مدير مشتريات", "en": "Procurement manager" },
+      { "ar": "مسؤول علاقات حكومية", "en": "Government relations officer" }
+    ]
+  },
+
+  "violations": [
+    {
+      "type": { "ar": "عدم توثيق العقد", "en": "Not authenticating contract" },
+      "fine": { "min": 5000, "max": 50000, "currency": "SAR" },
+      "consequences": { "ar": "إيقاف خدمات المنشأة", "en": "Establishment services suspended" }
+    },
+    {
+      "type": { "ar": "بيانات عقد غير صحيحة", "en": "Incorrect contract data" },
+      "fine": { "min": 10000, "max": 100000, "currency": "SAR" }
+    },
+    {
+      "type": { "ar": "تشغيل في مهنة مختلفة عن العقد", "en": "Employment in different profession than contract" },
+      "fine": { "min": 15000, "max": 100000, "currency": "SAR" }
+    }
+  ],
+
+  "integration": {
+    "mudad": { "ar": "ربط مع نظام حماية الأجور", "en": "Integration with WPS" },
+    "gosi": { "ar": "ربط مع التأمينات الاجتماعية", "en": "Integration with GOSI" },
+    "absher": { "ar": "التحقق من هوية الموظفين", "en": "Employee identity verification" },
+    "mol": { "ar": "ربط مع أنظمة الوزارة", "en": "Integration with Ministry systems" }
+  },
+
+  "relatedRegulations": ["labor-law", "wps-mudad", "nitaqat"],
+  "tags": ["قوى", "عقود", "توثيق", "نقل", "qiwa", "contracts", "authentication", "transfer"]
+}

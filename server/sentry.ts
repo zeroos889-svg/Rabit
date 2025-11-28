@@ -21,7 +21,7 @@ export function initializeSentry() {
   // Only initialize if DSN is provided
   const dsn = process.env.SENTRY_DSN;
   if (!dsn) {
-    // eslint-disable-next-line no-console
+     
     console.log("⚠️  Sentry DSN not configured, error tracking disabled");
     return;
   }
@@ -73,10 +73,10 @@ export function initializeSentry() {
     });
 
     sentryInitialized = true;
-    // eslint-disable-next-line no-console
+     
     console.log("✅ Sentry error tracking initialized");
   } catch (error) {
-    // eslint-disable-next-line no-console
+     
     console.error("❌ Failed to initialize Sentry:", error);
   }
 }

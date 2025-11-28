@@ -367,6 +367,21 @@ npm run dev:both       # Frontend + Backend
 - المشاكل والاقتراحات عبر GitHub Issues أو البريد [support@rabit.sa](mailto:support@rabit.sa).
 - للمساهمة اطلع على `DEVELOPER_GUIDE.md`, `CODE_DOCUMENTATION.md` وباقي أدلة CI.
 
-**آخر تحديث:** 25 نوفمبر 2025
+**آخر تحديث:** 28 نوفمبر 2025
+
+## 🔄 CI/CD Pipeline
+
+المشروع يستخدم GitHub Actions لـ CI/CD مع:
+
+![CI Pipeline](https://github.com/zeroos889-svg/Rabit/workflows/CI/CD%20Pipeline/badge.svg)
+
+| الـ Workflow | الوصف |
+|-------------|-------|
+| `ci.yml` | Pipeline رئيسي للبناء والاختبار والنشر |
+| `pr-check.yml` | فحص سريع لطلبات الدمج |
+| `security.yml` | فحص أمني أسبوعي |
+| `release.yml` | إصدارات تلقائية |
+
+للمزيد من التفاصيل راجع: [CI/CD Guide](docs/CI_CD_GUIDE.md)
 
 > استخدم هذا الملف كنقطة دخول سريعة، ثم ارجع إلى أدلة README المتخصصة لكل مجال.

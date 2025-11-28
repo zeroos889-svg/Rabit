@@ -367,7 +367,7 @@ export const chatRouter = router({
                       ctx =>
                         `- ${ctx.citation}: ${ctx.summary}${ctx.link ? ` (${ctx.link})` : ""}`
                     )
-                    .join("\n")}\nاختم بفقرة قصيرة \"المصادر:\" تتضمن أسمائها فقط.`,
+                    .join("\n")}\nاختم بفقرة قصيرة "المصادر:" تتضمن أسمائها فقط.`,
                 } satisfies Message,
               ]
             : []

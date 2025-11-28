@@ -11,6 +11,27 @@
 - 2GB RAM على الأقل
 - 10GB مساحة تخزين
 
+## 🏗️ Dockerfile
+
+المشروع يستخدم **Multi-stage build** للحصول على صورة محسّنة:
+
+```dockerfile
+# Stage 1: Dependencies
+FROM node:20-alpine AS deps
+# Stage 2: Builder  
+FROM node:20-alpine AS builder
+# Stage 3: Production Runner
+FROM node:20-alpine AS runner
+```
+
+### مميزات Dockerfile:
+
+- ✅ Multi-stage build لتقليل حجم الصورة
+- ✅ مستخدم غير root (`rabitapp`) للأمان
+- ✅ Health check مدمج
+- ✅ تخزين مؤقت للطبقات
+- ✅ Alpine Linux للحجم الصغير
+
 ## 🚀 البدء السريع
 
 ### 1. استخدام Docker Compose (موصى به)
@@ -163,21 +184,29 @@ services:
 
 ## 📦 النشر إلى الإنتاج
 
-### استخدام GitHub Container Registry
+### استخدام GitHub Container Registry (GHCR)
 
-يتم بناء ودفع الصورة تلقائياً عند الدفع إلى branch main:
+يتم بناء ودفع الصورة تلقائياً عند الدفع إلى branch main عبر CI/CD:
 
 ```bash
 # سحب الصورة
-docker pull ghcr.io/zeroos889-svg/rabithr:latest
+docker pull ghcr.io/zeroos889-svg/rabit:latest
 
 # تشغيل الصورة
 docker run -d \
   --name rabithr \
   -p 3000:3000 \
   --env-file .env \
-  ghcr.io/zeroos889-svg/rabithr:latest
+  ghcr.io/zeroos889-svg/rabit:latest
 ```
+
+### Tags المتاحة:
+
+| Tag | الوصف |
+|-----|-------|
+| `latest` | أحدث إصدار من main |
+| `v1.0.0` | إصدار محدد |
+| `sha-abc123` | commit محدد |
 
 ### استخدام Docker Hub
 

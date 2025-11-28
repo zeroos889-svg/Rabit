@@ -1,0 +1,388 @@
+{
+  "$schema": "../schemas/regulation.schema.json",
+  "id": "violations",
+  "name": {
+    "ar": "جدول المخالفات والعقوبات",
+    "en": "Violations and Penalties Schedule"
+  },
+  "authority": {
+    "ar": "وزارة الموارد البشرية والتنمية الاجتماعية",
+    "en": "Ministry of Human Resources and Social Development (MHRSD)"
+  },
+  "version": "2025",
+  "lastAmendment": "2025-01-01",
+  "status": "active",
+
+  "overview": {
+    "ar": "جدول شامل لمخالفات نظام العمل والعقوبات المقررة وفق أحدث التحديثات",
+    "en": "Comprehensive schedule of labor law violations and prescribed penalties per latest updates"
+  },
+
+  "categories": {
+    "employmentViolations": {
+      "name": { "ar": "مخالفات التوظيف", "en": "Employment Violations" },
+      "violations": [
+        {
+          "id": "EMP001",
+          "violation": {
+            "ar": "تشغيل عامل لم يُرخص له بالعمل",
+            "en": "Employing unauthorized worker"
+          },
+          "fine": { "min": 15000, "max": 100000, "currency": "SAR" },
+          "perEmployee": true,
+          "additionalPenalties": { "ar": "ترحيل العامل على حساب صاحب العمل", "en": "Worker deportation at employer's expense" }
+        },
+        {
+          "id": "EMP002",
+          "violation": {
+            "ar": "تشغيل عامل في مهنة غير مرخصة له",
+            "en": "Employing worker in unlicensed profession"
+          },
+          "fine": { "min": 10000, "max": 50000, "currency": "SAR" },
+          "perEmployee": true
+        },
+        {
+          "id": "EMP003",
+          "violation": {
+            "ar": "توظيف عامل لدى الغير",
+            "en": "Lending worker to another employer"
+          },
+          "fine": { "min": 15000, "max": 100000, "currency": "SAR" }
+        },
+        {
+          "id": "EMP004",
+          "violation": {
+            "ar": "تشغيل حدث دون السن القانوني",
+            "en": "Employing minor below legal age"
+          },
+          "fine": { "min": 20000, "max": 100000, "currency": "SAR" },
+          "perEmployee": true
+        },
+        {
+          "id": "EMP005",
+          "violation": {
+            "ar": "التوطين الوهمي (السعودة الوهمية)",
+            "en": "Fake Saudization"
+          },
+          "fine": { "min": 50000, "max": 200000, "currency": "SAR" },
+          "additionalPenalties": {
+            "ar": "إيقاف جميع الخدمات وإحالة للجهات المختصة",
+            "en": "All services suspended and referral to authorities"
+          }
+        }
+      ]
+    },
+
+    "wageViolations": {
+      "name": { "ar": "مخالفات الأجور", "en": "Wage Violations" },
+      "violations": [
+        {
+          "id": "WAG001",
+          "violation": {
+            "ar": "تأخير صرف الأجور",
+            "en": "Delayed wage payment"
+          },
+          "fine": { "min": 3000, "max": 10000, "currency": "SAR" },
+          "perEmployee": true
+        },
+        {
+          "id": "WAG002",
+          "violation": {
+            "ar": "عدم صرف الأجور",
+            "en": "Non-payment of wages"
+          },
+          "fine": { "min": 10000, "max": 50000, "currency": "SAR" },
+          "perEmployee": true,
+          "additionalPenalties": { "ar": "إيقاف الخدمات", "en": "Service suspension" }
+        },
+        {
+          "id": "WAG003",
+          "violation": {
+            "ar": "الخصم غير المشروع من الأجر",
+            "en": "Illegal wage deduction"
+          },
+          "fine": { "min": 5000, "max": 20000, "currency": "SAR" },
+          "perEmployee": true
+        },
+        {
+          "id": "WAG004",
+          "violation": {
+            "ar": "عدم الالتزام بالحد الأدنى للأجور",
+            "en": "Non-compliance with minimum wage"
+          },
+          "fine": { "min": 5000, "max": 20000, "currency": "SAR" },
+          "perEmployee": true
+        },
+        {
+          "id": "WAG005",
+          "violation": {
+            "ar": "عدم رفع ملف حماية الأجور",
+            "en": "Not uploading wage protection file"
+          },
+          "fine": { "min": 10000, "max": 10000, "currency": "SAR" }
+        }
+      ]
+    },
+
+    "contractViolations": {
+      "name": { "ar": "مخالفات العقود", "en": "Contract Violations" },
+      "violations": [
+        {
+          "id": "CON001",
+          "violation": {
+            "ar": "عدم تحرير عقد عمل مكتوب",
+            "en": "Not having written employment contract"
+          },
+          "fine": { "min": 5000, "max": 20000, "currency": "SAR" },
+          "perEmployee": true
+        },
+        {
+          "id": "CON002",
+          "violation": {
+            "ar": "عدم توثيق العقد في منصة قوى",
+            "en": "Not authenticating contract on Qiwa"
+          },
+          "fine": { "min": 5000, "max": 50000, "currency": "SAR" }
+        },
+        {
+          "id": "CON003",
+          "violation": {
+            "ar": "عدم إعطاء العامل نسخة من العقد",
+            "en": "Not providing worker contract copy"
+          },
+          "fine": { "min": 2000, "max": 5000, "currency": "SAR" },
+          "perEmployee": true
+        },
+        {
+          "id": "CON004",
+          "violation": {
+            "ar": "بيانات عقد غير صحيحة",
+            "en": "Incorrect contract data"
+          },
+          "fine": { "min": 10000, "max": 100000, "currency": "SAR" }
+        },
+        {
+          "id": "CON005",
+          "violation": {
+            "ar": "إنهاء العقد بشكل تعسفي",
+            "en": "Arbitrary contract termination"
+          },
+          "fine": { "min": 10000, "max": 50000, "currency": "SAR" },
+          "additionalPenalties": { "ar": "تعويض العامل", "en": "Worker compensation" }
+        }
+      ]
+    },
+
+    "workingConditionsViolations": {
+      "name": { "ar": "مخالفات ظروف العمل", "en": "Working Conditions Violations" },
+      "violations": [
+        {
+          "id": "WRK001",
+          "violation": {
+            "ar": "تجاوز ساعات العمل المحددة",
+            "en": "Exceeding working hours limit"
+          },
+          "fine": { "min": 3000, "max": 10000, "currency": "SAR" },
+          "perEmployee": true
+        },
+        {
+          "id": "WRK002",
+          "violation": {
+            "ar": "عدم منح الإجازات المستحقة",
+            "en": "Not granting entitled leaves"
+          },
+          "fine": { "min": 5000, "max": 20000, "currency": "SAR" },
+          "perEmployee": true
+        },
+        {
+          "id": "WRK003",
+          "violation": {
+            "ar": "مخالفة حظر العمل وقت الحر",
+            "en": "Violating summer outdoor work ban"
+          },
+          "fine": { "min": 3000, "max": 10000, "currency": "SAR" },
+          "perEmployee": true
+        },
+        {
+          "id": "WRK004",
+          "violation": {
+            "ar": "عدم توفير الراحة الأسبوعية",
+            "en": "Not providing weekly rest"
+          },
+          "fine": { "min": 3000, "max": 10000, "currency": "SAR" },
+          "perEmployee": true
+        },
+        {
+          "id": "WRK005",
+          "violation": {
+            "ar": "عدم دفع أجر الساعات الإضافية",
+            "en": "Not paying overtime wages"
+          },
+          "fine": { "min": 5000, "max": 15000, "currency": "SAR" },
+          "perEmployee": true
+        }
+      ]
+    },
+
+    "safetyViolations": {
+      "name": { "ar": "مخالفات السلامة", "en": "Safety Violations" },
+      "violations": [
+        {
+          "id": "SAF001",
+          "violation": {
+            "ar": "عدم توفير معدات الوقاية",
+            "en": "Not providing protective equipment"
+          },
+          "fine": { "min": 10000, "max": 50000, "currency": "SAR" }
+        },
+        {
+          "id": "SAF002",
+          "violation": {
+            "ar": "بيئة عمل غير آمنة",
+            "en": "Unsafe work environment"
+          },
+          "fine": { "min": 25000, "max": 100000, "currency": "SAR" },
+          "additionalPenalties": { "ar": "قد يؤدي لإغلاق المنشأة", "en": "May lead to closure" }
+        },
+        {
+          "id": "SAF003",
+          "violation": {
+            "ar": "عدم الإبلاغ عن إصابات العمل",
+            "en": "Not reporting work injuries"
+          },
+          "fine": { "min": 10000, "max": 100000, "currency": "SAR" }
+        },
+        {
+          "id": "SAF004",
+          "violation": {
+            "ar": "عدم إجراء الفحوصات الطبية",
+            "en": "Not conducting medical examinations"
+          },
+          "fine": { "min": 5000, "max": 20000, "currency": "SAR" }
+        }
+      ]
+    },
+
+    "womenEmploymentViolations": {
+      "name": { "ar": "مخالفات عمل المرأة", "en": "Women Employment Violations" },
+      "violations": [
+        {
+          "id": "WOM001",
+          "violation": {
+            "ar": "فصل بسبب الحمل أو الزواج",
+            "en": "Dismissal due to pregnancy or marriage"
+          },
+          "fine": { "min": 50000, "max": 200000, "currency": "SAR" },
+          "additionalPenalties": { "ar": "إعادة الموظفة", "en": "Reinstate employee" }
+        },
+        {
+          "id": "WOM002",
+          "violation": {
+            "ar": "عدم منح إجازة الأمومة",
+            "en": "Not granting maternity leave"
+          },
+          "fine": { "min": 20000, "max": 100000, "currency": "SAR" }
+        },
+        {
+          "id": "WOM003",
+          "violation": {
+            "ar": "عدم توفير وقت الرضاعة",
+            "en": "Not providing nursing time"
+          },
+          "fine": { "min": 5000, "max": 20000, "currency": "SAR" }
+        },
+        {
+          "id": "WOM004",
+          "violation": {
+            "ar": "التمييز في الأجور",
+            "en": "Wage discrimination"
+          },
+          "fine": { "min": 10000, "max": 50000, "currency": "SAR" },
+          "perEmployee": true
+        }
+      ]
+    },
+
+    "gosiViolations": {
+      "name": { "ar": "مخالفات التأمينات الاجتماعية", "en": "GOSI Violations" },
+      "violations": [
+        {
+          "id": "GOS001",
+          "violation": {
+            "ar": "عدم تسجيل العامل في التأمينات",
+            "en": "Not registering worker in GOSI"
+          },
+          "fine": { "min": 10000, "max": 100000, "currency": "SAR" },
+          "perEmployee": true
+        },
+        {
+          "id": "GOS002",
+          "violation": {
+            "ar": "التأخر في سداد الاشتراكات",
+            "en": "Late payment of contributions"
+          },
+          "penalty": { "ar": "غرامة 2% شهرياً من المبلغ المتأخر", "en": "2% monthly penalty on late amount" }
+        },
+        {
+          "id": "GOS003",
+          "violation": {
+            "ar": "تقديم بيانات أجور غير صحيحة",
+            "en": "Providing incorrect wage data"
+          },
+          "fine": { "min": 10000, "max": 50000, "currency": "SAR" }
+        }
+      ]
+    },
+
+    "administrativeViolations": {
+      "name": { "ar": "مخالفات إدارية", "en": "Administrative Violations" },
+      "violations": [
+        {
+          "id": "ADM001",
+          "violation": {
+            "ar": "عدم تعاون مع مفتشي العمل",
+            "en": "Non-cooperation with labor inspectors"
+          },
+          "fine": { "min": 10000, "max": 50000, "currency": "SAR" }
+        },
+        {
+          "id": "ADM002",
+          "violation": {
+            "ar": "عدم الاحتفاظ بالسجلات المطلوبة",
+            "en": "Not maintaining required records"
+          },
+          "fine": { "min": 5000, "max": 20000, "currency": "SAR" }
+        },
+        {
+          "id": "ADM003",
+          "violation": {
+            "ar": "منع مفتش العمل من الدخول",
+            "en": "Preventing labor inspector access"
+          },
+          "fine": { "min": 25000, "max": 100000, "currency": "SAR" }
+        }
+      ]
+    }
+  },
+
+  "penaltyMultipliers": {
+    "repeat": {
+      "ar": "تُضاعف الغرامة في حالة تكرار المخالفة",
+      "en": "Fine doubled for repeat violations"
+    },
+    "multiple": {
+      "ar": "تتعدد الغرامات بتعدد العمال المخالف بحقهم",
+      "en": "Fines multiply by number of affected workers"
+    }
+  },
+
+  "appeals": {
+    "period": 30,
+    "unit": "days",
+    "ar": "يحق الاعتراض خلال 30 يوماً من تاريخ الإبلاغ بالعقوبة",
+    "en": "Right to appeal within 30 days of penalty notification"
+  },
+
+  "relatedRegulations": ["labor-law", "gosi", "wps-mudad", "qiwa", "nitaqat", "ohs", "women-employment"],
+  "tags": ["مخالفات", "عقوبات", "غرامات", "violations", "penalties", "fines", "enforcement"]
+}

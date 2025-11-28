@@ -17,6 +17,9 @@ import {
   Wrench,
   Menu,
   X,
+  Brain,
+  Calculator,
+  BookOpen,
 } from "lucide-react";
 
 interface DashboardLayoutProps {
@@ -70,6 +73,24 @@ export default function DashboardLayout({ children, userType = "company", title 
       labelEn: "ATS",
       icon: Briefcase,
       href: "/dashboard/ats",
+    },
+    {
+      label: "أدوات الذكاء الاصطناعي",
+      labelEn: "AI Tools",
+      icon: Brain,
+      href: "/ai",
+    },
+    {
+      label: "الآلات الحاسبة",
+      labelEn: "Calculators",
+      icon: Calculator,
+      href: "/calculators",
+    },
+    {
+      label: "الأنظمة السعودية",
+      labelEn: "Saudi Regulations",
+      icon: BookOpen,
+      href: "/regulations",
     },
     {
       label: "التذاكر",

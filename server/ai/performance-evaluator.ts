@@ -1,9 +1,84 @@
 /**
  * AI Performance Evaluator - نظام تقييم الأداء الذكي
  * يستخدم الذكاء الاصطناعي لتقييم أداء الموظفين وتقديم توصيات مفصلة
+ * مع دعم كامل للأنظمة السعودية ومعايير الأداء المحلية
  */
 
 import { invokeLLM, type Message } from "../_core/llm";
+import { loadRegulation } from "./knowledge-base-loader";
+
+// ============================================
+// Knowledge Base Integration
+// ============================================
+
+function getLaborLaw() {
+  return loadRegulation('labor-law');
+}
+
+function getGOSI() {
+  return loadRegulation('gosi');
+}
+
+/**
+ * الحصول على معايير الأداء من نظام العمل
+ */
+function getPerformanceStandards(): {
+  probationPeriod: number;
+  maxProbation: number;
+  annualReviewRequired: boolean;
+  terminationNotice: Record<string, number>;
+} {
+  const laborLaw = getLaborLaw() as Record<string, any>;
+  
+  return {
+    probationPeriod: laborLaw?.probationPeriod?.standard || 90,
+    maxProbation: laborLaw?.probationPeriod?.maximum || 180,
+    annualReviewRequired: true,
+    terminationNotice: {
+      underTwoYears: 30,
+      twoToFiveYears: 60,
+      overFiveYears: 90
+    }
+  };
+}
+
+/**
+ * التحقق من فترة التجربة
+ */
+function checkProbationStatus(
+  joiningDate: string,
+  probationExtended: boolean = false
+): {
+  inProbation: boolean;
+  daysRemaining: number;
+  canTerminate: boolean;
+  notes: string[];
+} {
+  const standards = getPerformanceStandards();
+  const joinDate = new Date(joiningDate);
+  const today = new Date();
+  const daysSinceJoining = Math.floor((today.getTime() - joinDate.getTime()) / (1000 * 60 * 60 * 24));
+  
+  const probationDays = probationExtended ? standards.maxProbation : standards.probationPeriod;
+  const inProbation = daysSinceJoining <= probationDays;
+  const daysRemaining = Math.max(0, probationDays - daysSinceJoining);
+  
+  const notes: string[] = [];
+  if (inProbation) {
+    notes.push(`الموظف في فترة التجربة (${daysRemaining} يوم متبقي)`);
+    notes.push('يمكن إنهاء العقد خلال فترة التجربة بدون تعويض');
+  } else {
+    notes.push('انتهت فترة التجربة');
+    notes.push('يجب الالتزام بفترة الإشعار عند إنهاء العقد');
+  }
+  
+  return {
+    inProbation,
+    daysRemaining,
+    canTerminate: inProbation,
+    notes
+  };
+}
 
 // Helper function to simplify AI calls
 async function callAI(messages: Message[], maxTokens = 3000) {
@@ -535,6 +610,247 @@ Provide a comprehensive development plan in JSON format:
         : "Error creating plan",
       milestones: [],
       resources: [],
+    };
+  }
+}
+
+// ============================================
+// Saudi Compliance Functions
+// ============================================
+
+/**
+ * تقييم الأداء مع التحقق من الامتثال لنظام العمل السعودي
+ */
+export async function evaluateWithCompliance(
+  data: PerformanceData,
+  language: "ar" | "en" = "ar"
+): Promise<{
+  evaluation: PerformanceEvaluation;
+  probationStatus: ReturnType<typeof checkProbationStatus>;
+  complianceNotes: string[];
+  legalConsiderations: string[];
+}> {
+  const isArabic = language === "ar";
+  
+  // 1. التقييم الأساسي
+  const evaluation = await evaluateEmployeePerformance(data, language);
+  
+  // 2. التحقق من فترة التجربة
+  const probationStatus = checkProbationStatus(data.joiningDate);
+  
+  // 3. ملاحظات الامتثال
+  const complianceNotes: string[] = [];
+  const legalConsiderations: string[] = [];
+  
+  // التحقق من معدل الحضور
+  if (data.metrics.attendanceRate < 75) {
+    complianceNotes.push(isArabic
+      ? 'معدل الحضور منخفض - قد يؤثر على استحقاق المكافآت'
+      : 'Low attendance rate - may affect bonus eligibility');
+    legalConsiderations.push(isArabic
+      ? 'المادة 80: يجوز للموظف التغيب بدون أجر لمدة لا تزيد عن 20 يوماً متفرقة'
+      : 'Article 80: Employee may be absent without pay for up to 20 non-consecutive days');
+  }
+  
+  // التحقق من الأداء في فترة التجربة
+  if (probationStatus.inProbation && evaluation.overallScore < 60) {
+    legalConsiderations.push(isArabic
+      ? 'الموظف في فترة التجربة مع أداء ضعيف - يمكن إنهاء العقد بدون تعويض'
+      : 'Employee in probation with poor performance - contract can be terminated without compensation');
+  }
+  
+  // توصيات بناءً على التقييم
+  if (evaluation.rating === 'poor' && !probationStatus.inProbation) {
+    legalConsiderations.push(isArabic
+      ? 'يجب توثيق الأداء الضعيف وإعطاء فرصة للتحسين قبل اتخاذ إجراءات تأديبية'
+      : 'Poor performance must be documented and improvement opportunity given before disciplinary action');
+  }
+  
+  if (evaluation.rating === 'excellent') {
+    complianceNotes.push(isArabic
+      ? 'الموظف مؤهل للترقية والمكافآت حسب سياسة الشركة'
+      : 'Employee eligible for promotion and bonuses per company policy');
+  }
+  
+  return {
+    evaluation,
+    probationStatus,
+    complianceNotes,
+    legalConsiderations
+  };
+}
+
+/**
+ * حساب استحقاقات نهاية الخدمة بناءً على الأداء
+ */
+export function calculateEndOfServiceBenefits(
+  joiningDate: string,
+  salary: number,
+  terminationReason: 'resignation' | 'termination' | 'end_of_contract' | 'retirement',
+  performanceRating: 'excellent' | 'very_good' | 'good' | 'needs_improvement' | 'poor'
+): {
+  yearsOfService: number;
+  basicEntitlement: number;
+  performanceBonus: number;
+  totalEntitlement: number;
+  breakdown: string[];
+} {
+  const joinDate = new Date(joiningDate);
+  const today = new Date();
+  const yearsOfService = (today.getTime() - joinDate.getTime()) / (1000 * 60 * 60 * 24 * 365);
+  
+  let basicEntitlement = 0;
+  const breakdown: string[] = [];
+  
+  // حساب مكافأة نهاية الخدمة حسب نظام العمل السعودي
+  if (yearsOfService <= 5) {
+    basicEntitlement = (salary / 2) * yearsOfService;
+    breakdown.push(`أول 5 سنوات: نصف راتب شهري لكل سنة = ${basicEntitlement.toFixed(2)} ريال`);
+  } else {
+    const firstFiveYears = (salary / 2) * 5;
+    const remainingYears = salary * (yearsOfService - 5);
+    basicEntitlement = firstFiveYears + remainingYears;
+    breakdown.push(`أول 5 سنوات: ${firstFiveYears.toFixed(2)} ريال`);
+    breakdown.push(`السنوات التالية: ${remainingYears.toFixed(2)} ريال`);
+  }
+  
+  // تعديل حسب سبب انتهاء الخدمة
+  if (terminationReason === 'resignation' && yearsOfService < 2) {
+    basicEntitlement = 0;
+    breakdown.push('الاستقالة قبل سنتين: لا يستحق مكافأة');
+  } else if (terminationReason === 'resignation' && yearsOfService < 5) {
+    basicEntitlement = basicEntitlement * (1/3);
+    breakdown.push('الاستقالة بين 2-5 سنوات: ثلث المكافأة');
+  } else if (terminationReason === 'resignation' && yearsOfService < 10) {
+    basicEntitlement = basicEntitlement * (2/3);
+    breakdown.push('الاستقالة بين 5-10 سنوات: ثلثي المكافأة');
+  }
+  
+  // مكافأة الأداء المتميز
+  let performanceBonus = 0;
+  if (performanceRating === 'excellent' && yearsOfService >= 2) {
+    performanceBonus = salary * 0.5; // نصف راتب إضافي
+    breakdown.push(`مكافأة الأداء المتميز: ${performanceBonus.toFixed(2)} ريال`);
+  }
+  
+  return {
+    yearsOfService: Math.floor(yearsOfService * 10) / 10,
+    basicEntitlement: Math.round(basicEntitlement),
+    performanceBonus: Math.round(performanceBonus),
+    totalEntitlement: Math.round(basicEntitlement + performanceBonus),
+    breakdown
+  };
+}
+
+/**
+ * تحليل اتجاهات الأداء على مدار فترة زمنية
+ */
+export async function analyzePerformanceTrends(
+  employeeName: string,
+  historicalData: Array<{
+    period: string;
+    metrics: PerformanceMetrics;
+    score: number;
+  }>,
+  language: "ar" | "en" = "ar"
+): Promise<{
+  trend: 'improving' | 'stable' | 'declining';
+  trendAr: 'تحسن' | 'مستقر' | 'تراجع';
+  analysis: string;
+  predictions: string[];
+  recommendations: string[];
+}> {
+  const isArabic = language === "ar";
+  
+  if (historicalData.length < 2) {
+    return {
+      trend: 'stable',
+      trendAr: 'مستقر',
+      analysis: isArabic ? 'بيانات غير كافية للتحليل' : 'Insufficient data for analysis',
+      predictions: [],
+      recommendations: []
+    };
+  }
+  
+  // حساب الاتجاه
+  const scores = historicalData.map(d => d.score);
+  const avgChange = (scores[scores.length - 1] - scores[0]) / (scores.length - 1);
+  
+  let trend: 'improving' | 'stable' | 'declining';
+  let trendAr: 'تحسن' | 'مستقر' | 'تراجع';
+  
+  if (avgChange > 2) {
+    trend = 'improving';
+    trendAr = 'تحسن';
+  } else if (avgChange < -2) {
+    trend = 'declining';
+    trendAr = 'تراجع';
+  } else {
+    trend = 'stable';
+    trendAr = 'مستقر';
+  }
+  
+  const systemPrompt = isArabic
+    ? 'أنت محلل أداء موظفين خبير. حلل اتجاهات الأداء وقدم توقعات وتوصيات.'
+    : 'You are an expert employee performance analyst. Analyze performance trends and provide predictions and recommendations.';
+  
+  const userPrompt = isArabic
+    ? `حلل اتجاهات أداء الموظف: ${employeeName}
+
+البيانات التاريخية:
+${historicalData.map(d => `- ${d.period}: ${d.score}/100`).join('\n')}
+
+الاتجاه المحسوب: ${trendAr}
+
+قدم تحليلاً بصيغة JSON:
+{
+  "analysis": "<تحليل مفصل للاتجاه>",
+  "predictions": [<توقعات للأداء المستقبلي>],
+  "recommendations": [<توصيات للتحسين>]
+}`
+    : `Analyze performance trends for employee: ${employeeName}
+
+Historical data:
+${historicalData.map(d => `- ${d.period}: ${d.score}/100`).join('\n')}
+
+Calculated trend: ${trend}
+
+Provide analysis in JSON format:
+{
+  "analysis": "<detailed trend analysis>",
+  "predictions": [<predictions for future performance>],
+  "recommendations": [<recommendations for improvement>]
+}`;
+
+  try {
+    const response = await callAI([
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ]);
+
+    let jsonText = response.content;
+    const jsonMatch = jsonText.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      jsonText = jsonMatch[0];
+    }
+
+    const result = JSON.parse(jsonText);
+    
+    return {
+      trend,
+      trendAr,
+      analysis: result.analysis,
+      predictions: result.predictions || [],
+      recommendations: result.recommendations || []
+    };
+  } catch (error) {
+    console.error("Trend Analysis Error:", error);
+    return {
+      trend,
+      trendAr,
+      analysis: isArabic ? 'حدث خطأ في التحليل' : 'Analysis error',
+      predictions: [],
+      recommendations: []
     };
   }
 }

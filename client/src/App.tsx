@@ -162,6 +162,11 @@ const AIChat = loadDemoPage(() => import("./pages/AIChat"));
 const AIAnalytics = loadDemoPage(() => import("./pages/AIAnalytics"));
 const AIPerformanceEvaluator = loadDemoPage(() => import("./pages/AIPerformanceEvaluator"));
 
+// Saudi Regulations & AI Tools pages
+const SaudiRegulations = lazy(() => import("./pages/SaudiRegulations"));
+const FinancialCalculators = lazy(() => import("./components/calculators/FinancialCalculators").then(m => ({ default: m.CalculatorsPage })));
+const AIDashboard = lazy(() => import("./pages/AIDashboard"));
+
 const DashboardRedirect = () => {
   const { user, loading } = useAuth({ redirectOnUnauthenticated: true });
   if (loading) return <PageLoader />;
@@ -414,6 +419,16 @@ function Router() {
         {AIPerformanceEvaluator && (
           <Route path="/ai/performance-evaluator" component={AIPerformanceEvaluator} />
         )}
+        
+        {/* Saudi Regulations & AI Tools Routes */}
+        <Route path="/ai" component={AIDashboard} />
+        <Route path="/ai/dashboard" component={AIDashboard} />
+        <Route path="/regulations" component={SaudiRegulations} />
+        <Route path="/regulations/:id" component={SaudiRegulations} />
+        <Route path="/calculators" component={FinancialCalculators} />
+        <Route path="/ai/regulations" component={SaudiRegulations} />
+        <Route path="/ai/calculators" component={FinancialCalculators} />
+        
         <Route
           path="/dashboard"
           component={DashboardRedirect}

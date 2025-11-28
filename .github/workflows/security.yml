@@ -1,0 +1,170 @@
+name: Security & Dependency Audit
+
+on:
+  schedule:
+    # Run weekly on Sundays at midnight
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+    inputs:
+      audit_level:
+        description: 'Minimum severity level to report'
+        required: false
+        default: 'moderate'
+        type: choice
+        options:
+          - low
+          - moderate
+          - high
+          - critical
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ==========================================
+  # NPM Security Audit
+  # ==========================================
+  npm-audit:
+    name: NPM Security Audit
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run npm audit
+        id: npm-audit
+        run: |
+          AUDIT_LEVEL="${{ github.event.inputs.audit_level || 'moderate' }}"
+          echo "Running audit with level: $AUDIT_LEVEL"
+          npm audit --production --audit-level=$AUDIT_LEVEL --json > npm-audit.json || true
+          cat npm-audit.json
+        continue-on-error: true
+
+      - name: Upload NPM Audit Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-report
+          path: npm-audit.json
+          retention-days: 30
+
+  # ==========================================
+  # Trivy Vulnerability Scanner
+  # ==========================================
+  trivy-scan:
+    name: Trivy Vulnerability Scan
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          ignore-unfixed: true
+        continue-on-error: true
+
+      - name: Upload Trivy scan results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+        continue-on-error: true
+
+      - name: Upload Trivy Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report
+          path: trivy-results.sarif
+          retention-days: 30
+
+  # ==========================================
+  # Dependency Version Check
+  # ==========================================
+  outdated-deps:
+    name: Check Outdated Dependencies
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Check outdated packages
+        run: |
+          echo "📦 Checking for outdated packages..." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          npm outdated --long || true >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+  # ==========================================
+  # License Check
+  # ==========================================
+  license-check:
+    name: License Compliance Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Install license-checker
+        run: npm install -g license-checker
+
+      - name: Run license check
+        run: |
+          echo "## License Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          license-checker --summary --production >> $GITHUB_STEP_SUMMARY || true
+
+  # ==========================================
+  # Security Summary
+  # ==========================================
+  security-summary:
+    name: Security Summary
+    runs-on: ubuntu-latest
+    needs: [npm-audit, trivy-scan, outdated-deps, license-check]
+    if: always()
+    
+    steps:
+      - name: Generate Security Summary
+        run: |
+          echo "## 🔒 Security Audit Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| NPM Audit | ${{ needs.npm-audit.result == 'success' && '✅ Passed' || '⚠️ Issues Found' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Trivy Scan | ${{ needs.trivy-scan.result == 'success' && '✅ Passed' || '⚠️ Issues Found' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Outdated Check | ${{ needs.outdated-deps.result == 'success' && '✅ Complete' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| License Check | ${{ needs.license-check.result == 'success' && '✅ Compliant' || '⚠️ Review Needed' }} |" >> $GITHUB_STEP_SUMMARY

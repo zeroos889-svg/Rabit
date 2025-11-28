@@ -1,9 +1,28 @@
 /**
  * AI Training Recommender - نظام توصيات التدريب الذكي
  * يحلل أداء ومهارات الموظفين ويقترح برامج تدريبية مخصصة
+ * مع تكامل قاعدة المعرفة للامتثال للأنظمة السعودية
  */
 
 import { invokeLLM, type Message } from "../_core/llm";
+import { loadRegulation } from "./knowledge-base-loader";
+
+// Knowledge Base Helpers
+function getLaborLaw() {
+  return loadRegulation("labor-law") as Record<string, any>;
+}
+
+function getOccupationalHealth() {
+  return loadRegulation("occupational-health") as Record<string, any>;
+}
+
+function getNitaqat() {
+  return loadRegulation("nitaqat") as Record<string, any>;
+}
+
+function getWPS() {
+  return loadRegulation("wps") as Record<string, any>;
+}
 
 // Helper function to simplify AI calls
 async function callAI(messages: Message[], maxTokens = 3000) {
@@ -510,4 +529,547 @@ Provide evaluation in JSON format:
       detailedAnalysis: isArabic ? "حدث خطأ" : "Error occurred",
     };
   }
+}
+
+// ============================================================
+// توصيات التدريب للامتثال - Compliance Training Recommendations
+// ============================================================
+
+interface ComplianceTrainingNeed {
+  area: string;
+  areaAr: string;
+  priority: "critical" | "high" | "medium" | "low";
+  priorityAr: string;
+  description: string;
+  descriptionAr: string;
+  legalBasis: string;
+  requiredFor: string[];
+  recommendedCourses: string[];
+  deadline?: string;
+}
+
+interface ComplianceTrainingPlan {
+  employeeId: number;
+  employeeName: string;
+  role: string;
+  requiredTraining: ComplianceTrainingNeed[];
+  optionalTraining: ComplianceTrainingNeed[];
+  completedTraining: string[];
+  complianceScore: number;
+  gaps: string[];
+  recommendations: string[];
+  summary: string;
+}
+
+/**
+ * تحديد احتياجات التدريب الإلزامي حسب الأنظمة السعودية
+ */
+export function getComplianceTrainingRequirements(
+  role: string,
+  department: string,
+  isManager: boolean = false,
+  isHR: boolean = false,
+  isSafetyCritical: boolean = false
+): ComplianceTrainingNeed[] {
+  const laborLaw = getLaborLaw();
+  const occupationalHealth = getOccupationalHealth();
+  const nitaqat = getNitaqat();
+  const wps = getWPS();
+  
+  const requirements: ComplianceTrainingNeed[] = [];
+  
+  // 1. تدريب نظام العمل الأساسي (للجميع)
+  requirements.push({
+    area: "Saudi Labor Law Basics",
+    areaAr: "أساسيات نظام العمل السعودي",
+    priority: "high",
+    priorityAr: "عالية",
+    description: "Understanding of Saudi Labor Law rights and obligations",
+    descriptionAr: "فهم حقوق والتزامات نظام العمل السعودي",
+    legalBasis: `نظام العمل - ${laborLaw?.metadata?.issueDate || "1426هـ"}`,
+    requiredFor: ["all_employees"],
+    recommendedCourses: [
+      "نظام العمل السعودي للموظفين",
+      "حقوق وواجبات العامل",
+      "عقود العمل والالتزامات"
+    ],
+    deadline: "خلال 30 يوم من التعيين"
+  });
+  
+  // 2. تدريب السلامة المهنية
+  if (isSafetyCritical || department.toLowerCase().includes("operations") || 
+      department.toLowerCase().includes("manufacturing") || department.toLowerCase().includes("عمليات")) {
+    requirements.push({
+      area: "Occupational Health & Safety",
+      areaAr: "الصحة والسلامة المهنية",
+      priority: "critical",
+      priorityAr: "حرجة",
+      description: "Safety training as per OSHA Saudi regulations",
+      descriptionAr: "تدريب السلامة وفق لوائح السلامة المهنية",
+      legalBasis: occupationalHealth?.metadata?.authority || "وزارة الموارد البشرية",
+      requiredFor: ["operations", "manufacturing", "maintenance", "construction"],
+      recommendedCourses: [
+        "السلامة المهنية في بيئة العمل",
+        "الإسعافات الأولية",
+        "إدارة مخاطر العمل",
+        "استخدام معدات الحماية الشخصية"
+      ],
+      deadline: "قبل بدء العمل"
+    });
+  }
+  
+  // 3. تدريب الموارد البشرية
+  if (isHR) {
+    requirements.push({
+      area: "HR Compliance Training",
+      areaAr: "تدريب امتثال الموارد البشرية",
+      priority: "critical",
+      priorityAr: "حرجة",
+      description: "Comprehensive HR compliance including GOSI, Nitaqat, WPS",
+      descriptionAr: "امتثال شامل للموارد البشرية شاملاً التأمينات ونطاقات ونظام حماية الأجور",
+      legalBasis: "أنظمة متعددة",
+      requiredFor: ["hr_department", "hr_managers"],
+      recommendedCourses: [
+        "نظام التأمينات الاجتماعية للموارد البشرية",
+        "برنامج نطاقات وحساب السعودة",
+        "نظام حماية الأجور",
+        "إجراءات إنهاء الخدمة القانونية",
+        "إدارة ملفات الموظفين"
+      ]
+    });
+    
+    // تدريب نطاقات
+    requirements.push({
+      area: "Nitaqat Program",
+      areaAr: "برنامج نطاقات",
+      priority: "high",
+      priorityAr: "عالية",
+      description: "Saudization quotas and compliance requirements",
+      descriptionAr: "نسب السعودة ومتطلبات الامتثال",
+      legalBasis: nitaqat?.metadata?.authority || "وزارة الموارد البشرية",
+      requiredFor: ["hr_department"],
+      recommendedCourses: [
+        "فهم برنامج نطاقات",
+        "حساب نسب السعودة",
+        "استراتيجيات تحسين نطاق المنشأة"
+      ]
+    });
+    
+    // نظام حماية الأجور
+    requirements.push({
+      area: "Wage Protection System",
+      areaAr: "نظام حماية الأجور",
+      priority: "high",
+      priorityAr: "عالية",
+      description: "WPS compliance and salary transfer requirements",
+      descriptionAr: "الامتثال لنظام حماية الأجور ومتطلبات تحويل الرواتب",
+      legalBasis: wps?.metadata?.authority || "وزارة الموارد البشرية",
+      requiredFor: ["hr_department", "finance"],
+      recommendedCourses: [
+        "نظام حماية الأجور للمنشآت",
+        "إدارة مسيرات الرواتب",
+        "التعامل مع مخالفات WPS"
+      ]
+    });
+  }
+  
+  // 4. تدريب المدراء
+  if (isManager) {
+    requirements.push({
+      area: "Management & Labor Law",
+      areaAr: "الإدارة ونظام العمل",
+      priority: "high",
+      priorityAr: "عالية",
+      description: "Management responsibilities under Saudi Labor Law",
+      descriptionAr: "مسؤوليات المدير وفق نظام العمل السعودي",
+      legalBasis: "نظام العمل - باب العقوبات التأديبية",
+      requiredFor: ["managers", "supervisors"],
+      recommendedCourses: [
+        "صلاحيات المدير في نظام العمل",
+        "إدارة الأداء القانونية",
+        "التعامل مع المخالفات التأديبية",
+        "حقوق الموظف أثناء فترة الإنذار"
+      ]
+    });
+    
+    requirements.push({
+      area: "Performance Management",
+      areaAr: "إدارة الأداء",
+      priority: "medium",
+      priorityAr: "متوسطة",
+      description: "Legal aspects of performance evaluation and termination",
+      descriptionAr: "الجوانب القانونية لتقييم الأداء وإنهاء الخدمة",
+      legalBasis: "نظام العمل - المادة 80",
+      requiredFor: ["managers"],
+      recommendedCourses: [
+        "تقييم الأداء العادل",
+        "توثيق أداء الموظف",
+        "إجراءات الفصل المشروع"
+      ]
+    });
+  }
+  
+  // 5. تدريب مكافحة التحرش (للجميع)
+  requirements.push({
+    area: "Anti-Harassment",
+    areaAr: "مكافحة التحرش",
+    priority: "high",
+    priorityAr: "عالية",
+    description: "Saudi anti-harassment law compliance",
+    descriptionAr: "الامتثال لنظام مكافحة التحرش السعودي",
+    legalBasis: "نظام مكافحة التحرش 1439هـ",
+    requiredFor: ["all_employees"],
+    recommendedCourses: [
+      "التوعية بنظام مكافحة التحرش",
+      "الإبلاغ عن حالات التحرش",
+      "بيئة عمل آمنة"
+    ],
+    deadline: "خلال 60 يوم من التعيين"
+  });
+  
+  // 6. حماية البيانات الشخصية
+  requirements.push({
+    area: "Data Protection",
+    areaAr: "حماية البيانات الشخصية",
+    priority: "medium",
+    priorityAr: "متوسطة",
+    description: "Saudi Personal Data Protection Law compliance",
+    descriptionAr: "الامتثال لنظام حماية البيانات الشخصية",
+    legalBasis: "نظام حماية البيانات الشخصية 1443هـ",
+    requiredFor: ["all_employees"],
+    recommendedCourses: [
+      "أساسيات حماية البيانات الشخصية",
+      "التعامل الآمن مع بيانات الموظفين والعملاء"
+    ]
+  });
+  
+  return requirements;
+}
+
+/**
+ * إنشاء خطة تدريب امتثال مخصصة للموظف
+ */
+export async function generateComplianceTrainingPlan(
+  employee: {
+    id: number;
+    name: string;
+    role: string;
+    department: string;
+    isManager: boolean;
+    joinDate: Date;
+    completedTraining: string[];
+  },
+  language: "ar" | "en" = "ar"
+): Promise<ComplianceTrainingPlan> {
+  const isArabic = language === "ar";
+  const isHR = employee.department.toLowerCase().includes("hr") || 
+               employee.department.toLowerCase().includes("موارد");
+  const isSafety = employee.department.toLowerCase().includes("operations") ||
+                   employee.department.toLowerCase().includes("maintenance") ||
+                   employee.department.toLowerCase().includes("عمليات");
+  
+  // الحصول على متطلبات التدريب
+  const allRequirements = getComplianceTrainingRequirements(
+    employee.role,
+    employee.department,
+    employee.isManager,
+    isHR,
+    isSafety
+  );
+  
+  // تصنيف التدريبات إلى مكتملة وغير مكتملة
+  const completed = employee.completedTraining || [];
+  const requiredTraining: ComplianceTrainingNeed[] = [];
+  const optionalTraining: ComplianceTrainingNeed[] = [];
+  const gaps: string[] = [];
+  
+  for (const req of allRequirements) {
+    const isCompleted = req.recommendedCourses.some(course => 
+      completed.some(c => c.toLowerCase().includes(course.toLowerCase().split(" ")[0]))
+    );
+    
+    if (!isCompleted) {
+      if (req.priority === "critical" || req.priority === "high") {
+        requiredTraining.push(req);
+        gaps.push(req.areaAr);
+      } else {
+        optionalTraining.push(req);
+      }
+    }
+  }
+  
+  // حساب درجة الامتثال
+  const totalRequired = allRequirements.filter(r => 
+    r.priority === "critical" || r.priority === "high"
+  ).length;
+  const completedRequired = totalRequired - requiredTraining.length;
+  const complianceScore = totalRequired > 0 
+    ? Math.round((completedRequired / totalRequired) * 100) 
+    : 100;
+  
+  // توليد التوصيات باستخدام الذكاء الاصطناعي
+  const systemPrompt = isArabic
+    ? `أنت مستشار تدريب متخصص في الامتثال للأنظمة السعودية. قدم توصيات عملية لتطوير الموظف.`
+    : `You are a training consultant specialized in Saudi regulatory compliance. Provide practical recommendations for employee development.`;
+  
+  const userPrompt = isArabic
+    ? `قدم توصيات تدريبية للموظف التالي:
+    
+**الاسم:** ${employee.name}
+**الدور:** ${employee.role}
+**القسم:** ${employee.department}
+**مدير:** ${employee.isManager ? "نعم" : "لا"}
+**تاريخ الانضمام:** ${employee.joinDate.toLocaleDateString("ar-SA")}
+
+**فجوات التدريب:**
+${gaps.length > 0 ? gaps.map(g => `- ${g}`).join("\n") : "لا توجد فجوات حرجة"}
+
+**درجة الامتثال:** ${complianceScore}%
+
+قدم 3-5 توصيات محددة وملخص قصير.
+
+الرد بصيغة JSON:
+{
+  "recommendations": ["<توصية 1>", "<توصية 2>", ...],
+  "summary": "<ملخص الخطة>"
+}`
+    : `Provide training recommendations for the following employee:
+    
+**Name:** ${employee.name}
+**Role:** ${employee.role}
+**Department:** ${employee.department}
+**Manager:** ${employee.isManager ? "Yes" : "No"}
+**Join Date:** ${employee.joinDate.toLocaleDateString("en-US")}
+
+**Training Gaps:**
+${gaps.length > 0 ? gaps.map(g => `- ${g}`).join("\n") : "No critical gaps"}
+
+**Compliance Score:** ${complianceScore}%
+
+Provide 3-5 specific recommendations and a brief summary.
+
+Reply in JSON format:
+{
+  "recommendations": ["<recommendation 1>", "<recommendation 2>", ...],
+  "summary": "<plan summary>"
+}`;
+
+  try {
+    const response = await callAI([
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ], 1500);
+    
+    let jsonText = response.content;
+    const jsonMatch = jsonText.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      jsonText = jsonMatch[0];
+    }
+    
+    const aiResponse = JSON.parse(jsonText);
+    
+    return {
+      employeeId: employee.id,
+      employeeName: employee.name,
+      role: employee.role,
+      requiredTraining,
+      optionalTraining,
+      completedTraining: completed,
+      complianceScore,
+      gaps,
+      recommendations: aiResponse.recommendations || [],
+      summary: aiResponse.summary || (isArabic 
+        ? `خطة تدريب امتثال للموظف ${employee.name}` 
+        : `Compliance training plan for ${employee.name}`)
+    };
+  } catch (error) {
+    console.error("Compliance Training Plan Error:", error);
+    return {
+      employeeId: employee.id,
+      employeeName: employee.name,
+      role: employee.role,
+      requiredTraining,
+      optionalTraining,
+      completedTraining: completed,
+      complianceScore,
+      gaps,
+      recommendations: isArabic 
+        ? ["إكمال التدريبات الإلزامية في أقرب وقت"] 
+        : ["Complete mandatory training as soon as possible"],
+      summary: isArabic 
+        ? `يحتاج الموظف إلى ${requiredTraining.length} تدريبات إلزامية` 
+        : `Employee needs ${requiredTraining.length} mandatory trainings`
+    };
+  }
+}
+
+/**
+ * تحديد التدريبات الإلزامية قبل انتهاء فترة الاختبار
+ */
+export function getProbationTrainingRequirements(
+  role: string,
+  department: string,
+  daysUntilProbationEnd: number
+): ComplianceTrainingNeed[] {
+  const requirements: ComplianceTrainingNeed[] = [];
+  
+  // التدريبات الأساسية المطلوبة خلال فترة الاختبار
+  if (daysUntilProbationEnd > 0) {
+    requirements.push({
+      area: "Company Policies",
+      areaAr: "سياسات الشركة",
+      priority: daysUntilProbationEnd <= 30 ? "critical" : "high",
+      priorityAr: daysUntilProbationEnd <= 30 ? "حرجة" : "عالية",
+      description: "Understanding of company policies and procedures",
+      descriptionAr: "فهم سياسات وإجراءات الشركة",
+      legalBasis: "لائحة تنظيم العمل الداخلية",
+      requiredFor: ["all_employees"],
+      recommendedCourses: [
+        "التعريف بالشركة وسياساتها",
+        "لائحة العمل الداخلية",
+        "قواعد السلوك المهني"
+      ],
+      deadline: `قبل انتهاء فترة الاختبار (${daysUntilProbationEnd} يوم)`
+    });
+    
+    requirements.push({
+      area: "Role-Specific Training",
+      areaAr: "تدريب الدور الوظيفي",
+      priority: "high",
+      priorityAr: "عالية",
+      description: "Essential training for job role",
+      descriptionAr: "التدريب الأساسي للدور الوظيفي",
+      legalBasis: "متطلبات الوظيفة",
+      requiredFor: [role],
+      recommendedCourses: [
+        `تدريب ${role} الأساسي`,
+        "الأنظمة والأدوات المستخدمة",
+        "إجراءات العمل القياسية"
+      ],
+      deadline: `خلال 60 يوم من بدء العمل`
+    });
+  }
+  
+  return requirements;
+}
+
+/**
+ * تقرير امتثال التدريب على مستوى الشركة
+ */
+export async function generateCompanyTrainingComplianceReport(
+  employees: Array<{
+    id: number;
+    name: string;
+    role: string;
+    department: string;
+    isManager: boolean;
+    completedTraining: string[];
+  }>,
+  language: "ar" | "en" = "ar"
+): Promise<{
+  overallComplianceScore: number;
+  departmentScores: Record<string, number>;
+  criticalGaps: string[];
+  atRiskEmployees: Array<{ name: string; missingTraining: string[] }>;
+  recommendations: string[];
+  summary: string;
+}> {
+  const isArabic = language === "ar";
+  const departmentScores: Record<string, { total: number; completed: number }> = {};
+  const criticalGaps: Set<string> = new Set();
+  const atRiskEmployees: Array<{ name: string; missingTraining: string[] }> = [];
+  
+  for (const emp of employees) {
+    const isHR = emp.department.toLowerCase().includes("hr");
+    const requirements = getComplianceTrainingRequirements(
+      emp.role, emp.department, emp.isManager, isHR, false
+    );
+    
+    const criticalReqs = requirements.filter(r => 
+      r.priority === "critical" || r.priority === "high"
+    );
+    
+    const completed = emp.completedTraining || [];
+    const missing: string[] = [];
+    
+    for (const req of criticalReqs) {
+      const isCompleted = req.recommendedCourses.some(course =>
+        completed.some(c => c.toLowerCase().includes(course.toLowerCase().split(" ")[0]))
+      );
+      if (!isCompleted) {
+        missing.push(req.areaAr);
+        criticalGaps.add(req.areaAr);
+      }
+    }
+    
+    // تسجيل نتائج القسم
+    if (!departmentScores[emp.department]) {
+      departmentScores[emp.department] = { total: 0, completed: 0 };
+    }
+    departmentScores[emp.department].total += criticalReqs.length;
+    departmentScores[emp.department].completed += criticalReqs.length - missing.length;
+    
+    // تحديد الموظفين المعرضين للخطر
+    if (missing.length >= 2) {
+      atRiskEmployees.push({ name: emp.name, missingTraining: missing });
+    }
+  }
+  
+  // حساب النسب
+  const deptScores: Record<string, number> = {};
+  let totalAll = 0;
+  let completedAll = 0;
+  
+  for (const [dept, scores] of Object.entries(departmentScores)) {
+    deptScores[dept] = scores.total > 0 
+      ? Math.round((scores.completed / scores.total) * 100) 
+      : 100;
+    totalAll += scores.total;
+    completedAll += scores.completed;
+  }
+  
+  const overallScore = totalAll > 0 ? Math.round((completedAll / totalAll) * 100) : 100;
+  
+  // توليد التوصيات
+  const recommendations: string[] = [];
+  
+  if (overallScore < 70) {
+    recommendations.push(isArabic 
+      ? "يجب وضع خطة عاجلة لرفع مستوى الامتثال التدريبي" 
+      : "Urgent plan needed to improve training compliance");
+  }
+  
+  if (criticalGaps.size > 3) {
+    recommendations.push(isArabic
+      ? "توجد فجوات تدريبية حرجة متعددة تحتاج اهتماماً فورياً"
+      : "Multiple critical training gaps require immediate attention");
+  }
+  
+  if (atRiskEmployees.length > employees.length * 0.2) {
+    recommendations.push(isArabic
+      ? "أكثر من 20% من الموظفين يحتاجون تدريبات إلزامية متعددة"
+      : "More than 20% of employees need multiple mandatory trainings");
+  }
+  
+  // ترتيب الأقسام حسب الأولوية
+  const lowestDept = Object.entries(deptScores)
+    .sort(([, a], [, b]) => a - b)[0];
+  if (lowestDept && lowestDept[1] < 60) {
+    recommendations.push(isArabic
+      ? `قسم ${lowestDept[0]} يحتاج اهتماماً خاصاً (${lowestDept[1]}%)`
+      : `${lowestDept[0]} department needs special attention (${lowestDept[1]}%)`);
+  }
+  
+  const summary = isArabic
+    ? `تقرير امتثال التدريب: ${employees.length} موظف، متوسط الامتثال ${overallScore}%، ${atRiskEmployees.length} موظف معرض للخطر`
+    : `Training Compliance Report: ${employees.length} employees, ${overallScore}% average compliance, ${atRiskEmployees.length} at-risk employees`;
+  
+  return {
+    overallComplianceScore: overallScore,
+    departmentScores: deptScores,
+    criticalGaps: Array.from(criticalGaps),
+    atRiskEmployees: atRiskEmployees.slice(0, 10), // أعلى 10
+    recommendations,
+    summary
+  };
 }

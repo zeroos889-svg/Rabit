@@ -1,0 +1,172 @@
+{
+  "$schema": "../schemas/regulation.schema.json",
+  "id": "wps",
+  "name": {
+    "ar": "نظام حماية الأجور",
+    "en": "Wage Protection System (WPS)"
+  },
+  "authority": {
+    "ar": "وزارة الموارد البشرية والتنمية الاجتماعية",
+    "en": "Ministry of Human Resources and Social Development (MHRSD)"
+  },
+  "platform": {
+    "name": "مُدد",
+    "nameEn": "Mudad",
+    "website": "https://mudad.com.sa"
+  },
+  "version": "2025",
+  "lastAmendment": "2025-01-01",
+  "status": "active",
+
+  "overview": {
+    "ar": "نظام إلكتروني لمراقبة صرف الأجور في القطاع الخاص يضمن حصول جميع العاملين على أجورهم في الوقت المحدد",
+    "en": "Electronic system for monitoring wage payments in the private sector ensuring all employees receive their wages on time"
+  },
+
+  "coverage": {
+    "ar": "جميع منشآت القطاع الخاص بغض النظر عن الحجم أو القطاع",
+    "en": "All private sector establishments regardless of size or sector"
+  },
+
+  "subscriptionFees": [
+    { "employeeRange": "1-9", "fee": 460, "currency": "SAR", "period": "monthly" },
+    { "employeeRange": "10-49", "fee": 690, "currency": "SAR", "period": "monthly" },
+    { "employeeRange": "50-99", "fee": 805, "currency": "SAR", "period": "monthly" },
+    { "employeeRange": "100-999", "fee": 920, "currency": "SAR", "period": "monthly" },
+    { "employeeRange": "1000+", "fee": 1150, "currency": "SAR", "period": "monthly" }
+  ],
+
+  "complianceTimeline": {
+    "paymentDueDate": {
+      "ar": "يجب صرف الأجور في موعدها المحدد بالعقد",
+      "en": "Wages must be paid on the date specified in the contract"
+    },
+    "reminderSchedule": [
+      { "day": 0, "action": { "ar": "تذكير أول - موعد استحقاق الرواتب", "en": "First reminder - Salary due date" } },
+      { "day": 10, "action": { "ar": "تذكير ثاني", "en": "Second reminder" } },
+      { "day": 15, "action": { "ar": "تحذير نهائي", "en": "Final warning" } },
+      { "day": 20, "action": { "ar": "طلب تفتيش من الوزارة", "en": "Inspection request from Ministry" } }
+    ]
+  },
+
+  "justificationProcess": {
+    "employerDeadline": {
+      "ar": "10 أيام لتبرير تأخر صرف الرواتب",
+      "en": "10 days to justify salary delay"
+    },
+    "employeeDeadline": {
+      "ar": "3 أيام لقبول أو رفض تبرير صاحب العمل",
+      "en": "3 days to accept or reject employer's justification"
+    },
+    "defaultAction": {
+      "ar": "إذا لم يرد الموظف خلال 3 أيام، يُقبل تبرير صاحب العمل تلقائياً",
+      "en": "If employee doesn't respond within 3 days, employer's justification is automatically accepted"
+    }
+  },
+
+  "penalties": {
+    "twoMonthDelay": {
+      "ar": "إيقاف جميع الخدمات عدا إصدار وتجديد رخص العمل",
+      "en": "Suspension of all services except work permit issuance/renewal"
+    },
+    "threeMonthDelay": {
+      "ar": "إيقاف جميع الخدمات بالكامل",
+      "en": "Complete suspension of all services"
+    },
+    "employeeRights": {
+      "ar": "يحق للعامل الانتقال لصاحب عمل آخر دون موافقة صاحب العمل الحالي حتى لو كان تصريح العمل سارياً",
+      "en": "Employee can transfer to new employer without current employer's approval even if work permit is valid"
+    }
+  },
+
+  "violationFines": [
+    {
+      "violation": {
+        "ar": "عدم رفع ملف حماية الأجور",
+        "en": "Failure to upload wage protection file"
+      },
+      "fine": { "min": 10000, "max": 10000, "currency": "SAR" },
+      "perEmployee": false
+    },
+    {
+      "violation": {
+        "ar": "تأخير صرف الأجور",
+        "en": "Delayed wage payment"
+      },
+      "fine": { "min": 3000, "max": 10000, "currency": "SAR" },
+      "perEmployee": true
+    },
+    {
+      "violation": {
+        "ar": "عدم الالتزام بالحد الأدنى للأجور",
+        "en": "Non-compliance with minimum wage"
+      },
+      "fine": { "min": 5000, "max": 20000, "currency": "SAR" },
+      "perEmployee": true
+    }
+  ],
+
+  "employerObligations": [
+    {
+      "ar": "التسجيل في منصة مُدد",
+      "en": "Register on Mudad platform"
+    },
+    {
+      "ar": "رفع ملف الأجور شهرياً قبل الموعد المحدد",
+      "en": "Upload wage file monthly before deadline"
+    },
+    {
+      "ar": "صرف الأجور بالريال السعودي عبر بنوك معتمدة",
+      "en": "Pay wages in SAR through authorized banks"
+    },
+    {
+      "ar": "مطابقة بيانات الأجور مع عقود العمل المسجلة",
+      "en": "Match wage data with registered employment contracts"
+    },
+    {
+      "ar": "الرد على استفسارات الموظفين خلال المهلة المحددة",
+      "en": "Respond to employee inquiries within deadline"
+    }
+  ],
+
+  "employeeRights": [
+    {
+      "ar": "استلام الراتب في الوقت المحدد",
+      "en": "Receive salary on time"
+    },
+    {
+      "ar": "الحصول على كشف راتب مفصل",
+      "en": "Receive detailed pay slip"
+    },
+    {
+      "ar": "تقديم شكوى عبر منصة مُدد",
+      "en": "File complaint via Mudad platform"
+    },
+    {
+      "ar": "الاعتراض على تبريرات صاحب العمل",
+      "en": "Object to employer's justifications"
+    },
+    {
+      "ar": "الانتقال لصاحب عمل آخر في حالة التأخر 3 أشهر",
+      "en": "Transfer to another employer if delayed 3 months"
+    }
+  ],
+
+  "integration": {
+    "qiwa": {
+      "ar": "ربط مع منصة قوى للتحقق من العقود",
+      "en": "Integration with Qiwa for contract verification"
+    },
+    "absher": {
+      "ar": "يمكن للموظفين التحقق عبر أبشر",
+      "en": "Employees can verify via Absher"
+    },
+    "gosi": {
+      "ar": "مطابقة مع بيانات التأمينات الاجتماعية",
+      "en": "Matching with GOSI data"
+    }
+  },
+
+  "relatedRegulations": ["labor-law", "gosi", "qiwa"],
+  "tags": ["أجور", "رواتب", "مدد", "حماية", "wages", "salary", "mudad", "protection", "wps"]
+}

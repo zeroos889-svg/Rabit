@@ -3,6 +3,7 @@
  * يوفر طبقة caching متقدمة باستخدام Redis لتحسين الأداء
  */
 
+/* eslint-disable no-undef */
 import Redis from "ioredis";
 import { ENV } from "./env";
 import { logger } from "./logger";

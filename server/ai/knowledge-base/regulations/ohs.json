@@ -1,0 +1,269 @@
+{
+  "$schema": "../schemas/regulation.schema.json",
+  "id": "ohs",
+  "name": {
+    "ar": "نظام السلامة والصحة المهنية",
+    "en": "Occupational Health and Safety (OHS)"
+  },
+  "authority": {
+    "ar": "وزارة الموارد البشرية والتنمية الاجتماعية",
+    "en": "Ministry of Human Resources and Social Development (MHRSD)"
+  },
+  "version": "2025",
+  "lastAmendment": "2025-01-01",
+  "status": "active",
+
+  "overview": {
+    "ar": "نظام السلامة والصحة المهنية يهدف إلى حماية العمال من المخاطر المهنية وتوفير بيئة عمل آمنة وصحية",
+    "en": "OHS system aims to protect workers from occupational hazards and provide safe and healthy work environment"
+  },
+
+  "legalBasis": {
+    "laborLawArticles": ["121", "122", "123", "124", "125", "126", "127"],
+    "ar": "الباب العاشر من نظام العمل السعودي - الوقاية من مخاطر العمل",
+    "en": "Chapter 10 of Saudi Labor Law - Protection from Work Hazards"
+  },
+
+  "employerObligations": {
+    "general": [
+      {
+        "ar": "توفير بيئة عمل آمنة وصحية",
+        "en": "Provide safe and healthy work environment"
+      },
+      {
+        "ar": "اتخاذ الاحتياطات اللازمة لحماية العمال",
+        "en": "Take necessary precautions to protect workers"
+      },
+      {
+        "ar": "توفير معدات الوقاية الشخصية مجاناً",
+        "en": "Provide personal protective equipment free of charge"
+      },
+      {
+        "ar": "تدريب العمال على إجراءات السلامة",
+        "en": "Train workers on safety procedures"
+      },
+      {
+        "ar": "إجراء فحوصات طبية دورية للعمال",
+        "en": "Conduct periodic medical examinations for workers"
+      }
+    ],
+    "facilities": [
+      {
+        "ar": "توفير إضاءة وتهوية مناسبة",
+        "en": "Provide adequate lighting and ventilation"
+      },
+      {
+        "ar": "توفير مياه شرب نظيفة",
+        "en": "Provide clean drinking water"
+      },
+      {
+        "ar": "توفير دورات مياه نظيفة وكافية",
+        "en": "Provide clean and sufficient restrooms"
+      },
+      {
+        "ar": "توفير صندوق إسعافات أولية",
+        "en": "Provide first aid kit"
+      },
+      {
+        "ar": "توفير مخارج طوارئ وإطفاء حريق",
+        "en": "Provide emergency exits and fire extinguishers"
+      }
+    ],
+    "documentation": [
+      {
+        "ar": "الاحتفاظ بسجلات الحوادث والإصابات",
+        "en": "Maintain records of accidents and injuries"
+      },
+      {
+        "ar": "الإبلاغ عن الحوادث الجسيمة للجهات المختصة",
+        "en": "Report serious accidents to authorities"
+      },
+      {
+        "ar": "توثيق التدريبات والفحوصات الطبية",
+        "en": "Document training and medical examinations"
+      }
+    ]
+  },
+
+  "workerObligations": [
+    {
+      "ar": "الالتزام بتعليمات وإرشادات السلامة",
+      "en": "Comply with safety instructions and guidelines"
+    },
+    {
+      "ar": "استخدام معدات الوقاية الشخصية",
+      "en": "Use personal protective equipment"
+    },
+    {
+      "ar": "الإبلاغ عن أي مخاطر أو حوادث",
+      "en": "Report any hazards or accidents"
+    },
+    {
+      "ar": "المشاركة في برامج التدريب على السلامة",
+      "en": "Participate in safety training programs"
+    },
+    {
+      "ar": "عدم تعريض النفس أو الآخرين للخطر",
+      "en": "Not endanger self or others"
+    }
+  ],
+
+  "prohibitions": [
+    {
+      "ar": "العمل تحت تأثير الكحول أو المخدرات",
+      "en": "Working under influence of alcohol or drugs"
+    },
+    {
+      "ar": "إزالة أو تعطيل أجهزة السلامة",
+      "en": "Removing or disabling safety devices"
+    },
+    {
+      "ar": "التدخين في الأماكن المحظورة",
+      "en": "Smoking in prohibited areas"
+    },
+    {
+      "ar": "تشغيل المعدات بدون تدريب",
+      "en": "Operating equipment without training"
+    }
+  ],
+
+  "hazardousWork": {
+    "definition": {
+      "ar": "الأعمال التي تعرض العمال لمخاطر جسدية أو كيميائية أو بيولوجية",
+      "en": "Work that exposes workers to physical, chemical, or biological hazards"
+    },
+    "categories": [
+      { "ar": "العمل في المناجم والمحاجر", "en": "Mining and quarry work" },
+      { "ar": "العمل مع المواد الكيميائية الخطرة", "en": "Work with hazardous chemicals" },
+      { "ar": "العمل في الارتفاعات العالية", "en": "Work at heights" },
+      { "ar": "العمل في درجات حرارة عالية أو منخفضة جداً", "en": "Work in extreme temperatures" },
+      { "ar": "العمل مع الإشعاعات", "en": "Work with radiation" },
+      { "ar": "العمل في الأماكن المغلقة", "en": "Work in confined spaces" }
+    ],
+    "restrictions": {
+      "minors": {
+        "ar": "يُحظر تشغيل من هم دون 18 سنة في الأعمال الخطرة",
+        "en": "Prohibited to employ those under 18 in hazardous work"
+      },
+      "women": {
+        "ar": "بعض القيود على تشغيل النساء في أعمال معينة",
+        "en": "Some restrictions on employing women in certain work"
+      },
+      "pregnant": {
+        "ar": "حماية خاصة للحوامل من الأعمال الخطرة",
+        "en": "Special protection for pregnant women from hazardous work"
+      }
+    }
+  },
+
+  "workingConditions": {
+    "temperature": {
+      "outdoor": {
+        "summerBan": {
+          "ar": "حظر العمل تحت أشعة الشمس من الساعة 12 ظهراً إلى 3 عصراً",
+          "en": "Ban on outdoor work under sun from 12 PM to 3 PM"
+        },
+        "period": "June 15 - September 15",
+        "ar": "من 15 يونيو إلى 15 سبتمبر",
+        "en": "From June 15 to September 15"
+      },
+      "indoor": {
+        "ar": "يجب توفير تبريد مناسب في أماكن العمل المغلقة",
+        "en": "Adequate cooling must be provided in enclosed workplaces"
+      }
+    },
+    "workingHours": {
+      "regular": {
+        "daily": 8,
+        "weekly": 48,
+        "ar": "8 ساعات يومياً و48 ساعة أسبوعياً كحد أقصى",
+        "en": "Maximum 8 hours daily and 48 hours weekly"
+      },
+      "ramadan": {
+        "daily": 6,
+        "weekly": 36,
+        "ar": "6 ساعات يومياً خلال شهر رمضان للمسلمين",
+        "en": "6 hours daily during Ramadan for Muslims"
+      }
+    }
+  },
+
+  "injuryCompensation": {
+    "workInjury": {
+      "ar": "إصابة العمل تشمل الحوادث أثناء العمل أو بسببه",
+      "en": "Work injury includes accidents during or because of work"
+    },
+    "coverage": [
+      {
+        "ar": "تكاليف العلاج الكاملة",
+        "en": "Full treatment costs"
+      },
+      {
+        "ar": "الراتب الكامل خلال فترة العلاج",
+        "en": "Full salary during treatment period"
+      },
+      {
+        "ar": "تعويض العجز الكلي أو الجزئي",
+        "en": "Compensation for total or partial disability"
+      },
+      {
+        "ar": "تعويض الوفاة للورثة",
+        "en": "Death compensation for heirs"
+      }
+    ],
+    "gosiCoverage": {
+      "ar": "يغطي فرع الأخطار المهنية في التأمينات الاجتماعية إصابات العمل",
+      "en": "GOSI Occupational Hazards branch covers work injuries"
+    }
+  },
+
+  "inspections": {
+    "authority": {
+      "ar": "إدارة تفتيش العمل في وزارة الموارد البشرية",
+      "en": "Labor Inspection Department at MHRSD"
+    },
+    "types": [
+      {
+        "type": { "ar": "تفتيش دوري", "en": "Periodic inspection" },
+        "description": { "ar": "زيارات منتظمة للتأكد من الالتزام", "en": "Regular visits to ensure compliance" }
+      },
+      {
+        "type": { "ar": "تفتيش مفاجئ", "en": "Surprise inspection" },
+        "description": { "ar": "زيارات بدون إخطار مسبق", "en": "Visits without prior notice" }
+      },
+      {
+        "type": { "ar": "تفتيش بناءً على شكوى", "en": "Complaint-based inspection" },
+        "description": { "ar": "استجابة لشكاوى العمال", "en": "Response to worker complaints" }
+      }
+    ]
+  },
+
+  "violations": [
+    {
+      "type": { "ar": "عدم توفير معدات الوقاية", "en": "Not providing protective equipment" },
+      "fine": { "min": 10000, "max": 50000, "currency": "SAR" },
+      "perEmployee": false
+    },
+    {
+      "type": { "ar": "عدم إجراء الفحوصات الطبية", "en": "Not conducting medical examinations" },
+      "fine": { "min": 5000, "max": 20000, "currency": "SAR" }
+    },
+    {
+      "type": { "ar": "مخالفة حظر العمل في الحر", "en": "Violating outdoor work ban" },
+      "fine": { "min": 3000, "max": 10000, "currency": "SAR" },
+      "perEmployee": true
+    },
+    {
+      "type": { "ar": "عدم الإبلاغ عن الحوادث", "en": "Not reporting accidents" },
+      "fine": { "min": 10000, "max": 100000, "currency": "SAR" }
+    },
+    {
+      "type": { "ar": "بيئة عمل غير آمنة", "en": "Unsafe work environment" },
+      "fine": { "min": 25000, "max": 100000, "currency": "SAR" },
+      "consequences": { "ar": "قد يؤدي لإغلاق المنشأة", "en": "May lead to establishment closure" }
+    }
+  ],
+
+  "relatedRegulations": ["labor-law", "gosi"],
+  "tags": ["سلامة", "صحة مهنية", "حماية", "إصابات", "safety", "health", "ohs", "protection", "injuries"]
+}

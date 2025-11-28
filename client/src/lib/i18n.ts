@@ -2,6 +2,7 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { adminTranslations } from "./i18n-admin";
+import { aiToolsTranslations } from "./i18n-ai-tools";
 
 const resources = {
   ar: {
@@ -595,6 +596,8 @@ const resources = {
       "dashboard.tasks.title": "إدارة المهام",
       // Merge admin translations
       ...adminTranslations.ar,
+      // Merge AI tools translations
+      ...aiToolsTranslations.ar,
     },
   },
   en: {
@@ -1169,6 +1172,8 @@ const resources = {
       "dashboard.tasks.title": "Tasks management",
       // Merge admin translations
       ...adminTranslations.en,
+      // Merge AI tools translations
+      ...aiToolsTranslations.en,
     },
   },
 };

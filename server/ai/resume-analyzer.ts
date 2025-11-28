@@ -1,10 +1,25 @@
 /**
  * AI Resume Analyzer Module - تحليل السير الذاتية بالذكاء الاصطناعي
  * Advanced resume parsing and candidate matching
+ * مع تكامل قاعدة المعرفة للامتثال للأنظمة السعودية
  */
 
 import { callLLM } from "../_core/llm";
 import { logger } from "../utils/logger";
+import { loadRegulation } from "./knowledge-base-loader";
+
+// Knowledge Base Helpers
+function getLaborLaw() {
+  return loadRegulation("labor-law") as Record<string, any>;
+}
+
+function getNitaqat() {
+  return loadRegulation("nitaqat") as Record<string, any>;
+}
+
+function getLocalizedJobs() {
+  return loadRegulation("localized-jobs") as Record<string, any>;
+}
 
 // ============================================
 // Types & Interfaces
@@ -487,3 +502,553 @@ export const resumeAnalyzer = {
 };
 
 export default resumeAnalyzer;
+
+// ============================================
+// Saudi Compliance Analysis - تحليل الامتثال السعودي
+// ============================================
+
+interface SaudiComplianceInfo {
+  nationalityStatus: "saudi" | "gcc" | "expat" | "unknown";
+  nationalityStatusAr: string;
+  isSaudiCandidate: boolean;
+  isGCCCitizen: boolean;
+  visaRequired: boolean;
+  
+  // تحليل الوظائف المقصورة
+  localizedJobAnalysis: {
+    positionLocalizedToSaudis: boolean;
+    localizedPositionName?: string;
+    canApply: boolean;
+    reason: string;
+    reasonAr: string;
+  };
+  
+  // تحليل نطاقات
+  nitaqatImpact: {
+    countsAsLocalContent: boolean;
+    nitaqatPoints: number;
+    impactOnBand: "positive" | "neutral" | "negative";
+    details: string;
+    detailsAr: string;
+  };
+  
+  // المؤهلات السعودية المعترف بها
+  saudiQualifications: {
+    hasSaudiDegree: boolean;
+    recognizedInstitutions: string[];
+    professionalLicenses: string[];
+    needsEquivalency: boolean;
+  };
+  
+  // متطلبات التوظيف
+  hiringRequirements: {
+    documentsNeeded: string[];
+    additionalChecks: string[];
+    estimatedProcessingTime: string;
+  };
+  
+  recommendations: string[];
+  complianceScore: number; // 0-100
+}
+
+/**
+ * تحليل مؤهلات المرشح للامتثال للأنظمة السعودية
+ */
+export async function analyzeSaudiCompliance(
+  resume: ParsedResume,
+  targetPosition: string,
+  sector: string,
+  language: "ar" | "en" = "ar"
+): Promise<SaudiComplianceInfo> {
+  const isArabic = language === "ar";
+  const localizedJobs = getLocalizedJobs();
+  const nitaqat = getNitaqat();
+  
+  // تحديد الجنسية من السيرة الذاتية
+  const nationalityInfo = detectNationality(resume);
+  
+  // تحليل الوظائف المقصورة
+  const localizedAnalysis = checkLocalizedPosition(targetPosition, sector, nationalityInfo.isSaudi, localizedJobs);
+  
+  // تحليل أثر نطاقات
+  const nitaqatImpact = analyzeNitaqatImpact(nationalityInfo, nitaqat);
+  
+  // تحليل المؤهلات السعودية
+  const qualifications = analyzeSaudiQualifications(resume);
+  
+  // تحديد متطلبات التوظيف
+  const hiringReqs = getHiringRequirements(nationalityInfo, qualifications);
+  
+  // حساب درجة الامتثال
+  let complianceScore = 100;
+  if (!localizedAnalysis.canApply) complianceScore -= 50;
+  if (nationalityInfo.visaRequired) complianceScore -= 10;
+  if (qualifications.needsEquivalency) complianceScore -= 10;
+  if (!nationalityInfo.isSaudi && !nationalityInfo.isGCC) complianceScore -= 15;
+  
+  // توليد التوصيات
+  const recommendations: string[] = [];
+  
+  if (!localizedAnalysis.canApply) {
+    recommendations.push(isArabic 
+      ? `هذه الوظيفة مقصورة على السعوديين - ${localizedAnalysis.reasonAr}`
+      : `This position is localized to Saudis - ${localizedAnalysis.reason}`);
+  }
+  
+  if (qualifications.needsEquivalency) {
+    recommendations.push(isArabic
+      ? "يحتاج المرشح لمعادلة شهادته من وزارة التعليم"
+      : "Candidate needs degree equivalency from Ministry of Education");
+  }
+  
+  if (nationalityInfo.visaRequired) {
+    recommendations.push(isArabic
+      ? "المرشح يحتاج تأشيرة عمل وتصريح عمل"
+      : "Candidate requires work visa and work permit");
+  }
+  
+  if (nitaqatImpact.impactOnBand === "positive") {
+    recommendations.push(isArabic
+      ? "توظيف هذا المرشح سيحسن نطاق المنشأة"
+      : "Hiring this candidate will improve company's Nitaqat band");
+  }
+  
+  return {
+    nationalityStatus: nationalityInfo.status,
+    nationalityStatusAr: nationalityInfo.statusAr,
+    isSaudiCandidate: nationalityInfo.isSaudi,
+    isGCCCitizen: nationalityInfo.isGCC,
+    visaRequired: nationalityInfo.visaRequired,
+    localizedJobAnalysis: localizedAnalysis,
+    nitaqatImpact,
+    saudiQualifications: qualifications,
+    hiringRequirements: hiringReqs,
+    recommendations,
+    complianceScore: Math.max(0, complianceScore)
+  };
+}
+
+/**
+ * تحديد جنسية المرشح من السيرة الذاتية
+ */
+function detectNationality(resume: ParsedResume): {
+  status: "saudi" | "gcc" | "expat" | "unknown";
+  statusAr: string;
+  isSaudi: boolean;
+  isGCC: boolean;
+  visaRequired: boolean;
+} {
+  const location = resume.personalInfo.location?.toLowerCase() || "";
+  const name = resume.personalInfo.name?.toLowerCase() || "";
+  const education = resume.education.map(e => e.institution.toLowerCase()).join(" ");
+  
+  // مؤشرات سعودية
+  const saudiIndicators = [
+    "saudi", "سعودي", "riyadh", "الرياض", "jeddah", "جدة", 
+    "dammam", "الدمام", "makkah", "مكة", "madinah", "المدينة",
+    "ksa", "المملكة العربية السعودية"
+  ];
+  
+  // دول مجلس التعاون
+  const gccCountries = [
+    "uae", "إمارات", "kuwait", "كويت", "bahrain", "بحرين",
+    "qatar", "قطر", "oman", "عمان"
+  ];
+  
+  // التحقق من المؤشرات
+  const hasSaudiIndicator = saudiIndicators.some(ind => 
+    location.includes(ind) || education.includes(ind)
+  );
+  
+  const hasGCCIndicator = gccCountries.some(ind => 
+    location.includes(ind) || education.includes(ind)
+  );
+  
+  // جامعات سعودية معروفة
+  const saudiUniversities = [
+    "king saud", "الملك سعود", "king abdulaziz", "الملك عبدالعزيز",
+    "king fahd", "الملك فهد", "umm al-qura", "أم القرى",
+    "imam muhammad", "الإمام محمد", "princess nourah", "الأميرة نورة"
+  ];
+  
+  const hasSaudiDegree = saudiUniversities.some(uni => 
+    education.includes(uni)
+  );
+  
+  if (hasSaudiIndicator || hasSaudiDegree) {
+    return {
+      status: "saudi",
+      statusAr: "سعودي",
+      isSaudi: true,
+      isGCC: false,
+      visaRequired: false
+    };
+  }
+  
+  if (hasGCCIndicator) {
+    return {
+      status: "gcc",
+      statusAr: "مواطن خليجي",
+      isSaudi: false,
+      isGCC: true,
+      visaRequired: false // مواطنو الخليج لا يحتاجون تأشيرة
+    };
+  }
+  
+  return {
+    status: "unknown",
+    statusAr: "غير محدد",
+    isSaudi: false,
+    isGCC: false,
+    visaRequired: true
+  };
+}
+
+/**
+ * التحقق من الوظائف المقصورة على السعوديين
+ */
+function checkLocalizedPosition(
+  position: string,
+  sector: string,
+  isSaudi: boolean,
+  localizedJobs: Record<string, any>
+): {
+  positionLocalizedToSaudis: boolean;
+  localizedPositionName?: string;
+  canApply: boolean;
+  reason: string;
+  reasonAr: string;
+} {
+  const positionLower = position.toLowerCase();
+  
+  // قائمة الوظائف المقصورة الشائعة
+  const localizedPositions = [
+    { en: "hr", ar: "موارد بشرية", positions: ["hr manager", "hr director", "مدير موارد بشرية"] },
+    { en: "security", ar: "أمن", positions: ["security guard", "حارس أمن", "security officer"] },
+    { en: "reception", ar: "استقبال", positions: ["receptionist", "موظف استقبال"] },
+    { en: "sales", ar: "مبيعات", positions: ["sales representative", "مندوب مبيعات"] },
+    { en: "accounting", ar: "محاسبة", positions: ["accountant", "محاسب", "cashier", "أمين صندوق"] },
+    { en: "government relations", ar: "علاقات حكومية", positions: ["government relations", "معقب", "علاقات حكومية"] }
+  ];
+  
+  // التحقق من تطابق الوظيفة
+  for (const category of localizedPositions) {
+    if (category.positions.some(p => positionLower.includes(p.toLowerCase()))) {
+      if (isSaudi) {
+        return {
+          positionLocalizedToSaudis: true,
+          localizedPositionName: category.ar,
+          canApply: true,
+          reason: "Saudi candidate eligible for localized position",
+          reasonAr: "المرشح السعودي مؤهل للوظيفة المقصورة"
+        };
+      } else {
+        return {
+          positionLocalizedToSaudis: true,
+          localizedPositionName: category.ar,
+          canApply: false,
+          reason: `This position (${category.en}) is localized to Saudis only`,
+          reasonAr: `هذه الوظيفة (${category.ar}) مقصورة على السعوديين فقط`
+        };
+      }
+    }
+  }
+  
+  return {
+    positionLocalizedToSaudis: false,
+    canApply: true,
+    reason: "Position is open to all nationalities",
+    reasonAr: "الوظيفة متاحة لجميع الجنسيات"
+  };
+}
+
+/**
+ * تحليل أثر التوظيف على نطاقات
+ */
+function analyzeNitaqatImpact(
+  nationalityInfo: { isSaudi: boolean; isGCC: boolean },
+  nitaqat: Record<string, any>
+): {
+  countsAsLocalContent: boolean;
+  nitaqatPoints: number;
+  impactOnBand: "positive" | "neutral" | "negative";
+  details: string;
+  detailsAr: string;
+} {
+  if (nationalityInfo.isSaudi) {
+    return {
+      countsAsLocalContent: true,
+      nitaqatPoints: 1,
+      impactOnBand: "positive",
+      details: "Saudi employee counts fully towards Saudization quota",
+      detailsAr: "الموظف السعودي يحتسب بالكامل في نسبة السعودة"
+    };
+  }
+  
+  if (nationalityInfo.isGCC) {
+    return {
+      countsAsLocalContent: false,
+      nitaqatPoints: 0,
+      impactOnBand: "neutral",
+      details: "GCC citizen does not count towards Saudization but doesn't require sponsorship",
+      detailsAr: "المواطن الخليجي لا يحتسب في السعودة لكن لا يحتاج كفالة"
+    };
+  }
+  
+  return {
+    countsAsLocalContent: false,
+    nitaqatPoints: 0,
+    impactOnBand: "negative",
+    details: "Expat hire will increase total headcount without improving Saudization ratio",
+    detailsAr: "توظيف أجنبي سيزيد إجمالي الموظفين دون تحسين نسبة السعودة"
+  };
+}
+
+/**
+ * تحليل المؤهلات السعودية
+ */
+function analyzeSaudiQualifications(resume: ParsedResume): {
+  hasSaudiDegree: boolean;
+  recognizedInstitutions: string[];
+  professionalLicenses: string[];
+  needsEquivalency: boolean;
+} {
+  const saudiUniversities = [
+    "king saud university", "جامعة الملك سعود",
+    "king abdulaziz university", "جامعة الملك عبدالعزيز",
+    "king fahd university", "جامعة الملك فهد",
+    "umm al-qura university", "جامعة أم القرى",
+    "imam muhammad ibn saud", "جامعة الإمام محمد",
+    "princess nourah university", "جامعة الأميرة نورة",
+    "king khalid university", "جامعة الملك خالد",
+    "qassim university", "جامعة القصيم",
+    "taibah university", "جامعة طيبة",
+    "jazan university", "جامعة جازان"
+  ];
+  
+  const recognizedInternational = [
+    "harvard", "mit", "stanford", "oxford", "cambridge",
+    "american university", "british university"
+  ];
+  
+  const recognizedInstitutions: string[] = [];
+  let hasSaudiDegree = false;
+  let needsEquivalency = false;
+  
+  for (const edu of resume.education) {
+    const instLower = edu.institution.toLowerCase();
+    
+    // التحقق من الجامعات السعودية
+    if (saudiUniversities.some(uni => instLower.includes(uni.toLowerCase()))) {
+      hasSaudiDegree = true;
+      recognizedInstitutions.push(edu.institution);
+    }
+    // التحقق من الجامعات الدولية المعترف بها
+    else if (recognizedInternational.some(uni => instLower.includes(uni.toLowerCase()))) {
+      recognizedInstitutions.push(edu.institution);
+    }
+    // جامعات أخرى قد تحتاج معادلة
+    else if (edu.degree.toLowerCase().includes("bachelor") || 
+             edu.degree.toLowerCase().includes("master") ||
+             edu.degree.toLowerCase().includes("بكالوريوس") ||
+             edu.degree.toLowerCase().includes("ماجستير")) {
+      needsEquivalency = true;
+    }
+  }
+  
+  // الرخص المهنية
+  const professionalLicenses: string[] = [];
+  const licenseCertifications = [
+    "cpa", "cma", "cfa", "pmp", "shrm", "cipd",
+    "socpa", "هيئة المحاسبين", "هيئة المهندسين"
+  ];
+  
+  for (const cert of resume.certifications) {
+    if (licenseCertifications.some(lic => 
+      cert.name.toLowerCase().includes(lic.toLowerCase())
+    )) {
+      professionalLicenses.push(cert.name);
+    }
+  }
+  
+  return {
+    hasSaudiDegree,
+    recognizedInstitutions,
+    professionalLicenses,
+    needsEquivalency: needsEquivalency && !hasSaudiDegree
+  };
+}
+
+/**
+ * تحديد متطلبات التوظيف حسب حالة المرشح
+ */
+function getHiringRequirements(
+  nationalityInfo: { isSaudi: boolean; isGCC: boolean; visaRequired: boolean },
+  qualifications: { needsEquivalency: boolean }
+): {
+  documentsNeeded: string[];
+  additionalChecks: string[];
+  estimatedProcessingTime: string;
+} {
+  const documents: string[] = [];
+  const checks: string[] = [];
+  
+  // المستندات الأساسية للجميع
+  documents.push("صورة الهوية / جواز السفر");
+  documents.push("السيرة الذاتية");
+  documents.push("صور الشهادات الأكاديمية");
+  
+  if (nationalityInfo.isSaudi) {
+    documents.push("صورة الهوية الوطنية");
+    documents.push("شهادة حسن السيرة (للوظائف الحساسة)");
+    checks.push("التحقق من المؤهلات عبر منصة مقيم");
+    return {
+      documentsNeeded: documents,
+      additionalChecks: checks,
+      estimatedProcessingTime: "3-5 أيام عمل"
+    };
+  }
+  
+  if (nationalityInfo.isGCC) {
+    documents.push("جواز السفر ساري المفعول");
+    documents.push("بطاقة الهوية الخليجية");
+    checks.push("التحقق من صلاحية الهوية");
+    return {
+      documentsNeeded: documents,
+      additionalChecks: checks,
+      estimatedProcessingTime: "5-7 أيام عمل"
+    };
+  }
+  
+  // للأجانب
+  documents.push("جواز السفر ساري (6 أشهر على الأقل)");
+  documents.push("شهادات الخبرة مصدقة من السفارة");
+  documents.push("الشهادات الأكاديمية مصدقة ومترجمة");
+  documents.push("صورة شخصية بخلفية بيضاء");
+  documents.push("فحص طبي معتمد");
+  
+  if (qualifications.needsEquivalency) {
+    documents.push("معادلة الشهادة من وزارة التعليم");
+  }
+  
+  checks.push("التحقق من عدم وجود حظر دخول");
+  checks.push("الفحص الطبي للأمراض المعدية");
+  checks.push("التحقق من المهنة في جواز السفر");
+  checks.push("مطابقة المهنة مع التأشيرة المطلوبة");
+  
+  return {
+    documentsNeeded: documents,
+    additionalChecks: checks,
+    estimatedProcessingTime: "2-4 أسابيع (يشمل إجراءات التأشيرة)"
+  };
+}
+
+/**
+ * مطابقة المرشح مع متطلبات الوظيفة مع اعتبارات السعودة
+ */
+export async function matchCandidateWithCompliance(
+  resume: ParsedResume,
+  requirements: JobRequirements,
+  sector: string,
+  prioritizeSaudization: boolean = true,
+  language: "ar" | "en" = "ar"
+): Promise<CandidateMatch & { complianceInfo: SaudiComplianceInfo }> {
+  // المطابقة الأساسية
+  const basicMatch = await matchCandidate(resume, requirements);
+  
+  // تحليل الامتثال السعودي
+  const complianceInfo = await analyzeSaudiCompliance(
+    resume, 
+    requirements.title, 
+    sector, 
+    language
+  );
+  
+  // تعديل الدرجة بناءً على الامتثال
+  let adjustedScore = basicMatch.overallScore;
+  
+  if (prioritizeSaudization) {
+    if (complianceInfo.isSaudiCandidate) {
+      adjustedScore = Math.min(100, adjustedScore + 10);
+      basicMatch.strengths.push(language === "ar" 
+        ? "مرشح سعودي - يدعم نسبة السعودة"
+        : "Saudi candidate - supports Saudization quota");
+    }
+    
+    if (!complianceInfo.localizedJobAnalysis.canApply) {
+      adjustedScore = 0;
+      basicMatch.concerns.unshift(language === "ar"
+        ? "الوظيفة مقصورة على السعوديين"
+        : "Position is localized to Saudis only");
+      basicMatch.recommendation = "not_recommended";
+    }
+  }
+  
+  return {
+    ...basicMatch,
+    overallScore: adjustedScore,
+    complianceInfo
+  };
+}
+
+/**
+ * ترتيب المرشحين مع اعتبارات السعودة
+ */
+export async function rankCandidatesWithCompliance(
+  resumes: ParsedResume[],
+  requirements: JobRequirements,
+  sector: string,
+  prioritizeSaudization: boolean = true,
+  language: "ar" | "en" = "ar"
+): Promise<Array<{
+  resume: ParsedResume;
+  match: CandidateMatch;
+  complianceInfo: SaudiComplianceInfo;
+  rank: number;
+}>> {
+  const results: Array<{
+    resume: ParsedResume;
+    match: CandidateMatch;
+    complianceInfo: SaudiComplianceInfo;
+    rank: number;
+  }> = [];
+  
+  for (const resume of resumes) {
+    try {
+      const matchWithCompliance = await matchCandidateWithCompliance(
+        resume, requirements, sector, prioritizeSaudization, language
+      );
+      
+      results.push({
+        resume,
+        match: matchWithCompliance,
+        complianceInfo: matchWithCompliance.complianceInfo,
+        rank: 0
+      });
+    } catch (error) {
+      logger.warn("Failed to match candidate with compliance", {
+        context: "ResumeAnalyzer",
+        candidateName: resume.personalInfo.name,
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  }
+  
+  // ترتيب مع أولوية السعوديين إذا مطلوب
+  results.sort((a, b) => {
+    if (prioritizeSaudization) {
+      // السعوديون أولاً
+      if (a.complianceInfo.isSaudiCandidate && !b.complianceInfo.isSaudiCandidate) return -1;
+      if (!a.complianceInfo.isSaudiCandidate && b.complianceInfo.isSaudiCandidate) return 1;
+    }
+    // ثم حسب الدرجة
+    return b.match.overallScore - a.match.overallScore;
+  });
+  
+  // تعيين الرتب
+  for (const [index, result] of results.entries()) {
+    result.rank = index + 1;
+  }
+  
+  return results;
+}

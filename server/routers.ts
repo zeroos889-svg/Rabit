@@ -22,6 +22,8 @@ import crypto from "node:crypto";
 import { ENV } from "./_core/env";
 import { aiRouter } from "./routes/ai";
 import { aiAdvancedRouter } from "./routes/ai-advanced";
+import { aiSaudiRouter } from "./routes/ai-saudi";
+import { knowledgeBaseRouter } from "./routes/knowledge-base";
 import {
   sendSMS,
   getBookingConfirmationSMS,
@@ -125,6 +127,8 @@ export const appRouter = router({
   contact: contactRouter,
   ai: aiRouter,
   aiAdvanced: aiAdvancedRouter,
+  aiSaudi: aiSaudiRouter,
+  knowledgeBase: knowledgeBaseRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
 

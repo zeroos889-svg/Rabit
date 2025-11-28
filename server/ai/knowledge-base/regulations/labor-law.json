@@ -1,0 +1,245 @@
+{
+  "$schema": "../schemas/regulation.schema.json",
+  "id": "labor-law",
+  "name": {
+    "ar": "نظام العمل السعودي",
+    "en": "Saudi Labor Law"
+  },
+  "authority": {
+    "ar": "وزارة الموارد البشرية والتنمية الاجتماعية",
+    "en": "Ministry of Human Resources and Social Development (MHRSD)"
+  },
+  "website": "https://hrsd.gov.sa",
+  "version": "2025",
+  "lastAmendment": "2025-02-19",
+  "effectiveDate": "2025-02-19",
+  "royalDecree": "M/51",
+  "status": "active",
+  
+  "updates": [
+    {
+      "date": "2025-02-19",
+      "description": {
+        "ar": "تعديلات 2025 - 38 مادة معدلة، 7 مواد محذوفة، مادتان جديدتان",
+        "en": "2025 Amendments - 38 articles amended, 7 deleted, 2 new articles added"
+      },
+      "impactLevel": "major"
+    },
+    {
+      "date": "2024-08-01",
+      "description": {
+        "ar": "تعديلات على مواد الفصل التعسفي والتعويضات",
+        "en": "Amendments to unfair dismissal and compensation articles"
+      },
+      "impactLevel": "moderate"
+    }
+  ],
+
+  "chapters": [
+    {
+      "id": "definitions",
+      "name": {
+        "ar": "التعريفات والأحكام العامة",
+        "en": "Definitions and General Provisions"
+      },
+      "articles": ["1", "2", "3", "4", "5"]
+    },
+    {
+      "id": "employment",
+      "name": {
+        "ar": "التوظيف",
+        "en": "Employment"
+      },
+      "articles": ["25", "26", "27", "28", "29", "30", "31", "32"]
+    },
+    {
+      "id": "contracts",
+      "name": {
+        "ar": "عقد العمل",
+        "en": "Employment Contract"
+      },
+      "articles": ["50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60"]
+    },
+    {
+      "id": "termination",
+      "name": {
+        "ar": "انتهاء عقد العمل",
+        "en": "Termination of Employment Contract"
+      },
+      "articles": ["74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84", "85"]
+    },
+    {
+      "id": "wages",
+      "name": {
+        "ar": "الأجور",
+        "en": "Wages"
+      },
+      "articles": ["90", "91", "92", "93", "94", "95", "96", "97"]
+    },
+    {
+      "id": "working-hours",
+      "name": {
+        "ar": "ساعات العمل والراحة",
+        "en": "Working Hours and Rest"
+      },
+      "articles": ["98", "99", "100", "101", "102", "103", "104", "105", "106", "107"]
+    },
+    {
+      "id": "leaves",
+      "name": {
+        "ar": "الإجازات",
+        "en": "Leaves"
+      },
+      "articles": ["109", "110", "111", "112", "113", "114", "115", "116", "117"]
+    },
+    {
+      "id": "women-employment",
+      "name": {
+        "ar": "تشغيل النساء",
+        "en": "Employment of Women"
+      },
+      "articles": ["149", "150", "151", "152", "153", "154", "155", "156", "157", "158", "159", "160"]
+    },
+    {
+      "id": "end-of-service",
+      "name": {
+        "ar": "مكافأة نهاية الخدمة",
+        "en": "End of Service Benefits"
+      },
+      "articles": ["84", "85", "86", "87", "88"]
+    }
+  ],
+
+  "keyArticles": {
+    "74": {
+      "title": {
+        "ar": "حالات انتهاء عقد العمل",
+        "en": "Cases of Employment Contract Termination"
+      },
+      "content": {
+        "ar": "ينتهي عقد العمل في الحالات التالية:\n1. اتفاق الطرفين كتابياً على إنهائه\n2. انتهاء المدة المحددة في العقد\n3. بلوغ سن التقاعد (60 للرجال، 55 للنساء)\n4. القوة القاهرة\n5. إغلاق المنشأة نهائياً\n6. إنهاء النشاط الذي يعمل فيه العامل",
+        "en": "Employment contract terminates in the following cases:\n1. Written mutual agreement\n2. Contract term expiry\n3. Reaching retirement age (60 for men, 55 for women)\n4. Force majeure\n5. Permanent establishment closure\n6. Termination of the activity"
+      },
+      "lastUpdated": "2025-02-19"
+    },
+    "77": {
+      "title": {
+        "ar": "التعويض عن الفسخ غير المشروع",
+        "en": "Compensation for Unlawful Termination"
+      },
+      "content": {
+        "ar": "إذا أنهى أحد الطرفين العقد لسبب غير مشروع:\n- العقد محدد المدة: تعويض بقية مدة العقد أو راتب شهرين أيهما أكبر\n- العقد غير محدد المدة: أجر 15 يوماً عن كل سنة خدمة بحد أدنى شهرين",
+        "en": "If either party terminates the contract for unlawful reason:\n- Fixed-term: Compensation for remaining term or 2 months salary (whichever is greater)\n- Indefinite: 15 days wage per year of service (minimum 2 months)"
+      },
+      "lastUpdated": "2025-02-19"
+    },
+    "80": {
+      "title": {
+        "ar": "حالات فصل العامل دون مكافأة أو إشعار",
+        "en": "Cases of Dismissal Without Benefits or Notice"
+      },
+      "content": {
+        "ar": "يحق لصاحب العمل فسخ العقد دون مكافأة أو إشعار في الحالات التالية:\n1. الاعتداء على صاحب العمل أو المدير\n2. عدم أداء الالتزامات الجوهرية\n3. التزوير للحصول على العمل\n4. فترة التجربة\n5. الغياب أكثر من 30 يوماً متفرقة أو 15 متتالية\n6. استغلال المنصب لتحقيق مكاسب شخصية\n7. إفشاء الأسرار\n8. ارتكاب فعل مخل بالشرف",
+        "en": "Employer may terminate without benefits or notice if employee:\n1. Assaults employer or manager\n2. Fails to perform essential obligations\n3. Forged documents to get the job\n4. During probation period\n5. Absent more than 30 scattered days or 15 consecutive\n6. Exploits position for personal gain\n7. Discloses secrets\n8. Commits immoral act"
+      },
+      "lastUpdated": "2025-02-19"
+    },
+    "81": {
+      "title": {
+        "ar": "حق العامل في ترك العمل دون إشعار",
+        "en": "Employee Right to Leave Without Notice"
+      },
+      "content": {
+        "ar": "يحق للعامل ترك العمل دون إشعار مع احتفاظه بحقوقه في الحالات التالية:\n1. إخلال صاحب العمل بالتزاماته التعاقدية\n2. الغش في شروط العمل\n3. تكليفه بعمل مختلف جوهرياً\n4. التعرض للعنف أو الإهانة\n5. وجود خطر جسيم على السلامة\n6. معاملة قاسية أو ظلم",
+        "en": "Employee may leave without notice while retaining rights if:\n1. Employer breaches contractual obligations\n2. Fraud in work conditions\n3. Assigned substantially different work\n4. Subject to violence or insult\n5. Serious safety risk exists\n6. Harsh or unjust treatment"
+      },
+      "lastUpdated": "2025-02-19"
+    },
+    "84": {
+      "title": {
+        "ar": "مكافأة نهاية الخدمة",
+        "en": "End of Service Benefits"
+      },
+      "content": {
+        "ar": "يستحق العامل مكافأة نهاية الخدمة:\n- نصف شهر عن كل سنة من السنوات الخمس الأولى\n- شهر كامل عن كل سنة من السنوات التالية\n- تحسب على أساس آخر أجر\n- تشمل البدلات الثابتة",
+        "en": "Employee is entitled to end of service benefits:\n- Half month per year for first 5 years\n- Full month per year for subsequent years\n- Calculated based on last wage\n- Includes fixed allowances"
+      },
+      "lastUpdated": "2025-02-19"
+    },
+    "113": {
+      "title": {
+        "ar": "إجازة الأبوة",
+        "en": "Paternity Leave"
+      },
+      "content": {
+        "ar": "يستحق العامل إجازة مدفوعة الأجر لمدة ثلاثة أيام في حالة ولادة مولود له",
+        "en": "Employee is entitled to 3 days paid leave upon birth of a child"
+      },
+      "lastUpdated": "2025-02-19"
+    },
+    "151": {
+      "title": {
+        "ar": "إجازة الأمومة",
+        "en": "Maternity Leave"
+      },
+      "content": {
+        "ar": "تستحق المرأة العاملة إجازة وضع:\n- 10 أسابيع مدفوعة الأجر\n- تبدأ قبل التاريخ المرجح للولادة بأربعة أسابيع كحد أقصى\n- لا يجوز تشغيلها خلال 6 أسابيع بعد الولادة\n- يمكن تمديدها شهراً إضافياً بدون أجر",
+        "en": "Female employee is entitled to maternity leave:\n- 10 weeks paid\n- Can start up to 4 weeks before expected delivery\n- Cannot work for 6 weeks after delivery\n- Can extend by 1 month unpaid"
+      },
+      "lastUpdated": "2025-02-19"
+    }
+  },
+
+  "2025Updates": {
+    "probationPeriod": {
+      "ar": "فترة التجربة أصبحت 180 يوماً (6 أشهر) بدلاً من 90 يوماً",
+      "en": "Probation period extended to 180 days (6 months) from 90 days"
+    },
+    "resignation": {
+      "ar": "إجراءات الاستقالة: 30 يوماً للرد من صاحب العمل، 7 أيام للسحب",
+      "en": "Resignation procedures: 30 days for employer response, 7 days to withdraw"
+    },
+    "terminationGrounds": {
+      "ar": "إضافة الإفلاس والقوة القاهرة كأسباب مشروعة للإنهاء",
+      "en": "Added bankruptcy and force majeure as valid termination grounds"
+    },
+    "overtime": {
+      "ar": "يمكن الاتفاق على إجازة تعويضية بدلاً من أجر العمل الإضافي",
+      "en": "Can agree on compensatory leave instead of overtime pay"
+    },
+    "contractAuthentication": {
+      "ar": "يجب توثيق العقود عبر منصة قوى لتكون سنداً تنفيذياً",
+      "en": "Contracts must be authenticated via Qiwa to be executory instruments",
+      "phases": [
+        {
+          "phase": 1,
+          "date": "2025-10-06",
+          "description": {
+            "ar": "العقود الجديدة والمحدثة",
+            "en": "New and updated contracts"
+          }
+        },
+        {
+          "phase": 2,
+          "date": "2026-03-06",
+          "description": {
+            "ar": "العقود محددة المدة القائمة",
+            "en": "Existing fixed-term contracts"
+          }
+        },
+        {
+          "phase": 3,
+          "date": "2026-08-06",
+          "description": {
+            "ar": "العقود غير محددة المدة القائمة",
+            "en": "Existing open-ended contracts"
+          }
+        }
+      ]
+    }
+  },
+
+  "relatedRegulations": ["gosi", "nitaqat", "wps", "pdpl"],
+  
+  "tags": ["عقد العمل", "فصل", "استقالة", "إجازات", "أجور", "مكافأة نهاية الخدمة", "labor", "employment", "termination", "wages"]
+}

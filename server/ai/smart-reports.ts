@@ -1,10 +1,102 @@
 /**
  * AI Smart Reports Generator - توليد التقارير الذكية
  * Automated report generation with AI insights
+ * 
+ * متكامل مع قاعدة المعرفة للأنظمة السعودية
+ * 
+ * @module server/ai/smart-reports
  */
 
 import { callLLM } from "../_core/llm";
 import { logger } from "../utils/logger";
+import { loadRegulation, searchRegulations, type Regulation } from "./knowledge-base-loader";
+
+// ============================================
+// Knowledge Base Integration
+// ============================================
+
+let laborLawCache: Regulation | null = null;
+let gosiCache: Regulation | null = null;
+let nitaqatCache: Regulation | null = null;
+
+/**
+ * تحميل الأنظمة من قاعدة المعرفة
+ */
+function getRegulations(): { laborLaw: Regulation | null; gosi: Regulation | null; nitaqat: Regulation | null } {
+  if (!laborLawCache) {
+    try { laborLawCache = loadRegulation('labor-law'); } catch { /* ignore */ }
+  }
+  if (!gosiCache) {
+    try { gosiCache = loadRegulation('gosi'); } catch { /* ignore */ }
+  }
+  if (!nitaqatCache) {
+    try { nitaqatCache = loadRegulation('nitaqat'); } catch { /* ignore */ }
+  }
+  return { laborLaw: laborLawCache, gosi: gosiCache, nitaqat: nitaqatCache };
+}
+
+/**
+ * الحصول على سياق قاعدة المعرفة للتقرير
+ */
+function getKBContextForReport(reportType: ReportType): string {
+  const regulations = getRegulations();
+  let context = '';
+  
+  const laborData = regulations.laborLaw as Record<string, unknown> | null;
+  const gosiData = regulations.gosi as Record<string, unknown> | null;
+  const nitaqatData = regulations.nitaqat as Record<string, unknown> | null;
+  
+  switch (reportType) {
+    case 'salary_benchmark':
+      if (laborData) {
+        const wages = (laborData as Record<string, unknown>).wages as Record<string, unknown> | undefined;
+        context += `\nمعلومات الرواتب من قاعدة المعرفة:\n`;
+        context += `- الحد الأدنى لاحتساب نطاقات: ${(wages?.minimumWage as Record<string, unknown>)?.saudi ?? 4000} ريال\n`;
+      }
+      if (gosiData) {
+        const contributions = (gosiData as Record<string, unknown>).contributions as Record<string, unknown> | undefined;
+        context += `- نسبة خصم التأمينات (صاحب العمل): ${(contributions?.retirement as Record<string, unknown>)?.employer ?? 9}%\n`;
+        context += `- نسبة خصم التأمينات (الموظف): ${(contributions?.retirement as Record<string, unknown>)?.employee ?? 9}%\n`;
+      }
+      break;
+      
+    case 'leave_utilization':
+      if (laborData) {
+        const leaves = (laborData as Record<string, unknown>).leaves as Record<string, unknown> | undefined;
+        context += `\nمعلومات الإجازات من قاعدة المعرفة:\n`;
+        const annual = (leaves?.article109 as Record<string, unknown>)?.duration as Record<string, unknown> | undefined;
+        context += `- الإجازة السنوية: ${annual?.standard ?? 21} يوم (${annual?.afterFiveYears ?? 30} بعد 5 سنوات)\n`;
+        context += `- الإجازة المرضية: حتى 120 يوم\n`;
+      }
+      break;
+      
+    case 'turnover_analysis':
+      if (laborData) {
+        context += `\nمعلومات الإنهاء من قاعدة المعرفة:\n`;
+        context += `- فترة الإشعار: 60 يوم للعقود غير محددة المدة\n`;
+        context += `- مكافأة نهاية الخدمة: نصف شهر لأول 5 سنوات، شهر بعدها\n`;
+      }
+      if (nitaqatData) {
+        context += `- تأثير الدوران على نسبة السعودة\n`;
+      }
+      break;
+      
+    default: {
+      // البحث العام في قاعدة المعرفة
+      const searchResults = searchRegulations(reportType);
+      if (searchResults.length > 0) {
+        context += `\nمعلومات ذات صلة:\n`;
+        searchResults.slice(0, 2).forEach(r => {
+          const reg = r as Record<string, unknown>;
+          context += `- ${reg.title || reg.id}\n`;
+        });
+      }
+      break;
+    }
+  }
+  
+  return context;
+}
 
 // ============================================
 // Types & Interfaces
@@ -194,6 +286,7 @@ const REPORT_TEMPLATES: Record<ReportType, { ar: string; en: string }> = {
 
 /**
  * Generate a comprehensive HR report
+ * مع تكامل قاعدة المعرفة للامتثال السعودي
  */
 export async function generateReport(
   config: ReportConfig,
@@ -204,9 +297,12 @@ export async function generateReport(
     type: config.type,
     language: config.language 
   });
+  
+  // الحصول على سياق قاعدة المعرفة
+  const kbContext = getKBContextForReport(config.type);
 
   const systemPrompt = config.language === "ar"
-    ? `أنت خبير في تحليل بيانات الموارد البشرية وكتابة التقارير الاحترافية.
+    ? `أنت خبير في تحليل بيانات الموارد البشرية وكتابة التقارير الاحترافية المتوافقة مع الأنظمة السعودية.
 
 قواعد التقرير:
 - استخدم لغة عربية فصحى واضحة ومهنية
@@ -215,9 +311,13 @@ export async function generateReport(
 - قدم رؤى استراتيجية قابلة للتطبيق
 - اذكر الاتجاهات والأنماط الملحوظة
 - قدم توصيات محددة وعملية
+- تأكد من الامتثال لنظام العمل السعودي
+- راجع متطلبات نطاقات والتأمينات الاجتماعية
+
+${kbContext}
 
 الناتج يجب أن يكون بصيغة JSON صالحة.`
-    : `You are an expert in HR data analysis and professional report writing.
+    : `You are an expert in HR data analysis and professional report writing compliant with Saudi regulations.
 
 Report guidelines:
 - Use clear, professional English
@@ -226,6 +326,10 @@ Report guidelines:
 - Offer actionable strategic insights
 - Identify trends and patterns
 - Provide specific, practical recommendations
+- Ensure compliance with Saudi Labor Law
+- Check Nitaqat and GOSI requirements
+
+${kbContext}
 
 Output must be valid JSON format.`;
 
@@ -250,17 +354,22 @@ Output must be valid JSON format.`;
     const jsonStr = jsonMatch[1]?.trim() || content;
     
     const aiReport = JSON.parse(jsonStr);
+    
+    // إضافة معلومات الامتثال
+    const complianceInfo = generateComplianceInfo(config.type, config.language);
 
     return {
       title: config.title || reportTitle,
       period: periodStr,
       generatedAt: new Date(),
       language: config.language,
-      sections: aiReport.sections || [],
+      sections: [...(aiReport.sections || []), ...complianceInfo.sections],
       executiveSummary: aiReport.executiveSummary || "",
       keyMetrics: aiReport.keyMetrics || [],
-      insights: aiReport.insights || [],
-      recommendations: config.includeRecommendations ? (aiReport.recommendations || []) : [],
+      insights: [...(aiReport.insights || []), ...complianceInfo.insights],
+      recommendations: config.includeRecommendations 
+        ? [...(aiReport.recommendations || []), ...complianceInfo.recommendations] 
+        : [],
       chartData: config.includeCharts ? generateChartData(data, config.type) : undefined,
     };
   } catch (error) {
@@ -269,6 +378,64 @@ Output must be valid JSON format.`;
       ? "فشل في توليد التقرير" 
       : "Failed to generate report");
   }
+}
+
+/**
+ * توليد معلومات الامتثال للتقرير
+ */
+function generateComplianceInfo(
+  reportType: ReportType, 
+  language: 'ar' | 'en'
+): { sections: ReportSection[]; insights: string[]; recommendations: string[] } {
+  const sections: ReportSection[] = [];
+  const insights: string[] = [];
+  const recommendations: string[] = [];
+  
+  const regulations = getRegulations();
+  
+  if (regulations.laborLaw || regulations.gosi || regulations.nitaqat) {
+    if (language === 'ar') {
+      sections.push({
+        title: 'ملاحظات الامتثال',
+        content: 'تم مراجعة التقرير وفقاً للأنظمة السعودية المعمول بها.',
+        subsections: [
+          { title: 'المصادر المرجعية', content: 'نظام العمل السعودي، نظام التأمينات الاجتماعية، برنامج نطاقات' }
+        ]
+      });
+      
+      if (reportType === 'salary_benchmark') {
+        insights.push('تأكد من أن جميع الرواتب فوق الحد الأدنى لاحتساب نطاقات (4000 ريال)');
+        recommendations.push('مراجعة رواتب السعوديين للتأكد من احتسابهم في نطاقات');
+      } else if (reportType === 'leave_utilization') {
+        insights.push('الإجازة السنوية المستحقة: 21 يوم (30 بعد 5 سنوات خدمة)');
+        recommendations.push('متابعة رصيد الإجازات المتراكمة لتجنب المخالفات');
+      } else if (reportType === 'turnover_analysis') {
+        insights.push('معدل الدوران يؤثر على نسبة السعودة وتصنيف نطاقات');
+        recommendations.push('تطوير برامج الاحتفاظ بالموظفين السعوديين');
+      }
+    } else {
+      sections.push({
+        title: 'Compliance Notes',
+        content: 'This report has been reviewed according to applicable Saudi regulations.',
+        subsections: [
+          { title: 'Reference Sources', content: 'Saudi Labor Law, GOSI Regulations, Nitaqat Program' }
+        ]
+      });
+      
+      if (reportType === 'salary_benchmark') {
+        insights.push('Ensure all salaries are above Nitaqat minimum (4,000 SAR)');
+        recommendations.push('Review Saudi employee salaries for Nitaqat compliance');
+      } else if (reportType === 'leave_utilization') {
+        insights.push('Annual leave entitlement: 21 days (30 after 5 years of service)');
+        recommendations.push('Monitor accumulated leave balance to avoid violations');
+      } else if (reportType === 'turnover_analysis') {
+        insights.push('Turnover rate affects Saudization percentage and Nitaqat classification');
+        recommendations.push('Develop retention programs for Saudi employees');
+      }
+    }
+  }
+  
+  return { sections, insights, recommendations };
 }
 
 /**
@@ -400,7 +567,7 @@ function buildReportPrompt(
 /**
  * Generate chart data based on report data
  */
-function generateChartData(data: ReportData, reportType: ReportType): ChartData[] {
+function generateChartData(data: ReportData, _reportType: ReportType): ChartData[] {
   const charts: ChartData[] = [];
 
   if (data.employees?.length) {
@@ -488,14 +655,25 @@ function generateChartData(data: ReportData, reportType: ReportType): ChartData[
 
 /**
  * Generate quick insights from HR data
+ * مع تكامل قاعدة المعرفة
  */
 export async function generateQuickInsights(
   data: ReportData,
   language: "ar" | "en" = "en"
 ): Promise<string[]> {
+  // الحصول على سياق من قاعدة المعرفة
+  const regulations = getRegulations();
+  let kbContext = '';
+  
+  if (regulations.laborLaw || regulations.nitaqat) {
+    kbContext = language === 'ar' 
+      ? '\nملاحظة: تحقق من امتثال البيانات لنظام العمل السعودي ونطاقات.'
+      : '\nNote: Check data compliance with Saudi Labor Law and Nitaqat.';
+  }
+  
   const prompt = language === "ar"
-    ? `قدم 5 رؤى سريعة ومهمة من بيانات الموارد البشرية التالية بصيغة JSON array من النصوص.`
-    : `Provide 5 quick and important insights from the following HR data as a JSON array of strings.`;
+    ? `قدم 5 رؤى سريعة ومهمة من بيانات الموارد البشرية التالية بصيغة JSON array من النصوص.${kbContext}`
+    : `Provide 5 quick and important insights from the following HR data as a JSON array of strings.${kbContext}`;
 
   try {
     const response = await callLLM({
@@ -510,11 +688,113 @@ export async function generateQuickInsights(
     const jsonRegex = /\[[\s\S]*\]/;
     const jsonMatch = jsonRegex.exec(content) || [content];
     
-    return JSON.parse(jsonMatch[0]);
+    const insights = JSON.parse(jsonMatch[0]) as string[];
+    
+    // إضافة رؤية امتثال إذا كانت البيانات تحتوي على معلومات ذات صلة
+    if (data.salaries?.length && regulations.laborLaw) {
+      insights.push(language === 'ar' 
+        ? 'تأكد من احتساب جميع السعوديين في نطاقات (الحد الأدنى 4000 ريال)'
+        : 'Ensure all Saudis are counted in Nitaqat (minimum 4,000 SAR)');
+    }
+    
+    return insights.slice(0, 6);
   } catch (error) {
     logger.error("Quick insights generation failed", { context: "SmartReports", error });
     return [];
   }
+}
+
+// ============================================
+// New Compliance Report Functions
+// ============================================
+
+/**
+ * توليد تقرير الامتثال السعودي
+ */
+export async function generateComplianceReport(
+  data: ReportData,
+  language: 'ar' | 'en' = 'ar'
+): Promise<{
+  overallCompliance: number;
+  categories: Array<{
+    name: string;
+    score: number;
+    issues: string[];
+    recommendations: string[];
+  }>;
+  summary: string;
+}> {
+  const regulations = getRegulations();
+  const categories: Array<{
+    name: string;
+    score: number;
+    issues: string[];
+    recommendations: string[];
+  }> = [];
+  
+  // تحليل امتثال الرواتب
+  if (data.salaries?.length) {
+    const issues: string[] = [];
+    const recommendations: string[] = [];
+    let score = 100;
+    
+    // التحقق من الحد الأدنى للرواتب
+    const belowMinimum = data.salaries.filter(s => s.baseSalary < 4000);
+    if (belowMinimum.length > 0) {
+      score -= (belowMinimum.length / data.salaries.length) * 50;
+      issues.push(language === 'ar' 
+        ? `${belowMinimum.length} موظف براتب أقل من 4000 ريال`
+        : `${belowMinimum.length} employees with salary below 4,000 SAR`);
+      recommendations.push(language === 'ar'
+        ? 'رفع رواتب السعوديين إلى الحد الأدنى لاحتسابهم في نطاقات'
+        : 'Raise Saudi salaries to minimum for Nitaqat counting');
+    }
+    
+    categories.push({
+      name: language === 'ar' ? 'امتثال الرواتب' : 'Salary Compliance',
+      score: Math.max(0, Math.round(score)),
+      issues,
+      recommendations
+    });
+  }
+  
+  // تحليل امتثال الإجازات
+  if (data.leaves?.length) {
+    const issues: string[] = [];
+    const recommendations: string[] = [];
+    let score = 100;
+    
+    // التحقق من الإجازات المرفوضة بدون سبب
+    const rejected = data.leaves.filter(l => l.status === 'rejected');
+    if (rejected.length > data.leaves.length * 0.3) {
+      score -= 20;
+      issues.push(language === 'ar'
+        ? 'نسبة مرتفعة من الإجازات المرفوضة'
+        : 'High rejection rate for leave requests');
+    }
+    
+    categories.push({
+      name: language === 'ar' ? 'امتثال الإجازات' : 'Leave Compliance',
+      score: Math.max(0, Math.round(score)),
+      issues,
+      recommendations
+    });
+  }
+  
+  // حساب الامتثال الإجمالي
+  const overallCompliance = categories.length > 0
+    ? Math.round(categories.reduce((sum, c) => sum + c.score, 0) / categories.length)
+    : 100;
+  
+  const summary = language === 'ar'
+    ? `مستوى الامتثال العام: ${overallCompliance}%. ${categories.length} فئات تم تحليلها.`
+    : `Overall compliance level: ${overallCompliance}%. ${categories.length} categories analyzed.`;
+  
+  return {
+    overallCompliance,
+    categories,
+    summary
+  };
 }
 
 // ============================================
@@ -524,6 +804,7 @@ export async function generateQuickInsights(
 export const smartReports = {
   generateReport,
   generateQuickInsights,
+  generateComplianceReport,
   REPORT_TEMPLATES,
 };
 

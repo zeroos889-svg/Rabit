@@ -1,0 +1,162 @@
+{
+  "$schema": "../schemas/regulation.schema.json",
+  "id": "gosi",
+  "name": {
+    "ar": "نظام التأمينات الاجتماعية",
+    "en": "Social Insurance Law (GOSI)"
+  },
+  "authority": {
+    "ar": "المؤسسة العامة للتأمينات الاجتماعية",
+    "en": "General Organization for Social Insurance (GOSI)"
+  },
+  "website": "https://gosi.gov.sa",
+  "version": "2025",
+  "lastAmendment": "2025-07-01",
+  "effectiveDate": "2024-07-03",
+  "status": "active",
+
+  "updates": [
+    {
+      "date": "2025-07-01",
+      "description": {
+        "ar": "بدء تطبيق الزيادة التدريجية في نسب الاشتراكات للموظفين الجدد",
+        "en": "Start of gradual contribution rate increases for new employees"
+      },
+      "impactLevel": "major"
+    },
+    {
+      "date": "2025-07-01",
+      "description": {
+        "ar": "تطبيق منفعة الأمومة للعاملات السعوديات وغير السعوديات",
+        "en": "Implementation of maternity benefit for Saudi and non-Saudi female workers"
+      },
+      "impactLevel": "major"
+    }
+  ],
+
+  "branches": {
+    "annuities": {
+      "name": {
+        "ar": "فرع المعاشات",
+        "en": "Annuities Branch"
+      },
+      "coverage": {
+        "ar": "السعوديون فقط",
+        "en": "Saudis only"
+      },
+      "rates": {
+        "legacy": {
+          "description": {
+            "ar": "الموظفون المسجلون قبل 3 يوليو 2024",
+            "en": "Employees registered before July 3, 2024"
+          },
+          "employee": 9.0,
+          "employer": 9.0,
+          "total": 18.0
+        },
+        "new2025": {
+          "description": {
+            "ar": "الموظفون الجدد بعد 3 يوليو 2024 - نسب تصاعدية",
+            "en": "New employees after July 3, 2024 - progressive rates"
+          },
+          "schedule": [
+            { "year": 2024, "employee": 9.75, "employer": 11.75, "total": 21.5 },
+            { "year": 2025, "employee": 10.25, "employer": 12.25, "total": 22.5 },
+            { "year": 2026, "employee": 10.75, "employer": 12.75, "total": 23.5 },
+            { "year": 2027, "employee": 11.25, "employer": 13.25, "total": 24.5 },
+            { "year": 2028, "employee": 11.75, "employer": 13.75, "total": 25.5 }
+          ]
+        }
+      }
+    },
+    "saned": {
+      "name": {
+        "ar": "نظام ساند (التعطل عن العمل)",
+        "en": "SANED (Unemployment Insurance)"
+      },
+      "coverage": {
+        "ar": "السعوديون فقط",
+        "en": "Saudis only"
+      },
+      "rates": {
+        "employee": 0.75,
+        "employer": 0.75,
+        "total": 1.5
+      },
+      "benefits": {
+        "ar": "تعويض 60% من الراتب لأول 3 أشهر، 50% للـ 9 أشهر التالية",
+        "en": "60% salary compensation for first 3 months, 50% for next 9 months"
+      },
+      "maxCompensation": 9000,
+      "maxDuration": 12
+    },
+    "occupationalHazards": {
+      "name": {
+        "ar": "فرع الأخطار المهنية",
+        "en": "Occupational Hazards Branch"
+      },
+      "coverage": {
+        "ar": "جميع الموظفين (سعوديون وغير سعوديين)",
+        "en": "All employees (Saudis and non-Saudis)"
+      },
+      "rates": {
+        "employee": 0,
+        "employer": 2.0,
+        "total": 2.0
+      }
+    },
+    "maternity": {
+      "name": {
+        "ar": "منفعة الأمومة",
+        "en": "Maternity Benefit"
+      },
+      "effectiveDate": "2025-07-01",
+      "coverage": {
+        "ar": "السعوديات وغير السعوديات المسجلات في النظام",
+        "en": "Saudi and non-Saudi female workers registered in the system"
+      },
+      "duration": {
+        "ar": "3 أشهر تعويض مالي",
+        "en": "3 months financial compensation"
+      },
+      "calculation": {
+        "ar": "متوسط الراتب لآخر 3 أشهر خلال 36 شهراً السابقة للولادة",
+        "en": "Average salary of last 3 months within 36 months preceding delivery"
+      },
+      "eligibility": {
+        "ar": "12 شهر اشتراك (متصل أو متقطع) خلال 36 شهراً قبل الولادة",
+        "en": "12 months contribution (continuous or intermittent) within 36 months before delivery"
+      }
+    }
+  },
+
+  "contributionCap": {
+    "ar": "الحد الأقصى للراتب الخاضع للاشتراك 45,000 ريال شهرياً",
+    "en": "Maximum contributable salary is SAR 45,000 monthly"
+  },
+
+  "nonSaudiRates": {
+    "description": {
+      "ar": "غير السعوديين يخضعون فقط لفرع الأخطار المهنية",
+      "en": "Non-Saudis are only subject to Occupational Hazards branch"
+    },
+    "employee": 0,
+    "employer": 2.0,
+    "total": 2.0
+  },
+
+  "retirement": {
+    "normalAge": {
+      "male": 60,
+      "female": 55
+    },
+    "earlyRetirement": {
+      "ar": "يمكن التقاعد المبكر بعد 25 سنة اشتراك بتخفيض في المعاش",
+      "en": "Early retirement possible after 25 years contribution with reduced pension"
+    },
+    "minimumPension": 4000
+  },
+
+  "relatedRegulations": ["labor-law", "wps"],
+  "tags": ["تأمينات", "معاشات", "ساند", "أخطار مهنية", "تقاعد", "gosi", "pension", "retirement", "insurance"]
+}

@@ -1,140 +1,124 @@
-# CI/CD Pipeline Documentation
+# 🚀 دليل CI/CD الشامل - منصة رابِط HR
 
-## 🚀 Overview
+## 📋 نظرة عامة
 
-Automated CI/CD pipeline using GitHub Actions for continuous integration, testing, and deployment.
+نظام CI/CD متكامل باستخدام GitHub Actions للتكامل المستمر والنشر التلقائي.
 
-## 📋 Pipeline Jobs
-
-### 1. Code Quality ✅
-**Job**: `lint-and-typecheck`
-
-Runs on every push and pull request to `main` and `develop` branches.
-
-**Steps**:
-- ESLint code linting
-- TypeScript type checking
-
-**Duration**: ~2-3 minutes
+![CI Pipeline](https://github.com/zeroos889-svg/Rabit/workflows/CI/CD%20Pipeline/badge.svg)
+![Security](https://github.com/zeroos889-svg/Rabit/workflows/Security%20&%20Dependency%20Audit/badge.svg)
 
 ---
 
-### 2. Unit Tests ✅
-**Job**: `unit-tests`
+## 📊 بنية Pipeline
 
-Runs after code quality checks pass.
-
-**Steps**:
-- Run Vitest unit tests
-- Generate coverage report
-- Upload coverage artifacts (30 days retention)
-
-**Duration**: ~3-5 minutes
-
----
-
-### 3. E2E Tests ✅
-**Job**: `e2e-tests`
-
-Runs in parallel with unit tests.
-
-**Steps**:
-- Install Playwright browsers
-- Run E2E tests across 5 browsers:
-  - Desktop: Chrome, Firefox, Safari
-  - Mobile: Chrome (Pixel 5), Safari (iPhone 12)
-- Upload Playwright HTML report (30 days retention)
-
-**Duration**: ~5-8 minutes
-
----
-
-### 4. Security Audit ✅
-**Job**: `security-audit`
-
-Runs in parallel with tests.
-
-**Steps**:
-- npm audit (moderate level)
-- Generate JSON audit report
-- Upload audit artifacts (30 days retention)
-
-**Duration**: ~1-2 minutes
-
----
-
-### 5. Build Test ✅
-**Job**: `build-test`
-
-Runs after all tests pass.
-
-**Steps**:
-- Production build
-- Upload build artifacts (7 days retention)
-
-**Duration**: ~3-4 minutes
-
----
-
-### 6. Docker Build 🐳
-**Job**: `docker-build`
-
-**Trigger**: Only on push to `main` branch
-
-**Steps**:
-- Set up Docker Buildx
-- Login to Docker Hub (if credentials provided)
-- Build Docker image
-- Use GitHub Actions cache for faster builds
-
-**Duration**: ~4-6 minutes
-
----
-
-### 7. Deploy to Production 🚀
-**Job**: `deploy-production`
-
-**Trigger**: Only on push to `main` branch after all jobs pass
-
-**Targets**:
-- Railway (if `RAILWAY_TOKEN` configured)
-- Vercel (if `VERCEL_TOKEN` configured)
-
-**Duration**: ~2-3 minutes
-
----
-
-## 🔧 Setup Instructions
-
-### 1. GitHub Repository Secrets
-
-Go to: `Settings` → `Secrets and variables` → `Actions`
-
-#### Required Secrets:
-
-**For Docker Hub** (optional):
 ```
+┌──────────────────────────────────────────────────────────────────┐
+│                         Main Branch Push                          │
+└──────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                      1. Code Quality                              │
+│   • ESLint Check                                                  │
+│   • TypeScript Type Check                                         │
+└──────────────────────────────────────────────────────────────────┘
+                                │
+                ┌───────────────┼───────────────┐
+                ▼               ▼               ▼
+┌────────────────────┐ ┌────────────────────┐ ┌────────────────────┐
+│  2. Unit Tests     │ │  3. E2E Tests      │ │  4. Security Audit │
+│  • Vitest          │ │  • Playwright      │ │  • npm audit       │
+│  • Coverage Report │ │  • Multi-browser   │ │  • Trivy Scan      │
+└────────────────────┘ └────────────────────┘ └────────────────────┘
+                │               │               │
+                └───────────────┼───────────────┘
+                                ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                      5. Build & Bundle Analysis                   │
+│   • Production Build                                              │
+│   • Bundle Size Check                                             │
+└──────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                      6. Docker Build & Push                       │
+│   • Multi-stage Build                                             │
+│   • Push to GHCR                                                  │
+│   • Cache Optimization                                            │
+└──────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                      7. Deploy to Production                      │
+│   • Railway (if configured)                                       │
+│   • Vercel (if configured)                                        │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📁 ملفات Workflow
+
+| الملف | الوصف |
+|-------|-------|
+| `.github/workflows/ci.yml` | الـ Pipeline الرئيسي للبناء والاختبار والنشر |
+| `.github/workflows/pr-check.yml` | فحص سريع لطلبات الدمج |
+| `.github/workflows/security.yml` | فحص أمني أسبوعي تلقائي |
+| `.github/workflows/release.yml` | إصدارات تلقائية عند إنشاء tags |
+| `.github/workflows/deploy.yml` | إنشاء artifacts للنشر |
+| `.github/dependabot.yml` | تحديث تلقائي للحزم |
+
+---
+
+## 🔄 مراحل Pipeline الرئيسي (`ci.yml`)
+
+### الـ Jobs:
+
+| Job | الوصف | المدة المتوقعة |
+|-----|-------|---------------|
+| `lint-and-typecheck` | فحص ESLint و TypeScript | 2-3 دقائق |
+| `unit-tests` | اختبارات Vitest مع Coverage | 3-5 دقائق |
+| `e2e-tests` | اختبارات Playwright | 5-8 دقائق |
+| `security-audit` | npm audit + Trivy | 1-2 دقيقة |
+| `build-test` | بناء Production + تحليل Bundle | 3-4 دقائق |
+| `docker-build` | بناء Docker image (main فقط) | 4-6 دقائق |
+| `deploy-production` | النشر (main فقط) | 2-3 دقائق |
+
+---
+
+## ⚙️ إعداد GitHub Secrets
+
+### الانتقال إلى الإعدادات:
+`Settings` → `Secrets and variables` → `Actions`
+
+### المتغيرات المطلوبة:
+
+| Secret | الوصف | مطلوب |
+|--------|-------|------|
+| `CODECOV_TOKEN` | رمز Codecov لتقارير التغطية | اختياري |
+| `RAILWAY_TOKEN` | رمز Railway للنشر | للنشر على Railway |
+| `VERCEL_TOKEN` | رمز Vercel للنشر | للنشر على Vercel |
+
+### الحصول على الرموز:
+
+**لـ Docker Hub** (اختياري):
+```bash
 DOCKER_USERNAME=your-dockerhub-username
 DOCKER_PASSWORD=your-dockerhub-password
 ```
 
-**For Railway Deployment**:
-```
-RAILWAY_TOKEN=your-railway-token
-```
-
-Get token from:
+**لـ Railway:**
 ```bash
 railway login
 railway whoami --token
 ```
 
-**For Vercel Deployment**:
-```
-VERCEL_TOKEN=your-vercel-token
-```
+**لـ Vercel:**
+اذهب إلى: https://vercel.com/account/tokens
 
-Get token from: https://vercel.com/account/tokens
+---
+
+## 🔒 حماية الفروع والبيئات
 
 ### 2. Environment Protection
 

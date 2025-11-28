@@ -1,0 +1,227 @@
+{
+  "$schema": "../schemas/regulation.schema.json",
+  "id": "women-employment",
+  "name": {
+    "ar": "أنظمة عمل المرأة وحماية الأمومة",
+    "en": "Women Employment and Maternity Protection Regulations"
+  },
+  "authority": {
+    "ar": "وزارة الموارد البشرية والتنمية الاجتماعية",
+    "en": "Ministry of Human Resources and Social Development (MHRSD)"
+  },
+  "version": "2025",
+  "lastAmendment": "2025-07-01",
+  "status": "active",
+
+  "overview": {
+    "ar": "تنظم هذه الأحكام حقوق المرأة العاملة وتوفر حماية خاصة للأمومة والحمل والرضاعة",
+    "en": "These provisions regulate working women's rights and provide special protection for maternity, pregnancy, and nursing"
+  },
+
+  "legalBasis": {
+    "laborLawArticles": ["149", "150", "151", "152", "153", "154", "155", "156", "157", "158", "159", "160"],
+    "ar": "الباب التاسع من نظام العمل - تشغيل النساء",
+    "en": "Chapter 9 of Labor Law - Employment of Women"
+  },
+
+  "equality2025": {
+    "principle": {
+      "ar": "للمرأة الحق في العمل في جميع القطاعات المناسبة لطبيعتها",
+      "en": "Women have the right to work in all sectors suitable for their nature"
+    },
+    "equalPay": {
+      "ar": "المساواة في الأجر بين الرجل والمرأة للعمل المتساوي القيمة",
+      "en": "Equal pay between men and women for work of equal value"
+    },
+    "prohibitedDiscrimination": [
+      { "ar": "التمييز في التوظيف بسبب الجنس", "en": "Discrimination in hiring based on gender" },
+      { "ar": "التمييز في الترقيات", "en": "Discrimination in promotions" },
+      { "ar": "التمييز في الأجور", "en": "Discrimination in wages" },
+      { "ar": "إنهاء الخدمة بسبب الحمل أو الزواج", "en": "Termination due to pregnancy or marriage" }
+    ]
+  },
+
+  "workingConditions": {
+    "nightWork": {
+      "ar": "يُسمح للمرأة بالعمل ليلاً وفق ضوابط معينة",
+      "en": "Women are allowed to work at night under certain conditions",
+      "conditions": [
+        { "ar": "توفير وسيلة نقل آمنة", "en": "Provide safe transportation" },
+        { "ar": "مكان راحة مناسب", "en": "Suitable rest area" },
+        { "ar": "استثناء الحوامل من العمل الليلي", "en": "Pregnant women exempted from night work" }
+      ]
+    },
+    "prohibitedWork": [
+      { "ar": "الأعمال الخطرة", "en": "Hazardous work" },
+      { "ar": "العمل في المناجم والمحاجر", "en": "Mining and quarry work" },
+      { "ar": "الأعمال التي تضر بصحة المرأة", "en": "Work harmful to women's health" }
+    ],
+    "restPeriods": {
+      "ar": "يحق للمرأة فترات راحة للصلاة كالرجل",
+      "en": "Women have right to prayer rest periods like men"
+    }
+  },
+
+  "maternityLeave": {
+    "duration": {
+      "total": 70,
+      "unit": "days",
+      "ar": "70 يوماً إجازة أمومة",
+      "en": "70 days maternity leave"
+    },
+    "distribution": {
+      "beforeDelivery": {
+        "max": 28,
+        "unit": "days",
+        "ar": "حتى 4 أسابيع قبل الولادة المتوقعة",
+        "en": "Up to 4 weeks before expected delivery"
+      },
+      "afterDelivery": {
+        "min": 42,
+        "unit": "days",
+        "ar": "6 أسابيع على الأقل بعد الولادة",
+        "en": "At least 6 weeks after delivery"
+      }
+    },
+    "pay": {
+      "ar": "راتب كامل خلال إجازة الأمومة",
+      "en": "Full salary during maternity leave"
+    },
+    "extension": {
+      "unpaid": {
+        "max": 30,
+        "unit": "days",
+        "ar": "يمكن تمديد الإجازة شهراً بدون أجر",
+        "en": "Leave can be extended 30 days without pay"
+      },
+      "medical": {
+        "ar": "يمكن التمديد بتقرير طبي إذا تطلبت الحالة الصحية",
+        "en": "Can be extended with medical report if health requires"
+      }
+    }
+  },
+
+  "gosiMaternityBenefit2025": {
+    "effectiveDate": "2025-07-01",
+    "ar": "بدل إجازة الأمومة من التأمينات الاجتماعية",
+    "en": "Maternity leave benefit from GOSI",
+    "description": {
+      "ar": "تتحمل التأمينات الاجتماعية 75% من تكلفة إجازة الأمومة",
+      "en": "GOSI bears 75% of maternity leave cost"
+    },
+    "coverage": {
+      "percentage": 75,
+      "duration": 70,
+      "unit": "days",
+      "ar": "75% من راتب إجازة الأمومة (70 يوماً)",
+      "en": "75% of maternity leave salary (70 days)"
+    },
+    "employerShare": {
+      "percentage": 25,
+      "ar": "يتحمل صاحب العمل 25% فقط",
+      "en": "Employer bears only 25%"
+    },
+    "eligibility": [
+      { "ar": "الاشتراك في التأمينات الاجتماعية", "en": "Registered in GOSI" },
+      { "ar": "وجود اشتراك فعال عند بداية الإجازة", "en": "Active subscription at leave start" }
+    ]
+  },
+
+  "nursingBreaks": {
+    "duration": {
+      "totalDaily": 60,
+      "unit": "minutes",
+      "ar": "ساعة يومياً للرضاعة",
+      "en": "One hour daily for nursing"
+    },
+    "period": {
+      "months": 24,
+      "ar": "حتى يبلغ الطفل عامين",
+      "en": "Until child reaches two years"
+    },
+    "flexibility": {
+      "ar": "يمكن تقسيمها إلى فترتين",
+      "en": "Can be split into two periods"
+    },
+    "payment": {
+      "ar": "تُحتسب من ساعات العمل المدفوعة",
+      "en": "Counted as paid working hours"
+    }
+  },
+
+  "childcare": {
+    "nursingRoom": {
+      "threshold": 50,
+      "ar": "يجب توفير غرفة للرضاعة إذا كان عدد العاملات 50 أو أكثر",
+      "en": "Nursing room required if 50 or more female employees"
+    },
+    "daycare": {
+      "threshold": 100,
+      "childrenCount": 10,
+      "ar": "يجب توفير حضانة إذا كان عدد العاملات 100 أو أكثر ولديهن 10 أطفال دون 6 سنوات",
+      "en": "Daycare required if 100+ female employees with 10+ children under 6"
+    }
+  },
+
+  "pregnancyProtection": {
+    "medicalCare": {
+      "ar": "يحق للحامل الحصول على رعاية طبية",
+      "en": "Pregnant woman entitled to medical care"
+    },
+    "workAdjustment": {
+      "ar": "يحق لها طلب تعديل طبيعة العمل إذا كان يضر بصحتها أو صحة الجنين",
+      "en": "May request work adjustment if harmful to her or fetus health"
+    },
+    "terminationProtection": {
+      "ar": "يُحظر فصل المرأة الحامل أو خلال إجازة الأمومة",
+      "en": "Prohibited to dismiss pregnant woman or during maternity leave"
+    },
+    "lightDuty": {
+      "ar": "يمكن طلب أعمال خفيفة خلال الحمل",
+      "en": "May request light duty during pregnancy"
+    }
+  },
+
+  "bereavementLeave": {
+    "husbandDeath": {
+      "duration": 130,
+      "unit": "days",
+      "ar": "إجازة عدة الوفاة 130 يوماً (4 أشهر و10 أيام)",
+      "en": "Iddah leave 130 days (4 months and 10 days)"
+    },
+    "otherDeath": {
+      "duration": 3,
+      "unit": "days",
+      "ar": "3 أيام لوفاة قريب من الدرجة الأولى",
+      "en": "3 days for first-degree relative death"
+    }
+  },
+
+  "violations": [
+    {
+      "type": { "ar": "فصل بسبب الحمل أو الزواج", "en": "Dismissal due to pregnancy or marriage" },
+      "fine": { "min": 50000, "max": 200000, "currency": "SAR" },
+      "consequences": { "ar": "إعادة الموظفة وتعويضها", "en": "Reinstate employee and compensate" }
+    },
+    {
+      "type": { "ar": "عدم منح إجازة الأمومة", "en": "Not granting maternity leave" },
+      "fine": { "min": 20000, "max": 100000, "currency": "SAR" }
+    },
+    {
+      "type": { "ar": "عدم توفير وقت الرضاعة", "en": "Not providing nursing time" },
+      "fine": { "min": 5000, "max": 20000, "currency": "SAR" }
+    },
+    {
+      "type": { "ar": "التمييز في الأجور", "en": "Wage discrimination" },
+      "fine": { "min": 10000, "max": 50000, "currency": "SAR" },
+      "perEmployee": true
+    },
+    {
+      "type": { "ar": "تشغيل في أعمال خطرة", "en": "Employment in hazardous work" },
+      "fine": { "min": 25000, "max": 100000, "currency": "SAR" }
+    }
+  ],
+
+  "relatedRegulations": ["labor-law", "gosi"],
+  "tags": ["عمل المرأة", "أمومة", "حمل", "رضاعة", "women", "maternity", "pregnancy", "nursing", "equality"]
+}
