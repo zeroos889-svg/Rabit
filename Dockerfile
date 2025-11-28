@@ -13,8 +13,11 @@ FROM node:20-alpine AS deps
 WORKDIR /app
 
 # Install dependencies only when needed
+# Copy scripts first for postinstall hook
+COPY scripts ./scripts
 COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
-RUN npm ci --legacy-peer-deps --no-audit --no-fund
+RUN npm ci --legacy-peer-deps --no-audit --no-fund --ignore-scripts && \
+    node scripts/patch-picomatch.cjs || true
 
 # ===========================================
 # Stage 2: Builder
