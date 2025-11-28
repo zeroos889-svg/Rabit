@@ -1,12 +1,17 @@
+# ===============================================
+# Docker Compose - Monitoring Stack
+# ===============================================
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.monitoring.yml up
+# ===============================================
 version: "3.8"
 
-# Monitoring stack docker-compose
-# Usage: docker-compose -f docker-compose.yml -f docker-compose.monitoring.yml up
-
 services:
+  # ===========================================
+  # Prometheus - Metrics Collection
+  # ===========================================
   prometheus:
     image: prom/prometheus:latest
-    container_name: rabithr-prometheus
+    container_name: rabit-prometheus
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
@@ -16,73 +21,94 @@ services:
       - "--storage.tsdb.retention.time=30d"
       - "--web.console.libraries=/usr/share/prometheus/console_libraries"
       - "--web.console.templates=/usr/share/prometheus/consoles"
+      - "--web.enable-lifecycle"
     ports:
       - "9090:9090"
     restart: unless-stopped
     networks:
-      - rabithr-network
+      - rabit-network
     deploy:
       resources:
         limits:
           cpus: "0.5"
           memory: 512M
 
+  # ===========================================
+  # Grafana - Visualization & Dashboards
+  # ===========================================
   grafana:
     image: grafana/grafana:latest
-    container_name: rabithr-grafana
+    container_name: rabit-grafana
     volumes:
       - grafana_data:/var/lib/grafana
       - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
       - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
     environment:
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
-      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
-      - GF_SERVER_ROOT_URL=http://localhost:3001
-      - GF_USERS_ALLOW_SIGN_UP=false
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+      GF_SERVER_ROOT_URL: ${GRAFANA_URL:-http://localhost:3001}
+      GF_USERS_ALLOW_SIGN_UP: "false"
     ports:
       - "3001:3000"
     restart: unless-stopped
     depends_on:
       - prometheus
     networks:
-      - rabithr-network
+      - rabit-network
     deploy:
       resources:
         limits:
           cpus: "0.5"
           memory: 512M
 
+  # ===========================================
+  # Node Exporter - System Metrics
+  # ===========================================
   node-exporter:
     image: prom/node-exporter:latest
-    container_name: rabithr-node-exporter
+    container_name: rabit-node-exporter
     command:
       - "--path.rootfs=/host"
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
     volumes:
       - "/:/host:ro,rslave"
     ports:
       - "9100:9100"
     restart: unless-stopped
     networks:
-      - rabithr-network
+      - rabit-network
+    profiles:
+      - full
 
+  # ===========================================
+  # cAdvisor - Container Metrics
+  # ===========================================
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
-    container_name: rabithr-cadvisor
+    container_name: rabit-cadvisor
+    privileged: true
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
     ports:
       - "8082:8080"
     restart: unless-stopped
     networks:
-      - rabithr-network
+      - rabit-network
+    profiles:
+      - full
 
+  # ===========================================
+  # Loki - Log Aggregation
+  # ===========================================
   loki:
     image: grafana/loki:latest
-    container_name: rabithr-loki
+    container_name: rabit-loki
     volumes:
       - ./monitoring/loki.yml:/etc/loki/local-config.yaml:ro
       - loki_data:/loki
@@ -91,16 +117,19 @@ services:
       - "3100:3100"
     restart: unless-stopped
     networks:
-      - rabithr-network
+      - rabit-network
     deploy:
       resources:
         limits:
           cpus: "0.5"
           memory: 512M
 
+  # ===========================================
+  # Promtail - Log Collector
+  # ===========================================
   promtail:
     image: grafana/promtail:latest
-    container_name: rabithr-promtail
+    container_name: rabit-promtail
     volumes:
       - ./monitoring/promtail.yml:/etc/promtail/config.yml:ro
       - /var/log:/var/log:ro
@@ -110,8 +139,11 @@ services:
     depends_on:
       - loki
     networks:
-      - rabithr-network
+      - rabit-network
 
+# ===========================================
+# Volumes
+# ===========================================
 volumes:
   prometheus_data:
     driver: local
@@ -119,7 +151,3 @@ volumes:
     driver: local
   loki_data:
     driver: local
-
-networks:
-  rabithr-network:
-    external: true

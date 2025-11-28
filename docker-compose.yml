@@ -1,36 +1,132 @@
+# ===============================================
+# Docker Compose - Base Configuration
+# ===============================================
+# Usage: docker-compose up -d
+# For production: docker-compose -f docker-compose.yml -f docker-compose.production.yml up -d
+# For development: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+# ===============================================
 version: '3.8'
 
 services:
+  # ===========================================
+  # PostgreSQL Database
+  # ===========================================
   db:
-    image: mysql:8.0
-    command: --default-authentication-plugin=mysql_native_password
-    restart: always
+    image: postgres:16-alpine
+    container_name: rabit-db
+    restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: rabithr
+      POSTGRES_DB: ${DATABASE_NAME:-rabit_db}
+      POSTGRES_USER: ${DATABASE_USER:-rabit}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-rabit_dev_password}
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - "3306:3306"
+      - "${DATABASE_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-rabit} -d ${DATABASE_NAME:-rabit_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rabit-network
 
+  # ===========================================
+  # Redis Cache
+  # ===========================================
+  redis:
+    image: redis:7-alpine
+    container_name: rabit-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes ${REDIS_PASSWORD:+--requirepass ${REDIS_PASSWORD}}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rabit-network
+
+  # ===========================================
+  # Application
+  # ===========================================
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      target: runner
+    container_name: rabit-app
+    restart: unless-stopped
     depends_on:
-      - db
-    restart: always
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
-      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/rabithr
-      RESEND_API_KEY: ${RESEND_API_KEY}
+      # Database
+      DATABASE_URL: postgresql://${DATABASE_USER:-rabit}:${DATABASE_PASSWORD:-rabit_dev_password}@db:5432/${DATABASE_NAME:-rabit_db}
+      
+      # Redis
+      REDIS_URL: redis://${REDIS_PASSWORD:+:${REDIS_PASSWORD}@}redis:6379
+      
+      # App
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3000
+      HOST: 0.0.0.0
+      
+      # Auth
+      JWT_SECRET: ${JWT_SECRET:-dev_jwt_secret_change_in_production}
+      SESSION_SECRET: ${SESSION_SECRET:-dev_session_secret_change_in_production}
+      COOKIE_SECRET: ${COOKIE_SECRET:-dev_cookie_secret_change_in_production}
+      
+      # CORS
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      
+      # Email (optional)
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT}
       SMTP_USER: ${SMTP_USER}
-      SMTP_PASS: ${SMTP_PASS}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
       SMTP_FROM: ${SMTP_FROM}
-      NODE_ENV: production
+      
+      # Monitoring (optional)
+      SENTRY_DSN: ${SENTRY_DSN}
     ports:
-      - "3000:3000"
+      - "${PORT:-3000}:3000"
+    volumes:
+      - uploads_data:/app/uploads
+      - logs_data:/app/logs
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - rabit-network
 
+# ===========================================
+# Volumes
+# ===========================================
 volumes:
-  mysql_data:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  uploads_data:
+    driver: local
+  logs_data:
+    driver: local
+
+# ===========================================
+# Networks
+# ===========================================
+networks:
+  rabit-network:
+    driver: bridge

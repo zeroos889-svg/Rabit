@@ -1,24 +1,28 @@
+# ===============================================
+# Docker Compose - Development Override
+# ===============================================
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+# ===============================================
 version: "3.8"
 
-# Development docker-compose override
-# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
-
 services:
+  # ===========================================
+  # Application - Development Mode
+  # ===========================================
   app:
     build:
       context: .
       dockerfile: Dockerfile
       target: builder
-      args:
-        NODE_VERSION: 18
-        PNPM_VERSION: latest
+    container_name: rabit-app-dev
     volumes:
       - .:/app
       - /app/node_modules
       - /app/dist
     environment:
-      - NODE_ENV=development
-    command: pnpm dev
+      NODE_ENV: development
+      DEBUG: "true"
+    command: npm run dev
     ports:
       - "3000:3000"
       - "5173:5173" # Vite dev server
@@ -28,59 +32,73 @@ services:
           cpus: "4"
           memory: 4G
 
+  # ===========================================
+  # Database - Development Settings
+  # ===========================================
   db:
-    ports:
-      - "3306:3306"
-    command:
-      - --default-authentication-plugin=mysql_native_password
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-      - --max_connections=200
-      - --general-log=1
-      - --general-log-file=/var/log/mysql/general.log
+    environment:
+      POSTGRES_DB: rabit_dev
+      POSTGRES_USER: rabit_dev
+      POSTGRES_PASSWORD: rabit_dev_password
     volumes:
-      - mysql_data:/var/lib/mysql
-      - ./logs/mysql:/var/log/mysql
+      - postgres_data:/var/lib/postgresql/data
+      - ./logs/postgres:/var/log/postgresql
 
+  # ===========================================
+  # Redis - Development Settings
+  # ===========================================
   redis:
     command: redis-server --appendonly yes --loglevel debug
     volumes:
       - redis_data:/data
       - ./logs/redis:/var/log/redis
 
-  # phpMyAdmin for database management
-  phpmyadmin:
-    image: phpmyadmin:latest
-    container_name: rabithr-phpmyadmin
+  # ===========================================
+  # pgAdmin for PostgreSQL Management
+  # ===========================================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: rabit-pgadmin
     environment:
-      - PMA_HOST=db
-      - PMA_PORT=3306
-      - PMA_USER=root
-      - PMA_PASSWORD=${MYSQL_ROOT_PASSWORD:-rootpassword}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@rabit.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
     ports:
       - "8080:80"
     depends_on:
       - db
     networks:
-      - rabithr-network
+      - rabit-network
+    profiles:
+      - tools
 
-  # Redis Commander for Redis management
+  # ===========================================
+  # Redis Commander for Redis Management
+  # ===========================================
   redis-commander:
     image: rediscommander/redis-commander:latest
-    container_name: rabithr-redis-commander
+    container_name: rabit-redis-commander
     environment:
-      - REDIS_HOSTS=local:redis:6379
+      REDIS_HOSTS: local:redis:6379
     ports:
       - "8081:8081"
     depends_on:
       - redis
     networks:
-      - rabithr-network
+      - rabit-network
+    profiles:
+      - tools
 
-volumes:
-  mysql_data:
-  redis_data:
-
-networks:
-  rabithr-network:
-    driver: bridge
+  # ===========================================
+  # Mailhog for Email Testing
+  # ===========================================
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: rabit-mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - rabit-network
+    profiles:
+      - tools
