@@ -67,6 +67,8 @@ COPY --from=builder /app/drizzle ./drizzle
 COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 COPY --from=builder /app/tsconfig.base.json ./tsconfig.base.json
+COPY --from=builder /app/vite.config.ts ./vite.config.ts
+COPY --from=builder /app/client ./client
 
 # Copy environment files (if exist)
 COPY --from=builder /app/.env.production* ./ 
