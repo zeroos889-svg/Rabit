@@ -376,6 +376,11 @@ export async function doubleSubmitCsrfProtection(
       return next();
     }
 
+    // Skip Sentry test endpoint
+    if (req.path.includes("system.testSentryError")) {
+      return next();
+    }
+
     // Safe methods: generate and send token
     if (["GET", "HEAD", "OPTIONS"].includes(req.method)) {
       const token = generateCsrfToken();
