@@ -399,6 +399,8 @@ export function getResponseNotificationHTML(data: {
 export async function sendWelcomeEmail(data: {
   to: string;
   name: string;
+  verificationToken?: string;
+  userId?: number;
 }): Promise<boolean> {
   return sendEmail({
     to: data.to,

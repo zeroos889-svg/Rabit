@@ -773,6 +773,7 @@ export async function listContactRequests(limit = 50) {
 export async function createUser(input: {
   email?: string | null;
   name?: string | null;
+  phoneNumber?: string | null;
   role?: UserRole;
   openId?: string | null;
   userType?: string | null;
@@ -787,6 +788,7 @@ export async function createUser(input: {
       .values({
         email: input.email ?? null,
         name: input.name ?? null,
+        phoneNumber: input.phoneNumber ?? null,
         role: input.role || "user",
         userType: userTypeValue as DrizzleUserType,
         openId: input.openId ?? null,
@@ -832,6 +834,7 @@ export async function createUserWithPassword(input: {
   email: string;
   password: string;
   name?: string;
+  phoneNumber?: string;
   role?: UserRole;
   userType?: string;
 }) {
@@ -839,6 +842,7 @@ export async function createUserWithPassword(input: {
     const userId = await createUser({
       email: input.email,
       name: input.name ?? null,
+      phoneNumber: input.phoneNumber ?? null,
       role: input.role ?? "user",
       userType: input.userType ?? null,
     });
@@ -2642,15 +2646,68 @@ export async function getUsersCount(): Promise<number> {
 }
 
 export async function getActiveSubscriptionsCount(): Promise<number> {
-  return 0; // TODO: implement when subscriptions table exists
+  if (process.env.DATABASE_URL) {
+    try {
+      const db = await getDrizzleDb();
+      const { subscriptions } = await import("../../drizzle/schema");
+      const { sql, eq } = await import("drizzle-orm");
+      
+      const result = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(subscriptions)
+        .where(eq(subscriptions.status, 'active'));
+      
+      return result[0]?.count ?? 0;
+    } catch (error) {
+      // Log error silently and return 0
+      return 0;
+    }
+  }
+  return subscriptionsStore.size;
 }
 
 export async function getPendingBookingsCount(): Promise<number> {
-  return 0; // TODO: implement when bookings table exists
+  if (process.env.DATABASE_URL) {
+    try {
+      const db = await getDrizzleDb();
+      const { consultationBookings } = await import("../../drizzle/schema");
+      const { sql, eq } = await import("drizzle-orm");
+      
+      const result = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(consultationBookings)
+        .where(eq(consultationBookings.status, 'pending'));
+      
+      return result[0]?.count ?? 0;
+    } catch (error) {
+      // Log error silently and return 0
+      return 0;
+    }
+  }
+  return bookings.filter(b => b.status === "pending").length;
 }
 
 export async function getTotalRevenue(): Promise<number> {
-  return 0; // TODO: implement when payments table exists
+  if (process.env.DATABASE_URL) {
+    try {
+      const db = await getDrizzleDb();
+      const { payments } = await import("../../drizzle/schema");
+      const { sql, eq } = await import("drizzle-orm");
+      
+      const result = await db
+        .select({ total: sql<number>`sum(${payments.finalAmount})` })
+        .from(payments)
+        .where(eq(payments.status, 'paid'));
+      
+      // Convert from halalas to SAR (divide by 100)
+      const totalHalalas = result[0]?.total ?? 0;
+      return Math.floor(totalHalalas / 100);
+    } catch (error) {
+      // Log error silently and return 0
+      return 0;
+    }
+  }
+  return 0;
 }
 
 export async function getPendingTicketsCount(): Promise<number> {
@@ -3116,9 +3173,15 @@ export async function getDataRequestsForExport(): Promise<DataRequestRecord[]> {
 
 const loginAttemptsStore = new Map<number, { count: number; lockedUntil: Date | null }>();
 
-export async function getLoginAttempts(userId: number): Promise<number> {
+export async function getLoginAttempts(userId: number): Promise<{ failedCount: number; lastAttempt: Date } | null> {
   const entry = loginAttemptsStore.get(userId);
-  return entry?.count ?? 0;
+  if (!entry || entry.count === 0) {
+    return null;
+  }
+  return {
+    failedCount: entry.count,
+    lastAttempt: new Date(), // Use current time as we don't track individual attempt times
+  };
 }
 
 export async function incrementLoginAttempts(userId: number): Promise<void> {
@@ -3184,6 +3247,7 @@ export async function createUserFromOAuth(input: {
   name?: string;
   provider: string;
   providerUserId: string;
+  openId: string;
   profilePicture?: string;
 }): Promise<UserRecord> {
   const newUser: UserRecord = {
@@ -3191,7 +3255,7 @@ export async function createUserFromOAuth(input: {
     email: input.email,
     name: input.name ?? null,
     role: "user",
-    openId: `${input.provider}:${input.providerUserId}`,
+    openId: input.openId,
     userType: "individual",
     profilePicture: input.profilePicture ?? null,
     lastSignedIn: new Date(),

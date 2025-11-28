@@ -68,6 +68,7 @@ export const ENV = {
   enableSms2fa: process.env.ENABLE_SMS_2FA === "true",
   enableSmsLoginAlerts: process.env.ENABLE_SMS_LOGIN_ALERT === "true",
   enableSmsBookingAlerts: process.env.ENABLE_SMS_BOOKING_ALERTS === "true",
+  enableSmsWelcome: process.env.ENABLE_SMS_WELCOME === "true",
 
   // Google Maps
   googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY ?? "",

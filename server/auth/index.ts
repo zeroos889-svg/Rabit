@@ -1,7 +1,3 @@
-// @ts-nocheck
-// TODO: Fix type mismatches between UserRecord (null) and AuthUser (undefined) types
-// TODO: Add missing AuditAction types: auth:account_locked, auth:email_verified, auth:oauth_register, auth:oauth_login
-// TODO: Fix getLoginAttempts return type to match expected structure
 /**
  * Rabit HR Platform - Authentication Module
  * 
@@ -37,13 +33,13 @@ import * as db from "../db";
 export interface AuthUser {
   id: number;
   email: string;
-  name?: string;
+  name?: string | null;
   role: string;
-  userType?: string;
-  phoneNumber?: string;
-  openId?: string;
-  profilePicture?: string;
-  profileCompleted?: boolean;
+  userType?: string | null;
+  phoneNumber?: string | null;
+  openId?: string | null;
+  profilePicture?: string | null;
+  profileCompleted?: boolean | null;
 }
 
 export interface RegisterInput {
@@ -412,11 +408,11 @@ async function createLoginSession(
     userId: user.id,
     email: user.email || email,
     role: user.role || "user",
-    name: user.name,
-    userType: user.userType,
+    name: user.name ?? undefined,
+    userType: user.userType ?? undefined,
   });
 
-  if (res) {
+  if (res && req) {
     const cookieOptions = getSessionCookieOptions(req);
     if (rememberMe) {
       cookieOptions.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -472,7 +468,15 @@ export async function login(
     await createLoginSession(user, email, rememberMe, req, res);
 
     // Check for suspicious login
-    await checkLoginSecurity(user, metadata);
+    await checkLoginSecurity(
+      {
+        ...user,
+        email: user.email ?? undefined,
+        name: user.name ?? undefined,
+        userType: user.userType ?? undefined,
+      },
+      metadata
+    );
 
     // Record audit
     recordAudit({
@@ -586,7 +590,7 @@ async function checkLoginSecurity(
  * Logs out the current user
  */
 export function logout(req?: Request, res?: Response): AuthResult {
-  if (res) {
+  if (res && req) {
     const cookieOptions = getSessionCookieOptions(req);
     res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
   }
@@ -699,13 +703,15 @@ export async function resetPassword(
     await clearFailedLogins(user.id);
 
     // Send confirmation email
-    sendEmailDetailed({
-      to: user.email,
-      subject: "تم تغيير كلمة المرور",
-      html: `<p>تم تغيير كلمة المرور بنجاح.</p><p>إذا لم تقم بهذا الإجراء، يرجى التواصل معنا فوراً.</p>`,
-      template: "password-changed",
-      userId: user.id,
-    }).catch(() => undefined);
+    if (user.email) {
+      sendEmailDetailed({
+        to: user.email,
+        subject: "تم تغيير كلمة المرور",
+        html: `<p>تم تغيير كلمة المرور بنجاح.</p><p>إذا لم تقم بهذا الإجراء، يرجى التواصل معنا فوراً.</p>`,
+        template: "password-changed",
+        userId: user.id,
+      }).catch(() => undefined);
+    }
 
     recordAudit({
       action: "auth:password_reset",
@@ -865,9 +871,8 @@ export async function authenticateOAuth(
           email,
           name,
           profilePicture: picture,
-          role: "user",
-          userType: "individual",
           provider,
+          providerUserId: openId,
         });
 
         if (!user) {
@@ -907,13 +912,21 @@ export async function authenticateOAuth(
     });
 
     // Set session cookie
-    if (res) {
+    if (res && req) {
       const cookieOptions = getSessionCookieOptions(req);
       res.cookie(COOKIE_NAME, sessionToken, cookieOptions);
     }
 
     // Check login security
-    await checkLoginSecurity(user, metadata);
+    await checkLoginSecurity({
+      ...user,
+      email: user.email ?? undefined,
+      name: user.name ?? undefined,
+      phoneNumber: user.phoneNumber ?? undefined,
+      openId: user.openId ?? undefined,
+      profilePicture: user.profilePicture ?? undefined,
+      userType: user.userType ?? undefined,
+    }, metadata);
 
     recordAudit({
       action: "auth:oauth_login",

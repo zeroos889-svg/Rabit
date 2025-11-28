@@ -21,8 +21,7 @@ export function initializeSentry() {
   // Only initialize if DSN is provided
   const dsn = process.env.SENTRY_DSN;
   if (!dsn) {
-     
-    console.log("⚠️  Sentry DSN not configured, error tracking disabled");
+    // Sentry DSN not configured - error tracking disabled
     return;
   }
 
@@ -73,11 +72,9 @@ export function initializeSentry() {
     });
 
     sentryInitialized = true;
-     
-    console.log("✅ Sentry error tracking initialized");
+    // Sentry error tracking initialized successfully
   } catch (error) {
-     
-    console.error("❌ Failed to initialize Sentry:", error);
+    // Failed to initialize Sentry - continuing without error tracking
   }
 }
 

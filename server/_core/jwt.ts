@@ -13,6 +13,7 @@ export interface SessionPayload {
   role: string;
   name?: string;
   openId?: string;
+  userType?: string;
 }
 
 /**
@@ -29,6 +30,7 @@ export async function createSessionToken(
     role: payload.role,
     name: payload.name,
     openId: payload.openId,
+    userType: payload.userType,
   })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
