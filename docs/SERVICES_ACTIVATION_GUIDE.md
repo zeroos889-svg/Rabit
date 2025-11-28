@@ -1,20 +1,46 @@
 # 🔌 دليل تفعيل الخدمات - منصة رابِط HR
+# Services Activation Guide - RabitHR Platform
 
-## 📋 نظرة عامة
+<div dir="rtl">
 
-هذا الدليل يشرح كيفية تفعيل جميع الخدمات المطلوبة للمشروع.
+## 📋 نظرة عامة | Overview
+
+دليل شامل لتفعيل وإعداد جميع الخدمات الخارجية المستخدمة في منصة رابِط HR.
+
+</div>
 
 ---
 
-## 1. Email Service (SMTP) ⭐⭐⭐
+## 📊 حالة الخدمات الحالية | Current Services Status
 
-### الخيار 1: Resend (موصى به)
+| الخدمة | Service | الحالة | Status | الأولوية |
+|--------|---------|--------|--------|----------|
+| 🗄️ MySQL | Database | ✅ مفعّل | Active | ⭐⭐⭐ |
+| 🔴 Redis | Cache | ✅ مفعّل | Active | ⭐⭐⭐ |
+| 📧 Resend | Email | ✅ مفعّل | Active | ⭐⭐⭐ |
+| ☁️ Cloudinary | Storage | ✅ مفعّل | Active | ⭐⭐ |
+| 🤖 DeepSeek | AI | ✅ مفعّل | Active | ⭐⭐ |
+| 🔍 Sentry | Monitoring | ✅ مفعّل | Active | ⭐⭐⭐ |
+| 💳 Moyasar | Payments | ⏳ يحتاج تفعيل | Pending | ⭐⭐⭐ |
+| 📱 SMS | Notifications | ⏳ يحتاج تفعيل | Pending | ⭐⭐ |
+
+---
+
+## 1. 📧 Email Service (Resend) ⭐⭐⭐
+
+### ✅ الحالة: مفعّل على Railway
+
+<div dir="rtl">
+
+### الإعداد الحالي:
+
+</div>
 
 ```bash
-# 1. سجل في https://resend.com
-# 2. احصل على API key
-# 3. أضف في .env:
+# Environment Variables (Railway)
+RESEND_API_KEY=re_xxxxxxxxxxxxx
 
+# SMTP Fallback (اختياري)
 SMTP_HOST=smtp.resend.com
 SMTP_PORT=465
 SMTP_USER=resend
@@ -23,143 +49,313 @@ SMTP_FROM=noreply@rabithr.com
 SMTP_SECURE=true
 ```
 
-### الخيار 2: SendGrid
+### خطوات التفعيل:
 
-```env
-SMTP_HOST=smtp.sendgrid.net
-SMTP_PORT=587
-SMTP_USER=apikey
-SMTP_PASSWORD=SG.xxxxxxxxxxxxx
-SMTP_FROM=noreply@rabithr.com
-```
+1. **إنشاء حساب Resend:**
+   ```bash
+   # 1. اذهب إلى https://resend.com
+   # 2. سجّل حساب جديد
+   # 3. تحقق من بريدك الإلكتروني
+   ```
 
-### الخيار 3: AWS SES
+2. **إضافة Domain:**
+   ```bash
+   # في لوحة تحكم Resend:
+   # Settings → Domains → Add Domain
+   # أضف DNS records المطلوبة
+   ```
 
-```env
-SMTP_HOST=email-smtp.me-south-1.amazonaws.com
-SMTP_PORT=587
-SMTP_USER=AKIAxxxxxxxxxxxxx
-SMTP_PASSWORD=xxxxxxxxxxxxx
-SMTP_FROM=noreply@rabithr.com
-```
-
-### اختبار الإرسال:
-
-```bash
-# في Docker container
-docker exec rabithr-app node -e "
-  const { sendEmail } = require('./dist/server/_core/email');
-  sendEmail({
-    to: 'test@example.com',
-    subject: 'Test',
-    html: '<h1>It works!</h1>'
-  }).then(console.log);
-"
-```
-
----
-
-## 2. SMS Service (Twilio/Unifonic) ⭐⭐
-
-### الخيار 1: Unifonic (للسعودية - موصى به)
-
-```bash
-# 1. سجل في https://www.unifonic.com
-# 2. احصل على App SID
-# 3. أضف في .env:
-
-SMS_PROVIDER=unifonic
-UNIFONIC_APP_SID=xxxxxxxxxxxxx
-UNIFONIC_SENDER_ID=RABITHR
-```
-
-### الخيار 2: Twilio (عالمي)
-
-```env
-SMS_PROVIDER=twilio
-TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxx
-TWILIO_AUTH_TOKEN=xxxxxxxxxxxxx
-TWILIO_PHONE_NUMBER=+966xxxxxxxxx
-```
+3. **الحصول على API Key:**
+   ```bash
+   # Settings → API Keys → Create API Key
+   # انسخ المفتاح (يبدأ بـ re_)
+   ```
 
 ### اختبار الإرسال:
 
-```bash
-docker exec rabithr-app node -e "
-  const { sendSMS } = require('./dist/server/_core/sms');
-  sendSMS({
-    to: '+966xxxxxxxxx',
-    message: 'Test SMS'
-  }).then(console.log);
-"
+```typescript
+// server/_core/email.ts
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+await resend.emails.send({
+  from: 'noreply@rabithr.com',
+  to: 'user@example.com',
+  subject: 'مرحباً من رابِط HR',
+  html: '<h1>أهلاً بك!</h1>'
+});
 ```
+
+### البدائل المدعومة:
+
+| Provider | SMTP Host | Port |
+|----------|-----------|------|
+| SendGrid | smtp.sendgrid.net | 587 |
+| AWS SES | email-smtp.{region}.amazonaws.com | 587 |
+| Mailgun | smtp.mailgun.org | 587 |
 
 ---
 
-## 3. AWS S3 Storage ⭐⭐
+## 2. 🔴 Redis Cache ⭐⭐⭐
+
+### ✅ الحالة: مفعّل على Railway
+
+```bash
+# Environment Variables (Railway)
+REDIS_URL=redis://default:password@shuttle.proxy.rlwy.net:26479
+DISABLE_REDIS=false
+```
+
+### الإعداد المحلي:
+
+```bash
+# Docker Compose
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+```
+
+### الاستخدام في الكود:
+
+```typescript
+// server/_core/redis.ts
+import { createClient } from 'redis';
+
+const redis = createClient({
+  url: process.env.REDIS_URL
+});
+
+// Cache example
+await redis.set('key', 'value', { EX: 3600 }); // 1 hour TTL
+const value = await redis.get('key');
+```
+
+### الوظائف المدعومة:
+
+- 🔐 **Session Storage**: تخزين جلسات المستخدمين
+- 🚀 **Rate Limiting**: تحديد معدل الطلبات
+- 📦 **Cache**: تخزين مؤقت للبيانات
+- 🔔 **Pub/Sub**: للإشعارات الفورية
+
+---
+
+## 3. ☁️ Cloudinary Storage ⭐⭐
+
+### ✅ الحالة: مفعّل على Railway
+
+```bash
+# Environment Variables (Railway)
+CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name
+# أو بشكل منفصل:
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=xxxxxxxxxxxxx
+CLOUDINARY_API_SECRET=xxxxxxxxxxxxx
+```
 
 ### خطوات التفعيل:
 
-#### 1. إنشاء S3 Bucket
+1. **إنشاء حساب:**
+   ```bash
+   # 1. اذهب إلى https://cloudinary.com
+   # 2. سجّل حساب مجاني (25GB storage)
+   # 3. انسخ CLOUDINARY_URL من Dashboard
+   ```
+
+2. **إعداد Upload Preset (اختياري):**
+   ```bash
+   # Settings → Upload → Upload presets
+   # أنشئ preset جديد لـ unsigned uploads
+   ```
+
+### الاستخدام:
+
+```typescript
+// server/_core/storage.ts
+import { v2 as cloudinary } from 'cloudinary';
+
+cloudinary.config({
+  secure: true // استخدم HTTPS
+});
+
+// رفع صورة
+const result = await cloudinary.uploader.upload(file, {
+  folder: 'rabithr/avatars',
+  transformation: [
+    { width: 200, height: 200, crop: 'fill' }
+  ]
+});
+```
+
+### المميزات:
+
+| الميزة | الوصف |
+|--------|-------|
+| 🖼️ تحويل الصور | تغيير الحجم والتنسيق تلقائياً |
+| 🎬 الفيديو | دعم رفع وتحويل الفيديو |
+| 📁 PDF | معاينة ملفات PDF |
+| 🔒 الأمان | روابط موقعة ومحمية |
+
+---
+
+## 4. 🤖 DeepSeek AI ⭐⭐
+
+### ✅ الحالة: مفعّل على Railway
 
 ```bash
-# في AWS Console أو CLI
-aws s3 mb s3://rabithr-storage --region me-south-1
-
-# تعيين CORS
-aws s3api put-bucket-cors --bucket rabithr-storage --cors-configuration file://s3-cors.json
+# Environment Variables (Railway)
+DEEPSEEK_API_KEY=sk-xxxxxxxxxxxxx
 ```
 
-#### 2. s3-cors.json
+### خطوات التفعيل:
 
-```json
-{
-  "CORSRules": [
-    {
-      "AllowedOrigins": ["https://rabithr.com", "http://localhost:3000"],
-      "AllowedMethods": ["GET", "PUT", "POST", "DELETE"],
-      "AllowedHeaders": ["*"],
-      "MaxAgeSeconds": 3000
-    }
-  ]
-}
+1. **إنشاء حساب:**
+   ```bash
+   # 1. اذهب إلى https://platform.deepseek.com
+   # 2. سجّل حساب جديد
+   # 3. أضف رصيد (الأسعار منخفضة جداً)
+   ```
+
+2. **الحصول على API Key:**
+   ```bash
+   # API Keys → Create new key
+   # انسخ المفتاح
+   ```
+
+### الاستخدام:
+
+```typescript
+// server/_core/llm.ts
+import OpenAI from 'openai';
+
+const deepseek = new OpenAI({
+  apiKey: process.env.DEEPSEEK_API_KEY,
+  baseURL: 'https://api.deepseek.com'
+});
+
+const response = await deepseek.chat.completions.create({
+  model: 'deepseek-chat',
+  messages: [
+    { role: 'system', content: 'أنت مساعد موارد بشرية ذكي' },
+    { role: 'user', content: 'ما هي أفضل ممارسات التوظيف؟' }
+  ],
+  max_tokens: 2000,
+  temperature: 0.7
+});
 ```
 
-#### 3. IAM Policy
+### النماذج المتاحة:
 
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
-      "Resource": "arn:aws:s3:::rabithr-storage/*"
-    }
-  ]
-}
-```
+| النموذج | الاستخدام | السعر |
+|---------|----------|-------|
+| deepseek-chat | محادثات عامة | $0.14/1M tokens |
+| deepseek-coder | برمجة | $0.14/1M tokens |
 
-#### 4. Environment Variables
+### البدائل المدعومة:
 
-```env
-AWS_ACCESS_KEY_ID=AKIAxxxxxxxxxxxxx
-AWS_SECRET_ACCESS_KEY=xxxxxxxxxxxxx
-AWS_REGION=me-south-1
-AWS_S3_BUCKET=rabithr-storage
+```bash
+# OpenAI
+OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxx
+AI_PROVIDER=openai
+
+# Claude (Anthropic)
+ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxx
+AI_PROVIDER=anthropic
 ```
 
 ---
 
-## 4. Payment Gateway ⭐⭐⭐
+## 5. 🔍 Sentry Error Tracking ⭐⭐⭐
 
-### الخيار 1: Moyasar (للسعودية - موصى به)
+### ✅ الحالة: مفعّل على Railway
 
 ```bash
-# 1. سجل في https://moyasar.com
-# 2. فعّل الحساب
-# 3. احصل على API keys
+# Environment Variables (Railway)
+SENTRY_DSN=https://xxx@o4509314249187328.ingest.us.sentry.io/xxx
+VITE_SENTRY_DSN=https://xxx@o4509314249187328.ingest.us.sentry.io/xxx
+SENTRY_AUTH_TOKEN=sntrys_xxxxxxxxxxxxx
+```
 
+### خطوات التفعيل:
+
+1. **إنشاء مشروع Sentry:**
+   ```bash
+   # 1. اذهب إلى https://sentry.io
+   # 2. أنشئ Organization جديدة
+   # 3. أنشئ Project (اختر Node.js + React)
+   ```
+
+2. **الحصول على DSN:**
+   ```bash
+   # Settings → Projects → [Project] → Client Keys (DSN)
+   # انسخ الـ DSN
+   ```
+
+### إعداد السيرفر:
+
+```typescript
+// server/sentry.ts
+import * as Sentry from '@sentry/node';
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  environment: process.env.NODE_ENV,
+  tracesSampleRate: 0.1,
+  integrations: [
+    Sentry.httpIntegration(),
+    Sentry.expressIntegration()
+  ]
+});
+
+// التقاط خطأ
+Sentry.captureException(error);
+Sentry.captureMessage('Something happened');
+```
+
+### إعداد العميل:
+
+```typescript
+// client/src/main.tsx
+import * as Sentry from '@sentry/react';
+
+Sentry.init({
+  dsn: import.meta.env.VITE_SENTRY_DSN,
+  environment: import.meta.env.MODE,
+  integrations: [
+    Sentry.browserTracingIntegration(),
+    Sentry.replayIntegration()
+  ],
+  tracesSampleRate: 0.1,
+  replaysSessionSampleRate: 0.1
+});
+```
+
+### اختبار التكامل:
+
+```bash
+# من الـ API
+curl -X POST "https://rabit-app-production.up.railway.app/api/trpc/system.testSentryError"
+```
+
+### لوحة التحكم:
+
+- 🔗 **URL**: https://rabithr.sentry.io
+- 📊 **Issues**: عرض الأخطاء
+- 📈 **Performance**: تتبع الأداء
+- 🔄 **Releases**: ربط الأخطاء بالإصدارات
+
+---
+
+## 6. 💳 Payment Gateway (Moyasar) ⭐⭐⭐
+
+### ⏳ الحالة: يحتاج تفعيل
+
+```bash
+# Environment Variables
 # Test Mode (للتطوير)
 MOYASAR_API_KEY=sk_test_xxxxxxxxxxxxx
 MOYASAR_SECRET_KEY=xxxxxxxxxxxxx
@@ -171,260 +367,381 @@ MOYASAR_SECRET_KEY=xxxxxxxxxxxxx
 PAYMENT_MODE=live
 ```
 
-### الخيار 2: Tap Payment
+### خطوات التفعيل:
 
-```env
-TAP_SECRET_KEY=sk_live_xxxxxxxxxxxxx
-TAP_PUBLIC_KEY=pk_live_xxxxxxxxxxxxx
+1. **إنشاء حساب Moyasar:**
+   ```bash
+   # 1. اذهب إلى https://moyasar.com
+   # 2. سجّل كشركة (يتطلب سجل تجاري)
+   # 3. أكمل التحقق من الهوية
+   # 4. انتظر الموافقة (1-3 أيام عمل)
+   ```
+
+2. **الحصول على API Keys:**
+   ```bash
+   # Dashboard → Settings → API Keys
+   # انسخ Secret Key (يبدأ بـ sk_test_ أو sk_live_)
+   ```
+
+3. **إعداد Webhook:**
+   ```bash
+   # Dashboard → Settings → Webhooks
+   # URL: https://rabit-app-production.up.railway.app/api/webhooks/moyasar
+   # Events: payment.paid, payment.failed, payment.refunded
+   ```
+
+### الاستخدام:
+
+```typescript
+// server/payments/moyasar.ts
+const payment = await moyasar.createPayment({
+  amount: 10000, // 100.00 SAR (بالهللات)
+  currency: 'SAR',
+  description: 'اشتراك شهري - رابِط HR',
+  callback_url: 'https://rabithr.com/payment/callback',
+  source: {
+    type: 'creditcard',
+    // ... card details
+  }
+});
 ```
 
-### Webhook Setup:
+### البدائل:
+
+| Provider | الدول المدعومة | العمولة |
+|----------|---------------|---------|
+| Tap Payment | الخليج + مصر | 2.5% + 1 SAR |
+| PayTabs | الخليج | 2.75% |
+| HyperPay | السعودية | 2.5% |
+
+---
+
+## 7. 📱 SMS Service (Unifonic) ⭐⭐
+
+### ⏳ الحالة: يحتاج تفعيل
 
 ```bash
-# أضف في Moyasar Dashboard:
-Webhook URL: https://rabithr.com/api/webhooks/moyasar
-Events: payment.paid, payment.failed
+# Environment Variables
+SMS_PROVIDER=unifonic
+UNIFONIC_APP_SID=xxxxxxxxxxxxx
+UNIFONIC_SENDER_ID=RABITHR
+```
+
+### خطوات التفعيل:
+
+1. **إنشاء حساب Unifonic:**
+   ```bash
+   # 1. اذهب إلى https://www.unifonic.com
+   # 2. سجّل كشركة
+   # 3. أكمل التحقق
+   # 4. اشحن رصيد
+   ```
+
+2. **تسجيل Sender ID:**
+   ```bash
+   # يتطلب موافقة هيئة الاتصالات السعودية
+   # المدة: 3-7 أيام عمل
+   ```
+
+### الاستخدام:
+
+```typescript
+// server/_core/sms.ts
+await unifonic.send({
+  recipient: '+966xxxxxxxxx',
+  body: 'رمز التحقق: 123456',
+  senderID: 'RABITHR'
+});
+```
+
+### البدائل:
+
+| Provider | المنطقة | السعر |
+|----------|---------|-------|
+| Twilio | عالمي | $0.05/SMS |
+| MessageBird | عالمي | $0.04/SMS |
+| Nexmo | عالمي | $0.06/SMS |
+
+---
+
+## 8. 🗄️ MySQL Database ⭐⭐⭐
+
+### ✅ الحالة: مفعّل على Railway
+
+```bash
+# Environment Variables (Railway)
+DATABASE_URL=mysql://root:password@shortline.proxy.rlwy.net:18829/railway
+```
+
+### الإعداد المحلي:
+
+```bash
+# Docker Compose
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: rabithr
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+```
+
+### Migrations:
+
+```bash
+# تشغيل Migrations
+npx drizzle-kit push
+
+# إنشاء Migration جديد
+npx drizzle-kit generate
+
+# عرض حالة قاعدة البيانات
+npx drizzle-kit studio
 ```
 
 ---
 
-## 5. SSL Certificates (Let's Encrypt) ⭐⭐⭐
+## 9. 🔐 Authentication (JWT + Sessions) ⭐⭐⭐
 
-### تلقائي مع Certbot:
-
-#### 1. إعداد DNS
+### ✅ الحالة: مفعّل
 
 ```bash
-# تأكد من أن النطاق يشير إلى السيرفر
-A Record: rabithr.com -> YOUR_SERVER_IP
-A Record: www.rabithr.com -> YOUR_SERVER_IP
+# Environment Variables
+JWT_SECRET=your-super-secret-jwt-key-min-32-chars
+SESSION_SECRET=your-super-secret-session-key
+JWT_EXPIRES_IN=7d
 ```
 
-#### 2. الحصول على الشهادة
+### الإعداد:
+
+```typescript
+// server/auth/config.ts
+export const authConfig = {
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+  },
+  session: {
+    secret: process.env.SESSION_SECRET,
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+  }
+};
+```
+
+---
+
+## 10. 🔒 SSL/TLS Certificates ⭐⭐⭐
+
+### ✅ الحالة: مفعّل تلقائياً على Railway
+
+Railway يوفر SSL تلقائياً لجميع التطبيقات.
+
+### للنشر الذاتي (Let's Encrypt):
 
 ```bash
-# تشغيل certbot
-docker-compose -f docker-compose.yml -f docker-compose.ssl.yml up -d
-
-# أول مرة: احصل على الشهادة
-docker run -it --rm \
-  -v ./ssl/certbot/conf:/etc/letsencrypt \
-  -v ./ssl/certbot/www:/var/www/certbot \
-  certbot/certbot certonly --webroot \
+# باستخدام Certbot
+certbot certonly --webroot \
   -w /var/www/certbot \
   -d rabithr.com \
   -d www.rabithr.com \
   --email admin@rabithr.com \
-  --agree-tos \
-  --no-eff-email
-```
-
-#### 3. التجديد التلقائي
-
-الشهادة ستتجدد تلقائياً كل 12 ساعة.
-
----
-
-## 6. OpenAI API (للذكاء الاصطناعي) ⭐⭐
-
-```bash
-# 1. سجل في https://platform.openai.com
-# 2. احصل على API key
-# 3. أضف في .env:
-
-OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxx
-OPENAI_MODEL=gpt-4o-mini
-AI_MAX_TOKENS=2000
-AI_TEMPERATURE=0.7
-```
-
-### اختبار:
-
-```bash
-docker exec rabithr-app node -e "
-  const { invokeLLM } = require('./dist/server/_core/llm');
-  invokeLLM({
-    systemPrompt: 'You are a helpful assistant',
-    userMessage: 'Hello!'
-  }).then(console.log);
-"
+  --agree-tos
 ```
 
 ---
 
-## 7. Backup Automation ⭐⭐⭐
+## 📋 Environment Variables الكاملة
 
-### التفعيل:
+### Railway Production:
 
 ```bash
-# 1. تشغيل خدمة النسخ الاحتياطي
-docker-compose -f docker-compose.yml -f docker-compose.backup.yml up -d
+# Database
+DATABASE_URL=mysql://root:xxx@shortline.proxy.rlwy.net:18829/railway
 
-# 2. فحص السجلات
-docker logs rabithr-backup-cron
+# Redis
+REDIS_URL=redis://default:xxx@shuttle.proxy.rlwy.net:26479
+DISABLE_REDIS=false
 
-# 3. اختبار يدوي
-docker exec rabithr-backup-cron /scripts/backup.sh
+# Authentication
+JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters
+SESSION_SECRET=your-super-secret-session-key
+
+# Email
+RESEND_API_KEY=re_xxxxxxxxxxxxx
+SMTP_HOST=smtp.resend.com
+SMTP_PORT=465
+SMTP_USER=resend
+SMTP_PASSWORD=re_xxxxxxxxxxxxx
+SMTP_FROM=noreply@rabithr.com
+SMTP_SECURE=true
+
+# AI
+DEEPSEEK_API_KEY=sk-xxxxxxxxxxxxx
+
+# Storage
+CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name
+
+# Monitoring
+SENTRY_DSN=https://xxx@xxx.ingest.us.sentry.io/xxx
+VITE_SENTRY_DSN=https://xxx@xxx.ingest.us.sentry.io/xxx
+SENTRY_AUTH_TOKEN=sntrys_xxxxxxxxxxxxx
+
+# App
+NODE_ENV=production
+VITE_APP_URL=https://rabit-app-production.up.railway.app
+PORT=3000
 ```
 
-### الجدول الزمني (افتراضي):
+### التطوير المحلي:
 
-- **النسخ الاحتياطي:** كل يوم الساعة 2:00 صباحاً
-- **التنظيف:** كل أحد الساعة 3:00 صباحاً
+```bash
+# .env.local
+DATABASE_URL=mysql://root:password@localhost:3306/rabithr
+REDIS_URL=redis://localhost:6379
+DISABLE_REDIS=true  # أو false إذا كان Redis يعمل محلياً
 
-### تعديل الجدول:
+JWT_SECRET=dev-secret-key-for-local-development
+SESSION_SECRET=dev-session-secret
 
-```env
-# في docker-compose.backup.yml
-# صيغة Cron: minute hour day month weekday
-# مثال: كل 6 ساعات
-BACKUP_SCHEDULE=0 */6 * * *
+# يمكن استخدام نفس مفاتيح الإنتاج للخدمات الخارجية
+# أو إنشاء مفاتيح اختبار منفصلة
 ```
 
 ---
 
-## 8. Push Notifications (Firebase) ⭐
+## 📋 Checklist النشر | Deployment Checklist
 
-### الخطوات:
+### ✅ الخدمات المفعّلة حالياً:
 
-#### 1. إنشاء Firebase Project
+- [x] 🗄️ MySQL Database - Railway
+- [x] 🔴 Redis Cache - Railway  
+- [x] 📧 Resend Email - API Key configured
+- [x] ☁️ Cloudinary Storage - URL configured
+- [x] 🤖 DeepSeek AI - API Key configured
+- [x] 🔍 Sentry Monitoring - DSN configured
+- [x] 🔐 JWT Authentication - Secrets configured
+- [x] 🔒 SSL/TLS - Railway auto-managed
 
-```bash
-# 1. اذهب إلى https://console.firebase.google.com
-# 2. أنشئ مشروع جديد
-# 3. فعّل Cloud Messaging
-# 4. احصل على Service Account Key
-```
+### ⏳ الخدمات المطلوب تفعيلها:
 
-#### 2. Environment Variables
-
-```env
-FIREBASE_PROJECT_ID=rabithr-xxxxx
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nxxxxx\n-----END PRIVATE KEY-----\n"
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@rabithr-xxxxx.iam.gserviceaccount.com
-```
-
----
-
-## 9. Monitoring (Grafana) ✅
-
-### الوصول:
-
-```
-URL: http://localhost:3001
-Username: admin
-Password: admin (غيّره فوراً!)
-```
-
-### إعداد Dashboard:
-
-```bash
-# 1. سجّل الدخول إلى Grafana
-# 2. أضف Prometheus كـ data source:
-URL: http://prometheus:9090
-
-# 3. استورد Dashboards:
-- Node Exporter Dashboard (ID: 1860)
-- Docker Dashboard (ID: 893)
-- MySQL Dashboard (ID: 7362)
-```
+- [ ] 💳 Moyasar Payment Gateway
+- [ ] 📱 Unifonic SMS Service
+- [ ] 🔔 Firebase Push Notifications
+- [ ] 📊 Grafana Monitoring (للنشر الذاتي)
 
 ---
 
-## 10. فحص الخدمات
+## 🔧 فحص الخدمات | Health Checks
 
-### اختبار شامل:
+### فحص شامل:
 
 ```bash
-# 1. Health Check
-make health
+# 1. Health Check الرئيسي
+curl https://rabit-app-production.up.railway.app/api/health
 
-# 2. فحص الخدمات الفردية
-curl http://localhost:3000/health
-curl http://localhost:9090/-/healthy  # Prometheus
-curl http://localhost:3001/api/health # Grafana
+# 2. فحص قاعدة البيانات (من خلال API)
+curl https://rabit-app-production.up.railway.app/api/trpc/healthCheck
 
-# 3. فحص قاعدة البيانات
+# 3. اختبار Sentry
+curl -X POST https://rabit-app-production.up.railway.app/api/trpc/system.testSentryError
+```
+
+### فحص محلي:
+
+```bash
+# Docker environment
+docker exec rabithr-app node -e "console.log('App OK')"
 docker exec rabithr-db mysqladmin ping -h localhost
-
-# 4. فحص Redis
 docker exec rabithr-redis redis-cli ping
 ```
 
 ---
 
-## 📋 Checklist النشر
+## 🆘 استكشاف الأخطاء | Troubleshooting
 
-### قبل الإنتاج:
+### مشاكل شائعة وحلولها:
 
-- [ ] SSL Certificates مفعّلة
-- [ ] Email Service يعمل
-- [ ] SMS Service يعمل (اختياري)
-- [ ] Payment Gateway في Production mode
-- [ ] Backup Automation مفعّل
-- [ ] AWS S3 جاهز (اختياري)
-- [ ] Monitoring يعمل
-- [ ] جميع Passwords تم تغييرها
-- [ ] Environment variables محدّثة
-- [ ] DNS configured صحيح
-- [ ] Firewall rules مضبوطة
+<div dir="rtl">
 
-### بعد النشر:
-
-- [ ] اختبر جميع الخدمات
-- [ ] راقب الـ logs
-- [ ] فحص النسخ الاحتياطية
-- [ ] اختبر الـ SSL
-- [ ] اختبر الدفع
-- [ ] فحص الإشعارات
-
----
-
-## 🆘 المساعدة والدعم
-
-### المشاكل الشائعة:
-
-**Email لا يُرسل:**
+#### 1. خطأ اتصال قاعدة البيانات:
+</div>
 
 ```bash
-# فحص الـ logs
-docker logs rabithr-app | grep -i email
+# تحقق من DATABASE_URL
+echo $DATABASE_URL
 
-# اختبار SMTP
-telnet smtp.resend.com 587
+# اختبر الاتصال
+mysql -h shortline.proxy.rlwy.net -P 18829 -u root -p
 ```
 
-**Payment يفشل:**
+<div dir="rtl">
+
+#### 2. خطأ Redis:
+</div>
 
 ```bash
-# فحص الـ webhook
-docker logs rabithr-app | grep -i payment
+# تحقق من REDIS_URL
+echo $REDIS_URL
 
-# تأكد من الـ API keys
-echo $MOYASAR_API_KEY
+# أو عطّل Redis مؤقتاً
+DISABLE_REDIS=true
 ```
 
-**Backup لا يعمل:**
+<div dir="rtl">
+
+#### 3. البريد لا يُرسل:
+</div>
 
 ```bash
-# فحص cron logs
-docker logs rabithr-backup-cron
+# تحقق من سجلات الخطأ في Sentry
+# أو فحص الـ logs
+docker logs rabithr-app 2>&1 | grep -i "email\|resend"
+```
 
-# تشغيل يدوي
-docker exec rabithr-backup-cron /scripts/backup.sh
+<div dir="rtl">
+
+#### 4. خطأ Sentry:
+</div>
+
+```bash
+# تحقق من DSN
+echo $SENTRY_DSN
+
+# اختبر يدوياً
+curl -X POST "https://your-app/api/trpc/system.testSentryError"
 ```
 
 ---
 
-## 📞 الدعم
+## 📞 الدعم والمساعدة | Support
 
-للمزيد من المساعدة، راجع:
+### الموارد:
 
-- `FINAL_AUDIT_REPORT.md` - تقرير الفحص الشامل
-- `DEPLOYMENT_GUIDE_FULL.md` - دليل النشر
-- `DOCKER.md` - دليل Docker
+| المورد | الرابط |
+|--------|-------|
+| 📚 التوثيق الكامل | `/docs/INDEX.md` |
+| 🚀 دليل النشر | `/docs/RAILWAY_DEPLOYMENT.md` |
+| 🔧 دليل المطورين | `/docs/DEVELOPER_GUIDE.md` |
+| 🐛 تتبع الأخطاء | https://rabithr.sentry.io |
+
+### روابط الخدمات:
+
+| الخدمة | لوحة التحكم |
+|--------|-------------|
+| Railway | https://railway.app/dashboard |
+| Sentry | https://rabithr.sentry.io |
+| Resend | https://resend.com/emails |
+| Cloudinary | https://console.cloudinary.com |
+| DeepSeek | https://platform.deepseek.com |
 
 ---
 
-**آخر تحديث:** 4 نوفمبر 2025  
-**الحالة:** ✅ جاهز للتطبيق
+<div align="center">
+
+**آخر تحديث:** يناير 2025  
+**الحالة:** ✅ جاهز للإنتاج
+
+</div>

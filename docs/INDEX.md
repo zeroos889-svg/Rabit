@@ -1,320 +1,278 @@
-# 📚 دليل التوثيق الشامل - Rabit Documentation Index
+# 📚 فهرس التوثيق - RabitHR Documentation Index
 
-مرحباً بك في دليل التوثيق الشامل لمشروع Rabit! هذا الملف يحتوي على فهرس منظم لجميع الملفات التوثيقية المتوفرة.
+<div align="center">
 
----
+![RabitHR](https://img.shields.io/badge/RabitHR-Documentation-blue?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-2.0-green?style=for-the-badge)
+![Updated](https://img.shields.io/badge/Updated-January%202025-orange?style=for-the-badge)
 
-## 🗂️ التصنيفات
+**دليل شامل ومنظم لجميع التوثيقات**  
+**Comprehensive and organized documentation guide**
 
-### 📖 [البدء السريع - Quick Start](#quick-start)
-### 🔧 [الإعداد والتثبيت - Setup](#setup)
-### 🏗️ [البناء والنشر - Build & Deploy](#deployment)
-### 🔐 [الأمان - Security](#security)
-### 💾 [قاعدة البيانات - Database](#database)
-### 🧪 [الاختبارات - Testing](#testing)
-### 📊 [التقارير والمراجعات - Reports](#reports)
-### 🌐 [Vercel & Railway](#vercel)
-### 🐳 [Docker](#docker)
-### 📝 [متقدم - Advanced](#advanced)
+</div>
 
 ---
 
-<a name="quick-start"></a>
-## 📖 البدء السريع
+## 🗺️ خريطة التنقل السريع | Quick Navigation
 
-| الملف | الوصف |
-|-------|--------|
-| [QUICK_START.md](QUICK_START.md) | دليل البدء السريع للمشروع |
-| [QUICK_GUIDE.md](QUICK_GUIDE.md) | دليل سريع للاستخدام |
-| [README.md](../README.md) | الملف الرئيسي للمشروع |
-| [README_COMPLETE.md](README_COMPLETE.md) | دليل شامل كامل |
-| [README_FINAL.md](README_FINAL.md) | النسخة النهائية من التوثيق |
+| 🚀 للبدء | 🔧 للإعداد | 🌐 للنشر | 🔐 للأمان |
+|---------|----------|---------|----------|
+| [البدء السريع](#-البدء-السريع) | [دليل المطورين](#-دليل-المطورين) | [Railway](#-railway-deployment) | [الأمان](#-الأمان) |
+| [README الرئيسي](../README.md) | [الخدمات](#-الخدمات-والتكامل) | [Docker](#-docker) | [المصادقة](#-المصادقة) |
 
 ---
 
-<a name="setup"></a>
-## 🔧 الإعداد والتثبيت
+## 📖 البدء السريع | Quick Start
 
-### 🚀 التثبيت الأساسي
-| الملف | الوصف |
-|-------|--------|
-| [INSTALLATION.md](INSTALLATION.md) | دليل التثبيت الكامل |
-| [SETUP_ACHIEVEMENTS.md](SETUP_ACHIEVEMENTS.md) | إنجازات الإعداد |
-| [ENV_SETUP_GUIDE.md](ENV_SETUP_GUIDE.md) | دليل إعداد متغيرات البيئة |
+<div dir="rtl">
 
-### 🌍 متغيرات البيئة
-| الملف | الوصف |
-|-------|--------|
-| [ENV_VARIABLES_AR.md](ENV_VARIABLES_AR.md) | متغيرات البيئة بالعربية |
-| [ENV_VARIABLES_EN.md](ENV_VARIABLES_EN.md) | Environment Variables (English) |
-| [ENVIRONMENT_VARIABLES_SUMMARY.md](ENVIRONMENT_VARIABLES_SUMMARY.md) | ملخص متغيرات البيئة |
-| [ENVIRONMENT_VARIABLES_FINAL_REPORT.md](ENVIRONMENT_VARIABLES_FINAL_REPORT.md) | التقرير النهائي لمتغيرات البيئة |
+### الملفات الأساسية للبدء:
 
-### 👨‍💻 دليل المطورين
-| الملف | الوصف |
-|-------|--------|
-| [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) | دليل المطورين الشامل |
-| [DEV_MODE_GUIDE.md](DEV_MODE_GUIDE.md) | دليل وضع التطوير |
-| [DEVELOPMENT_ENHANCEMENTS.md](DEVELOPMENT_ENHANCEMENTS.md) | تحسينات التطوير |
+</div>
+
+| الملف | الوصف | Description |
+|-------|--------|-------------|
+| 📄 [../README.md](../README.md) | الملف الرئيسي للمشروع | Main project README |
+| 📄 [QUICK_START.md](QUICK_START.md) | دليل البدء السريع | Quick start guide |
+| 📄 [INSTALLATION.md](INSTALLATION.md) | دليل التثبيت الكامل | Full installation guide |
 
 ---
 
-<a name="deployment"></a>
-## 🏗️ البناء والنشر
+## 👨‍💻 دليل المطورين | Developer Guide
 
-### 📦 النشر العام
+### 📘 أدلة التطوير الأساسية
+
+| الملف | الوصف | الأولوية |
+|-------|--------|----------|
+| 📄 [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) | دليل المطورين الشامل | ⭐⭐⭐ |
+| 📄 [DEV_MODE_GUIDE.md](DEV_MODE_GUIDE.md) | دليل وضع التطوير | ⭐⭐ |
+| 📄 [CODE_DOCUMENTATION.md](CODE_DOCUMENTATION.md) | توثيق الكود | ⭐⭐ |
+| 📄 [BILINGUAL_CODE_GUIDE.md](BILINGUAL_CODE_GUIDE.md) | دليل الكود ثنائي اللغة | ⭐⭐ |
+
+### 🔧 متغيرات البيئة | Environment Variables
+
 | الملف | الوصف |
 |-------|--------|
-| [DEPLOYMENT_GUIDE_FULL.md](DEPLOYMENT_GUIDE_FULL.md) | دليل النشر الكامل |
-| [DEPLOYMENT_ARCHITECTURE.md](DEPLOYMENT_ARCHITECTURE.md) | معمارية النشر |
-| [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md) | قائمة مراجعة النشر |
-| [DEPLOYMENT_FIX_REPORT.md](DEPLOYMENT_FIX_REPORT.md) | تقرير إصلاحات النشر |
-| [FINAL_DEPLOYMENT_CHECK.md](FINAL_DEPLOYMENT_CHECK.md) | الفحص النهائي للنشر |
-| [PRE_LAUNCH_CHECKLIST.md](PRE_LAUNCH_CHECKLIST.md) | قائمة ما قبل الإطلاق |
-
-### 📄 أدلة النشر
-| الملف | الوصف |
-|-------|--------|
-| [README_DEPLOY_GUIDE_AR.md](README_DEPLOY_GUIDE_AR.md) | دليل النشر بالعربية |
-| [README_DEPLOY_GUIDE_EN.md](README_DEPLOY_GUIDE_EN.md) | Deployment Guide (English) |
+| 📄 [ENV_VARIABLES_AR.md](ENV_VARIABLES_AR.md) | متغيرات البيئة (عربي) |
+| 📄 [ENV_VARIABLES_EN.md](ENV_VARIABLES_EN.md) | Environment Variables (English) |
+| 📄 [ENV_SETUP_GUIDE.md](ENV_SETUP_GUIDE.md) | دليل إعداد المتغيرات |
 
 ---
 
-<a name="security"></a>
-## 🔐 الأمان
+## 🚀 Railway Deployment
+
+### ✅ الحالة: التطبيق يعمل على Railway
+
+| الملف | الوصف | الحالة |
+|-------|--------|--------|
+| 📄 [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md) | دليل النشر على Railway | ✅ محدّث |
+| 📄 [DEPLOYMENT_GUIDE_FULL.md](DEPLOYMENT_GUIDE_FULL.md) | دليل النشر الكامل | ✅ |
+| 📄 [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md) | قائمة تحقق النشر | ✅ |
+| 📄 [PRE_LAUNCH_CHECKLIST.md](PRE_LAUNCH_CHECKLIST.md) | قائمة ما قبل الإطلاق | ✅ |
+
+### 📊 معمارية النشر
 
 | الملف | الوصف |
 |-------|--------|
-| [SECURITY_AUDIT_REPORT.md](SECURITY_AUDIT_REPORT.md) | تقرير مراجعة الأمان |
-| [SECURITY_CHECKLIST.md](SECURITY_CHECKLIST.md) | قائمة التحقق الأمني |
-| [SECURITY_CREDENTIALS_REPORT.md](SECURITY_CREDENTIALS_REPORT.md) | تقرير بيانات الاعتماد الأمنية |
-| [SECURITY_FEATURES_AR.md](SECURITY_FEATURES_AR.md) | ميزات الأمان بالعربية |
-| [SECURITY_IMPROVEMENTS_AR.md](SECURITY_IMPROVEMENTS_AR.md) | تحسينات الأمان بالعربية |
-| [CSRF_PROTECTION_BEST_PRACTICES.md](CSRF_PROTECTION_BEST_PRACTICES.md) | أفضل ممارسات حماية CSRF |
-
-### 🔑 المصادقة
-| الملف | الوصف |
-|-------|--------|
-| [AUTHENTICATION_COMPLETION_REPORT.md](AUTHENTICATION_COMPLETION_REPORT.md) | تقرير إكمال المصادقة |
-| [AUTH_DASHBOARD_STATUS_REPORT.md](AUTH_DASHBOARD_STATUS_REPORT.md) | تقرير حالة لوحة المصادقة |
+| 📄 [DEPLOYMENT_ARCHITECTURE.md](DEPLOYMENT_ARCHITECTURE.md) | معمارية النشر |
+| 📄 [BACKEND-ARCH-OVERVIEW.md](BACKEND-ARCH-OVERVIEW.md) | نظرة عامة على الـ Backend |
 
 ---
 
-<a name="database"></a>
-## 💾 قاعدة البيانات
+## 🔌 الخدمات والتكامل | Services Integration
+
+### ✅ الخدمات المفعّلة حالياً
+
+| الملف | الوصف | الحالة |
+|-------|--------|--------|
+| 📄 [SERVICES_ACTIVATION_GUIDE.md](SERVICES_ACTIVATION_GUIDE.md) | **دليل تفعيل جميع الخدمات** | ✅ محدّث |
+| 📄 [SENTRY_SETUP.md](SENTRY_SETUP.md) | إعداد Sentry للمراقبة | ✅ |
+
+### 📧 البريد الإلكتروني | Email
 
 | الملف | الوصف |
 |-------|--------|
-| [DATABASE_OPTIONS.md](DATABASE_OPTIONS.md) | خيارات قاعدة البيانات |
-| [DATABASE_SETUP_GUIDE.md](DATABASE_SETUP_GUIDE.md) | دليل إعداد قاعدة البيانات |
-| [DATABASE_TESTING_GUIDE.md](DATABASE_TESTING_GUIDE.md) | دليل اختبار قاعدة البيانات |
+| 📄 [README_EMAIL_PROVIDER.md](README_EMAIL_PROVIDER.md) | دليل موفري البريد |
+
+### 💾 قاعدة البيانات | Database
+
+| الملف | الوصف |
+|-------|--------|
+| 📄 [DATABASE_OPTIONS.md](DATABASE_OPTIONS.md) | خيارات قاعدة البيانات |
+| 📄 [DATABASE_SETUP_GUIDE.md](DATABASE_SETUP_GUIDE.md) | دليل إعداد قاعدة البيانات |
+| 📄 [DATABASE_TESTING_GUIDE.md](DATABASE_TESTING_GUIDE.md) | دليل اختبار قاعدة البيانات |
+| 📄 [CACHE_OPERATIONS_RUNBOOK.md](CACHE_OPERATIONS_RUNBOOK.md) | دليل عمليات Redis |
 
 ---
 
-<a name="testing"></a>
-## 🧪 الاختبارات
+## 🔐 الأمان | Security
+
+### 📋 قوائم التحقق الأمني
+
+| الملف | الوصف | الأولوية |
+|-------|--------|----------|
+| 📄 [SECURITY_CHECKLIST.md](SECURITY_CHECKLIST.md) | قائمة التحقق الأمني | ⭐⭐⭐ |
+| 📄 [SECURITY_FEATURES_AR.md](SECURITY_FEATURES_AR.md) | ميزات الأمان | ⭐⭐⭐ |
+| 📄 [CSRF_PROTECTION_BEST_PRACTICES.md](CSRF_PROTECTION_BEST_PRACTICES.md) | حماية CSRF | ⭐⭐ |
+| 📄 [SECURITY_IMPROVEMENTS_AR.md](SECURITY_IMPROVEMENTS_AR.md) | تحسينات الأمان | ⭐⭐ |
+
+### 🔑 المصادقة | Authentication
 
 | الملف | الوصف |
 |-------|--------|
-| [TESTING_QUICK_START.md](TESTING_QUICK_START.md) | البدء السريع بالاختبارات |
-| [TEST_USERS.md](TEST_USERS.md) | مستخدمي الاختبار |
+| 📄 [AUTH_GUIDE.md](AUTH_GUIDE.md) | دليل المصادقة |
+| 📄 [AUTH_SYSTEM_COMPLETE.md](AUTH_SYSTEM_COMPLETE.md) | نظام المصادقة الكامل |
+| 📄 [AUTH_TESTING_GUIDE.md](AUTH_TESTING_GUIDE.md) | دليل اختبار المصادقة |
 
 ---
 
-<a name="reports"></a>
-## 📊 التقارير والمراجعات
-
-### 📋 تقارير المشروع
-| الملف | الوصف |
-|-------|--------|
-| [PROJECT_COMPLETION_STATUS.md](PROJECT_COMPLETION_STATUS.md) | حالة اكتمال المشروع |
-| [PROJECT_OVERVIEW_AR.md](PROJECT_OVERVIEW_AR.md) | نظرة عامة على المشروع |
-| [PROJECT_CLEANUP_REPORT.md](PROJECT_CLEANUP_REPORT.md) | تقرير تنظيف المشروع |
-
-### ✅ تقارير الإكمال
-| الملف | الوصف |
-|-------|--------|
-| [COMPLETION_REPORT.md](COMPLETION_REPORT.md) | تقرير الإكمال |
-| [COMPLETION_SUMMARY.md](COMPLETION_SUMMARY.md) | ملخص الإكمال |
-| [COMPLETION_SUMMARY_FINAL.md](COMPLETION_SUMMARY_FINAL.md) | الملخص النهائي للإكمال |
-| [IMPLEMENTATION_COMPLETE.md](IMPLEMENTATION_COMPLETE.md) | اكتمال التنفيذ |
-| [WORK_COMPLETED_SUMMARY.md](WORK_COMPLETED_SUMMARY.md) | ملخص العمل المكتمل |
-
-### 🔍 مراجعات الكود
-| الملف | الوصف |
-|-------|--------|
-| [CODE_REVIEW_REPORT.md](CODE_REVIEW_REPORT.md) | تقرير مراجعة الكود |
-| [CODE_REVIEW_COMPREHENSIVE_AR.md](CODE_REVIEW_COMPREHENSIVE_AR.md) | مراجعة شاملة للكود بالعربية |
-| [FINAL_CODE_REVIEW_AR.md](FINAL_CODE_REVIEW_AR.md) | المراجعة النهائية للكود |
-| [CODE_DOCUMENTATION.md](CODE_DOCUMENTATION.md) | توثيق الكود |
-| [CODE_ISSUES_REPORT_AR.md](CODE_ISSUES_REPORT_AR.md) | تقرير مشاكل الكود بالعربية |
-
-### 📈 جودة الكود
-| الملف | الوصف |
-|-------|--------|
-| [code-quality-summary.md](code-quality-summary.md) | ملخص جودة الكود |
-| [code-audit-report.md](code-audit-report.md) | تقرير تدقيق الكود |
-| [code-issues-examples.md](code-issues-examples.md) | أمثلة على مشاكل الكود |
-| [KNOWN_LINT_ISSUES.md](KNOWN_LINT_ISSUES.md) | مشاكل Lint المعروفة |
-
-### 🔄 إعادة الهيكلة
-| الملف | الوصف |
-|-------|--------|
-| [REFACTORING_ROADMAP.md](REFACTORING_ROADMAP.md) | خارطة طريق إعادة الهيكلة |
-| [REFACTORING_STATUS.md](REFACTORING_STATUS.md) | حالة إعادة الهيكلة |
-| [refactoring-recommendations.md](refactoring-recommendations.md) | توصيات إعادة الهيكلة |
-| [COMPLEXITY_REFACTORING_REPORT.md](COMPLEXITY_REFACTORING_REPORT.md) | تقرير إعادة هيكلة التعقيد |
-
-### 🎯 التحسينات
-| الملف | الوصف |
-|-------|--------|
-| [IMPROVEMENTS_COMPLETED.md](IMPROVEMENTS_COMPLETED.md) | التحسينات المكتملة |
-| [IMPROVEMENTS_ROADMAP.md](IMPROVEMENTS_ROADMAP.md) | خارطة طريق التحسينات |
-| [IMPROVEMENTS_SUMMARY.md](IMPROVEMENTS_SUMMARY.md) | ملخص التحسينات |
-| [RECOMMENDATIONS.md](RECOMMENDATIONS.md) | التوصيات |
-
-### 📝 تقارير متنوعة
-| الملف | الوصف |
-|-------|--------|
-| [COMPREHENSIVE_FIXES_REPORT.md](COMPREHENSIVE_FIXES_REPORT.md) | تقرير الإصلاحات الشامل |
-| [COMPLIANCE_REPORT.md](COMPLIANCE_REPORT.md) | تقرير الامتثال |
-| [FINAL_AUDIT_REPORT.md](FINAL_AUDIT_REPORT.md) | تقرير التدقيق النهائي |
-| [FINAL_REVIEW_CHECKLIST.md](FINAL_REVIEW_CHECKLIST.md) | قائمة المراجعة النهائية |
-| [FINAL_SUMMARY.md](FINAL_SUMMARY.md) | الملخص النهائي |
-| [PERFORMANCE_REVIEW.md](PERFORMANCE_REVIEW.md) | مراجعة الأداء |
-| [PR_SUMMARY.md](PR_SUMMARY.md) | ملخص Pull Requests |
-| [PROFESSIONAL_DEVELOPMENT_SUMMARY.md](PROFESSIONAL_DEVELOPMENT_SUMMARY.md) | ملخص التطوير المهني |
-
----
-
-<a name="vercel"></a>
-## 🌐 Vercel & Railway
-
-### Vercel
-| الملف | الوصف |
-|-------|--------|
-| [VERCEL_SETUP.md](VERCEL_SETUP.md) | إعداد Vercel |
-| [VERCEL_SETUP_WITH_DATABASE.md](VERCEL_SETUP_WITH_DATABASE.md) | إعداد Vercel مع قاعدة البيانات |
-| [VERCEL_CONFIGURATION_AR.md](VERCEL_CONFIGURATION_AR.md) | تكوين Vercel بالعربية |
-| [VERCEL_DEPLOYMENT_AR.md](VERCEL_DEPLOYMENT_AR.md) | نشر Vercel بالعربية |
-| [VERCEL_DEPLOYMENT_CHECKLIST.md](VERCEL_DEPLOYMENT_CHECKLIST.md) | قائمة تحقق نشر Vercel |
-| [VERCEL_QUICKSTART_AR.md](VERCEL_QUICKSTART_AR.md) | البدء السريع مع Vercel |
-| [VERCEL_ENV_SETUP_GUIDE.md](VERCEL_ENV_SETUP_GUIDE.md) | دليل إعداد بيئة Vercel |
-| [VERCEL_ENV_COMMANDS.md](VERCEL_ENV_COMMANDS.md) | أوامر بيئة Vercel |
-| [VERCEL_INTEGRATION_SUMMARY.md](VERCEL_INTEGRATION_SUMMARY.md) | ملخص تكامل Vercel |
-| [VERCEL_TROUBLESHOOTING_AR.md](VERCEL_TROUBLESHOOTING_AR.md) | حل مشاكل Vercel بالعربية |
-| [VERCEL_TROUBLESHOOTING_EN.md](VERCEL_TROUBLESHOOTING_EN.md) | Vercel Troubleshooting (English) |
-| [REDIS_VERCEL_GUIDE.md](REDIS_VERCEL_GUIDE.md) | دليل Redis مع Vercel |
-
-### Railway
-| الملف | الوصف |
-|-------|--------|
-| [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md) | نشر Railway |
-
----
-
-<a name="docker"></a>
 ## 🐳 Docker
 
 | الملف | الوصف |
 |-------|--------|
-| [DOCKER.md](DOCKER.md) | دليل Docker الشامل |
+| 📄 [DOCKER.md](DOCKER.md) | دليل Docker الشامل |
+| 📄 [../docker-compose.yml](../docker-compose.yml) | Docker Compose الأساسي |
+| 📄 [../docker-compose.dev.yml](../docker-compose.dev.yml) | Docker للتطوير |
+| 📄 [../docker-compose.production.yml](../docker-compose.production.yml) | Docker للإنتاج |
 
 ---
 
-<a name="advanced"></a>
-## 📝 متقدم
+## 🧪 الاختبارات | Testing
 
-### 🎨 التصميم والهوية
 | الملف | الوصف |
 |-------|--------|
-| [brand-identity-summary.md](brand-identity-summary.md) | ملخص الهوية التجارية |
-| [LOGO_USAGE_GUIDE.md](LOGO_USAGE_GUIDE.md) | دليل استخدام الشعار |
-| [IMAGE_OPTIMIZATION_GUIDE.md](IMAGE_OPTIMIZATION_GUIDE.md) | دليل تحسين الصور |
+| 📄 [TESTING_QUICK_START.md](TESTING_QUICK_START.md) | البدء السريع بالاختبارات |
+| 📄 [TEST_USERS.md](TEST_USERS.md) | مستخدمي الاختبار |
+| 📄 [../TESTING_README.md](../TESTING_README.md) | دليل الاختبارات الرئيسي |
 
-### 🌐 اللغات
+---
+
+## 🔄 CI/CD
+
 | الملف | الوصف |
 |-------|--------|
-| [BILINGUAL_CODE_GUIDE.md](BILINGUAL_CODE_GUIDE.md) | دليل الكود ثنائي اللغة |
+| 📄 [CI_CD_GUIDE.md](CI_CD_GUIDE.md) | دليل CI/CD الشامل |
+| 📄 [CI_WORKFLOW_README.md](CI_WORKFLOW_README.md) | شرح سير عمل CI |
 
-### 📊 التحليلات والمراقبة
+### ملفات GitHub Actions:
+
+```
+.github/workflows/
+├── ci.yml           # Pipeline رئيسي
+├── pr-check.yml     # فحص PRs
+├── security.yml     # فحص أمني
+└── release.yml      # إصدارات تلقائية
+```
+
+---
+
+## 📊 التقارير | Reports
+
+### 📈 تقارير الحالة
+
 | الملف | الوصف |
 |-------|--------|
-| [ANALYTICS_GUIDE.md](ANALYTICS_GUIDE.md) | دليل التحليلات |
-| [SENTRY_SETUP.md](SENTRY_SETUP.md) | إعداد Sentry للمراقبة |
+| 📄 [PROJECT_COMPLETION_STATUS.md](PROJECT_COMPLETION_STATUS.md) | حالة اكتمال المشروع |
+| 📄 [PROJECT_OVERVIEW_AR.md](PROJECT_OVERVIEW_AR.md) | نظرة عامة على المشروع |
+| 📄 [COMPLETION_SUMMARY.md](COMPLETION_SUMMARY.md) | ملخص الإكمال |
 
-### 🔧 التكوين والخدمات
+### 🔍 مراجعات الكود
+
 | الملف | الوصف |
 |-------|--------|
-| [SERVICES_ACTIVATION_GUIDE.md](SERVICES_ACTIVATION_GUIDE.md) | دليل تفعيل الخدمات |
-| [README_EMAIL_PROVIDER.md](README_EMAIL_PROVIDER.md) | دليل موفر البريد الإلكتروني |
-| [README_GITHUB.md](README_GITHUB.md) | دليل GitHub |
-| [README_REPORTS.md](README_REPORTS.md) | دليل التقارير |
+| 📄 [CODE_REVIEW_REPORT.md](CODE_REVIEW_REPORT.md) | تقرير مراجعة الكود |
+| 📄 [FINAL_AUDIT_REPORT.md](FINAL_AUDIT_REPORT.md) | تقرير التدقيق النهائي |
+| 📄 [code-quality-summary.md](code-quality-summary.md) | ملخص جودة الكود |
 
-### 🚀 CI/CD
+### 🎯 التحسينات
+
 | الملف | الوصف |
 |-------|--------|
-| [CI_CD_GUIDE.md](CI_CD_GUIDE.md) | دليل CI/CD |
-| [CI_WORKFLOW_README.md](CI_WORKFLOW_README.md) | شرح سير عمل CI |
+| 📄 [IMPROVEMENTS_ROADMAP.md](IMPROVEMENTS_ROADMAP.md) | خارطة طريق التحسينات |
+| 📄 [REFACTORING_ROADMAP.md](REFACTORING_ROADMAP.md) | خارطة إعادة الهيكلة |
+| 📄 [RECOMMENDATIONS.md](RECOMMENDATIONS.md) | التوصيات |
 
-### 🎯 تجربة المستخدم
+---
+
+## 🎨 التصميم والهوية | Design
+
 | الملف | الوصف |
 |-------|--------|
-| [UX_USAGE_EXAMPLES.md](UX_USAGE_EXAMPLES.md) | أمثلة استخدام تجربة المستخدم |
-| [FUNCTIONAL_FLOWS.md](FUNCTIONAL_FLOWS.md) | التدفقات الوظيفية |
+| 📄 [brand-identity-summary.md](brand-identity-summary.md) | ملخص الهوية التجارية |
+| 📄 [LOGO_USAGE_GUIDE.md](LOGO_USAGE_GUIDE.md) | دليل استخدام الشعار |
+| 📄 [IMAGE_OPTIMIZATION_GUIDE.md](IMAGE_OPTIMIZATION_GUIDE.md) | دليل تحسين الصور |
+| 📄 [ACCESSIBILITY_AUDIT.md](ACCESSIBILITY_AUDIT.md) | تدقيق إمكانية الوصول |
 
-### 📋 متقدم أخرى
+---
+
+## 📱 API والتكامل | API & Integration
+
 | الملف | الوصف |
 |-------|--------|
-| [NEXT_STEPS.md](NEXT_STEPS.md) | الخطوات التالية |
+| 📄 [API_DOCUMENTATION.md](API_DOCUMENTATION.md) | توثيق API |
+| 📄 [ANALYTICS_GUIDE.md](ANALYTICS_GUIDE.md) | دليل التحليلات |
+| 📄 [FUNCTIONAL_FLOWS.md](FUNCTIONAL_FLOWS.md) | التدفقات الوظيفية |
+| 📄 [UX_USAGE_EXAMPLES.md](UX_USAGE_EXAMPLES.md) | أمثلة تجربة المستخدم |
+
+---
+
+## 🌐 Vercel (للمرجع)
+
+> ℹ️ التطبيق منشور حالياً على Railway. هذه الملفات للمرجع فقط.
+
+| الملف | الوصف |
+|-------|--------|
+| 📄 [VERCEL_CONFIGURATION_AR.md](VERCEL_CONFIGURATION_AR.md) | تكوين Vercel |
+| 📄 [VERCEL_DEPLOYMENT_AR.md](VERCEL_DEPLOYMENT_AR.md) | نشر Vercel |
+| 📄 [VERCEL_TROUBLESHOOTING_AR.md](VERCEL_TROUBLESHOOTING_AR.md) | حل مشاكل Vercel |
+
+---
+
+## 📊 إحصائيات التوثيق | Documentation Stats
+
+| المقياس | القيمة |
+|---------|--------|
+| 📁 إجمالي الملفات | ~65 ملف |
+| 🌍 اللغات | العربية + الإنجليزية |
+| 📅 آخر تحديث | يناير 2025 |
+| ✅ نسبة التحديث | 90%+ |
 
 ---
 
 ## 🔍 كيفية استخدام هذا الدليل
 
-1. **للمبتدئين**: ابدأ بقسم [البدء السريع](#quick-start)
-2. **للمطورين الجدد**: راجع [الإعداد والتثبيت](#setup) ثم [دليل المطورين](DEVELOPER_GUIDE.md)
-3. **للنشر**: راجع قسم [البناء والنشر](#deployment)
-4. **للمشاكل**: تحقق من أقسام الـ Troubleshooting في [Vercel](#vercel)
-5. **للمراجعة**: راجع [التقارير والمراجعات](#reports)
+<div dir="rtl">
+
+### للمبتدئين:
+1. ابدأ بـ [README الرئيسي](../README.md)
+2. اتبع [دليل التثبيت](INSTALLATION.md)
+3. راجع [البدء السريع](QUICK_START.md)
+
+### للمطورين:
+1. راجع [دليل المطورين](DEVELOPER_GUIDE.md)
+2. اطلع على [متغيرات البيئة](ENV_VARIABLES_AR.md)
+3. افهم [معمارية الـ Backend](BACKEND-ARCH-OVERVIEW.md)
+
+### للنشر:
+1. اتبع [دليل Railway](RAILWAY_DEPLOYMENT.md)
+2. راجع [قائمة التحقق](DEPLOYMENT_CHECKLIST.md)
+3. فعّل [الخدمات](SERVICES_ACTIVATION_GUIDE.md)
+
+</div>
 
 ---
 
-## 📊 إحصائيات
+## 💡 نصائح البحث | Search Tips
 
-- **إجمالي الملفات**: 110+ ملف توثيق
-- **آخر تحديث**: 28 نوفمبر 2025
-- **اللغات**: العربية والإنجليزية
-
----
-
-## 🔄 CI/CD & DevOps (جديد!)
-
-| الملف | الوصف |
-|-------|-------|
-| [CI_CD_GUIDE.md](CI_CD_GUIDE.md) | دليل CI/CD الشامل |
-| [CI_WORKFLOW_README.md](CI_WORKFLOW_README.md) | شرح سير عمل CI |
-| [CODE_REVIEW_CICD_REPORT.md](../CODE_REVIEW_CICD_REPORT.md) | تقرير مراجعة الكود و CI/CD |
-
-### ملفات GitHub Actions:
-
-| الملف | الوصف |
-|-------|-------|
-| `.github/workflows/ci.yml` | Pipeline رئيسي للبناء والاختبار |
-| `.github/workflows/pr-check.yml` | فحص طلبات الدمج |
-| `.github/workflows/security.yml` | فحص أمني أسبوعي |
-| `.github/workflows/release.yml` | إصدارات تلقائية |
-| `.github/dependabot.yml` | تحديث تلقائي للحزم |
-
----
-
-## 💡 نصائح
-
-- 🔖 استخدم Ctrl/Cmd + F للبحث السريع
+- 🔖 استخدم `Ctrl/Cmd + F` للبحث السريع
 - 📌 احفظ هذا الملف كمرجع سريع
-- 🔄 يتم تحديث هذا الدليل مع كل إضافة ملف جديد
-- 📚 جميع الملفات موجودة في مجلد `docs/`
+- 🔗 جميع الروابط تعمل مباشرة من VS Code
 
 ---
 
-**⭐ تم إنشاء هذا الدليل بواسطة تنظيف شامل للمشروع - [تقرير التنظيف](PROJECT_CLEANUP_REPORT.md)**
+<div align="center">
+
+**📚 RabitHR Documentation**  
+**تم التحديث:** يناير 2025
+
+</div>

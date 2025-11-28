@@ -1,12 +1,21 @@
 # Rabit API Documentation / توثيق واجهات برمجة التطبيقات
 
-> **Version:** 1.0.0  
+<div align="center">
+
+![API](https://img.shields.io/badge/API-tRPC-blue?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-2.0.0-green?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Production-success?style=for-the-badge)
+
+</div>
+
+> **Version:** 2.0.0  
 > **Last Updated:** January 2025  
-> **Base URL:** `https://rabit.sa/api` (Production) | `http://localhost:5000/api` (Development)
+> **Production URL:** `https://rabit-app-production.up.railway.app/api`  
+> **Development URL:** `http://localhost:5000/api`
 
 ---
 
-## Table of Contents / جدول المحتويات
+## 📋 Table of Contents / جدول المحتويات
 
 1. [Overview / نظرة عامة](#overview)
 2. [Authentication / المصادقة](#authentication)
@@ -1482,3 +1491,23 @@ function MyComponent() {
 ---
 
 *This documentation is auto-generated and may be updated. Last update: January 2025.*
+
+---
+
+## 🔗 Quick Links / روابط سريعة
+
+| Resource | URL |
+|----------|-----|
+| 🌐 Production API | `https://rabit-app-production.up.railway.app/api/trpc` |
+| 🔍 Health Check | `https://rabit-app-production.up.railway.app/api/health` |
+| 📊 Sentry Dashboard | `https://rabithr.sentry.io` |
+| 📚 Full Documentation | `/docs/INDEX.md` |
+
+---
+
+<div align="center">
+
+**RabitHR API Documentation**  
+**آخر تحديث:** يناير 2025
+
+</div>

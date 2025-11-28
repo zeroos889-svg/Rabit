@@ -1,5 +1,23 @@
 # 🚀 Railway Deployment Guide - دليل النشر على Railway
 
+<div dir="rtl">
+
+## 📊 حالة النشر الحالية
+
+| الخدمة | الحالة | التفاصيل |
+|--------|--------|----------|
+| 🌐 **التطبيق** | ✅ يعمل | [rabit-app-production.up.railway.app](https://rabit-app-production.up.railway.app) |
+| 🗄️ **MySQL** | ✅ متصل | Railway MySQL Database |
+| 📦 **Redis** | ✅ متصل | Railway Redis Cache |
+| 📧 **البريد** | ✅ مُفعّل | Resend + SMTP |
+| 🤖 **AI** | ✅ مُفعّل | DeepSeek API |
+| 📁 **الملفات** | ✅ مُفعّل | Cloudinary |
+| 🔍 **المراقبة** | ✅ مُفعّل | Sentry Error Tracking |
+
+</div>
+
+---
+
 ## ✅ المتطلبات المحققة
 
 - ✅ Production build جاهز
