@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Search,
@@ -161,18 +162,25 @@ const CATEGORY_LABELS: Record<string, { en: string; ar: string }> = {
   action: { en: "Actions", ar: "الإجراءات" },
 };
 
-interface GlobalSearchProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+export interface GlobalSearchProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
+export function GlobalSearch({ open: controlledOpen, onOpenChange: controlledOnOpenChange }: GlobalSearchProps = {}) {
   const { i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
   const [, setLocation] = useLocation();
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Internal state for uncontrolled mode
+  const [internalOpen, setInternalOpen] = useState(false);
+  
+  // Use controlled state if provided, otherwise use internal state
+  const open = controlledOpen ?? internalOpen;
+  const onOpenChange = controlledOnOpenChange ?? setInternalOpen;
 
   const filteredResults = SEARCH_DATA.filter((item) => {
     if (!query) return true;
@@ -239,20 +247,49 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, flatResults, selectedIndex, handleSelect]);
 
+  // Keyboard shortcut to open search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        onOpenChange(!open);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, onOpenChange]);
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl p-0 gap-0">
-        <DialogHeader className="p-4 pb-0">
-          <DialogTitle className="sr-only">
-            {isArabic ? "البحث الشامل" : "Global Search"}
-          </DialogTitle>
-        </DialogHeader>
-        
-        <div className="flex items-center border-b px-4 py-3">
-          <Search className="h-5 w-5 text-muted-foreground shrink-0" />
-          <Input
-            ref={inputRef}
-            value={query}
+    <>
+      {/* Search Trigger Button */}
+      <Button
+        variant="outline"
+        className="relative h-9 w-full justify-start rounded-md bg-background text-sm text-muted-foreground sm:pr-12 md:w-40 lg:w-64"
+        onClick={() => onOpenChange(true)}
+      >
+        <Search className="ml-2 h-4 w-4 shrink-0" />
+        <span className="hidden lg:inline-flex">
+          {isArabic ? "بحث..." : "Search..."}
+        </span>
+        <kbd className="pointer-events-none absolute left-1.5 top-1.5 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+          <span className="text-xs">⌘</span>K
+        </kbd>
+      </Button>
+
+      {/* Search Dialog */}
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-2xl p-0 gap-0">
+          <DialogHeader className="p-4 pb-0">
+            <DialogTitle className="sr-only">
+              {isArabic ? "البحث الشامل" : "Global Search"}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex items-center border-b px-4 py-3">
+            <Search className="h-5 w-5 text-muted-foreground shrink-0" />
+            <Input
+              ref={inputRef}
+              value={query}
             onChange={(e) => {
               setQuery(e.target.value);
               setSelectedIndex(0);
@@ -349,6 +386,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 }
 

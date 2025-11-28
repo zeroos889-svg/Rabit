@@ -62,12 +62,20 @@ interface ExportOptions {
 }
 
 interface ReportExportProps {
-  title: string;
-  titleAr: string;
-  data: Record<string, unknown>[];
-  columns: { id: string; label: string; labelAr: string }[];
+  title?: string;
+  titleAr?: string;
+  data?: Record<string, unknown>[];
+  columns?: { id: string; label: string; labelAr: string }[];
   onExport?: (options: ExportOptions) => Promise<void>;
 }
+
+// Default columns for standalone usage
+const DEFAULT_COLUMNS = [
+  { id: "name", label: "Name", labelAr: "الاسم" },
+  { id: "department", label: "Department", labelAr: "القسم" },
+  { id: "date", label: "Date", labelAr: "التاريخ" },
+  { id: "status", label: "Status", labelAr: "الحالة" },
+];
 
 // Export Utilities
 async function generatePDF(
@@ -215,10 +223,10 @@ function printReport(
 
 // Main Component
 export function ReportExport({
-  title,
-  titleAr,
-  data,
-  columns,
+  title = "Report",
+  titleAr = "تقرير",
+  data = [],
+  columns = DEFAULT_COLUMNS,
   onExport,
 }: ReportExportProps) {
   const { i18n } = useTranslation();
