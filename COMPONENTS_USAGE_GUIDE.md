@@ -6,7 +6,215 @@
 
 ---
 
-## 📦 المكونات الجديدة
+## 🆕 المكونات الجديدة (v2.0)
+
+### 1. البحث الشامل (Global Search)
+
+```tsx
+import { GlobalSearch } from "@/components/GlobalSearch";
+
+function Header() {
+  return (
+    <header>
+      <GlobalSearch />
+    </header>
+  );
+}
+```
+
+**اختصارات لوحة المفاتيح:**
+- `⌘K` / `Ctrl+K`: فتح البحث
+- `ESC`: إغلاق البحث
+
+---
+
+### 2. مساعد AI العائم
+
+```tsx
+import { AIAssistant } from "@/components/ai/AIAssistant";
+
+function App() {
+  return (
+    <div>
+      <MainContent />
+      <AIAssistant /> {/* يظهر في زاوية الشاشة */}
+    </div>
+  );
+}
+```
+
+---
+
+### 3. مركز الإشعارات المتقدم
+
+```tsx
+import { AdvancedNotificationCenter } from "@/components/AdvancedNotificationCenter";
+
+function Header() {
+  return (
+    <header>
+      <AdvancedNotificationCenter />
+    </header>
+  );
+}
+```
+
+**الميزات:**
+- تصنيف الإشعارات
+- تحديد كمقروء
+- فلترة حسب النوع
+
+---
+
+### 4. تبديل المظهر المحسّن
+
+```tsx
+import { EnhancedThemeToggle } from "@/components/theme/EnhancedThemeToggle";
+
+function Header() {
+  return <EnhancedThemeToggle />;
+}
+```
+
+**المظاهر المتاحة:**
+- فاتح / داكن / نظام
+- ألوان مخصصة
+
+---
+
+### 5. مكونات الموارد البشرية
+
+#### جدولة المقابلات
+
+```tsx
+import { InterviewScheduler } from "@/components/hr";
+
+function InterviewsPage() {
+  return <InterviewScheduler />;
+}
+```
+
+#### تقييم الأداء
+
+```tsx
+import { PerformanceEvaluation } from "@/components/hr";
+
+function PerformancePage() {
+  return <PerformanceEvaluation />;
+}
+```
+
+#### إدارة التدريب
+
+```tsx
+import { TrainingManagement } from "@/components/hr";
+
+function TrainingPage() {
+  return <TrainingManagement />;
+}
+```
+
+#### مؤشرات الأداء
+
+```tsx
+import { HRKPIsDashboard } from "@/components/hr";
+
+function KPIsPage() {
+  return <HRKPIsDashboard />;
+}
+```
+
+---
+
+### 6. نظام الرسائل الداخلية
+
+```tsx
+import { InternalMessaging } from "@/components/messaging/InternalMessaging";
+
+function MessagingPage() {
+  return <InternalMessaging />;
+}
+```
+
+---
+
+### 7. تصدير التقارير
+
+```tsx
+import { ReportExport } from "@/components/reports/ReportExport";
+
+function ReportsPage() {
+  return <ReportExport />;
+}
+```
+
+**صيغ التصدير:**
+- PDF
+- Excel (.xlsx)
+- CSV
+- JSON
+
+---
+
+### 8. لوحة التحليلات
+
+```tsx
+import { AnalyticsDashboard } from "@/components/analytics/AnalyticsDashboard";
+
+function AnalyticsPage() {
+  return <AnalyticsDashboard />;
+}
+```
+
+---
+
+## 🪝 Hooks الجديدة
+
+### اختصارات لوحة المفاتيح
+
+```tsx
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+
+function MyComponent() {
+  useKeyboardShortcuts();
+  // الآن الاختصارات تعمل في التطبيق
+}
+```
+
+### إشعارات البريد
+
+```tsx
+import { useEmailNotifications } from "@/hooks/useEmailNotifications";
+
+function MyComponent() {
+  const { sendNotification, isEnabled } = useEmailNotifications();
+  
+  await sendNotification({
+    type: 'leave_request',
+    recipientId: 'user-123',
+    data: { leaveType: 'annual', days: 5 }
+  });
+}
+```
+
+### إشعارات الدفع
+
+```tsx
+import { usePushNotifications } from "@/hooks/usePushNotifications";
+
+function MyComponent() {
+  const { permission, requestPermission, sendNotification } = usePushNotifications();
+  
+  sendNotification({
+    title: 'إشعار جديد',
+    body: 'لديك رسالة جديدة'
+  });
+}
+```
+
+---
+
+## 📦 المكونات الأصلية
 
 ### 1. مكونات الرسوم المتحركة
 
