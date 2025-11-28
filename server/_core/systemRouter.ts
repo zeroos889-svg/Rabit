@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { notifyOwner } from "./notification";
 import { adminProcedure, publicProcedure, router } from "./trpc";
+import { captureException } from "../sentry";
 
 export const systemRouter = router({
   health: publicProcedure
@@ -12,6 +13,19 @@ export const systemRouter = router({
     .query(() => ({
       ok: true,
     })),
+
+  // Test Sentry error tracking (only in non-production or with debug flag)
+  testSentryError: publicProcedure
+    .input(
+      z.object({
+        message: z.string().optional().default("Test error from RabitHR"),
+      })
+    )
+    .mutation(({ input }) => {
+      const testError = new Error(input.message);
+      captureException(testError, { source: "test-endpoint", timestamp: Date.now() });
+      throw testError;
+    }),
 
   notifyOwner: adminProcedure
     .input(
