@@ -62,8 +62,11 @@ COPY --from=deps /app/package.json ./package.json
 # Copy built application
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/server ./server
+COPY --from=builder /app/shared ./shared
 COPY --from=builder /app/drizzle ./drizzle
 COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
+COPY --from=builder /app/tsconfig.base.json ./tsconfig.base.json
 
 # Copy environment files (if exist)
 COPY --from=builder /app/.env.production* ./ 
