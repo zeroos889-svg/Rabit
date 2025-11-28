@@ -117,3 +117,6 @@ performance-test*.js
 # Code analysis tools
 .sonarlint/
 .scannerwork/
+
+# Sentry Config File
+.env.sentry-build-plugin
