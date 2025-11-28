@@ -3,6 +3,7 @@ import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { adminTranslations } from "./i18n-admin";
 import { aiToolsTranslations } from "./i18n-ai-tools";
+import { newFeaturesTranslations } from "./i18n-new-features";
 
 const resources = {
   ar: {
@@ -598,6 +599,8 @@ const resources = {
       ...adminTranslations.ar,
       // Merge AI tools translations
       ...aiToolsTranslations.ar,
+      // Merge new features translations (v2.1)
+      ...newFeaturesTranslations.ar,
     },
   },
   en: {
@@ -1174,6 +1177,8 @@ const resources = {
       ...adminTranslations.en,
       // Merge AI tools translations
       ...aiToolsTranslations.en,
+      // Merge new features translations (v2.1)
+      ...newFeaturesTranslations.en,
     },
   },
 };
