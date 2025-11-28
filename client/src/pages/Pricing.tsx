@@ -521,13 +521,11 @@ export default function Pricing() {
                   })();
 
                   return (
-                  /* eslint-disable-next-line jsx-a11y/role-supports-aria-props */
                   <button
                       key={tier.id}
                       type="button"
-                      aria-pressed={selectedCompanyTier === tier.id}
                       aria-describedby={tierDescriptionId}
-                      className={`p-3 rounded-lg border-2 transition-all text-center ${
+                      className={`p-3 rounded-lg border-2 transition-all text-center cursor-pointer ${
                         selectedCompanyTier === tier.id
                           ? "border-blue-500 bg-blue-50"
                           : "border-gray-200 hover:border-gray-300"

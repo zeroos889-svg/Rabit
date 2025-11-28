@@ -20,7 +20,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -49,10 +48,7 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
-  Building2,
-  Mail,
   TrendingUp,
-  TrendingDown,
   Download,
   Eye,
   RefreshCw,
@@ -607,8 +603,8 @@ export default function AdminSubscriptions() {
                 <div className="p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
                   <h4 className="font-semibold mb-2">المميزات المتاحة</h4>
                   <ul className="grid grid-cols-2 gap-2 text-sm">
-                    {selectedSubscription.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-center gap-2">
+                    {selectedSubscription.features.map((feature) => (
+                      <li key={feature} className="flex items-center gap-2">
                         <CheckCircle2 className="h-3 w-3 text-green-600" />
                         {feature}
                       </li>

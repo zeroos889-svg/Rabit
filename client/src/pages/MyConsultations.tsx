@@ -7,6 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MessageCircle, RefreshCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
+interface BookingItem {
+  id: number;
+  subject?: string;
+  consultationType?: { nameAr?: string; slaHours?: number | null; price?: number | null };
+  consultant?: { fullNameAr?: string };
+  status?: string;
+  scheduledDate?: string | Date;
+  scheduledTime?: string;
+  price?: number | null;
+  slaHours?: number | null;
+}
+
 const statusLabels: Record<string, string> = {
   open: "مفتوحة",
   pending: "قيد الانتظار",
@@ -61,7 +73,7 @@ export default function MyConsultations() {
         </Card>
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
-          {bookings.map(booking => (
+          {bookings.map((booking: BookingItem) => (
             <Card key={booking.id}>
               <CardHeader className="flex flex-row items-start justify-between">
                 <div>

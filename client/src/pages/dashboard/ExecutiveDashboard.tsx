@@ -22,6 +22,13 @@ import { isFeatureEnabled, listFeatureFlags, setFeatureFlag } from "@/lib/featur
 import { trpc } from "@/lib/trpc";
 import { Skeleton } from "@/components/ui/skeleton";
 
+interface AnomalyItem {
+  title: string;
+  detail: string;
+  severity: "high" | "medium" | "low";
+  action?: string;
+}
+
 export default function ExecutiveDashboard() {
   const [flags, setFlags] = useState(listFeatureFlags());
   const [tab, setTab] = useState("overview");
@@ -220,7 +227,7 @@ export default function ExecutiveDashboard() {
                     </Card>
                   ))}
                 {!dataQuery.isLoading &&
-                  (dataQuery.data?.anomalies ?? []).map(anomaly => (
+                  (dataQuery.data?.anomalies ?? []).map((anomaly: AnomalyItem) => (
                     <Card
                       key={anomaly.title}
                       className={`border ${severityTone(anomaly.severity)}`}

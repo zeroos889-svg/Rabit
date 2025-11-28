@@ -539,12 +539,10 @@ export default function AdminDataRequests() {
                                 </DropdownMenuItem>
                               )}
                               {(request.status === "pending" || request.status === "in_progress") && (
-                                <>
                                   <DropdownMenuItem onClick={() => handleOpenResponse(request)}>
                                     <Check className="h-4 w-4 ml-2" />
                                     الرد على الطلب
                                   </DropdownMenuItem>
-                                </>
                               )}
                             </DropdownMenuContent>
                           </DropdownMenu>

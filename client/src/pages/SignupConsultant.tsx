@@ -70,7 +70,7 @@ export default function SignupConsultant() {
         setLocation("/complete-profile");
       }, 1500);
     },
-    onError: (error) => {
+    onError: (error: { message?: string }) => {
       toast.error(error.message || t("signup.error"));
       setIsLoading(false);
     },

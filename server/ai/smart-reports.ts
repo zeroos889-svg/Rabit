@@ -3,7 +3,7 @@
  * Automated report generation with AI insights
  */
 
-import { callLLM, type Message } from "../_core/llm";
+import { callLLM } from "../_core/llm";
 import { logger } from "../utils/logger";
 
 // ============================================
@@ -243,8 +243,10 @@ Output must be valid JSON format.`;
       maxTokens: 4000,
     });
 
-    const content = response.choices[0]?.message?.content?.toString() || "{}";
-    const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/) || [null, content];
+    const rawContent = response.choices[0]?.message?.content;
+    const content = typeof rawContent === 'string' ? rawContent : "{}";
+    const jsonRegex = /```(?:json)?\s*([\s\S]*?)```/;
+    const jsonMatch = jsonRegex.exec(content) || [null, content];
     const jsonStr = jsonMatch[1]?.trim() || content;
     
     const aiReport = JSON.parse(jsonStr);
@@ -270,6 +272,66 @@ Output must be valid JSON format.`;
 }
 
 /**
+ * Build employee data section for prompt
+ */
+function buildEmployeeSection(employees: EmployeeData[], lang: "ar" | "en"): string {
+  const active = employees.filter(e => e.status === "active").length;
+  const onLeave = employees.filter(e => e.status === "on-leave").length;
+  
+  return lang === "ar"
+    ? `بيانات الموظفين:\n- إجمالي الموظفين: ${employees.length}\n- نشط: ${active}\n- في إجازة: ${onLeave}\n\n`
+    : `Employee Data:\n- Total employees: ${employees.length}\n- Active: ${active}\n- On leave: ${onLeave}\n\n`;
+}
+
+/**
+ * Build attendance data section for prompt
+ */
+function buildAttendanceSection(attendance: AttendanceData[], lang: "ar" | "en"): string {
+  const present = attendance.filter(a => a.status === "present").length;
+  const absent = attendance.filter(a => a.status === "absent").length;
+  const late = attendance.filter(a => a.status === "late").length;
+  
+  return lang === "ar"
+    ? `بيانات الحضور:\n- إجمالي السجلات: ${attendance.length}\n- حضور: ${present}\n- غياب: ${absent}\n- تأخير: ${late}\n\n`
+    : `Attendance Data:\n- Total records: ${attendance.length}\n- Present: ${present}\n- Absent: ${absent}\n- Late: ${late}\n\n`;
+}
+
+/**
+ * Build leave data section for prompt
+ */
+function buildLeaveSection(leaves: LeaveData[], lang: "ar" | "en"): string {
+  const approved = leaves.filter(l => l.status === "approved").length;
+  const totalDays = leaves.reduce((sum, l) => sum + l.days, 0);
+  
+  return lang === "ar"
+    ? `بيانات الإجازات:\n- إجمالي الطلبات: ${leaves.length}\n- المعتمدة: ${approved}\n- إجمالي الأيام: ${totalDays}\n\n`
+    : `Leave Data:\n- Total requests: ${leaves.length}\n- Approved: ${approved}\n- Total days: ${totalDays}\n\n`;
+}
+
+/**
+ * Build performance data section for prompt
+ */
+function buildPerformanceSection(performance: PerformanceData[], lang: "ar" | "en"): string {
+  const avgRating = performance.reduce((sum, p) => sum + p.rating, 0) / performance.length;
+  
+  return lang === "ar"
+    ? `بيانات الأداء:\n- عدد التقييمات: ${performance.length}\n- متوسط التقييم: ${avgRating.toFixed(2)}\n\n`
+    : `Performance Data:\n- Number of evaluations: ${performance.length}\n- Average rating: ${avgRating.toFixed(2)}\n\n`;
+}
+
+/**
+ * Build turnover data section for prompt
+ */
+function buildTurnoverSection(turnover: TurnoverData[], lang: "ar" | "en"): string {
+  const totalHires = turnover.reduce((sum, t) => sum + t.hires, 0);
+  const totalTerminations = turnover.reduce((sum, t) => sum + t.terminations, 0);
+  
+  return lang === "ar"
+    ? `بيانات الدوران الوظيفي:\n- إجمالي التعيينات: ${totalHires}\n- إجمالي الإنهاءات: ${totalTerminations}\n\n`
+    : `Turnover Data:\n- Total hires: ${totalHires}\n- Total terminations: ${totalTerminations}\n\n`;
+}
+
+/**
  * Build the prompt for report generation
  */
 function buildReportPrompt(
@@ -284,50 +346,25 @@ function buildReportPrompt(
     ? `قم بإنشاء ${reportTitle} للفترة: ${periodStr}\n\n`
     : `Create a ${reportTitle} for the period: ${periodStr}\n\n`;
 
-  // Add data summaries
+  // Add data summaries using helper functions
   if (data.employees?.length) {
-    const active = data.employees.filter(e => e.status === "active").length;
-    const onLeave = data.employees.filter(e => e.status === "on-leave").length;
-    
-    prompt += lang === "ar"
-      ? `بيانات الموظفين:\n- إجمالي الموظفين: ${data.employees.length}\n- نشط: ${active}\n- في إجازة: ${onLeave}\n\n`
-      : `Employee Data:\n- Total employees: ${data.employees.length}\n- Active: ${active}\n- On leave: ${onLeave}\n\n`;
+    prompt += buildEmployeeSection(data.employees, lang);
   }
 
   if (data.attendance?.length) {
-    const present = data.attendance.filter(a => a.status === "present").length;
-    const absent = data.attendance.filter(a => a.status === "absent").length;
-    const late = data.attendance.filter(a => a.status === "late").length;
-    
-    prompt += lang === "ar"
-      ? `بيانات الحضور:\n- إجمالي السجلات: ${data.attendance.length}\n- حضور: ${present}\n- غياب: ${absent}\n- تأخير: ${late}\n\n`
-      : `Attendance Data:\n- Total records: ${data.attendance.length}\n- Present: ${present}\n- Absent: ${absent}\n- Late: ${late}\n\n`;
+    prompt += buildAttendanceSection(data.attendance, lang);
   }
 
   if (data.leaves?.length) {
-    const approved = data.leaves.filter(l => l.status === "approved").length;
-    const totalDays = data.leaves.reduce((sum, l) => sum + l.days, 0);
-    
-    prompt += lang === "ar"
-      ? `بيانات الإجازات:\n- إجمالي الطلبات: ${data.leaves.length}\n- المعتمدة: ${approved}\n- إجمالي الأيام: ${totalDays}\n\n`
-      : `Leave Data:\n- Total requests: ${data.leaves.length}\n- Approved: ${approved}\n- Total days: ${totalDays}\n\n`;
+    prompt += buildLeaveSection(data.leaves, lang);
   }
 
   if (data.performance?.length) {
-    const avgRating = data.performance.reduce((sum, p) => sum + p.rating, 0) / data.performance.length;
-    
-    prompt += lang === "ar"
-      ? `بيانات الأداء:\n- عدد التقييمات: ${data.performance.length}\n- متوسط التقييم: ${avgRating.toFixed(2)}\n\n`
-      : `Performance Data:\n- Number of evaluations: ${data.performance.length}\n- Average rating: ${avgRating.toFixed(2)}\n\n`;
+    prompt += buildPerformanceSection(data.performance, lang);
   }
 
   if (data.turnover?.length) {
-    const totalHires = data.turnover.reduce((sum, t) => sum + t.hires, 0);
-    const totalTerminations = data.turnover.reduce((sum, t) => sum + t.terminations, 0);
-    
-    prompt += lang === "ar"
-      ? `بيانات الدوران الوظيفي:\n- إجمالي التعيينات: ${totalHires}\n- إجمالي الإنهاءات: ${totalTerminations}\n\n`
-      : `Turnover Data:\n- Total hires: ${totalHires}\n- Total terminations: ${totalTerminations}\n\n`;
+    prompt += buildTurnoverSection(data.turnover, lang);
   }
 
   // Request format
@@ -369,9 +406,9 @@ function generateChartData(data: ReportData, reportType: ReportType): ChartData[
   if (data.employees?.length) {
     // Department distribution
     const deptCounts: Record<string, number> = {};
-    data.employees.forEach(e => {
+    for (const e of data.employees) {
       deptCounts[e.department] = (deptCounts[e.department] || 0) + 1;
-    });
+    }
 
     charts.push({
       type: "pie",
@@ -468,8 +505,10 @@ export async function generateQuickInsights(
       maxTokens: 500,
     });
 
-    const content = response.choices[0]?.message?.content?.toString() || "[]";
-    const jsonMatch = content.match(/\[[\s\S]*\]/) || [content];
+    const rawContent = response.choices[0]?.message?.content;
+    const content = typeof rawContent === 'string' ? rawContent : "[]";
+    const jsonRegex = /\[[\s\S]*\]/;
+    const jsonMatch = jsonRegex.exec(content) || [content];
     
     return JSON.parse(jsonMatch[0]);
   } catch (error) {

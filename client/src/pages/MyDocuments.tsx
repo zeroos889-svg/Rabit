@@ -143,7 +143,7 @@ export default function MyDocuments() {
   const documents = useMemo(() => documentsData ?? [], [documentsData]);
 
   const toggleSaveMutation = trpc.documentGenerator.toggleSaveDocument.useMutation({
-    onSuccess: result => {
+    onSuccess: (result: { isSaved: boolean }) => {
       toast.success(result.isSaved ? "تم حفظ المستند في المفضلة" : "تمت إزالته من المفضلة");
       utils.documentGenerator.getMyDocuments.invalidate(documentsQueryInput);
     },
@@ -160,7 +160,7 @@ export default function MyDocuments() {
 
   const filteredDocuments = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
-    return documents.filter(doc => {
+    return documents.filter((doc: GeneratedDocument) => {
       if (tab === "saved" && !isSavedDocument(doc)) return false;
       if (tab === "draft" && isSavedDocument(doc)) return false;
       if (!normalizedSearch) return true;
@@ -173,7 +173,7 @@ export default function MyDocuments() {
     const total = documents.length;
     const saved = documents.filter(isSavedDocument).length;
     const drafts = total - saved;
-    const recent = documents.filter(doc => {
+    const recent = documents.filter((doc: GeneratedDocument) => {
       if (!doc.createdAt) return false;
       const createdAt = typeof doc.createdAt === "string" ? new Date(doc.createdAt) : doc.createdAt;
       return Date.now() - createdAt.getTime() <= RECENT_WINDOW_MS;
@@ -350,7 +350,7 @@ export default function MyDocuments() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredDocuments.map(doc => {
+                      {filteredDocuments.map((doc: GeneratedDocument) => {
                         const saved = isSavedDocument(doc);
                         return (
                           <TableRow key={doc.id}>

@@ -503,6 +503,8 @@ export default function Settings() {
                     <Globe className="h-4 w-4 text-muted-foreground" />
                     <select
                       id="language"
+                      title="اختر اللغة"
+                      aria-label="اختر اللغة"
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     >
                       <option value="ar">العربية</option>

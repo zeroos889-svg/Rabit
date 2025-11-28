@@ -171,7 +171,7 @@ export default function EnhancedLogin() {
         }
       }, 500);
     },
-    onError: (error) => {
+    onError: (error: { message?: string }) => {
       toast.error(error.message || (isArabic ? "فشل تسجيل الدخول" : "Login failed"));
       setIsLoading(false);
     },

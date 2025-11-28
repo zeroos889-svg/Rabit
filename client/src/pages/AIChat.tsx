@@ -425,7 +425,7 @@ export default function AIChat() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {suggestedQuestions.map((question, idx) => (
+              {suggestedQuestions.map((question: string, idx: number) => (
                 <Button
                   key={idx}
                   variant="ghost"

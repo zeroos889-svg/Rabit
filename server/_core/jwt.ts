@@ -11,6 +11,8 @@ export interface SessionPayload {
   userId: number;
   email: string;
   role: string;
+  name?: string;
+  openId?: string;
 }
 
 /**
@@ -25,6 +27,8 @@ export async function createSessionToken(
     userId: payload.userId,
     email: payload.email,
     role: payload.role,
+    name: payload.name,
+    openId: payload.openId,
   })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -46,6 +50,8 @@ export async function verifySessionToken(
       userId: payload.userId as number,
       email: payload.email as string,
       role: payload.role as string,
+      name: payload.name as string | undefined,
+      openId: payload.openId as string | undefined,
     };
   } catch (error) {
     logger.error("Token verification failed", {
@@ -54,4 +60,16 @@ export async function verifySessionToken(
     });
     return null;
   }
+}
+
+/**
+ * Refresh a session token
+ */
+export async function refreshSessionToken(
+  token: string
+): Promise<string | null> {
+  const payload = await verifySessionToken(token);
+  if (!payload) return null;
+  
+  return createSessionToken(payload);
 }

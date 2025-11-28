@@ -499,7 +499,7 @@ const loginMeta = new Map<
 const bookings: ConsultationBooking[] = [];
 const consultationMessages: ConsultationMessage[] = [];
 const consents: ConsentRecord[] = [];
-interface GenericLogEntry { id?: number; type?: string; message?: string; createdAt?: Date; [key: string]: unknown }
+// GenericLogEntry interface removed - was defined but never used
 interface DataSubjectRequest {
   id: number;
   userId: number;
@@ -629,38 +629,30 @@ const testUserSeeds: TestUserSeed[] = [
 
 // Minimal stub DB object used by health check/tests
 const fakeDb = {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  delete(_table?: unknown) {
+  delete() {
     return {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      where: async (_condition?: unknown) => {
+      where: async () => {
         return undefined;
       },
     };
   },
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  select(_fields?: unknown) {
+  select() {
     return {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      from: (_table: unknown) => {
+      from: () => {
         return {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          where: (_condition: unknown) => {
+          where: () => {
             return {
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              limit: async (_count: number) => {
+              limit: async () => {
                 return [];
               },
             };
           },
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          limit: async (_count: number) => {
+          limit: async () => {
             return [];
           },
         };
       },
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      limit: async (_count: number) => {
+      limit: async () => {
         return [];
       },
     };
@@ -1910,51 +1902,72 @@ export async function upsertChatConversation(input: {
   visitorEmail?: string | null;
   userId?: number | null;
 }) {
-  if (useChatDb) {
-    const db = await getDrizzleDb();
-    if (input.id) {
-      const rows = await db
-        .select()
-        .from(chatConversationsTable)
-        .where(eq(chatConversationsTable.id, input.id))
-        .limit(1);
-      const existing = rows[0];
-      if (existing) {
-        const visitorToken = existing.visitorToken || generateVisitorToken();
-        await db
-          .update(chatConversationsTable)
-          .set({
-            visitorName: existing.visitorName || input.visitorName || null,
-            visitorEmail: existing.visitorEmail || input.visitorEmail || null,
-            userId: existing.userId || input.userId || null,
-            visitorToken,
-            updatedAt: new Date(),
-          })
-          .where(eq(chatConversationsTable.id, existing.id));
-        return {
-          id: existing.id,
-          userId: existing.userId ?? input.userId ?? null,
-          visitorName: existing.visitorName ?? input.visitorName ?? null,
-          visitorEmail: existing.visitorEmail ?? input.visitorEmail ?? null,
-          visitorToken,
-          status: existing.status,
-          lastMessageAt: existing.lastMessageAt ?? new Date(),
-        };
-      }
-    }
+  // If no id provided, create new conversation
+  if (!input.id) {
     return createChatConversation(input);
   }
-  if (input.id) {
-    const existing = chatConversations.find(c => c.id === input.id);
-    if (existing) {
-      if (!existing.visitorName && input.visitorName) existing.visitorName = input.visitorName;
-      if (!existing.visitorEmail && input.visitorEmail) existing.visitorEmail = input.visitorEmail;
-      if (!existing.userId && input.userId) existing.userId = input.userId;
-      if (!existing.visitorToken) existing.visitorToken = generateVisitorToken();
-      return existing;
-    }
+
+  if (useChatDb) {
+    return upsertChatConversationDrizzle(input.id, input);
   }
-  return createChatConversation(input);
+  return upsertChatConversationInMemory(input.id, input);
+}
+
+// Helper function for Drizzle database upsert
+async function upsertChatConversationDrizzle(
+  id: number,
+  input: { visitorName?: string | null; visitorEmail?: string | null; userId?: number | null }
+) {
+  const db = await getDrizzleDb();
+  const rows = await db
+    .select()
+    .from(chatConversationsTable)
+    .where(eq(chatConversationsTable.id, id))
+    .limit(1);
+  const existing = rows[0];
+
+  if (!existing) {
+    return createChatConversation(input);
+  }
+
+  const visitorToken = existing.visitorToken || generateVisitorToken();
+  await db
+    .update(chatConversationsTable)
+    .set({
+      visitorName: existing.visitorName || input.visitorName || null,
+      visitorEmail: existing.visitorEmail || input.visitorEmail || null,
+      userId: existing.userId || input.userId || null,
+      visitorToken,
+      updatedAt: new Date(),
+    })
+    .where(eq(chatConversationsTable.id, existing.id));
+
+  return {
+    id: existing.id,
+    userId: existing.userId ?? input.userId ?? null,
+    visitorName: existing.visitorName ?? input.visitorName ?? null,
+    visitorEmail: existing.visitorEmail ?? input.visitorEmail ?? null,
+    visitorToken,
+    status: existing.status,
+    lastMessageAt: existing.lastMessageAt ?? new Date(),
+  };
+}
+
+// Helper function for in-memory upsert
+function upsertChatConversationInMemory(
+  id: number,
+  input: { visitorName?: string | null; visitorEmail?: string | null; userId?: number | null }
+) {
+  const existing = chatConversations.find(c => c.id === id);
+  if (!existing) {
+    return createChatConversation(input);
+  }
+
+  if (!existing.visitorName && input.visitorName) existing.visitorName = input.visitorName;
+  if (!existing.visitorEmail && input.visitorEmail) existing.visitorEmail = input.visitorEmail;
+  if (!existing.userId && input.userId) existing.userId = input.userId;
+  if (!existing.visitorToken) existing.visitorToken = generateVisitorToken();
+  return existing;
 }
 
 export async function getChatConversation(id: number) {
@@ -2618,3 +2631,579 @@ export async function seedTestUsers() {
 }
 
 // تمت إزالة التشغيل التلقائي للبذور لتجنب إدراج غير مقصود في بيئات الإنتاج.
+
+// =====================================================
+// Admin Router Functions (Stubs)
+// =====================================================
+
+// Stats Functions
+export async function getUsersCount(): Promise<number> {
+  return users.length;
+}
+
+export async function getActiveSubscriptionsCount(): Promise<number> {
+  return 0; // TODO: implement when subscriptions table exists
+}
+
+export async function getPendingBookingsCount(): Promise<number> {
+  return 0; // TODO: implement when bookings table exists
+}
+
+export async function getTotalRevenue(): Promise<number> {
+  return 0; // TODO: implement when payments table exists
+}
+
+export async function getPendingTicketsCount(): Promise<number> {
+  return tickets.filter(t => t.status === "pending").length;
+}
+
+export async function getTotalConsultationsCount(): Promise<number> {
+  return tickets.length;
+}
+
+// User Management Functions
+export async function getAdminUsersList(params: {
+  limit: number;
+  offset: number;
+  search?: string;
+  role?: string;
+  status?: string;
+  sortBy: string;
+  sortOrder: "asc" | "desc";
+}): Promise<{ users: UserRecord[]; total: number }> {
+  let filteredUsers = [...users];
+  
+  if (params.search) {
+    const searchLower = params.search.toLowerCase();
+    filteredUsers = filteredUsers.filter(u => 
+      u.name?.toLowerCase().includes(searchLower) ||
+      u.email?.toLowerCase().includes(searchLower)
+    );
+  }
+  
+  if (params.role) {
+    filteredUsers = filteredUsers.filter(u => u.role === params.role || u.userType === params.role);
+  }
+  
+  const total = filteredUsers.length;
+  filteredUsers = filteredUsers.slice(params.offset, params.offset + params.limit);
+  
+  return { users: filteredUsers, total };
+}
+
+export async function createUserByAdmin(input: {
+  name: string;
+  email: string;
+  phone?: string;
+  role: string;
+  status?: string;
+  companyId?: number;
+  createdBy: number;
+}): Promise<number> {
+  const id = seq++;
+  const user: UserRecord = {
+    id,
+    email: input.email,
+    name: input.name,
+    role: input.role === "admin" ? "admin" : "user",
+    userType: input.role,
+    phoneNumber: input.phone,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+  users.push(user);
+  return id;
+}
+
+export async function updateUserByAdmin(
+  id: number,
+  data: Partial<{
+    name: string;
+    email: string;
+    phone: string;
+    role: string;
+    status: string;
+  }>
+): Promise<void> {
+  const user = users.find(u => u.id === id);
+  if (user) {
+    if (data.name) user.name = data.name;
+    if (data.email) user.email = data.email;
+    if (data.phone) user.phoneNumber = data.phone;
+    if (data.role) user.role = data.role === "admin" ? "admin" : "user";
+    user.updatedAt = new Date();
+  }
+}
+
+export async function updateUserStatus(id: number, status: string): Promise<void> {
+  // Status stored in userType or separate field - for now just update the record
+  const user = users.find(u => u.id === id);
+  if (user) {
+    // Apply status to userType field if it's a valid value
+    if (status === "active" || status === "inactive" || status === "suspended") {
+      user.userType = status === "active" ? user.userType : "inactive";
+    }
+    user.updatedAt = new Date();
+  }
+}
+
+export async function deleteUser(id: number): Promise<void> {
+  const index = users.findIndex(u => u.id === id);
+  if (index > -1) {
+    users.splice(index, 1);
+  }
+  const pwIndex = passwords.findIndex(p => p.userId === id);
+  if (pwIndex > -1) {
+    passwords.splice(pwIndex, 1);
+  }
+}
+
+export async function getUserStatistics(): Promise<{
+  totalUsers: number;
+  newUsersThisMonth: number;
+  activeUsers: number;
+}> {
+  return {
+    totalUsers: users.length,
+    newUsersThisMonth: 0,
+    activeUsers: users.length,
+  };
+}
+
+export async function getAllUsersForExport(): Promise<UserRecord[]> {
+  return [...users];
+}
+
+// Booking Functions
+type BookingRecord = {
+  id: number;
+  userId: number;
+  consultantId?: number;
+  status: string;
+  date: string;
+  time: string;
+  createdAt: Date;
+};
+
+const bookingsStore = new Map<number, BookingRecord>();
+
+export async function getAdminBookingsList(params: {
+  limit: number;
+  offset: number;
+  search?: string;
+  status?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  consultantId?: number;
+}): Promise<{ bookings: BookingRecord[]; total: number }> {
+  let bookings = Array.from(bookingsStore.values());
+  
+  if (params.status) {
+    bookings = bookings.filter(b => b.status === params.status);
+  }
+  
+  const total = bookings.length;
+  bookings = bookings.slice(params.offset, params.offset + params.limit);
+  
+  return { bookings, total };
+}
+
+export async function updateBookingStatus(id: number, status: string, reason?: string): Promise<void> {
+  const booking = bookingsStore.get(id);
+  if (booking) {
+    booking.status = status;
+    // reason can be logged or stored in additional field when needed
+    if (reason) {
+      // Future: store cancellation/rejection reason
+    }
+    bookingsStore.set(id, booking);
+  }
+}
+
+export async function assignBookingConsultant(id: number, consultantId: number): Promise<void> {
+  const booking = bookingsStore.get(id);
+  if (booking) {
+    booking.consultantId = consultantId;
+    bookingsStore.set(id, booking);
+  }
+}
+
+export async function getTodayBookings(): Promise<BookingRecord[]> {
+  const today = new Date().toISOString().split("T")[0];
+  return Array.from(bookingsStore.values()).filter(b => b.date === today);
+}
+
+export async function getBookingStatistics(): Promise<{
+  total: number;
+  pending: number;
+  confirmed: number;
+  completed: number;
+  cancelled: number;
+}> {
+  const bookings = Array.from(bookingsStore.values());
+  return {
+    total: bookings.length,
+    pending: bookings.filter(b => b.status === "pending").length,
+    confirmed: bookings.filter(b => b.status === "confirmed").length,
+    completed: bookings.filter(b => b.status === "completed").length,
+    cancelled: bookings.filter(b => b.status === "cancelled").length,
+  };
+}
+
+export async function getBookingsForExport(dateFrom?: string, dateTo?: string): Promise<BookingRecord[]> {
+  let bookings = Array.from(bookingsStore.values());
+  if (dateFrom) {
+    bookings = bookings.filter(b => b.date >= dateFrom);
+  }
+  if (dateTo) {
+    bookings = bookings.filter(b => b.date <= dateTo);
+  }
+  return bookings;
+}
+
+// Subscription Functions
+type SubscriptionRecord = {
+  id: number;
+  userId: number;
+  plan: string;
+  status: string;
+  startDate: Date;
+  endDate: Date;
+  amount: number;
+};
+
+const subscriptionsStore = new Map<number, SubscriptionRecord>();
+let nextSubscriptionId = 1;
+
+export async function getAdminSubscriptionsList(params: {
+  limit: number;
+  offset: number;
+  search?: string;
+  status?: string;
+  plan?: string;
+}): Promise<{ subscriptions: SubscriptionRecord[]; total: number }> {
+  let subs = Array.from(subscriptionsStore.values());
+  
+  if (params.status) {
+    subs = subs.filter(s => s.status === params.status);
+  }
+  if (params.plan) {
+    subs = subs.filter(s => s.plan === params.plan);
+  }
+  
+  const total = subs.length;
+  subs = subs.slice(params.offset, params.offset + params.limit);
+  
+  return { subscriptions: subs, total };
+}
+
+export async function getSubscriptionById(id: number): Promise<SubscriptionRecord | undefined> {
+  return subscriptionsStore.get(id);
+}
+
+export async function createSubscription(input: {
+  userId: number;
+  plan: string;
+  billingCycle?: string;
+  startDate: Date | string;
+  endDate: Date | string;
+  amount?: number;
+  price?: number;
+  notes?: string;
+  status?: string;
+  features?: string[];
+  employeesLimit?: number;
+  createdBy: number;
+}): Promise<number> {
+  const id = nextSubscriptionId++;
+  const startDate = typeof input.startDate === "string" ? new Date(input.startDate) : input.startDate;
+  const endDate = typeof input.endDate === "string" ? new Date(input.endDate) : input.endDate;
+  subscriptionsStore.set(id, {
+    id,
+    userId: input.userId,
+    plan: input.plan,
+    status: input.status ?? "active",
+    startDate,
+    endDate,
+    amount: input.amount ?? input.price ?? 0,
+  });
+  return id;
+}
+
+export async function updateSubscription(
+  id: number,
+  data: Partial<{
+    plan: string;
+    status: string;
+    endDate: Date | string;
+    notes: string;
+    employeesLimit: number;
+  }>
+): Promise<void> {
+  const sub = subscriptionsStore.get(id);
+  if (sub) {
+    if (data.endDate && typeof data.endDate === "string") {
+      data.endDate = new Date(data.endDate);
+    }
+    Object.assign(sub, data);
+    subscriptionsStore.set(id, sub);
+  }
+}
+
+export async function getExpiringSoonSubscriptions(days: number = 7): Promise<SubscriptionRecord[]> {
+  const now = new Date();
+  const future = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+  return Array.from(subscriptionsStore.values()).filter(
+    s => s.status === "active" && s.endDate <= future && s.endDate >= now
+  );
+}
+
+export async function getSubscriptionStatistics(): Promise<{
+  total: number;
+  active: number;
+  trial: number;
+  expired: number;
+  cancelled: number;
+  monthlyRevenue: number;
+}> {
+  const subs = Array.from(subscriptionsStore.values());
+  return {
+    total: subs.length,
+    active: subs.filter(s => s.status === "active").length,
+    trial: subs.filter(s => s.status === "trial").length,
+    expired: subs.filter(s => s.status === "expired").length,
+    cancelled: subs.filter(s => s.status === "cancelled").length,
+    monthlyRevenue: subs.filter(s => s.status === "active").reduce((sum, s) => sum + s.amount, 0),
+  };
+}
+
+export async function getSubscriptionsForExport(): Promise<SubscriptionRecord[]> {
+  return Array.from(subscriptionsStore.values());
+}
+
+// Consultant Functions
+export async function getAdminConsultantsList(_params: {
+  limit: number;
+  offset: number;
+  search?: string;
+  status?: string;
+  specialization?: string;
+}): Promise<{ consultants: Array<{ id: number; name: string; status: string }>; total: number }> {
+  // Return empty for now - would integrate with consultantsStore
+  return { consultants: [], total: 0 };
+}
+
+export async function updateConsultantStatus(_id: number, _status: string, _reviewNotes?: string): Promise<void> {
+  // Would update consultant status - stub for future implementation
+}
+
+// Data Request Functions
+type DataRequestRecord = {
+  id: number;
+  userId: number;
+  email?: string;
+  type: string;
+  status: string;
+  details?: string;
+  createdAt: Date;
+  dueDate: Date;
+};
+
+const dataRequestsStore = new Map<number, DataRequestRecord>();
+// nextDataRequestId will be used when createDataRequest is implemented
+
+export async function getAdminDataRequestsList(params: {
+  limit: number;
+  offset: number;
+  search?: string;
+  type?: string;
+  status?: string;
+}): Promise<{ requests: DataRequestRecord[]; total: number }> {
+  let requests = Array.from(dataRequestsStore.values());
+  
+  if (params.type) {
+    requests = requests.filter(r => r.type === params.type);
+  }
+  if (params.status) {
+    requests = requests.filter(r => r.status === params.status);
+  }
+  
+  const total = requests.length;
+  requests = requests.slice(params.offset, params.offset + params.limit);
+  
+  return { requests, total };
+}
+
+export async function getDataRequestById(id: number): Promise<DataRequestRecord | undefined> {
+  return dataRequestsStore.get(id);
+}
+
+export async function updateDataRequestStatus(
+  id: number,
+  status: string,
+  notes?: string,
+  handledBy?: number
+): Promise<void> {
+  const req = dataRequestsStore.get(id);
+  if (req) {
+    req.status = status;
+    // notes and handledBy can be stored in additional fields when needed
+    if (notes || handledBy) {
+      // Future: store handling details
+    }
+    dataRequestsStore.set(id, req);
+  }
+}
+
+export async function processDataDeletion(userId: number): Promise<void> {
+  // Would anonymize/delete user data
+  const index = users.findIndex(u => u.id === userId);
+  if (index > -1) {
+    users.splice(index, 1);
+  }
+  const pwIndex = passwords.findIndex(p => p.userId === userId);
+  if (pwIndex > -1) {
+    passwords.splice(pwIndex, 1);
+  }
+}
+
+export async function completeDataRequest(
+  id: number,
+  data: { dataFile?: string; deletedAt?: string }
+): Promise<void> {
+  const req = dataRequestsStore.get(id);
+  if (req) {
+    req.status = "completed";
+    // data.dataFile and data.deletedAt can be stored when needed
+    if (data.dataFile || data.deletedAt) {
+      // Future: store completion details
+    }
+    dataRequestsStore.set(id, req);
+  }
+}
+
+export async function getOverdueDataRequests(): Promise<DataRequestRecord[]> {
+  const now = new Date();
+  return Array.from(dataRequestsStore.values()).filter(
+    r => r.status !== "completed" && r.dueDate < now
+  );
+}
+
+export async function getDataRequestStatistics(): Promise<{
+  total: number;
+  new: number;
+  inReview: number;
+  completed: number;
+  rejected: number;
+}> {
+  const requests = Array.from(dataRequestsStore.values());
+  return {
+    total: requests.length,
+    new: requests.filter(r => r.status === "new").length,
+    inReview: requests.filter(r => r.status === "in_review").length,
+    completed: requests.filter(r => r.status === "completed").length,
+    rejected: requests.filter(r => r.status === "rejected").length,
+  };
+}
+
+export async function getDataRequestsForExport(): Promise<DataRequestRecord[]> {
+  return Array.from(dataRequestsStore.values());
+}
+
+// ============================================================================
+// Login Attempts Tracking
+// ============================================================================
+
+const loginAttemptsStore = new Map<number, { count: number; lockedUntil: Date | null }>();
+
+export async function getLoginAttempts(userId: number): Promise<number> {
+  const entry = loginAttemptsStore.get(userId);
+  return entry?.count ?? 0;
+}
+
+export async function incrementLoginAttempts(userId: number): Promise<void> {
+  const entry = loginAttemptsStore.get(userId) ?? { count: 0, lockedUntil: null };
+  entry.count += 1;
+  loginAttemptsStore.set(userId, entry);
+}
+
+export async function clearLoginAttempts(userId: number): Promise<void> {
+  loginAttemptsStore.delete(userId);
+}
+
+// ============================================================================
+// Email Verification
+// ============================================================================
+
+const emailVerificationStore = new Map<number, { token: string; expiresAt: Date }>();
+
+export async function setEmailVerificationToken(userId: number, token: string, expiresAt: Date): Promise<void> {
+  emailVerificationStore.set(userId, { token, expiresAt });
+}
+
+export async function findUserByVerificationToken(token: string): Promise<UserRecord | null> {
+  for (const [userId, entry] of emailVerificationStore.entries()) {
+    if (entry.token === token && entry.expiresAt > new Date()) {
+      const user = await getUserById(userId);
+      return user ?? null;
+    }
+  }
+  return null;
+}
+
+export async function markEmailVerified(userId: number): Promise<void> {
+  const user = users.find(u => u.id === userId);
+  if (user) {
+    user.emailVerified = true;
+  }
+  emailVerificationStore.delete(userId);
+}
+
+export async function clearPasswordResetToken(userId: number): Promise<void> {
+  const pwd = passwords.find(p => p.userId === userId);
+  if (pwd) {
+    pwd.resetToken = null;
+    pwd.resetTokenExpiry = null;
+  }
+}
+
+// ============================================================================
+// OAuth Support
+// ============================================================================
+
+export async function linkOAuthAccount(userId: number, provider: string, providerUserId: string): Promise<void> {
+  const user = users.find(u => u.id === userId);
+  if (user) {
+    user.openId = `${provider}:${providerUserId}`;
+    user.loginMethod = provider;
+  }
+}
+
+export async function createUserFromOAuth(input: {
+  email: string;
+  name?: string;
+  provider: string;
+  providerUserId: string;
+  profilePicture?: string;
+}): Promise<UserRecord> {
+  const newUser: UserRecord = {
+    id: nextId(),
+    email: input.email,
+    name: input.name ?? null,
+    role: "user",
+    openId: `${input.provider}:${input.providerUserId}`,
+    userType: "individual",
+    profilePicture: input.profilePicture ?? null,
+    lastSignedIn: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    phoneNumber: null,
+    loginMethod: input.provider,
+    emailVerified: true,
+    profileCompleted: false,
+    lastLoginIp: null,
+    lastLoginUserAgent: null,
+  };
+  users.push(newUser);
+  return newUser;
+}

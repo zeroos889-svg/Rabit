@@ -145,11 +145,10 @@ export default function DashboardLayout({ children, userType = "company", title 
             </span>
           )}
         </div>
-        {/* eslint-disable-next-line jsx-a11y/role-supports-aria-props */}
         <button
           type="button"
           onClick={() => setIsMobileNavOpen(prev => !prev)}
-          aria-expanded={isMobileNavOpen}
+          aria-expanded={isMobileNavOpen ? "true" : "false"}
           aria-controls={navId}
           aria-label={mobileToggleLabel}
           className="inline-flex items-center justify-center rounded-full border border-border p-2 text-sm font-medium"

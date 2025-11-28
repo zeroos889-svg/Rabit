@@ -53,6 +53,7 @@ type SignupFormErrors = {
   fullName: string;
   email: string;
   phone: string;
+  company?: string;
   password: string;
   confirmPassword: string;
 };
@@ -132,6 +133,57 @@ function getPasswordStrengthColor(score: number): string {
   return "bg-destructive";
 }
 
+/**
+ * Helper to check if form can be submitted
+ */
+function canFormBeSubmitted(
+  formData: SignupFormData,
+  agreements: { terms: boolean; privacy: boolean; cookies: boolean },
+  t: TFunction
+): boolean {
+  return Boolean(
+    formData.fullName &&
+    formData.email &&
+    formData.phone &&
+    formData.password &&
+    formData.confirmPassword &&
+    agreements.terms &&
+    agreements.privacy &&
+    agreements.cookies &&
+    Object.values(getValidationErrors(formData, t)).every(error => !error)
+  );
+}
+
+/**
+ * Helper to get requirement states for progress indicator
+ */
+function getRequirementStates(
+  formData: SignupFormData,
+  agreements: { terms: boolean; privacy: boolean; cookies: boolean },
+  t: TFunction
+) {
+  return [
+    {
+      label: t("signup.readiness.requirements.basicInfo"),
+      ok: Boolean(formData.fullName && formData.email && formData.phone),
+    },
+    {
+      label: t("signup.readiness.requirements.strongPassword"),
+      ok: validatePassword(formData.password),
+    },
+    {
+      label: t("signup.readiness.requirements.matchingPasswords"),
+      ok:
+        Boolean(formData.password) &&
+        formData.password === formData.confirmPassword,
+    },
+    {
+      label: t("signup.readiness.requirements.acceptPolicies"),
+      ok: agreements.terms && agreements.privacy && agreements.cookies,
+    },
+  ];
+}
+
 export default function Signup() {
   const { t } = useTranslation();
   const [location, setLocation] = useLocation();
@@ -148,7 +200,7 @@ export default function Signup() {
   });
 
   const registerMutation = trpc.auth.register.useMutation({
-    onSuccess: data => {
+    onSuccess: (data: { user?: { userType?: string } }) => {
       toast.success(t("signup.toast.success"));
       // Save user data to localStorage
       localStorage.setItem("registeredUser", JSON.stringify(data.user));
@@ -158,7 +210,7 @@ export default function Signup() {
         setLocation("/login");
       }, 1500);
     },
-    onError: error => {
+    onError: (error: { message?: string }) => {
       toast.error(error.message || t("signup.toast.error"));
       setIsLoading(false);
     },
@@ -216,16 +268,7 @@ export default function Signup() {
     cookies: false,
   });
 
-  const canSubmit =
-    formData.fullName &&
-    formData.email &&
-    formData.phone &&
-    formData.password &&
-    formData.confirmPassword &&
-    agreements.terms &&
-    agreements.privacy &&
-    agreements.cookies &&
-    Object.values(getValidationErrors(formData, t)).every(error => !error);
+  const canSubmit = canFormBeSubmitted(formData, agreements, t);
 
   const validateForm = () => {
     const nextErrors = getValidationErrors(formData, t);
@@ -260,6 +303,7 @@ export default function Signup() {
       "email",
       "password",
       "confirmPassword",
+      "company",
     ];
     const firstError = order.find(key => errors[key]);
     if (!firstError) return;
@@ -269,30 +313,12 @@ export default function Signup() {
       email: emailRef.current,
       password: passwordRef.current,
       confirmPassword: confirmPasswordRef.current,
+      company: null,
     };
     refMap[firstError]?.focus();
   };
 
-  const requirementStates = [
-    {
-      label: t("signup.readiness.requirements.basicInfo"),
-      ok: Boolean(formData.fullName && formData.email && formData.phone),
-    },
-    {
-      label: t("signup.readiness.requirements.strongPassword"),
-      ok: validatePassword(formData.password),
-    },
-    {
-      label: t("signup.readiness.requirements.matchingPasswords"),
-      ok:
-        Boolean(formData.password) &&
-        formData.password === formData.confirmPassword,
-    },
-    {
-      label: t("signup.readiness.requirements.acceptPolicies"),
-      ok: agreements.terms && agreements.privacy && agreements.cookies,
-    },
-  ];
+  const requirementStates = getRequirementStates(formData, agreements, t);
 
   const handleSignup = async (
     e: FormEvent<HTMLFormElement> | MouseEvent<HTMLButtonElement>,

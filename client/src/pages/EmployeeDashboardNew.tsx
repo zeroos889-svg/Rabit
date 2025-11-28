@@ -27,6 +27,14 @@ import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Skeleton } from "@/components/ui/skeleton";
 
+interface ActivityItem {
+  id: number;
+  title: string;
+  description: string;
+  date: string | Date;
+  status: string;
+}
+
 export default function EmployeeDashboardNew() {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -271,7 +279,7 @@ export default function EmployeeDashboardNew() {
               </div>
             ) : overview?.recentActivities && overview.recentActivities.length > 0 ? (
               <div className="space-y-3">
-                {overview.recentActivities.map((activity) => (
+                {overview.recentActivities.map((activity: ActivityItem) => (
                   <div
                     key={activity.id}
                     className="flex items-start gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors"

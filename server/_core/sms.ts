@@ -136,6 +136,10 @@ export function getLoginAlertSMS(data: { ip: string; device: string }): string {
   return `تم تسجيل دخول جديد لحسابك من جهاز ${data.device} وعنوان ${data.ip}. إذا لم تكن أنت، قم بتغيير كلمة المرور فوراً.`;
 }
 
+export function getWelcomeSMS(data: { name: string }): string {
+  return `مرحباً ${data.name}، أهلاً بك في منصة رابِط للموارد البشرية! تمنياتنا لك بتجربة مميزة.`;
+}
+
 export function getConsultantBookingSMS(data: {
   name: string;
   consultationType: string;

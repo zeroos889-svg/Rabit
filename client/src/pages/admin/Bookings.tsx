@@ -20,7 +20,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -59,7 +58,6 @@ import {
   Eye,
   Check,
   X,
-  Filter,
   CalendarDays,
   AlertCircle,
 } from "lucide-react";

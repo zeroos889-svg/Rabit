@@ -31,6 +31,22 @@ import { trpc } from "@/lib/trpc";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 
+// Type for booking records
+interface BookingItem {
+  id: number;
+  status: string;
+  price?: number;
+  clientId?: number;
+  userId?: number;
+  scheduledDate?: string;
+  scheduledTime?: string;
+  consultationType?: {
+    nameAr?: string;
+    nameEn?: string;
+    price?: number;
+  };
+}
+
 export default function ConsultantDashboard() {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
@@ -40,22 +56,22 @@ export default function ConsultantDashboard() {
     trpc.consultant.getConsultantBookings.useQuery();
   const { data: profileData } = trpc.consultant.getMyProfile.useQuery();
 
-  const bookings = useMemo(() => bookingsData?.bookings || [], [bookingsData]);
+  const bookings = useMemo<BookingItem[]>(() => (bookingsData?.bookings || []) as BookingItem[], [bookingsData]);
 
   const stats = useMemo(() => {
     const active = bookings.filter(
-      b => b.status !== "completed" && b.status !== "cancelled"
+      (b: BookingItem) => b.status !== "completed" && b.status !== "cancelled"
     );
-    const completed = bookings.filter(b => b.status === "completed");
+    const completed = bookings.filter((b: BookingItem) => b.status === "completed");
     const revenue = completed.reduce(
-      (sum, b) => sum + (b.price || b.consultationType?.price || 0),
+      (sum: number, b: BookingItem) => sum + (b.price || b.consultationType?.price || 0),
       0
     );
     return {
       activeCount: active.length,
       completedCount: completed.length,
       revenue,
-      totalClients: new Set(bookings.map(b => b.clientId || b.userId)).size,
+      totalClients: new Set(bookings.map((b: BookingItem) => b.clientId || b.userId)).size,
     };
   }, [bookings]);
 
@@ -130,10 +146,10 @@ export default function ConsultantDashboard() {
   const filteredBookings = useMemo(
     () =>
       bookings
-        .filter(b => {
+        .filter((b: BookingItem) => {
           const typeName =
-            (b.consultationType as any)?.nameAr ||
-            (b.consultationType as any)?.nameEn ||
+            b.consultationType?.nameAr ||
+            b.consultationType?.nameEn ||
             "";
           return typeName.toLowerCase().includes(search.toLowerCase());
         })
@@ -313,7 +329,7 @@ export default function ConsultantDashboard() {
                 </p>
               ) : (
                 <div className="space-y-4">
-                  {filteredBookings.map(booking => (
+                  {filteredBookings.map((booking: BookingItem) => (
                     <div
                       key={booking.id}
                       className="flex items-start gap-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50"

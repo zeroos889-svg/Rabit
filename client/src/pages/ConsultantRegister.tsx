@@ -91,7 +91,7 @@ export default function ConsultantRegister() {
       setIsSuccess(true);
       toast.success("تم إرسال طلب التسجيل بنجاح! سنتواصل معك قريباً.");
     },
-    onError: error => {
+    onError: (error: { message?: string }) => {
       const message =
         error?.message ||
         "حدث خطأ أثناء التسجيل. يرجى المحاولة مرة أخرى.";
@@ -100,7 +100,7 @@ export default function ConsultantRegister() {
   });
 
   const uploadDocumentMutation = trpc.consultant.uploadDocument.useMutation({
-    onError: error => {
+    onError: (error: { message?: string }) => {
       const message =
         error?.message || "تعذر رفع المستند. يمكنك إعادة المحاولة لاحقاً.";
       toast.error(message);

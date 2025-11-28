@@ -44,7 +44,7 @@ test.describe('Accessibility - Home Page', () => {
     // Check heading order (h1 should come before h2, etc.)
     const headings = await page.locator('h1, h2, h3, h4, h5, h6').all();
     const headingLevels = await Promise.all(
-      headings.map(async h => parseInt((await h.evaluate(el => el.tagName)).replace('H', '')))
+      headings.map(async h => Number.parseInt((await h.evaluate(el => el.tagName)).replace('H', '')))
     );
     
     // Verify no skipped heading levels (e.g., h1 -> h3 without h2)
@@ -202,7 +202,9 @@ test.describe('Keyboard Navigation', () => {
       
       const focused = await page.evaluate(() => {
         const el = document.activeElement;
-        return el ? el.tagName + (el.id ? `#${el.id}` : '') : null;
+        if (!el) return null;
+        const idPart = el.id ? `#${el.id}` : '';
+        return el.tagName + idPart;
       });
       
       if (focused) {
@@ -357,7 +359,7 @@ test.describe('Motion & Animation Preferences', () => {
     
     // Check that animations are reduced
     const hasReducedMotion = await page.evaluate(() => {
-      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      return globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
     });
     
     expect(hasReducedMotion).toBe(true);
@@ -388,7 +390,7 @@ test.describe('Zoom & Text Scaling', () => {
     // Check that text sizes use relative units
     const usesRelativeUnits = await page.evaluate(() => {
       const body = document.body;
-      const fontSize = window.getComputedStyle(body).fontSize;
+      const fontSize = globalThis.getComputedStyle(body).fontSize;
       
       // Font size should be based on rem/em or reasonable px
       return fontSize !== '0px';

@@ -140,7 +140,7 @@ export default function Profile() {
       setIsEditing(false);
       refetch();
     },
-    onError: error => {
+    onError: (error: { message?: string }) => {
       toast.error("فشل تحديث الملف الشخصي: " + error.message);
     },
   });
@@ -155,7 +155,7 @@ export default function Profile() {
         toast.success("تم تحديث صورة الملف الشخصي بنجاح");
         refetch();
       },
-      onError: error => {
+      onError: (error: { message?: string }) => {
         toast.error("فشل تحديث الصورة: " + error.message);
       },
     });

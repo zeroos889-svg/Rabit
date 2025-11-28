@@ -149,11 +149,10 @@ describe("Home page", () => {
     }, { timeout: 10000 });
 
     const header = screen.getByRole("banner");
-    ["الرئيسية", "الاستشارات", "الدورات", "قاعدة المعرفة", "الأدوات", "الأسعار"].forEach(
-      label => {
-        expect(within(header).getAllByRole("link", { name: label }).length).toBeGreaterThan(0);
-      }
-    );
+    const labels = ["الرئيسية", "الاستشارات", "الدورات", "قاعدة المعرفة", "الأدوات", "الأسعار"];
+    for (const label of labels) {
+      expect(within(header).getAllByRole("link", { name: label }).length).toBeGreaterThan(0);
+    }
 
     expect(screen.getByText("حل الموارد البشرية الشامل")).toBeInTheDocument();
     expect(screen.getByText("منصة رابِط")).toBeInTheDocument();
@@ -229,9 +228,10 @@ describe("Home page", () => {
       link => link.getAttribute("href") || ""
     );
 
-    ["/consulting/book-new", "/consulting/experts", "/pricing", "/signup"].forEach(route => {
+    const routes = ["/consulting/book-new", "/consulting/experts", "/pricing", "/signup"];
+    for (const route of routes) {
       expect(hrefs.some(href => href.endsWith(route))).toBe(true);
-    });
+    }
     expect(hrefs).toHaveLength(4);
 
     unmount();
@@ -278,6 +278,6 @@ describe("Home page", () => {
     startButtons[0].click();
 
     expect(mockGetLoginUrl).toHaveBeenCalled();
-    expect(window.location.href).toContain("https://example.com/login");
+    expect(globalThis.location.href).toContain("https://example.com/login");
   });
 });

@@ -1116,7 +1116,7 @@ ${letterData.additionalInfo ? `\n${letterData.additionalInfo}\n` : ""}
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {letterHistory.map(entry => (
+                  {letterHistory.map((entry: LetterHistoryItem) => (
                     <div
                       key={entry.id}
                       className="rounded-2xl border bg-white/40 p-4 shadow-sm backdrop-blur"

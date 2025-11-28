@@ -98,14 +98,14 @@ export default function ConsultationChat() {
       utils.consultant.getMessages.invalidate({ bookingId });
       scrollToBottom();
     },
-    onError: error => {
+    onError: (error: { message?: string }) => {
       toast.error("فشل إرسال الرسالة: " + error.message);
     },
   });
 
   // Get AI suggestion mutation
   const getAiSuggestionMutation = trpc.consultant.getAiSuggestion.useMutation({
-    onSuccess: data => {
+    onSuccess: (data: { suggestion: string | string[] }) => {
       setMessage(
         Array.isArray(data.suggestion)
           ? JSON.stringify(data.suggestion)
@@ -114,7 +114,7 @@ export default function ConsultationChat() {
       toast.success("تم إنشاء الاقتراح بنجاح!");
       setIsLoadingAi(false);
     },
-    onError: error => {
+    onError: (error: { message?: string }) => {
       toast.error("فشل إنشاء الاقتراح: " + error.message);
       setIsLoadingAi(false);
     },
@@ -127,7 +127,7 @@ export default function ConsultationChat() {
         toast.success("تم تحديث الحالة بنجاح");
         utils.consulting.getTicket.invalidate({ ticketId: bookingId });
       },
-      onError: error => {
+      onError: (error: { message?: string }) => {
         toast.error("فشل تحديث الحالة: " + error.message);
       },
     });
@@ -136,7 +136,7 @@ export default function ConsultationChat() {
     onSuccess: () => {
       toast.success("تم تصعيد التذكرة لفريق الدعم");
     },
-    onError: error => {
+    onError: (error: { message?: string }) => {
       toast.error("فشل التصعيد: " + error.message);
     },
   });
@@ -149,7 +149,7 @@ export default function ConsultationChat() {
         setShowRating(false);
         navigate("/my-consultations");
       },
-      onError: error => {
+      onError: (error: { message?: string }) => {
         toast.error("فشل إرسال التقييم: " + error.message);
       },
     }

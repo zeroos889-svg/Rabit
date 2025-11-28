@@ -185,7 +185,7 @@ export default function CompleteProfile() {
       const dashboardPath = getDashboardPath(userType);
       setTimeout(() => setLocation(dashboardPath), 1500);
     },
-    onError: (error) => {
+    onError: (error: { message?: string }) => {
       toast.error(error.message || (isArabic ? "فشل في حفظ الملف الشخصي" : "Failed to save profile"));
       setIsLoading(false);
     },

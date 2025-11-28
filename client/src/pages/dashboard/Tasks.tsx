@@ -52,6 +52,17 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+// Utility function to get progress width class
+function getProgressWidthClass(progress: number): string {
+  const progressMap: Record<number, string> = {
+    0: "w-0",
+    60: "w-[60%]",
+    80: "w-4/5",
+    100: "w-full",
+  };
+  return progressMap[progress] ?? `w-[${progress}%]`;
+}
+
 // بيانات تجريبية للمهام
 const tasksData = [
   {
@@ -110,6 +121,29 @@ const tasksData = [
     createdAt: "2024-11-01",
   },
 ];
+
+// Helper functions for badge styles
+function getPriorityBadgeClass(priority: string): string {
+  switch (priority) {
+    case "عاجل":
+      return "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300";
+    case "متوسط":
+      return "bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300";
+    default:
+      return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+  }
+}
+
+function getStatusBadgeClass(status: string): string {
+  switch (status) {
+    case "قيد التنفيذ":
+      return "bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300";
+    case "مكتملة":
+      return "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300";
+    default:
+      return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+  }
+}
 
 export default function Tasks() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -432,13 +466,7 @@ export default function Tasks() {
                       <TableCell>
                         <Badge
                           variant="secondary"
-                          className={
-                            task.priority === "عاجل"
-                              ? "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300"
-                              : task.priority === "متوسط"
-                                ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300"
-                                : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
-                          }
+                          className={getPriorityBadgeClass(task.priority)}
                         >
                           {task.priority}
                         </Badge>
@@ -446,13 +474,7 @@ export default function Tasks() {
                       <TableCell>
                         <Badge
                           variant="secondary"
-                          className={
-                            task.status === "لم تبدأ"
-                              ? "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
-                              : task.status === "قيد التنفيذ"
-                                ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300"
-                                : "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300"
-                          }
+                          className={getStatusBadgeClass(task.status)}
                         >
                           {task.status}
                         </Badge>
@@ -461,8 +483,7 @@ export default function Tasks() {
                         <div className="flex items-center gap-2">
                           <div className="w-16 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-gradient-to-r from-green-600 to-teal-600"
-                              style={{ width: `${task.progress}%` }}
+                              className={`h-full bg-gradient-to-r from-green-600 to-teal-600 ${getProgressWidthClass(task.progress)}`}
                             />
                           </div>
                           <span className="text-xs text-muted-foreground">

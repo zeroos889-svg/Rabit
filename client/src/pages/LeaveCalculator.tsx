@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { trpc } from "@/lib/trpc";
 import {
   Card,
@@ -21,14 +20,12 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Calendar as CalendarIcon,
   Download,
   Plus,
   Trash2,
   Info,
-  TrendingUp,
   Clock,
   Sparkles,
   Bot,
@@ -61,9 +58,6 @@ interface LeaveBalance {
 }
 
 export default function LeaveCalculator() {
-  const { t, i18n } = useTranslation();
-  const isRTL = i18n.language === "ar";
-
   // Form State
   const [employeeYears, setEmployeeYears] = useState<string>("");
   const [monthlySalary, setMonthlySalary] = useState<string>(""); // New: Monthly salary
@@ -82,7 +76,7 @@ export default function LeaveCalculator() {
 
   // Calculate leave balance
   const calculateBalance = (): LeaveBalance => {
-    const years = parseFloat(employeeYears) || 0;
+    const years = Number.parseFloat(employeeYears) || 0;
 
     // Annual leave: 21 days (1-4 years), 30 days (5+ years)
     const annualTotal = years >= 5 ? 30 : 21;
@@ -206,7 +200,7 @@ export default function LeaveCalculator() {
       const response = await askAIMutation.mutateAsync({
         question: aiQuestion,
         context: {
-          employeeYears: parseFloat(employeeYears) || undefined,
+          employeeYears: Number.parseFloat(employeeYears) || undefined,
         },
       });
 
@@ -253,15 +247,11 @@ export default function LeaveCalculator() {
       {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between">
-          <Link href="/">
-            <a className="flex items-center gap-2">
-              <img src={APP_LOGO} alt="Rabit" className="h-8" />
-            </a>
+          <Link href="/" className="flex items-center gap-2">
+            <img src={APP_LOGO} alt="Rabit" className="h-8" />
           </Link>
           <Button variant="ghost" asChild>
-            <Link href="/">
-              <a>العودة للرئيسية</a>
-            </Link>
+            <Link href="/">العودة للرئيسية</Link>
           </Button>
         </div>
       </header>

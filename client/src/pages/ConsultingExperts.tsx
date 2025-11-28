@@ -18,6 +18,23 @@ import {
 } from "lucide-react";
 import { Footer } from "@/components/Footer";
 
+interface ExpertItem {
+  id: number;
+  fullName?: string | null;
+  fullNameAr?: string | null;
+  mainSpecialization?: string | null;
+  subSpecializations?: string[] | null;
+  profilePicture?: string | null;
+  bio?: string | null;
+  averageRating?: number | null;
+  reviewsCount?: number | null;
+  yearsOfExperience?: number | null;
+  city?: string | null;
+  consultations?: number | null;
+  languages?: string[] | null;
+  price?: number | null;
+}
+
 const specialties = [
   "الكل",
   "نظام العمل",
@@ -35,7 +52,7 @@ export default function ConsultingExperts() {
 
   const experts = useMemo(() => data?.consultants ?? [], [data]);
 
-  const filteredExperts = experts.filter(expert => {
+  const filteredExperts = experts.filter((expert: ExpertItem) => {
     const name = (expert.fullNameAr || expert.fullName || "").toLowerCase();
     const title = (expert.mainSpecialization || "").toLowerCase();
     const matchesSearch =
@@ -124,7 +141,7 @@ export default function ConsultingExperts() {
                     <Skeleton className="h-10 w-full" />
                   </Card>
                 ))
-              : filteredExperts.map(expert => (
+              : filteredExperts.map((expert: ExpertItem) => (
                   <Card
                     key={expert.id}
                     className="hover:shadow-lg transition-shadow"
@@ -136,7 +153,7 @@ export default function ConsultingExperts() {
                             expert.profilePicture ||
                             `https://api.dicebear.com/7.x/avataaars/svg?seed=${expert.id}`
                           }
-                          alt={expert.fullNameAr || expert.fullName}
+                          alt={expert.fullNameAr || expert.fullName || ""}
                           loading="lazy"
                           className="w-20 h-20 rounded-full object-cover"
                         />

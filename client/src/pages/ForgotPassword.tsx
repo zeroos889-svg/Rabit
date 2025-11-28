@@ -23,7 +23,7 @@ export default function ForgotPassword() {
       setEmailSent(true);
       toast.success("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني");
     },
-    onError: error => {
+    onError: (error: { message?: string }) => {
       toast.error(error.message || "تعذر إرسال رابط إعادة التعيين");
     },
   });

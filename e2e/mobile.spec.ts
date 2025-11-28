@@ -161,11 +161,11 @@ test.describe('Mobile Responsive Layout', () => {
     // Check font sizes
     const body = page.locator('body');
     const fontSize = await body.evaluate((el) => {
-      return window.getComputedStyle(el).fontSize;
+      return globalThis.getComputedStyle(el).fontSize;
     });
     
     // Font size should be at least 14px for readability
-    const fontSizeNum = parseInt(fontSize);
+    const fontSizeNum = Number.parseInt(fontSize);
     expect(fontSizeNum).toBeGreaterThanOrEqual(14);
   });
 

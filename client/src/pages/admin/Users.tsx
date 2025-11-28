@@ -42,7 +42,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import {
   Users,
@@ -53,11 +52,9 @@ import {
   Phone,
   Shield,
   UserCheck,
-  UserX,
   Building2,
   Calendar,
   TrendingUp,
-  Filter,
   Download,
   Eye,
   Edit,
@@ -65,7 +62,6 @@ import {
   Ban,
   CheckCircle2,
   Clock,
-  AlertCircle,
 } from "lucide-react";
 
 // بيانات تجريبية للمستخدمين

@@ -275,7 +275,7 @@ test.describe('Accessibility - Auth Pages', () => {
     
     // Check for focus styles
     const hasFocusStyle = await emailInput.evaluate((el) => {
-      const styles = window.getComputedStyle(el);
+      const styles = globalThis.getComputedStyle(el);
       const outline = styles.outline;
       const boxShadow = styles.boxShadow;
       const borderColor = styles.borderColor;

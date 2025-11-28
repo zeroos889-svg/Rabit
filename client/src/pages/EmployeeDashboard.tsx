@@ -37,6 +37,33 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+interface ApplicationItem {
+  id: number;
+  jobTitle?: string;
+  jobTitleEn?: string;
+  company?: string;
+  companyEn?: string;
+  status?: string;
+  statusEn?: string;
+  statusColor?: string;
+  appliedDate?: string;
+  location?: string;
+  locationEn?: string;
+  salary?: string;
+}
+
+interface RecommendedJob {
+  id: number;
+  title?: string;
+  titleEn?: string;
+  company?: string;
+  companyEn?: string;
+  location?: string;
+  locationEn?: string;
+  salary?: string;
+  match?: number;
+}
+
 export default function EmployeeDashboard() {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
@@ -140,14 +167,14 @@ export default function EmployeeDashboard() {
 
   const filteredApplications = useMemo(
     () =>
-      applications.filter(app => {
+      applications.filter((app: ApplicationItem) => {
         const matchesSearch = `${app.jobTitle} ${app.company}`
           .toLowerCase()
           .includes(search.toLowerCase());
         const matchesStatus =
           statusFilter === "all" ||
           (app.status || "").toLowerCase() === statusFilter ||
-          (((app as any).statusEn || "") as string).toLowerCase() === statusFilter;
+          (app.statusEn || "").toLowerCase() === statusFilter;
         return matchesSearch && matchesStatus;
       }),
     [applications, search, statusFilter]
@@ -155,7 +182,7 @@ export default function EmployeeDashboard() {
 
   const filteredRecommended = useMemo(
     () =>
-      recommendedJobs.filter(job =>
+      recommendedJobs.filter((job: RecommendedJob) =>
         `${job.title} ${job.company}`.toLowerCase().includes(search.toLowerCase())
       ),
     [recommendedJobs, search]
@@ -166,7 +193,7 @@ export default function EmployeeDashboard() {
   const limitedApplications = filteredApplications.slice(0, applicationsLimit);
   const limitedRecommended = filteredRecommended.slice(0, recommendedLimit);
 
-  const getStatusBadge = (status: string, color: string) => {
+  const getStatusBadge = (status: string | undefined, color: string | undefined) => {
     const colorMap = {
       yellow: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
       blue: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
@@ -175,7 +202,7 @@ export default function EmployeeDashboard() {
     };
 
     return (
-      <Badge className={colorMap[color as keyof typeof colorMap] || colorMap.yellow}>
+      <Badge className={colorMap[(color || "yellow") as keyof typeof colorMap] || colorMap.yellow}>
         {status}
       </Badge>
     );
@@ -337,11 +364,11 @@ export default function EmployeeDashboard() {
               <div className="space-y-4">
                 {isLoading && <Skeleton className="h-24 w-full" />}
                 {!isLoading &&
-                  limitedApplications.map(app => {
-                    const title = isArabic ? app.jobTitle : (app as any).jobTitleEn ?? app.jobTitle;
-                    const company = isArabic ? app.company : (app as any).companyEn ?? app.company;
-                    const statusLabel = isArabic ? app.status : (app as any).statusEn ?? app.status;
-                    const location = isArabic ? app.location : (app as any).locationEn ?? app.location;
+                  limitedApplications.map((app: ApplicationItem) => {
+                    const title = isArabic ? app.jobTitle : app.jobTitleEn ?? app.jobTitle;
+                    const company = isArabic ? app.company : app.companyEn ?? app.company;
+                    const statusLabel = isArabic ? app.status : app.statusEn ?? app.status;
+                    const location = isArabic ? app.location : app.locationEn ?? app.location;
                     return (
                       <div
                         key={app.id}
@@ -420,10 +447,10 @@ export default function EmployeeDashboard() {
               <div className="space-y-4">
                 {isLoading && <Skeleton className="h-24 w-full" />}
                 {!isLoading &&
-                  limitedRecommended.map(job => {
-                    const title = isArabic ? job.title : (job as any).titleEn ?? job.title;
-                    const company = isArabic ? job.company : (job as any).companyEn ?? job.company;
-                    const location = isArabic ? job.location : (job as any).locationEn ?? job.location;
+                  limitedRecommended.map((job: RecommendedJob) => {
+                    const title = isArabic ? job.title : job.titleEn ?? job.title;
+                    const company = isArabic ? job.company : job.companyEn ?? job.company;
+                    const location = isArabic ? job.location : job.locationEn ?? job.location;
                     return (
                   <div
                     key={job.id}

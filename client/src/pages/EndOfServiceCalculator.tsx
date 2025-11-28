@@ -281,7 +281,7 @@ export default function EndOfServiceCalculator() {
       await utils.eosb.getCalculationHistory.invalidate(historyInput);
       toast.success("تم حفظ الحساب في السجل");
     },
-    onError: error => {
+    onError: (error: { message?: string }) => {
       toast.error(error.message || "تعذر حفظ الحساب");
     },
   });
@@ -291,7 +291,7 @@ export default function EndOfServiceCalculator() {
       await utils.eosb.getCalculationHistory.invalidate(historyInput);
       toast.success("تم حذف السجل");
     },
-    onError: error => {
+    onError: (error: { message?: string }) => {
       toast.error(error.message || "تعذر حذف السجل");
     },
   });
@@ -900,7 +900,7 @@ export default function EndOfServiceCalculator() {
                     يتم تحديث السجل...
                   </div>
                 )}
-                {historyItems.map(item => {
+                {historyItems.map((item: CalculationHistoryItem) => {
                   const savedResult = item.result as CalculationResult | undefined;
                   const contractLabel = getContractTypeLabel(item.contractType);
                   const terminationLabel = getTerminationReasonLabel(

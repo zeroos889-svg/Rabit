@@ -34,6 +34,20 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 
+interface ActivityItem {
+  id: number;
+  type: string;
+  message: string;
+  timeAgo: string;
+}
+
+interface TaskItem {
+  id: number;
+  title: string;
+  due: string;
+  priority: string;
+}
+
 export default function CompanyDashboard() {
   const overviewQuery = trpc.dashboard.companyOverview.useQuery(undefined, {
     staleTime: 30_000,
@@ -109,7 +123,7 @@ export default function CompanyDashboard() {
   const filteredActivities = useMemo(
     () =>
       recentActivities.filter(
-        act => activityFilter === "all" || act.type === activityFilter
+        (act: ActivityItem) => activityFilter === "all" || act.type === activityFilter
       ),
     [recentActivities, activityFilter]
   );
@@ -121,7 +135,7 @@ export default function CompanyDashboard() {
 
   const filteredTasks = useMemo(() => {
     const base = upcomingTasks.filter(
-      task =>
+      (task: TaskItem) =>
         task.title?.toLowerCase().includes(taskQuery.toLowerCase()) &&
         (taskPriority === "all" || task.priority === taskPriority)
     );
@@ -131,7 +145,7 @@ export default function CompanyDashboard() {
   const totalFilteredTasks = useMemo(
     () =>
       upcomingTasks.filter(
-        task =>
+        (task: TaskItem) =>
           task.title?.toLowerCase().includes(taskQuery.toLowerCase()) &&
           (taskPriority === "all" || task.priority === taskPriority)
       ).length,
@@ -292,7 +306,7 @@ export default function CompanyDashboard() {
               <div className="space-y-4">
                 {isLoading && <Skeleton className="h-24 w-full" />}
                 {!isLoading &&
-                  limitedActivities.map(activity => {
+                  limitedActivities.map((activity: ActivityItem) => {
                     const { Icon, color } = getActivityMeta(activity.type);
                     return (
                       <div
@@ -368,7 +382,7 @@ export default function CompanyDashboard() {
               <div className="space-y-4">
                 {isLoading && <Skeleton className="h-24 w-full" />}
                 {!isLoading &&
-                  filteredTasks.map(task => (
+                  filteredTasks.map((task: TaskItem) => (
                     <div
                       key={task.id}
                       className="flex items-start gap-4 p-3 rounded-lg border hover:shadow-sm transition-all"

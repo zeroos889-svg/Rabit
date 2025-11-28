@@ -268,7 +268,7 @@ export default function DocumentGenerator() {
   useEffect(() => {
     if (!templates.length) return;
     setSelectedTemplate(prev => {
-      if (prev && templates.some(t => t.code === prev)) {
+      if (prev && templates.some((t: TemplateOption) => t.code === prev)) {
         return prev;
       }
       return templates[0].code;
@@ -276,7 +276,7 @@ export default function DocumentGenerator() {
   }, [templates]);
 
   const template = useMemo(
-    () => templates.find(t => t.code === selectedTemplate) || templates[0],
+    () => templates.find((t: TemplateOption) => t.code === selectedTemplate) || templates[0],
     [selectedTemplate, templates]
   );
 
@@ -320,24 +320,24 @@ export default function DocumentGenerator() {
   }, [template, variables]);
 
   const documentMutation = trpc.documentGenerator.generateDocument.useMutation({
-    onSuccess: data => {
+    onSuccess: (data: { outputHtml?: string; outputText?: string; documentId?: number }) => {
       setPreviewHtml(data.outputHtml || "");
       setPreviewText(data.outputText || "");
       setLastDocumentId(data.documentId ?? null);
       setIsLastDocumentSaved(false);
       toast.success("تم توليد المستند وحفظه في السجل");
     },
-    onError: error => {
+    onError: (error: { message?: string }) => {
       toast.error(error.message || "فشل في توليد المستند، حاول مرة أخرى");
     },
   });
 
   const toggleSaveMutation = trpc.documentGenerator.toggleSaveDocument.useMutation({
-    onSuccess: data => {
+    onSuccess: (data: { isSaved: boolean }) => {
       setIsLastDocumentSaved(data.isSaved);
       toast.success(data.isSaved ? "تم حفظ المستند في مكتبتي" : "تمت إزالة المستند من المفضلة");
     },
-    onError: error => {
+    onError: (error: { message?: string }) => {
       toast.error(error.message || "تعذر تحديث حالة الحفظ");
     },
   });
@@ -352,10 +352,10 @@ export default function DocumentGenerator() {
       return;
     }
     const missingRequired = templateFields.filter(
-      field => field.required && !variables[field.key]?.trim()
+      (field: TemplateField) => field.required && !variables[field.key]?.trim()
     );
     if (missingRequired.length) {
-      toast.error(`يرجى تعبئة الحقول: ${missingRequired.map(f => f.label).join("، ")}`);
+      toast.error(`يرجى تعبئة الحقول: ${missingRequired.map((f: TemplateField) => f.label).join("، ")}`);
       return;
     }
 
@@ -477,7 +477,7 @@ export default function DocumentGenerator() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {templates.map(t => (
+                      {templates.map((t: TemplateOption) => (
                         <SelectItem key={t.code} value={t.code}>
                           {t.title}
                         </SelectItem>
@@ -551,7 +551,7 @@ export default function DocumentGenerator() {
               <Separator />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {templateFields.map(field => (
+                {templateFields.map((field: TemplateField) => (
                   <div key={field.key} className="space-y-2">
                     <Label className="flex items-center justify-between">
                       <span>{field.label}</span>

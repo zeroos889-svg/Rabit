@@ -33,7 +33,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
-import type { AuthResponse, Package } from "@/shared/types/consulting";
+import type { AuthResponse, Package } from "@shared/types/consulting";
 
 type CompanyForm = {
   companyName: string;
@@ -563,6 +563,224 @@ function AgreementsSection({ agreements, setAgreements, isLoading, isArabic }: A
   );
 }
 
+// ========== Helper Functions ==========
+
+/** Get signup steps configuration */
+const getSignupSteps = (isArabic: boolean) => [
+  { id: 0, title: isArabic ? "بيانات الشركة" : "Company info" },
+  { id: 1, title: isArabic ? "بيانات المسؤول" : "Owner details" },
+  { id: 2, title: isArabic ? "الباقة والمراجعة" : "Package & review" },
+];
+
+/** Get features list */
+const getFeaturesList = (isArabic: boolean) => [
+  isArabic ? "إدارة الموظفين والملفات" : "Employee & docs management",
+  isArabic ? "نظام ATS كامل" : "Full ATS pipeline",
+  isArabic ? "التذاكر والمهام" : "Tickets & tasks",
+  isArabic ? "الأدوار الذكية" : "Smart HR tools",
+  isArabic ? "تنبيهات وإشعارات" : "Alerts & notifications",
+  isArabic ? "تقارير متقدمة" : "Advanced analytics",
+];
+
+/** Validate step data */
+const validateStepData = (
+  step: number,
+  formData: CompanyForm,
+  agreements: Agreements
+): boolean => {
+  if (step === 0) {
+    return !!formData.companyName;
+  }
+  if (step === 1) {
+    return (
+      !!formData.contactName &&
+      !!formData.email &&
+      !!formData.phone &&
+      !!formData.password &&
+      !!formData.confirmPassword &&
+      formData.password === formData.confirmPassword &&
+      formData.password.length >= 8
+    );
+  }
+  if (step === 2) {
+    return agreements.terms && agreements.privacy;
+  }
+  return true;
+};
+
+/** Load draft from localStorage */
+const loadDraft = (): { formData?: CompanyForm; agreements?: Agreements; currentStep?: number } | null => {
+  try {
+    const saved = localStorage.getItem(DRAFT_KEY);
+    if (saved) {
+      return JSON.parse(saved);
+    }
+  } catch {
+    /* ignore corrupted drafts */
+  }
+  return null;
+};
+
+/** Save draft to localStorage */
+const saveDraft = (formData: CompanyForm, agreements: Agreements, currentStep: number) => {
+  localStorage.setItem(DRAFT_KEY, JSON.stringify({ formData, agreements, currentStep }));
+};
+
+// ========== Sub-Components ==========
+
+interface FormNavigationProps {
+  readonly isArabic: boolean;
+  readonly currentStep: number;
+  readonly stepsLength: number;
+  readonly isLoading: boolean;
+  readonly onBack: () => void;
+  readonly onNext: () => void;
+  readonly onSubmit: () => void;
+}
+
+const FormNavigation = ({
+  isArabic,
+  currentStep,
+  stepsLength,
+  isLoading,
+  onBack,
+  onNext,
+  onSubmit,
+}: FormNavigationProps) => (
+  <div className="px-6 pb-6 flex items-center justify-between">
+    <div className="text-sm text-gray-500 dark:text-gray-400">
+      {isArabic ? "سجّل للدخول؟" : "Already have an account?"}{" "}
+      <Link href="/login" className="text-primary hover:underline">
+        {isArabic ? "تسجيل الدخول" : "Login"}
+      </Link>
+    </div>
+
+    <div className="flex items-center gap-3">
+      {currentStep > 0 && (
+        <Button variant="outline" onClick={onBack} disabled={isLoading}>
+          {isArabic ? "السابق" : "Back"}
+        </Button>
+      )}
+      {currentStep < stepsLength - 1 ? (
+        <Button onClick={onNext} disabled={isLoading}>
+          {isArabic ? "التالي" : "Next"}
+        </Button>
+      ) : (
+        <Button onClick={onSubmit} disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Sparkles className="h-4 w-4 mr-2 animate-spin" />
+              {isArabic ? "جاري التسجيل..." : "Signing up..."}
+            </>
+          ) : (
+            <>{isArabic ? "إنشاء حساب شركة" : "Create Company Account"}</>
+          )}
+        </Button>
+      )}
+    </div>
+  </div>
+);
+
+interface SidebarInfoProps {
+  readonly isArabic: boolean;
+  readonly features: readonly string[];
+}
+
+const SidebarInfo = ({ isArabic, features }: SidebarInfoProps) => (
+  <Card className="shadow-xl">
+    <CardHeader>
+      <CardTitle>
+        {isArabic ? "لماذا رابِط للشركات؟" : "Why Rabit for Companies?"}
+      </CardTitle>
+      <CardDescription>
+        {isArabic ? "حلول متكاملة للموارد البشرية" : "Integrated HR solutions"}
+      </CardDescription>
+    </CardHeader>
+    <CardContent className="space-y-4">
+      <div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg border">
+        <Sparkles className="h-5 w-5 text-purple-600" />
+        <div>
+          <p className="font-semibold">
+            {isArabic ? "تشغيل متكامل" : "End-to-end operations"}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {isArabic
+              ? "من التوظيف إلى نهاية الخدمة مع لوحة تحكم واحدة"
+              : "From hiring to exit in one dashboard"}
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        {features.map(feature => (
+          <div
+            key={feature}
+            className="flex items-center gap-2 text-sm text-muted-foreground"
+          >
+            <div className="h-2 w-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600" />
+            <span>{feature}</span>
+          </div>
+        ))}
+      </div>
+
+      <Separator />
+
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">
+          {isArabic
+            ? "بالنقر على التسجيل، أنت توافق على"
+            : "By signing up you agree to our"}
+        </p>
+        <div className="flex gap-2 text-sm">
+          <Link href="/terms" className="text-primary hover:underline">
+            {isArabic ? "الشروط" : "Terms"}
+          </Link>
+          <span>•</span>
+          <Link href="/privacy" className="text-primary hover:underline">
+            {isArabic ? "الخصوصية" : "Privacy"}
+          </Link>
+          <span>•</span>
+          <Link href="/cookies" className="text-primary hover:underline">
+            {isArabic ? "الكوكيز" : "Cookies"}
+          </Link>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
+
+interface PageHeaderProps {
+  readonly isArabic: boolean;
+}
+
+const PageHeader = ({ isArabic }: PageHeaderProps) => (
+  <div className="text-center mb-8">
+    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl mb-4 shadow-lg">
+      <Building2 className="w-8 h-8 text-white" />
+    </div>
+    <h1 className="text-3xl font-bold mb-2">
+      <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        {isArabic ? "إنشاء حساب شركة" : "Create Company Account"}
+      </span>
+    </h1>
+    <p className="text-gray-600 dark:text-gray-400">
+      {isArabic
+        ? "رحلة بثلاث خطوات: بيانات، مسؤول، باقة — مع حفظ مسودة تلقائي."
+        : "A 3-step journey: company, owner, package — with autosave."}
+    </p>
+    <div className="mt-4 flex items-center justify-center gap-4">
+      <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        {isArabic ? "ابتداءً من 599 ريال/شهر" : "From 599 SAR/month"}
+      </Badge>
+      <Badge variant="outline">
+        {isArabic ? "تجربة مجانية 14 يوم" : "14-day free trial"}
+      </Badge>
+    </div>
+  </div>
+);
+
+// ========== Main Component ==========
+
 export default function SignupCompany() {
   const { t, i18n } = useTranslation();
   const [, setLocation] = useLocation();
@@ -584,7 +802,7 @@ export default function SignupCompany() {
     confirmPassword: "",
     packageId: null,
   });
-  const [agreements, setAgreements] = useState({
+  const [agreements, setAgreements] = useState<Agreements>({
     terms: false,
     privacy: false,
     marketing: false,
@@ -599,36 +817,25 @@ export default function SignupCompany() {
       refetchOnWindowFocus: false,
     });
 
-  const steps = [
-    { id: 0, title: isArabic ? "بيانات الشركة" : "Company info" },
-    { id: 1, title: isArabic ? "بيانات المسؤول" : "Owner details" },
-    { id: 2, title: isArabic ? "الباقة والمراجعة" : "Package & review" },
-  ];
+  const steps = getSignupSteps(isArabic);
+  const features = getFeaturesList(isArabic);
 
+  // Load draft on mount
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(DRAFT_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setFormData(parsed.formData ?? formData);
-        setAgreements(parsed.agreements ?? agreements);
-        setCurrentStep(parsed.currentStep ?? 0);
-      }
-    } catch {
-      /* ignore corrupted drafts */
+    const draft = loadDraft();
+    if (draft) {
+      if (draft.formData) setFormData(draft.formData);
+      if (draft.agreements) setAgreements(draft.agreements);
+      if (draft.currentStep !== undefined) setCurrentStep(draft.currentStep);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Save draft on changes
   useEffect(() => {
-    const draft = {
-      formData,
-      agreements,
-      currentStep,
-    };
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    saveDraft(formData, agreements, currentStep);
   }, [formData, agreements, currentStep]);
 
+  // Set default package
   useEffect(() => {
     if (!formData.packageId && packagesData?.packages?.length) {
       setFormData(prev => ({ ...prev, packageId: packagesData.packages[0].id }));
@@ -648,36 +855,15 @@ export default function SignupCompany() {
       if (token) localStorage.setItem("token", token);
       setTimeout(() => setLocation("/complete-profile"), 600);
     },
-    onError: error => {
+    onError: (error: { message?: string }) => {
       toast.error(error.message || t("signup.error"));
       setIsLoading(false);
     },
     onSettled: () => setIsLoading(false),
   });
 
-  const validateStep = (step: number) => {
-    if (step === 0) {
-      return !!formData.companyName;
-    }
-    if (step === 1) {
-      return (
-        formData.contactName &&
-        formData.email &&
-        formData.phone &&
-        formData.password &&
-        formData.confirmPassword &&
-        formData.password === formData.confirmPassword &&
-        formData.password.length >= 8
-      );
-    }
-    if (step === 2) {
-      return agreements.terms && agreements.privacy;
-    }
-    return true;
-  };
-
   const goNext = () => {
-    if (!validateStep(currentStep)) {
+    if (!validateStepData(currentStep, formData, agreements)) {
       toast.error(
         isArabic
           ? "أكمل الحقول المطلوبة في هذه الخطوة"
@@ -692,7 +878,7 @@ export default function SignupCompany() {
 
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!validateStep(1) || !validateStep(2)) {
+    if (!validateStepData(1, formData, agreements) || !validateStepData(2, formData, agreements)) {
       toast.error(
         isArabic
           ? "أكمل البيانات والاتفاقيات قبل المتابعة"
@@ -709,15 +895,6 @@ export default function SignupCompany() {
       userType: "company",
     });
   };
-
-  const features = [
-    isArabic ? "إدارة الموظفين والملفات" : "Employee & docs management",
-    isArabic ? "نظام ATS كامل" : "Full ATS pipeline",
-    isArabic ? "التذاكر والمهام" : "Tickets & tasks",
-    isArabic ? "الأدوات الذكية" : "Smart HR tools",
-    isArabic ? "تنبيهات وإشعارات" : "Alerts & notifications",
-    isArabic ? "تقارير متقدمة" : "Advanced analytics",
-  ];
 
   const renderStepContent = () => {
     if (currentStep === 0) {
@@ -765,30 +942,7 @@ export default function SignupCompany() {
       <BackButton />
 
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl mb-4 shadow-lg">
-            <Building2 className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold mb-2">
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {isArabic ? "إنشاء حساب شركة" : "Create Company Account"}
-            </span>
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            {isArabic
-              ? "رحلة بثلاث خطوات: بيانات، مسؤول، باقة — مع حفظ مسودة تلقائي."
-              : "A 3-step journey: company, owner, package — with autosave."}
-          </p>
-          <div className="mt-4 flex items-center justify-center gap-4">
-            <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-              {isArabic ? "ابتداءً من 599 ريال/شهر" : "From 599 SAR/month"}
-            </Badge>
-            <Badge variant="outline">
-              {isArabic ? "تجربة مجانية 14 يوم" : "14-day free trial"}
-            </Badge>
-          </div>
-        </div>
+        <PageHeader isArabic={isArabic} />
 
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Form */}
@@ -820,112 +974,19 @@ export default function SignupCompany() {
               </form>
             </CardContent>
 
-            <div className="px-6 pb-6 flex items-center justify-between">
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {isArabic ? "سجّل للدخول؟" : "Already have an account?"}{" "}
-                <Link href="/login" className="text-primary hover:underline">
-                  {isArabic ? "تسجيل الدخول" : "Login"}
-                </Link>
-              </div>
-
-              <div className="flex items-center gap-3">
-                {currentStep > 0 && (
-                  <Button variant="outline" onClick={goBack} disabled={isLoading}>
-                    {isArabic ? "السابق" : "Back"}
-                  </Button>
-                )}
-                {currentStep < steps.length - 1 ? (
-                  <Button onClick={goNext} disabled={isLoading}>
-                    {isArabic ? "التالي" : "Next"}
-                  </Button>
-                ) : (
-                  <Button onClick={() => handleSubmit()} disabled={isLoading}>
-                    {isLoading ? (
-                      <>
-                        <Sparkles className="h-4 w-4 mr-2 animate-spin" />
-                        {isArabic ? "جاري التسجيل..." : "Signing up..."}
-                      </>
-                    ) : (
-                      <>{isArabic ? "إنشاء حساب شركة" : "Create Company Account"}</>
-                    )}
-                  </Button>
-                )}
-              </div>
-            </div>
+            <FormNavigation
+              isArabic={isArabic}
+              currentStep={currentStep}
+              stepsLength={steps.length}
+              isLoading={isLoading}
+              onBack={goBack}
+              onNext={goNext}
+              onSubmit={() => handleSubmit()}
+            />
           </Card>
 
           {/* Sidebar */}
-          <Card className="shadow-xl">
-            <CardHeader>
-              <CardTitle>
-                {isArabic ? "لماذا رابِط للشركات؟" : "Why Rabit for Companies?"}
-              </CardTitle>
-              <CardDescription>
-                {isArabic
-                  ? "حلول متكاملة للموارد البشرية"
-                  : "Integrated HR solutions"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg border">
-                <Sparkles className="h-5 w-5 text-purple-600" />
-                <div>
-                  <p className="font-semibold">
-                    {isArabic ? "تشغيل متكامل" : "End-to-end operations"}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {isArabic
-                      ? "من التوظيف إلى نهاية الخدمة مع لوحة تحكم واحدة"
-                      : "From hiring to exit in one dashboard"}
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                {features.map(feature => (
-                  <div
-                    key={feature}
-                    className="flex items-center gap-2 text-sm text-muted-foreground"
-                  >
-                    <div className="h-2 w-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600" />
-                    <span>{feature}</span>
-                  </div>
-                ))}
-              </div>
-
-              <Separator />
-
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  {isArabic
-                    ? "بالنقر على التسجيل، أنت توافق على"
-                    : "By signing up you agree to our"}
-                </p>
-                <div className="flex gap-2 text-sm">
-                  <Link
-                    href="/terms"
-                    className="text-primary hover:underline"
-                  >
-                    {isArabic ? "الشروط" : "Terms"}
-                  </Link>
-                  <span>•</span>
-                  <Link
-                    href="/privacy"
-                    className="text-primary hover:underline"
-                  >
-                    {isArabic ? "الخصوصية" : "Privacy"}
-                  </Link>
-                  <span>•</span>
-                  <Link
-                    href="/cookies"
-                    className="text-primary hover:underline"
-                  >
-                    {isArabic ? "الكوكيز" : "Cookies"}
-                  </Link>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <SidebarInfo isArabic={isArabic} features={features} />
         </div>
       </div>
     </div>

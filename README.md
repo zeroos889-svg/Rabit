@@ -1,4 +1,4 @@
-﻿#  منصة رابِط - Rabit HR Platform
+﻿# منصة رابِط - Rabit HR Platform
 
 <p align="center">
   <img src="client/public/LOGO.svg" alt="Rabit Logo" width="280" />

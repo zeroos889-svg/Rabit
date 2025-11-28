@@ -14,7 +14,7 @@ import {
 } from "./metrics";
 
 // Type for Redis client - can be real Redis or mock
-type RedisClient = Redis | InMemoryRedis;
+type RedisClient = InstanceType<typeof Redis> | InMemoryRedis;
 
 // Redis client instance (singleton pattern)
 let redisClient: RedisClient | null = null;
@@ -112,7 +112,7 @@ class InMemoryRedis {
     return "OK";
   }
 
-  on(...args: Parameters<Redis['on']>) {
+  on(...args: Parameters<InstanceType<typeof Redis>['on']>) {
     if (args.length > 0) {
       // Listener registration is intentionally ignored in the mock implementation
     }
@@ -430,7 +430,7 @@ export class CacheManager {
 
     try {
       const values = await this.redis.mget(...keys);
-      return values.map(value => {
+      return values.map((value: string | null) => {
         if (!value) {
           const namespace = keys[0]?.split(':')[0] || 'default';
           trackCacheMiss(namespace);

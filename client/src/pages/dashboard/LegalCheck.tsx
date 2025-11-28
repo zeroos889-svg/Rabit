@@ -36,18 +36,13 @@ import {
   RefreshCw,
   FileText,
   Scale,
-  Building2,
   Users,
-  Calendar,
   Clock,
   Download,
   Eye,
-  Briefcase,
   CreditCard,
   Heart,
   Plane,
-  FileWarning,
-  TrendingUp,
   AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -621,8 +616,8 @@ export default function LegalCheck() {
                       articles: "43 مادة",
                       lastUpdate: "1443هـ",
                     },
-                  ].map((reg, index) => (
-                    <Card key={index} className="hover:shadow-md transition-shadow">
+                  ].map((reg) => (
+                    <Card key={reg.title} className="hover:shadow-md transition-shadow">
                       <CardContent className="pt-6">
                         <div className="flex items-start justify-between">
                           <div>

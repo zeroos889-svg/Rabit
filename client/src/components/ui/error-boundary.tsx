@@ -80,9 +80,9 @@ export class ErrorBoundary extends Component<Props, State> {
 }
 
 interface ErrorFallbackProps {
-  error: Error | null;
-  errorInfo?: ErrorInfo | null;
-  resetError: () => void;
+  readonly error: Error | null;
+  readonly errorInfo?: ErrorInfo | null;
+  readonly resetError: () => void;
 }
 
 /**
@@ -161,7 +161,7 @@ export function ErrorFallback({ error, errorInfo, resetError }: ErrorFallbackPro
               </Button>
               <Button
                 variant="outline"
-                onClick={() => window.location.href = "/"}
+                onClick={() => globalThis.location.href = "/"}
                 className="flex-1"
               >
                 <Home className="h-4 w-4 ml-2" />
@@ -222,13 +222,15 @@ export function ErrorFallback({ error, errorInfo, resetError }: ErrorFallbackPro
 /**
  * Simple inline error display for smaller components
  */
+interface InlineErrorProps {
+  readonly message: string;
+  readonly onRetry?: () => void;
+}
+
 export function InlineError({ 
   message, 
   onRetry 
-}: { 
-  message: string; 
-  onRetry?: () => void;
-}) {
+}: InlineErrorProps) {
   return (
     <div className="flex items-center justify-center gap-3 p-4 rounded-lg bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400">
       <AlertTriangle className="h-5 w-5 flex-shrink-0" />
@@ -245,15 +247,17 @@ export function InlineError({
 /**
  * Page-level error component
  */
+interface PageErrorProps {
+  readonly title?: string;
+  readonly message?: string;
+  readonly onRetry?: () => void;
+}
+
 export function PageError({ 
   title = "حدث خطأ",
   message = "تعذر تحميل هذه الصفحة. يرجى المحاولة مرة أخرى.",
   onRetry,
-}: {
-  title?: string;
-  message?: string;
-  onRetry?: () => void;
-}) {
+}: PageErrorProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] text-center px-4">
       <motion.div

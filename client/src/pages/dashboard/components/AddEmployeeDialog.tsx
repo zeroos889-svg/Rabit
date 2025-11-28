@@ -15,14 +15,56 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 
 interface AddEmployeeDialogProps {
   isArabic: boolean;
-  departments: string[];
+  departments: readonly string[];
   onSubmit: () => void;
   onCancel: () => void;
 }
+
+// Translations object to reduce cognitive complexity
+const translations = {
+  ar: {
+    title: "إضافة موظف جديد",
+    description: "أدخل بيانات الموظف الجديد",
+    fullName: "الاسم الكامل",
+    fullNamePlaceholder: "أحمد محمد",
+    email: "البريد الإلكتروني",
+    phone: "رقم الجوال",
+    position: "المسمى الوظيفي",
+    positionPlaceholder: "مطور برمجيات",
+    department: "القسم",
+    departmentPlaceholder: "اختر القسم",
+    startDate: "تاريخ البدء",
+    baseSalary: "الراتب الأساسي",
+    status: "الحالة",
+    active: "نشط",
+    onLeave: "في إجازة",
+    cancel: "إلغاء",
+    add: "إضافة",
+  },
+  en: {
+    title: "Add New Employee",
+    description: "Enter new employee information",
+    fullName: "Full Name",
+    fullNamePlaceholder: "Ahmad Mohammed",
+    email: "Email",
+    phone: "Phone",
+    position: "Position",
+    positionPlaceholder: "Software Developer",
+    department: "Department",
+    departmentPlaceholder: "Select department",
+    startDate: "Start Date",
+    baseSalary: "Base Salary",
+    status: "Status",
+    active: "Active",
+    onLeave: "On Leave",
+    cancel: "Cancel",
+    add: "Add",
+  },
+};
 
 const AddEmployeeDialog: FC<AddEmployeeDialogProps> = ({
   isArabic,
@@ -30,37 +72,37 @@ const AddEmployeeDialog: FC<AddEmployeeDialogProps> = ({
   onSubmit,
   onCancel,
 }) => {
+  const t = useMemo(() => (isArabic ? translations.ar : translations.en), [isArabic]);
+
   return (
     <DialogContent className="max-w-2xl">
       <DialogHeader>
-        <DialogTitle>{isArabic ? "إضافة موظف جديد" : "Add New Employee"}</DialogTitle>
-        <DialogDescription>
-          {isArabic ? "أدخل بيانات الموظف الجديد" : "Enter new employee information"}
-        </DialogDescription>
+        <DialogTitle>{t.title}</DialogTitle>
+        <DialogDescription>{t.description}</DialogDescription>
       </DialogHeader>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>{isArabic ? "الاسم الكامل" : "Full Name"}</Label>
-          <Input placeholder={isArabic ? "أحمد محمد" : "Ahmad Mohammed"} />
+          <Label>{t.fullName}</Label>
+          <Input placeholder={t.fullNamePlaceholder} />
         </div>
         <div className="space-y-2">
-          <Label>{isArabic ? "البريد الإلكتروني" : "Email"}</Label>
+          <Label>{t.email}</Label>
           <Input type="email" placeholder="ahmad@company.com" dir="ltr" />
         </div>
         <div className="space-y-2">
-          <Label>{isArabic ? "رقم الجوال" : "Phone"}</Label>
+          <Label>{t.phone}</Label>
           <Input placeholder="05xxxxxxxx" dir="ltr" />
         </div>
         <div className="space-y-2">
-          <Label>{isArabic ? "المسمى الوظيفي" : "Position"}</Label>
-          <Input placeholder={isArabic ? "مطور برمجيات" : "Software Developer"} />
+          <Label>{t.position}</Label>
+          <Input placeholder={t.positionPlaceholder} />
         </div>
         <div className="space-y-2">
-          <Label>{isArabic ? "القسم" : "Department"}</Label>
+          <Label>{t.department}</Label>
           <Select>
             <SelectTrigger>
-              <SelectValue placeholder={isArabic ? "اختر القسم" : "Select department"} />
+              <SelectValue placeholder={t.departmentPlaceholder} />
             </SelectTrigger>
             <SelectContent>
               {departments.map((dept) => (
@@ -72,22 +114,22 @@ const AddEmployeeDialog: FC<AddEmployeeDialogProps> = ({
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>{isArabic ? "تاريخ البدء" : "Start Date"}</Label>
+          <Label>{t.startDate}</Label>
           <Input type="date" />
         </div>
         <div className="space-y-2">
-          <Label>{isArabic ? "الراتب الأساسي" : "Base Salary"}</Label>
+          <Label>{t.baseSalary}</Label>
           <Input type="number" placeholder="12000" dir="ltr" />
         </div>
         <div className="space-y-2">
-          <Label>{isArabic ? "الحالة" : "Status"}</Label>
+          <Label>{t.status}</Label>
           <Select defaultValue="active">
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="active">{isArabic ? "نشط" : "Active"}</SelectItem>
-              <SelectItem value="on-leave">{isArabic ? "في إجازة" : "On Leave"}</SelectItem>
+              <SelectItem value="active">{t.active}</SelectItem>
+              <SelectItem value="on-leave">{t.onLeave}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -95,10 +137,10 @@ const AddEmployeeDialog: FC<AddEmployeeDialogProps> = ({
 
       <DialogFooter>
         <Button variant="outline" onClick={onCancel}>
-          {isArabic ? "إلغاء" : "Cancel"}
+          {t.cancel}
         </Button>
         <Button className="bg-gradient-to-r from-blue-600 to-purple-600" onClick={onSubmit}>
-          {isArabic ? "إضافة" : "Add"}
+          {t.add}
         </Button>
       </DialogFooter>
     </DialogContent>

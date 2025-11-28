@@ -52,7 +52,7 @@ export default function Register() {
   const [selectedTemplate, setSelectedTemplate] = useState<TrialProfile | null>(null);
 
   const registerMutation = trpc.auth.register.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (data: { message?: string; token?: string; user?: Record<string, unknown> }) => {
       toast.success(data.message || "تم إنشاء الحساب بنجاح");
       
       // Save JWT token
@@ -83,7 +83,7 @@ export default function Register() {
         }
       }, 500);
     },
-    onError: (error) => {
+    onError: (error: { message?: string }) => {
       toast.error(error.message || "فشل إنشاء الحساب");
       setIsLoading(false);
     },

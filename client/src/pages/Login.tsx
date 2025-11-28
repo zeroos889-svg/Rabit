@@ -71,7 +71,7 @@ export default function Login() {
         }
       }, 500);
     },
-    onError: (error) => {
+    onError: (error: { message?: string }) => {
       toast.error(error.message || t("login.error"));
       setIsLoading(false);
     },

@@ -3,7 +3,7 @@
  * Advanced resume parsing and candidate matching
  */
 
-import { callLLM, type Message } from "../_core/llm";
+import { callLLM } from "../_core/llm";
 import { logger } from "../utils/logger";
 
 // ============================================
@@ -196,10 +196,12 @@ Rules:
       maxTokens: 2000,
     });
 
-    const content = response.choices[0]?.message?.content?.toString() || "{}";
+    const rawContent = response.choices[0]?.message?.content;
+    const content = typeof rawContent === 'string' ? rawContent : "{}";
     
     // Extract JSON from response (handle markdown code blocks)
-    const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/) || [null, content];
+    const jsonRegex = /```(?:json)?\s*([\s\S]*?)```/;
+    const jsonMatch = jsonRegex.exec(content) || [null, content];
     const jsonStr = jsonMatch[1]?.trim() || content;
     
     const parsed = JSON.parse(jsonStr) as Omit<ParsedResume, "confidence">;
@@ -321,8 +323,10 @@ Analyze the match and provide scores.`;
       maxTokens: 1500,
     });
 
-    const content = response.choices[0]?.message?.content?.toString() || "{}";
-    const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/) || [null, content];
+    const rawContent2 = response.choices[0]?.message?.content;
+    const content = typeof rawContent2 === 'string' ? rawContent2 : "{}";
+    const jsonRegex2 = /```(?:json)?\s*([\s\S]*?)```/;
+    const jsonMatch = jsonRegex2.exec(content) || [null, content];
     const jsonStr = jsonMatch[1]?.trim() || content;
     
     return JSON.parse(jsonStr) as CandidateMatch;
@@ -377,16 +381,18 @@ export async function rankCandidates(
     } catch (error) {
       logger.warn("Failed to match candidate", { 
         context: "ResumeAnalyzer",
-        candidateName: resume.personalInfo.name 
+        candidateName: resume.personalInfo.name,
+        error: error instanceof Error ? error.message : 'Unknown error'
       });
+      // Continue processing other candidates even if one fails
     }
   }
 
   // Sort by overall score and assign ranks
   results.sort((a, b) => b.match.overallScore - a.match.overallScore);
-  results.forEach((result, index) => {
+  for (const [index, result] of results.entries()) {
     result.rank = index + 1;
-  });
+  }
 
   return results;
 }
@@ -447,8 +453,10 @@ Provide a comprehensive skills gap analysis with development recommendations in 
       maxTokens: 1500,
     });
 
-    const content = response.choices[0]?.message?.content?.toString() || "{}";
-    const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/) || [null, content];
+    const rawContent = response.choices[0]?.message?.content;
+    const content = typeof rawContent === 'string' ? rawContent : "{}";
+    const jsonRegex = /```(?:json)?\s*([\s\S]*?)```/;
+    const jsonMatch = jsonRegex.exec(content) || [null, content];
     const jsonStr = jsonMatch[1]?.trim() || content;
     
     return JSON.parse(jsonStr);

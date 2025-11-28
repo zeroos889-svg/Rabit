@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -17,19 +16,13 @@ import {
   Users,
   Building2,
   CreditCard,
-  TrendingUp,
-  TrendingDown,
   Activity,
   Shield,
-  Bell,
   Search,
   Calendar,
-  BarChart3,
-  PieChart,
   ArrowUpRight,
   ArrowDownRight,
   CheckCircle2,
-  AlertCircle,
   Clock,
   Eye,
   Download,
@@ -40,10 +33,8 @@ import {
   Zap,
   Globe,
   Server,
-  Database,
 } from "lucide-react";
 import { Link } from "wouter";
-import { trpc } from "@/lib/trpc";
 import DashboardLayout from "@/components/DashboardLayout";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -62,7 +53,30 @@ const staggerContainer = {
   }
 };
 
+// Utility function for change type colors
+function getChangeTypeColor(changeType: "up" | "down" | "neutral"): string {
+  switch (changeType) {
+    case "up":
+      return "text-green-600 dark:text-green-400";
+    case "down":
+      return "text-red-600 dark:text-red-400";
+    case "neutral":
+    default:
+      return "text-slate-600 dark:text-slate-400";
+  }
+}
+
 // Stats card component
+interface StatsCardProps {
+  readonly title: string;
+  readonly value: string | number;
+  readonly change: string;
+  readonly changeType: "up" | "down" | "neutral";
+  readonly icon: React.ElementType;
+  readonly iconColor: string;
+  readonly isLoading?: boolean;
+}
+
 function StatsCard({ 
   title, 
   value, 
@@ -71,15 +85,7 @@ function StatsCard({
   icon: Icon, 
   iconColor,
   isLoading 
-}: {
-  title: string;
-  value: string | number;
-  change: string;
-  changeType: "up" | "down" | "neutral";
-  icon: React.ElementType;
-  iconColor: string;
-  isLoading?: boolean;
-}) {
+}: StatsCardProps) {
   return (
     <motion.div variants={fadeInUp}>
       <Card className="hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800">
@@ -93,15 +99,13 @@ function StatsCard({
                 <p className="text-3xl font-bold">{value}</p>
               )}
               <div className="flex items-center gap-1">
-                {changeType === "up" ? (
+                {changeType === "up" && (
                   <ArrowUpRight className="h-4 w-4 text-green-500" />
-                ) : changeType === "down" ? (
+                )}
+                {changeType === "down" && (
                   <ArrowDownRight className="h-4 w-4 text-red-500" />
-                ) : null}
-                <span className={`text-sm ${
-                  changeType === "up" ? "text-green-500" : 
-                  changeType === "down" ? "text-red-500" : "text-muted-foreground"
-                }`}>
+                )}
+                <span className={`text-sm ${getChangeTypeColor(changeType)}`}>
                   {change}
                 </span>
               </div>
@@ -117,17 +121,19 @@ function StatsCard({
 }
 
 // Activity item component
+interface ActivityItemProps {
+  readonly type: string;
+  readonly message: string;
+  readonly time: string;
+  readonly user?: string;
+}
+
 function ActivityItem({ 
   type, 
   message, 
   time, 
   user 
-}: { 
-  type: string; 
-  message: string; 
-  time: string;
-  user?: string;
-}) {
+}: ActivityItemProps) {
   const getTypeStyles = () => {
     switch (type) {
       case "user": return { bg: "bg-blue-100 dark:bg-blue-900", text: "text-blue-600 dark:text-blue-400", Icon: Users };

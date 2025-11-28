@@ -1,11 +1,14 @@
 import { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
+// Define allowed HTML elements for the Section component
+type AllowedElements = "section" | "div" | "article" | "aside" | "main" | "header" | "footer" | "nav";
+
 interface SectionProps extends HTMLAttributes<HTMLElement> {
-  id?: string;
-  as?: keyof JSX.IntrinsicElements;
-  background?: "plain" | "muted" | "gradient" | "glow";
-  children: ReactNode;
+  readonly id?: string;
+  readonly as?: AllowedElements;
+  readonly background?: "plain" | "muted" | "gradient" | "glow";
+  readonly children: ReactNode;
 }
 
 const backgroundClassMap: Record<NonNullable<SectionProps["background"]>, string> = {
@@ -44,11 +47,11 @@ export function Section({
 }
 
 interface SectionHeaderProps {
-  eyebrow?: string;
-  title: string;
-  description?: string;
-  align?: "start" | "center";
-  actions?: ReactNode;
+  readonly eyebrow?: string;
+  readonly title: string;
+  readonly description?: string;
+  readonly align?: "start" | "center";
+  readonly actions?: ReactNode;
 }
 
 export function SectionHeader({
@@ -57,7 +60,7 @@ export function SectionHeader({
   description,
   align = "start",
   actions,
-}: SectionHeaderProps) {
+}: Readonly<SectionHeaderProps>) {
   return (
     <div
       className={cn(

@@ -16,7 +16,41 @@ type AuditAction =
   | "letter:delete"
   | "consulting:ticket"
   | "chat:sensitive_blocked"
-  | "account:update";
+  | "account:update"
+  // Admin actions
+  | "admin:user:create"
+  | "admin:user:update"
+  | "admin:user:delete"
+  | "admin:user:active"
+  | "admin:user:pending"
+  | "admin:user:suspended"
+  | "admin:users:export"
+  | "admin:booking:update"
+  | "admin:booking:assign"
+  | "admin:booking:pending"
+  | "admin:booking:confirmed"
+  | "admin:booking:completed"
+  | "admin:booking:cancelled"
+  | "admin:bookings:export"
+  | "admin:subscription:create"
+  | "admin:subscription:update"
+  | "admin:subscription:renew"
+  | "admin:subscription:cancel"
+  | "admin:subscriptions:export"
+  | "admin:consultant:approve"
+  | "admin:consultant:approved"
+  | "admin:consultant:reject"
+  | "admin:consultant:rejected"
+  | "admin:consultant:suspend"
+  | "admin:data_request:review"
+  | "admin:data_request:complete"
+  | "admin:data_request:completed"
+  | "admin:data_request:reject"
+  | "admin:data_request:rejected"
+  | "admin:data_request:new"
+  | "admin:data_request:in_review"
+  | "admin:data_request:delete"
+  | "admin:data_requests:export";
 
 export type AuditLog = {
   id: number;
@@ -59,6 +93,6 @@ export function getAuditStatsForUser(userId: number) {
     acc[log.action] = (acc[log.action] ?? 0) + 1;
     return acc;
   }, {});
-  const lastActivity = userLogs[userLogs.length - 1]?.createdAt ?? null;
+  const lastActivity = userLogs.at(-1)?.createdAt ?? null;
   return { totals, byAction, lastActivity };
 }

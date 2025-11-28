@@ -82,7 +82,7 @@ consultantsData?.consultants?.map((consultant: Consultant) => ...
 onSuccess: (data: AuthResponse) => { ...
 ```
 
-**الفائدة:** 
+**الفائدة:**
 - تقليل أخطاء runtime
 - تحسين IntelliSense
 - كود أكثر أماناً

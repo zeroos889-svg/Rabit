@@ -22,13 +22,57 @@ import {
   DollarSign,
   Calendar,
   Briefcase,
-  Ticket,
   TrendingUp,
   TrendingDown,
   FileText,
   PieChart,
 } from "lucide-react";
 import { useState } from "react";
+
+// Utility function to get width class from percentage
+function getWidthClass(percent: number): string {
+  const widthMap: Record<number, string> = {
+    3: "w-[3%]",
+    5: "w-[5%]",
+    7: "w-[7%]",
+    11: "w-[11%]",
+    14: "w-[14%]",
+    17: "w-[17%]",
+    18: "w-[18%]",
+    33: "w-1/3",
+    34: "w-[34%]",
+    35: "w-[35%]",
+    36: "w-[36%]",
+    40: "w-2/5",
+    43: "w-[43%]",
+    50: "w-1/2",
+    53: "w-[53%]",
+    57: "w-[57%]",
+    62: "w-[62%]",
+    65: "w-[65%]",
+    79: "w-[79%]",
+    92: "w-[92%]",
+    100: "w-full",
+  };
+  return widthMap[percent] ?? `w-[${percent}%]`;
+}
+
+// Utility function to get height class from count/max for bar charts
+function getBarHeightClass(count: number, max: number): string {
+  const heightMap: Record<string, string> = {
+    "28-45": "h-[62%]",
+    "32-45": "h-[71%]",
+    "25-45": "h-[56%]",
+    "38-45": "h-[84%]",
+    "42-45": "h-[93%]",
+    "35-45": "h-[78%]",
+    "45-45": "h-full",
+    "40-45": "h-[89%]",
+    "30-45": "h-[67%]",
+    "27-45": "h-[60%]",
+  };
+  return heightMap[`${count}-${max}`] ?? `h-[${Math.round((count / max) * 100)}%]`;
+}
 
 export default function Reports() {
   const [selectedPeriod, setSelectedPeriod] = useState("month");
@@ -163,8 +207,7 @@ export default function Reports() {
                       <div className="flex items-center gap-2">
                         <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-blue-600"
-                            style={{ width: "65%" }}
+                            className="h-full bg-blue-600 w-[65%]"
                           ></div>
                         </div>
                         <span className="text-sm font-semibold">45</span>
@@ -178,8 +221,7 @@ export default function Reports() {
                       <div className="flex items-center gap-2">
                         <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-green-600"
-                            style={{ width: "50%" }}
+                            className="h-full bg-green-600 w-1/2"
                           ></div>
                         </div>
                         <span className="text-sm font-semibold">35</span>
@@ -193,8 +235,7 @@ export default function Reports() {
                       <div className="flex items-center gap-2">
                         <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-purple-600"
-                            style={{ width: "40%" }}
+                            className="h-full bg-purple-600 w-2/5"
                           ></div>
                         </div>
                         <span className="text-sm font-semibold">28</span>
@@ -208,8 +249,7 @@ export default function Reports() {
                       <div className="flex items-center gap-2">
                         <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-yellow-600"
-                            style={{ width: "35%" }}
+                            className="h-full bg-yellow-600 w-[35%]"
                           ></div>
                         </div>
                         <span className="text-sm font-semibold">25</span>
@@ -223,8 +263,7 @@ export default function Reports() {
                       <div className="flex items-center gap-2">
                         <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-pink-600"
-                            style={{ width: "33%" }}
+                            className="h-full bg-pink-600 w-1/3"
                           ></div>
                         </div>
                         <span className="text-sm font-semibold">23</span>
@@ -249,8 +288,7 @@ export default function Reports() {
                       <div className="flex items-center gap-2">
                         <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-green-600"
-                            style={{ width: "92%" }}
+                            className="h-full bg-green-600 w-[92%]"
                           ></div>
                         </div>
                         <span className="text-sm font-semibold text-green-600">
@@ -263,8 +301,7 @@ export default function Reports() {
                       <div className="flex items-center gap-2">
                         <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-blue-600"
-                            style={{ width: "5%" }}
+                            className="h-full bg-blue-600 w-[5%]"
                           ></div>
                         </div>
                         <span className="text-sm font-semibold text-blue-600">
@@ -277,8 +314,7 @@ export default function Reports() {
                       <div className="flex items-center gap-2">
                         <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-red-600"
-                            style={{ width: "3%" }}
+                            className="h-full bg-red-600 w-[3%]"
                           ></div>
                         </div>
                         <span className="text-sm font-semibold text-red-600">
@@ -317,9 +353,9 @@ export default function Reports() {
                     },
                     { name: "سارة خالد", dept: "التسويق", date: "2024-10-20" },
                     { name: "خالد أحمد", dept: "المالية", date: "2024-10-15" },
-                  ].map((emp, idx) => (
+                  ].map((emp) => (
                     <div
-                      key={idx}
+                      key={`${emp.name}-${emp.date}`}
                       className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg"
                     >
                       <div>
@@ -410,17 +446,16 @@ export default function Reports() {
                     },
                     { dept: "المالية", amount: "﷼ 350,000", percent: 14 },
                     { dept: "التسويق", amount: "﷼ 180,000", percent: 7 },
-                  ].map((item, idx) => (
+                  ].map((item) => (
                     <div
-                      key={idx}
+                      key={item.dept}
                       className="flex items-center justify-between"
                     >
                       <span className="text-sm font-medium">{item.dept}</span>
                       <div className="flex items-center gap-4">
                         <div className="w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-green-600 to-emerald-600"
-                            style={{ width: `${item.percent}%` }}
+                            className={`h-full bg-gradient-to-r from-green-600 to-emerald-600 ${getWidthClass(item.percent)}`}
                           ></div>
                         </div>
                         <span className="text-sm font-semibold w-24 text-left">
@@ -508,14 +543,13 @@ export default function Reports() {
                     { month: "أغسطس", count: 40 },
                     { month: "سبتمبر", count: 30 },
                     { month: "أكتوبر", count: 27 },
-                  ].map((item, idx) => (
+                  ].map((item) => (
                     <div
-                      key={idx}
+                      key={item.month}
                       className="flex-1 flex flex-col items-center gap-2"
                     >
                       <div
-                        className="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t-lg"
-                        style={{ height: `${(item.count / 45) * 100}%` }}
+                        className={`w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t-lg ${getBarHeightClass(item.count, 45)}`}
                       ></div>
                       <span className="text-xs text-muted-foreground">
                         {item.month}
@@ -591,22 +625,21 @@ export default function Reports() {
               <CardContent>
                 <div className="space-y-4">
                   {[
-                    { stage: "طلبات جديدة", count: 156, color: "blue" },
-                    { stage: "فحص السيرة الذاتية", count: 89, color: "purple" },
-                    { stage: "مقابلة أولية", count: 52, color: "yellow" },
-                    { stage: "مقابلة فنية", count: 28, color: "orange" },
-                    { stage: "عرض توظيف", count: 17, color: "green" },
-                  ].map((item, idx) => (
+                    { stage: "طلبات جديدة", count: 156, colorClass: "bg-blue-600", widthClass: "w-full" },
+                    { stage: "فحص السيرة الذاتية", count: 89, colorClass: "bg-purple-600", widthClass: "w-[57%]" },
+                    { stage: "مقابلة أولية", count: 52, colorClass: "bg-yellow-600", widthClass: "w-[33%]" },
+                    { stage: "مقابلة فنية", count: 28, colorClass: "bg-orange-600", widthClass: "w-[18%]" },
+                    { stage: "عرض توظيف", count: 17, colorClass: "bg-green-600", widthClass: "w-[11%]" },
+                  ].map((item) => (
                     <div
-                      key={idx}
+                      key={item.stage}
                       className="flex items-center justify-between"
                     >
                       <span className="text-sm font-medium">{item.stage}</span>
                       <div className="flex items-center gap-4">
                         <div className="w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className={`h-full bg-${item.color}-600`}
-                            style={{ width: `${(item.count / 156) * 100}%` }}
+                            className={`h-full ${item.colorClass} ${item.widthClass}`}
                           ></div>
                         </div>
                         <span className="text-sm font-semibold w-12 text-left">
@@ -684,14 +717,14 @@ export default function Reports() {
               <CardContent>
                 <div className="space-y-4">
                   {[
-                    { category: "شهادات", count: 28, color: "blue" },
-                    { category: "إجازات", count: 22, color: "green" },
-                    { category: "رواتب", count: 15, color: "yellow" },
-                    { category: "بيانات شخصية", count: 12, color: "purple" },
-                    { category: "أخرى", count: 10, color: "gray" },
-                  ].map((item, idx) => (
+                    { category: "شهادات", count: 28, colorClass: "bg-blue-600", widthClass: "w-full" },
+                    { category: "إجازات", count: 22, colorClass: "bg-green-600", widthClass: "w-[79%]" },
+                    { category: "رواتب", count: 15, colorClass: "bg-yellow-600", widthClass: "w-[53%]" },
+                    { category: "بيانات شخصية", count: 12, colorClass: "bg-purple-600", widthClass: "w-[43%]" },
+                    { category: "أخرى", count: 10, colorClass: "bg-gray-600", widthClass: "w-[36%]" },
+                  ].map((item) => (
                     <div
-                      key={idx}
+                      key={item.category}
                       className="flex items-center justify-between"
                     >
                       <span className="text-sm font-medium">
@@ -700,8 +733,7 @@ export default function Reports() {
                       <div className="flex items-center gap-4">
                         <div className="w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className={`h-full bg-${item.color}-600`}
-                            style={{ width: `${(item.count / 28) * 100}%` }}
+                            className={`h-full ${item.colorClass} ${item.widthClass}`}
                           ></div>
                         </div>
                         <span className="text-sm font-semibold w-12 text-left">

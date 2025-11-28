@@ -100,7 +100,7 @@ export default function ConsultingExpertProfile() {
                   {expert.mainSpecialization || "مستشار موارد بشرية"}
                 </p>
                 <div className="flex flex-wrap gap-2 mt-3">
-                  {(expert.subSpecializations || ["استشارات"]).map(spec => (
+                  {(expert.subSpecializations || ["استشارات"]).map((spec: string) => (
                     <Badge key={spec} variant="secondary">
                       {spec}
                     </Badge>

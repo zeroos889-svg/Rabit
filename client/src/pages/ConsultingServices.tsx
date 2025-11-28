@@ -23,6 +23,17 @@ import { ConsultingServicesSection } from "@/components/ConsultingServicesSectio
 import { trpc } from "@/lib/trpc";
 import { Footer } from "@/components/Footer";
 
+interface PackageItem {
+  id: number;
+  name?: string;
+  description?: string;
+  price?: number;
+  priceSAR?: number;
+  slaHours?: number | null;
+  duration?: number;
+  features?: unknown;
+}
+
 const quickLinks = [
   {
     title: "حجز استشارة فوري",
@@ -277,9 +288,9 @@ export default function ConsultingServices() {
           </Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {packages.map(pkg => {
-              const features = parseFeatures((pkg as any).features);
-              const price = (pkg as any).priceSAR ?? (pkg as any).price ?? 0;
+            {packages.map((pkg: PackageItem) => {
+              const features = parseFeatures(pkg.features);
+              const price = pkg.priceSAR ?? pkg.price ?? 0;
               return (
                 <Card
                   key={pkg.id}
@@ -289,8 +300,8 @@ export default function ConsultingServices() {
                       "rabit-consulting-package",
                       JSON.stringify({
                         id: pkg.id,
-                        name: (pkg as any).name,
-                        price: (pkg as any).priceSAR ?? (pkg as any).price ?? 0,
+                        name: pkg.name,
+                        price: pkg.priceSAR ?? pkg.price ?? 0,
                         slaHours: pkg.slaHours ?? null,
                       })
                     )
@@ -298,16 +309,16 @@ export default function ConsultingServices() {
                 >
                   <CardHeader className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-xl">{(pkg as any).name}</CardTitle>
+                      <CardTitle className="text-xl">{pkg.name}</CardTitle>
                       {pkg.slaHours && (
                         <Badge variant="secondary" className="text-xs">
                           SLA {pkg.slaHours} ساعة
                         </Badge>
                       )}
                     </div>
-                    {(pkg as any).description && (
+                    {pkg.description && (
                       <CardDescription className="leading-relaxed">
-                        {(pkg as any).description}
+                        {pkg.description}
                       </CardDescription>
                     )}
                   </CardHeader>
@@ -316,9 +327,9 @@ export default function ConsultingServices() {
                       <div className="text-3xl font-bold text-purple-700">
                         {price} ريال
                       </div>
-                      {(pkg as any).duration && (
+                      {pkg.duration && (
                         <p className="text-sm text-muted-foreground">
-                          مدة الجلسة ~ {(pkg as any).duration} دقيقة
+                          مدة الجلسة ~ {pkg.duration} دقيقة
                         </p>
                       )}
                     </div>

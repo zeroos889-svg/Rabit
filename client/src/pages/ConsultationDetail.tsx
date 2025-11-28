@@ -41,7 +41,7 @@ export default function ConsultationDetail() {
     onSuccess: () => {
       toast.success("تم تصعيد التذكرة لفريق الدعم");
     },
-    onError: error => {
+    onError: (error: { message?: string }) => {
       toast.error("فشل التصعيد: " + error.message);
     },
   });

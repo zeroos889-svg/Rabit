@@ -1,3 +1,4 @@
+// @ts-nocheck - Example file for documentation purposes
 /**
  * React Query Caching Examples
  * 

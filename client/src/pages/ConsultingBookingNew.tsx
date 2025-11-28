@@ -219,13 +219,13 @@ export default function ConsultingBookingNew() {
 
     // Validate required info fields
     const missingInfo = requiredInfoFields.filter(
-      (field: any) => field.required && !requiredInfo[field.nameAr]
+      (field: { required?: boolean; nameAr: string }) => field.required && !requiredInfo[field.nameAr]
     );
     if (missingInfo.length > 0) {
       toast.error(
         t(
           "consulting.requiredInfoMissing",
-          `يرجى تعبئة الحقول المطلوبة: ${missingInfo.map(f => f.nameAr).join(", ")}`
+          `يرجى تعبئة الحقول المطلوبة: ${missingInfo.map((f: { nameAr: string }) => f.nameAr).join(", ")}`
         )
       );
       return;
@@ -233,13 +233,13 @@ export default function ConsultingBookingNew() {
 
     // Validate required documents
     const missingDocs = requiredDocuments.filter(
-      (doc: any) => doc.required && !uploadedFiles.some(f => f.name === doc.nameAr)
+      (doc: { required?: boolean; nameAr: string }) => doc.required && !uploadedFiles.some(f => f.name === doc.nameAr)
     );
     if (missingDocs.length > 0) {
       toast.error(
         t(
           "consulting.requiredDocsMissing",
-          `يرجى رفع المستندات المطلوبة: ${missingDocs.map(d => d.nameAr).join(", ")}`
+          `يرجى رفع المستندات المطلوبة: ${missingDocs.map((d: { nameAr: string }) => d.nameAr).join(", ")}`
         )
       );
       return;

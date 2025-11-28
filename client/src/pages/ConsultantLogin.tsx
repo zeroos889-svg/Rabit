@@ -28,7 +28,7 @@ export default function ConsultantLogin() {
   });
 
   const loginMutation = trpc.auth.login.useMutation({
-    onSuccess: data => {
+    onSuccess: (data: { user: { userType?: string; [key: string]: unknown } }) => {
       toast.success("تم تسجيل الدخول بنجاح! 🎉");
 
       // Save user data
@@ -39,7 +39,7 @@ export default function ConsultantLogin() {
 
       // Redirect based on user type
       setTimeout(() => {
-        const userType = (data.user as any).userType;
+        const userType = data.user.userType;
         if (userType === "consultant" || userType === "individual") {
           setLocation("/consultant/dashboard");
         } else {
@@ -48,7 +48,7 @@ export default function ConsultantLogin() {
         setIsLoading(false);
       }, 1500);
     },
-    onError: error => {
+    onError: (error: { message?: string }) => {
       const errorMessage = error.message || "فشل في تسجيل الدخول";
       setError(errorMessage);
       toast.error(errorMessage);

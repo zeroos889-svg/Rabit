@@ -27,6 +27,16 @@ import { toast } from "sonner";
 
 type NotificationType = "success" | "warning" | "error" | "info" | "system";
 
+interface NotificationItem {
+  id: number;
+  read: boolean;
+  type?: NotificationType;
+  title?: string;
+  message?: string;
+  body?: string;
+  createdAt?: string | Date;
+}
+
 export default function Notifications() {
   const [filter, setFilter] = useState<"all" | "unread">("all");
 
@@ -38,7 +48,7 @@ export default function Notifications() {
   const unreadCount = data?.unreadCount ?? 0;
 
   const filteredNotifications =
-    filter === "unread" ? notifications.filter(n => !n.read) : notifications;
+    filter === "unread" ? notifications.filter((n: NotificationItem) => !n.read) : notifications;
 
   const markAsReadMutation = trpc.notifications.markRead.useMutation({
     onSuccess: () => refetch(),
@@ -184,9 +194,9 @@ export default function Notifications() {
                 <p className="text-sm text-muted-foreground">اليوم</p>
                 <p className="text-2xl font-bold text-purple-600">
                   {
-                    notifications.filter(n => {
+                    notifications.filter((n: NotificationItem) => {
                       const diff =
-                        Date.now() - new Date(n.createdAt).getTime();
+                        Date.now() - new Date(n.createdAt ?? Date.now()).getTime();
                       return diff < 24 * 60 * 60 * 1000;
                     }).length
                   }
@@ -238,7 +248,7 @@ export default function Notifications() {
             </CardContent>
           </Card>
         ) : (
-          filteredNotifications.map(notification => {
+          filteredNotifications.map((notification: NotificationItem) => {
             const actionUrl = getNotificationActionUrl(notification);
 
             return (
@@ -273,7 +283,7 @@ export default function Notifications() {
                             {notification.body}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {formatDistanceToNow(new Date(notification.createdAt), {
+                            {notification.createdAt && formatDistanceToNow(new Date(notification.createdAt), {
                               addSuffix: true,
                               locale: ar,
                             })}
