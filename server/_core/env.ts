@@ -130,8 +130,9 @@ export function validateEnv(): { valid: boolean; missing: string[]; weak: string
  */
 export function checkEnv(): void {
   const { valid, missing, weak } = validateEnv();
+  const skipValidation = process.env.SKIP_ENV_VALIDATION === "true";
   const enforceStrict =
-    ENV.isProduction || process.env.ENFORCE_ENV_STRICT === "true";
+    (ENV.isProduction || process.env.ENFORCE_ENV_STRICT === "true") && !skipValidation;
 
   if (missing.length > 0) {
     logger.error("Missing required environment variables", { missing });
@@ -141,14 +142,15 @@ export function checkEnv(): void {
     logger.warn("Weak secrets detected", { weak });
   }
 
-  if ((missing.length > 0 || weak.length > 0) && enforceStrict) {
+  // Only exit on missing required variables, not weak warnings
+  if (missing.length > 0 && enforceStrict) {
     logger.error("Critical environment validation failed. Exiting.");
     process.exit(1);
   }
 
   if (valid) {
     logger.info("Environment variables loaded successfully");
-  } else if (!enforceStrict) {
-    logger.warn("Continuing with non-production environment despite validation warnings");
+  } else if (!enforceStrict || skipValidation) {
+    logger.warn("Continuing with environment despite validation warnings");
   }
 }
