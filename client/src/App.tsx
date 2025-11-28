@@ -24,6 +24,7 @@ import { useFocusVisible } from "./hooks/useAccessibility";
 import { useARIAEnhancer, useARIAValidation } from "./lib/ariaUtils";
 import { useAnalytics, usePageTracking } from "./hooks/useAnalytics";
 import { LoadingSpinner } from "./components/LoadingSpinner";
+import { AIAssistant } from "./components/ai/AIAssistant";
 
 const ENABLE_DEMO_PAGES = import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEMOS === "true";
 const loadDemoPage = <T extends ComponentType<any>>(
@@ -89,6 +90,14 @@ const Templates = lazy(() => import("./pages/dashboard/Templates"));
 const Reminders = lazy(() => import("./pages/dashboard/Reminders"));
 const Notifications = lazy(() => import("./pages/dashboard/Notifications"));
 const ExecutiveDashboard = lazy(() => import("./pages/dashboard/ExecutiveDashboard"));
+
+// New Feature Pages
+const AnalyticsPage = lazy(() => import("./pages/dashboard/AnalyticsPage"));
+const TrainingPage = lazy(() => import("./pages/dashboard/TrainingPage"));
+const InterviewsPage = lazy(() => import("./pages/dashboard/InterviewsPage"));
+const PerformancePage = lazy(() => import("./pages/dashboard/PerformancePage"));
+const MessagingPage = lazy(() => import("./pages/dashboard/MessagingPage"));
+const ReportsPage = lazy(() => import("./pages/dashboard/ReportsPage"));
 
 // Consulting pages
 const Consulting = lazy(() => import("./pages/Consulting"));
@@ -629,6 +638,55 @@ function Router() {
             </ProtectedRoute>
           )}
         />
+        {/* New Feature Routes */}
+        <Route
+          path="/dashboard/analytics"
+          component={() => (
+            <ProtectedRoute requiredRole="company">
+              <AnalyticsPage />
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/dashboard/training"
+          component={() => (
+            <ProtectedRoute requiredRole="company">
+              <TrainingPage />
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/dashboard/interviews"
+          component={() => (
+            <ProtectedRoute requiredRole="company">
+              <InterviewsPage />
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/dashboard/performance"
+          component={() => (
+            <ProtectedRoute requiredRole="company">
+              <PerformancePage />
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/dashboard/messaging"
+          component={() => (
+            <ProtectedRoute requiredRole="company">
+              <MessagingPage />
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/dashboard/reports-export"
+          component={() => (
+            <ProtectedRoute requiredRole="company">
+              <ReportsPage />
+            </ProtectedRoute>
+          )}
+        />
         <Route path="/verify-decision" component={VerifyDecision} />
         <Route path="/services" component={Services} />
         <Route path="/brand-preview" component={BrandPreview} />
@@ -693,6 +751,9 @@ function App() {
             <ChatWidget />
             <CookieConsent />
             <KeyboardShortcuts />
+            
+            {/* AI Assistant - Floating Button */}
+            <AIAssistant />
             
             {/* PWA Components */}
             <PWAInstallPrompt />

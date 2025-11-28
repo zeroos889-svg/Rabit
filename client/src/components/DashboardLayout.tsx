@@ -20,6 +20,11 @@ import {
   Brain,
   Calculator,
   BookOpen,
+  GraduationCap,
+  UserCheck,
+  Target,
+  MessageSquare,
+  FileOutput,
 } from "lucide-react";
 
 interface DashboardLayoutProps {
@@ -75,6 +80,36 @@ export default function DashboardLayout({ children, userType = "company", title 
       href: "/dashboard/ats",
     },
     {
+      label: "المقابلات",
+      labelEn: "Interviews",
+      icon: UserCheck,
+      href: "/dashboard/interviews",
+    },
+    {
+      label: "تقييم الأداء",
+      labelEn: "Performance",
+      icon: Target,
+      href: "/dashboard/performance",
+    },
+    {
+      label: "التدريب",
+      labelEn: "Training",
+      icon: GraduationCap,
+      href: "/dashboard/training",
+    },
+    {
+      label: "التحليلات",
+      labelEn: "Analytics",
+      icon: BarChart3,
+      href: "/dashboard/analytics",
+    },
+    {
+      label: "الرسائل",
+      labelEn: "Messaging",
+      icon: MessageSquare,
+      href: "/dashboard/messaging",
+    },
+    {
       label: "أدوات الذكاء الاصطناعي",
       labelEn: "AI Tools",
       icon: Brain,
@@ -109,6 +144,12 @@ export default function DashboardLayout({ children, userType = "company", title 
       labelEn: "Reports",
       icon: BarChart3,
       href: "/dashboard/reports",
+    },
+    {
+      label: "تصدير التقارير",
+      labelEn: "Export Reports",
+      icon: FileOutput,
+      href: "/dashboard/reports-export",
     },
     {
       label: "الشهادات",

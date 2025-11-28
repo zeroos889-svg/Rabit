@@ -20,8 +20,12 @@ import {
   Menu,
   X,
   Globe,
+  Search,
 } from "lucide-react";
 import { BrandMark } from "@/components/BrandMark";
+import { GlobalSearch } from "@/components/GlobalSearch";
+import { EnhancedThemeToggle } from "@/components/theme/EnhancedThemeToggle";
+import { AdvancedNotificationCenter } from "@/components/AdvancedNotificationCenter";
 
 const NAV_LINKS = [
   { href: "/", labelKey: "nav.home", fallback: "الرئيسية" },
@@ -109,9 +113,21 @@ export function Header() {
           </Link>
 
           <nav className="flex w-auto items-center gap-4" aria-label={primaryNavLabel}>
+          {/* Global Search */}
+          <div className="hidden md:block">
+            <GlobalSearch />
+          </div>
+          
           <div className="hidden md:flex items-center gap-2">
             {NAV_LINKS.map(link => renderNavLink(link))}
           </div>
+          
+          {/* Theme Toggle & Notifications */}
+          <div className="hidden md:flex items-center gap-2">
+            <EnhancedThemeToggle />
+            {isAuthenticated && <AdvancedNotificationCenter />}
+          </div>
+          
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -178,6 +194,26 @@ export function Header() {
             </div>
           )}
           <div className="flex items-center gap-2">
+            {/* Mobile Search Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              aria-label="بحث"
+              onClick={() => {
+                // Trigger global search on mobile
+                const searchInput = document.querySelector('[data-global-search]') as HTMLInputElement;
+                if (searchInput) searchInput.focus();
+              }}
+            >
+              <Search className="h-5 w-5" aria-hidden="true" />
+            </Button>
+            
+            {/* Mobile Theme Toggle */}
+            <div className="md:hidden">
+              <EnhancedThemeToggle />
+            </div>
+            
             <Button
               type="button"
               variant="ghost"
