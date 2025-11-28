@@ -14,10 +14,30 @@
  * @module rateLimiter
  */
 
-import rateLimit, { type Options, ipKeyGenerator } from "express-rate-limit";
+import rateLimit, { type Options } from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
 import { type Request, type Response } from "express";
 import { getRedisInstance } from "../redis";
+
+/**
+ * Custom IP Key Generator
+ * استخراج IP من الطلب بطريقة آمنة
+ */
+const getClientIp = (req: Request): string => {
+  // Check for forwarded IP (behind proxy/load balancer)
+  const forwarded = req.headers['x-forwarded-for'];
+  if (forwarded) {
+    const ip = Array.isArray(forwarded) ? forwarded[0] : forwarded.split(',')[0];
+    return ip.trim();
+  }
+  // Check for real IP header
+  const realIp = req.headers['x-real-ip'];
+  if (realIp) {
+    return Array.isArray(realIp) ? realIp[0] : realIp;
+  }
+  // Fallback to socket remote address
+  return req.socket?.remoteAddress || req.ip || 'unknown';
+};
 
 /**
  * معلومات Rate Limit
@@ -89,7 +109,7 @@ const rateLimitHandler = (
  */
 const skipTrustedIps = (req: Request): boolean => {
   const trustedIps = process.env.TRUSTED_IPS?.split(",") || [];
-  const clientIp = ipKeyGenerator(req);
+  const clientIp = getClientIp(req);
   
   return trustedIps.includes(clientIp);
 };
@@ -117,7 +137,7 @@ export const generalLimiter = rateLimit({
   skip: skipTrustedIps,
   keyGenerator: (req) => {
     // استخدام IP + User ID (إذا كان متاح)
-    const ip = ipKeyGenerator(req);
+    const ip = getClientIp(req);
     const userId = (req as any).user?.id || "anonymous";
     return `${ip}:${userId}`;
   },
@@ -146,7 +166,7 @@ export const loginLimiter = rateLimit({
   skipSuccessfulRequests: true, // لا تحسب المحاولات الناجحة
   keyGenerator: (req) => {
     // استخدام email + IP للدقة
-    const ip = ipKeyGenerator(req);
+    const ip = getClientIp(req);
     const email = req.body?.email || "unknown";
     return `${ip}:${email}`;
   },
@@ -174,7 +194,7 @@ export const registerLimiter = rateLimit({
   handler: rateLimitHandler,
   skipSuccessfulRequests: true,
   keyGenerator: (req) => {
-    return ipKeyGenerator(req);
+    return getClientIp(req);
   },
 });
 
@@ -194,7 +214,7 @@ export const passwordResetLimiter = rateLimit({
   store: createRedisStore("password-reset"),
   handler: rateLimitHandler,
   keyGenerator: (req) => {
-    const ip = ipKeyGenerator(req);
+    const ip = getClientIp(req);
     const email = req.body?.email || "unknown";
     return `${ip}:${email}`;
   },
@@ -216,7 +236,7 @@ export const uploadLimiter = rateLimit({
   store: createRedisStore("upload"),
   handler: rateLimitHandler,
   keyGenerator: (req) => {
-    const ip = ipKeyGenerator(req);
+    const ip = getClientIp(req);
     const userId = (req as any).user?.id || "anonymous";
     return `${ip}:${userId}`;
   },
@@ -259,7 +279,7 @@ export const strictLimiter = rateLimit({
   store: createRedisStore("strict"),
   handler: rateLimitHandler,
   keyGenerator: (req) => {
-    const ip = ipKeyGenerator(req);
+    const ip = getClientIp(req);
     const userId = (req as any).user?.id || "anonymous";
     return `${ip}:${userId}`;
   },

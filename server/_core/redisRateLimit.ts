@@ -3,12 +3,29 @@
  * Distributed rate limiting using Redis for multi-instance support
  */
 
-import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import rateLimit from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
 import type { Request, Response } from "express";
 import { getRedisClient } from "./redisClient";
 import { logger } from "./logger";
 import { getRequestId } from "./requestTracking";
+
+/**
+ * Custom IP Key Generator
+ * استخراج IP من الطلب بطريقة آمنة
+ */
+const getClientIp = (req: Request): string => {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (forwarded) {
+    const ip = Array.isArray(forwarded) ? forwarded[0] : forwarded.split(',')[0];
+    return ip.trim();
+  }
+  const realIp = req.headers['x-real-ip'];
+  if (realIp) {
+    return Array.isArray(realIp) ? realIp[0] : realIp;
+  }
+  return req.socket?.remoteAddress || req.ip || 'unknown';
+};
 
 /**
  * Check if Redis is available for rate limiting
@@ -135,7 +152,7 @@ function generateRedisKey(req: Request): string {
     return `user:${user.id}`;
   }
   // Use ipKeyGenerator helper for proper IPv6 handling
-  return `ip:${ipKeyGenerator(req)}`;
+  return `ip:${getClientIp(req)}`;
 }
 
 /**

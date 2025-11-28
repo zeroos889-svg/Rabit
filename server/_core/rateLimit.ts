@@ -1,7 +1,24 @@
-import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import rateLimit from "express-rate-limit";
 import type { Request } from "express";
 import { logger } from "./logger";
 import { getRedisClient } from "./redisClient";
+
+/**
+ * Custom IP Key Generator
+ * استخراج IP من الطلب بطريقة آمنة
+ */
+const getClientIp = (req: Request): string => {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (forwarded) {
+    const ip = Array.isArray(forwarded) ? forwarded[0] : forwarded.split(',')[0];
+    return ip.trim();
+  }
+  const realIp = req.headers['x-real-ip'];
+  if (realIp) {
+    return Array.isArray(realIp) ? realIp[0] : realIp;
+  }
+  return req.socket?.remoteAddress || req.ip || 'unknown';
+};
 
 /**
  * Rate Limiting Middleware with Redis Store Support
@@ -111,7 +128,7 @@ export const webhookLimiter = rateLimit({
   // Use a different key generator for webhooks (based on signature or source)
   keyGenerator: (req: Request) => {
     const signature = req.headers["x-webhook-signature"] || req.headers["x-signature"];
-    return signature ? `webhook:${signature}` : `webhook:${ipKeyGenerator(req)}`;
+    return signature ? `webhook:${signature}` : `webhook:${getClientIp(req)}`;
   },
 });
 
