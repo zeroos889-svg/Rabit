@@ -6,15 +6,16 @@
 import { createClient, type RedisClientType } from "redis";
 import { logger } from "./logger";
 
-// Only create Redis client if REDIS_URL is configured
+// Only create Redis client if REDIS_URL is configured and not disabled
+const DISABLE_REDIS = process.env.DISABLE_REDIS === "true";
 let redis: RedisClientType | null = null;
 
 /**
  * Get or create Redis client
- * Returns null if REDIS_URL is not configured
+ * Returns null if REDIS_URL is not configured or DISABLE_REDIS is true
  */
 export const getRedisClient = () => {
-  if (!process.env.REDIS_URL) {
+  if (DISABLE_REDIS || !process.env.REDIS_URL) {
     return null;
   }
   

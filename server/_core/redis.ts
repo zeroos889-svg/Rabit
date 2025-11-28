@@ -1,7 +1,8 @@
 import { createClient } from "redis";
 import { logger } from "./logger";
 
-const REDIS_URL = process.env.REDIS_URL;
+const DISABLE_REDIS = process.env.DISABLE_REDIS === "true";
+const REDIS_URL = DISABLE_REDIS ? null : process.env.REDIS_URL;
 
 let redisInstance: ReturnType<typeof createClient> | null = null;
 
