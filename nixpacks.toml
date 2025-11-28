@@ -1,0 +1,29 @@
+# Nixpacks Configuration for Railway
+# This file optimizes the build process for Railway deployment
+
+[phases.setup]
+# Use Node.js 20 and Python 3 for build tools
+nixPkgs = ["nodejs-20_x", "python3", "gcc", "g++"]
+
+[phases.install]
+# Install dependencies with caching
+cmds = [
+  "npm ci --legacy-peer-deps --prefer-offline --no-audit --no-fund"
+]
+# Cache node_modules to speed up builds
+cacheDirectories = ["node_modules", ".npm"]
+
+[phases.build]
+# Build the application
+cmds = [
+  "npm run build"
+]
+
+[start]
+# Start command
+cmd = "npm run start"
+
+[variables]
+# Node.js optimization
+NODE_ENV = "production"
+NODE_OPTIONS = "--max-old-space-size=4096"

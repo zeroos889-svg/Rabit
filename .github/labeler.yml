@@ -1,0 +1,66 @@
+# Auto-label PRs based on changed files
+
+# Documentation
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: ['docs/**/*', '*.md', 'README*']
+
+# Frontend
+frontend:
+  - changed-files:
+    - any-glob-to-any-file: ['client/**/*', 'client/src/**/*']
+
+# Backend
+backend:
+  - changed-files:
+    - any-glob-to-any-file: ['server/**/*', 'api/**/*']
+
+# Database
+database:
+  - changed-files:
+    - any-glob-to-any-file: ['db/**/*', 'drizzle/**/*', '**/migrations/**/*', 'drizzle.config.*']
+
+# Tests
+tests:
+  - changed-files:
+    - any-glob-to-any-file: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', 'e2e/**/*', '__tests__/**/*']
+
+# CI/CD
+ci/cd:
+  - changed-files:
+    - any-glob-to-any-file: ['.github/**/*', 'Dockerfile', 'docker-compose*.yml', '.dockerignore']
+
+# Dependencies
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file: ['package.json', 'package-lock.json', 'pnpm-lock.yaml']
+
+# Configuration
+configuration:
+  - changed-files:
+    - any-glob-to-any-file: ['*.config.*', '*.json', '.env*', 'tsconfig*.json']
+
+# Security
+security:
+  - changed-files:
+    - any-glob-to-any-file: ['**/auth/**/*', '**/security/**/*', '.github/workflows/security.yml']
+
+# UI/UX
+ui/ux:
+  - changed-files:
+    - any-glob-to-any-file: ['client/src/components/**/*', '**/*.css', 'tailwind.config.*']
+
+# API
+api:
+  - changed-files:
+    - any-glob-to-any-file: ['server/**/*Router.ts', 'api/**/*', 'shared/**/*']
+
+# Scripts
+scripts:
+  - changed-files:
+    - any-glob-to-any-file: ['scripts/**/*', '*.sh']
+
+# Monitoring
+monitoring:
+  - changed-files:
+    - any-glob-to-any-file: ['monitoring/**/*', '**/sentry*', '**/analytics*']
