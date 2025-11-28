@@ -27,7 +27,7 @@ jobs:
       deps: ${{ steps.filter.outputs.deps }}
       docker: ${{ steps.filter.outputs.docker }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -57,10 +57,10 @@ jobs:
     if: needs.changes.outputs.src == 'true' || needs.changes.outputs.deps == 'true'
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -85,10 +85,10 @@ jobs:
     if: needs.changes.outputs.src == 'true'
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -103,7 +103,7 @@ jobs:
           CI: true
 
       - name: Upload Coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage-report-pr-${{ github.event.pull_request.number }}
           path: coverage/
@@ -119,10 +119,10 @@ jobs:
     needs: [changes, quality]
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'

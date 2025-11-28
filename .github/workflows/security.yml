@@ -32,10 +32,10 @@ jobs:
       contents: read
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -53,7 +53,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload NPM Audit Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: npm-audit-report
           path: npm-audit.json
@@ -70,7 +70,7 @@ jobs:
       contents: read
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -84,13 +84,13 @@ jobs:
         continue-on-error: true
 
       - name: Upload Trivy scan results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: 'trivy-results.sarif'
         continue-on-error: true
 
       - name: Upload Trivy Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: trivy-report
           path: trivy-results.sarif
@@ -104,10 +104,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -128,10 +128,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
