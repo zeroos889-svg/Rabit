@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -19,10 +18,8 @@ import {
 import {
   Users,
   TrendingUp,
-  TrendingDown,
   DollarSign,
   Clock,
-  UserCheck,
   UserMinus,
   Briefcase,
   Target,

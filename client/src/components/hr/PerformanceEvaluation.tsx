@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Card,
@@ -14,14 +14,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -39,10 +31,8 @@ import {
   Target,
   Award,
   BarChart3,
-  Calendar,
   User,
   Plus,
-  Edit,
   Save,
   CheckCircle2,
   Clock,
@@ -73,7 +63,7 @@ interface Goal {
   progress: number;
 }
 
-interface PerformanceReview {
+interface _PerformanceReview {
   id: string;
   period: string;
   overallRating: number;
@@ -380,7 +370,7 @@ interface PerformanceEvaluationProps {
   employeeId?: string;
 }
 
-export function PerformanceEvaluation({ employeeId }: PerformanceEvaluationProps) {
+export function PerformanceEvaluation({ employeeId: _employeeId }: PerformanceEvaluationProps) {
   const { i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
   const [employee] = useState<Employee>(MOCK_EMPLOYEE);

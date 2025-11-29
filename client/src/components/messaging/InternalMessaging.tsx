@@ -2,23 +2,12 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import {
   MessageCircle,
   Send,
@@ -32,18 +21,12 @@ import {
   Smile,
   Check,
   CheckCheck,
-  Circle,
-  X,
   Plus,
-  Settings,
   Users,
-  Archive,
-  Star,
   Pin,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, isToday, isYesterday } from "date-fns";
-import { ar, enUS } from "date-fns/locale";
 
 // Types
 interface User {
@@ -336,7 +319,7 @@ interface MessageBubbleProps {
   isArabic: boolean;
 }
 
-function MessageBubble({ message, isOwn, isArabic }: MessageBubbleProps) {
+function MessageBubble({ message, isOwn, isArabic: _isArabic }: MessageBubbleProps) {
   return (
     <div
       className={cn(

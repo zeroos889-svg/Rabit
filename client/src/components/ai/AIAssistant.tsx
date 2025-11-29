@@ -11,7 +11,6 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import {
   Bot,
@@ -20,13 +19,10 @@ import {
   User,
   Lightbulb,
   HelpCircle,
-  FileText,
   Calculator,
   Calendar,
   Users,
-  X,
   Loader2,
-  MessageSquare,
   Mic,
   MicOff,
   ThumbsUp,

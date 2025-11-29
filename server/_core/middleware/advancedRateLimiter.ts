@@ -453,7 +453,7 @@ export const generalLimiter = rateLimit({
   store: createRedisStore("general"),
   handler: rateLimitHandler,
   skip: skipRateLimit,
-  keyGenerator: (req) => {
+  keyGenerator: (req: Request) => {
     const ip = getClientIp(req);
     const userId = (req as any).user?.id || "anonymous";
     return `${ip}:${userId}`;
@@ -473,7 +473,7 @@ export const loginLimiter = rateLimit({
   handler: rateLimitHandler,
   skipSuccessfulRequests: true,
   skip: skipRateLimit,
-  keyGenerator: (req) => {
+  keyGenerator: (req: Request) => {
     const ip = getClientIp(req);
     const email = req.body?.email || "unknown";
     return `${ip}:${email}`;
@@ -493,7 +493,7 @@ export const registerLimiter = rateLimit({
   handler: rateLimitHandler,
   skipSuccessfulRequests: true,
   skip: skipRateLimit,
-  keyGenerator: (req) => getClientIp(req),
+  keyGenerator: (req: Request) => getClientIp(req),
   limiterType: "register",
 } as any);
 
@@ -508,7 +508,7 @@ export const passwordResetLimiter = rateLimit({
   store: createRedisStore("password-reset"),
   handler: rateLimitHandler,
   skip: skipRateLimit,
-  keyGenerator: (req) => {
+  keyGenerator: (req: Request) => {
     const ip = getClientIp(req);
     const email = req.body?.email || "unknown";
     return `${ip}:${email}`;
@@ -527,7 +527,7 @@ export const uploadLimiter = rateLimit({
   store: createRedisStore("upload"),
   handler: rateLimitHandler,
   skip: skipRateLimit,
-  keyGenerator: (req) => {
+  keyGenerator: (req: Request) => {
     const ip = getClientIp(req);
     const userId = (req as any).user?.id || "anonymous";
     return `${ip}:${userId}`;
@@ -546,7 +546,7 @@ export const adminLimiter = rateLimit({
   store: createRedisStore("admin"),
   handler: rateLimitHandler,
   skip: skipRateLimit,
-  keyGenerator: (req) => {
+  keyGenerator: (req: Request) => {
     const userId = (req as any).user?.id || "anonymous";
     return `admin:${userId}`;
   },
@@ -564,7 +564,7 @@ export const strictLimiter = rateLimit({
   store: createRedisStore("strict"),
   handler: rateLimitHandler,
   skip: skipRateLimit,
-  keyGenerator: (req) => {
+  keyGenerator: (req: Request) => {
     const ip = getClientIp(req);
     const userId = (req as any).user?.id || "anonymous";
     return `${ip}:${userId}`;
@@ -583,7 +583,7 @@ export const authenticatedLimiter = rateLimit({
   store: createRedisStore("authenticated"),
   handler: rateLimitHandler,
   skip: skipRateLimit,
-  keyGenerator: (req) => {
+  keyGenerator: (req: Request) => {
     const userId = (req as any).user?.id || "anonymous";
     return `user:${userId}`;
   },

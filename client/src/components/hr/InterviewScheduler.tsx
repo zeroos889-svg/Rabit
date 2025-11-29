@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -36,7 +35,6 @@ import {
   Video,
   MapPin,
   Phone,
-  User,
   Plus,
   Edit,
   Trash2,

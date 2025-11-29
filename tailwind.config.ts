@@ -1,8 +1,7 @@
 import type { Config } from "tailwindcss";
-import defaultTheme from "tailwindcss/defaultTheme";
 
 const config: Config = {
-  darkMode: ["class"],
+  darkMode: "class",
   content: ["./client/index.html", "./client/src/**/*.{ts,tsx,js,jsx}"],
   theme: {
     container: {
@@ -17,9 +16,20 @@ const config: Config = {
         sans: [
           "Cairo",
           "Inter",
+          "ui-sans-serif",
           "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Roboto",
+          "Helvetica Neue",
+          "Arial",
+          "Noto Sans",
           "sans-serif",
-          ...defaultTheme.fontFamily.sans,
+          "Apple Color Emoji",
+          "Segoe UI Emoji",
+          "Segoe UI Symbol",
+          "Noto Color Emoji",
         ],
       },
       colors: {

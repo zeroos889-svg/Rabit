@@ -25,7 +25,7 @@ const accentColors: { value: AccentColor; label: string; color: string }[] = [
 ];
 
 export function EnhancedThemeToggle() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
   
   const [theme, setTheme] = useState<Theme>(() => {
@@ -58,8 +58,6 @@ export function EnhancedThemeToggle() {
 
   // Apply theme on mount and change
   useEffect(() => {
-    const root = window.document.documentElement;
-    
     if (theme === 'system') {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
@@ -74,15 +72,15 @@ export function EnhancedThemeToggle() {
 
   // Apply accent color
   useEffect(() => {
-    const root = window.document.documentElement;
+    const rootEl = window.document.documentElement;
     
     // Remove previous accent classes
     accentColors.forEach(({ value }) => {
-      root.classList.remove(`accent-${value}`);
+      rootEl.classList.remove(`accent-${value}`);
     });
     
     // Add new accent class
-    root.classList.add(`accent-${accentColor}`);
+    rootEl.classList.add(`accent-${accentColor}`);
     localStorage.setItem('accentColor', accentColor);
   }, [accentColor]);
 

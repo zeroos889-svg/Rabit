@@ -19,12 +19,9 @@ import {
   Settings,
   MessageSquare,
   Calendar,
-  Users,
   AlertTriangle,
   Info,
   CheckCircle2,
-  Clock,
-  Filter,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";

@@ -3,18 +3,13 @@ import { useTranslation } from "react-i18next";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -23,19 +18,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
   GraduationCap,
   BookOpen,
   Video,
-  Calendar,
   Clock,
   Users,
   Plus,
@@ -46,11 +31,7 @@ import {
   Search,
   Filter,
   FileText,
-  ExternalLink,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { ar, enUS } from "date-fns/locale";
 
 // Types
 interface Course {
@@ -82,7 +63,7 @@ interface Enrollment {
   score?: number;
 }
 
-interface TrainingProgram {
+interface _TrainingProgram {
   id: string;
   name: string;
   nameAr: string;

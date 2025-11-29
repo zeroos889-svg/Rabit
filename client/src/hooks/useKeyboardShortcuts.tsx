@@ -1,6 +1,5 @@
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "@/lib/toast";
 
 // Types
 interface KeyboardShortcut {
