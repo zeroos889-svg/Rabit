@@ -48,6 +48,7 @@ import {
   Menu,
   X,
   Sparkles,
+  MessageSquare,
   Zap,
   Clock,
   Award,
@@ -55,6 +56,8 @@ import {
   Star,
   ChevronDown,
   MousePointerClick,
+  ShieldCheck,
+  PhoneCall,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -63,6 +66,49 @@ const CTA_LINKS = [
   { href: "/tools", labelAr: "تجربة الأدوات", labelEn: "Try Tools" },
   { href: "/pricing", labelAr: "عرض الباقات", labelEn: "View Plans" },
   { href: "/contact", labelAr: "تواصل معنا", labelEn: "Contact Us" },
+];
+
+const CONSULTING_ROUTES = [
+  {
+    href: "/consulting/book",
+    titleAr: "حجز فوري لجلسة",
+    titleEn: "Instant booking",
+    descAr: "جلسة صوتية/فيديو مع مستشار معتمد خلال 24 ساعة.",
+    descEn: "Voice/video session with a certified consultant in under 24h.",
+    badge: "مسار سريع",
+    icon: Calendar,
+    accent: "from-indigo-500 to-blue-600",
+  },
+  {
+    href: "/consultants",
+    titleAr: "تصفح الخبراء",
+    titleEn: "Browse experts",
+    descAr: "اختيار المستشار حسب التخصص (قانوني، امتثال، توظيف).",
+    descEn: "Pick experts by specialty (legal, compliance, hiring).",
+    badge: "دليل الخبراء",
+    icon: Users,
+    accent: "from-emerald-500 to-teal-600",
+  },
+  {
+    href: "/consulting/services",
+    titleAr: "خدمات جاهزة",
+    titleEn: "Ready-made services",
+    descAr: "مراجعة عقود، تدقيق فصل، لوائح داخلية مع تسليم واضح.",
+    descEn: "Contract reviews, termination audits, policy kits with clear deliverables.",
+    badge: "جاهزة للتنفيذ",
+    icon: FileText,
+    accent: "from-amber-500 to-orange-600",
+  },
+  {
+    href: "/consulting/how-to-book",
+    titleAr: "تعرّف على الرحلة",
+    titleEn: "See the journey",
+    descAr: "خطوات الحجز، المتابعة، والتسليم مع ربط الأدوات والباقات.",
+    descEn: "Booking, follow-up, and delivery steps connected to tools and plans.",
+    badge: "دليل سريع",
+    icon: MousePointerClick,
+    accent: "from-purple-500 to-pink-600",
+  },
 ];
 
 // ============================================================================
@@ -1364,6 +1410,218 @@ const UnifiedJourneySection = memo(function UnifiedJourneySection() {
   );
 });
 
+const ConsultingRoutesSection = memo(function ConsultingRoutesSection({
+  isArabic,
+}: {
+  isArabic: boolean;
+}) {
+  return (
+    <section className="py-16 bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
+      <div className="container mx-auto px-4 space-y-10">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <Badge variant="outline" className="mb-2 border-dashed">
+              {isArabic ? "منصة الاستشارات" : "Consulting Platform"}
+            </Badge>
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
+              {isArabic
+                ? "اختر المسار الأنسب: من الحجز الفوري إلى الخدمات الجاهزة"
+                : "Pick your path: instant booking to ready-made services"}
+            </h2>
+            <p className="text-muted-foreground max-w-2xl">
+              {isArabic
+                ? "كل مسار يوصلك مباشرةً للخطوة التالية مع ربط الأدوات والباقات بدون مغادرة الرحلة."
+                : "Every path jumps to the next step while keeping tools and plans connected to your journey."}
+            </p>
+          </div>
+          <Button asChild variant="outline" size="lg" className="shrink-0">
+            <Link href="/consulting/book">
+              {isArabic ? "ابدأ بحجز استشارة" : "Start with a booking"}
+            </Link>
+          </Button>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          {CONSULTING_ROUTES.map((route) => (
+            <GlassCard
+              key={route.href}
+              className="p-6 h-full border border-slate-200/60 dark:border-slate-800/60 hover:border-primary/40 transition-colors"
+            >
+              <div
+                className={`w-12 h-12 rounded-xl bg-gradient-to-br ${route.accent} text-white flex items-center justify-center shadow-lg mb-4`}
+              >
+                <route.icon className="w-6 h-6" />
+              </div>
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                  {isArabic ? route.titleAr : route.titleEn}
+                </h3>
+                <Badge variant="secondary" className="bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                  {route.badge}
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                {isArabic ? route.descAr : route.descEn}
+              </p>
+              <div className="flex items-center justify-between text-primary font-semibold">
+                <Link href={route.href}>
+                  {isArabic ? "اذهب للمسار" : "Open path"}
+                </Link>
+                {isArabic ? (
+                  <ArrowLeft className="w-4 h-4" />
+                ) : (
+                  <ArrowRight className="w-4 h-4" />
+                )}
+              </div>
+            </GlassCard>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+});
+
+const ConsultingCTAHome = memo(function ConsultingCTAHome() {
+  const { i18n } = useTranslation();
+  const isRTL = i18n.language === "ar";
+
+  return (
+    <section className="py-14">
+      <div className="container">
+        <div className="overflow-hidden rounded-3xl border border-slate-200/60 dark:border-slate-800/60 bg-gradient-to-r from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-950 dark:to-indigo-900 shadow-lg">
+          <div className="grid md:grid-cols-2">
+            <div className="p-8 lg:p-10 space-y-4">
+              <Badge variant="secondary" className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/60 dark:text-indigo-100">
+                {isRTL ? "منصة الاستشارات" : "Consulting Platform"}
+              </Badge>
+              <h3 className="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white leading-snug">
+                {isRTL
+                  ? "استشارة موثوقة + أدوات تنفيذ = نتائج أسرع"
+                  : "Trusted consulting + execution tools = faster outcomes"}
+              </h3>
+              <p className="text-muted-foreground">
+                {isRTL
+                  ? "احجز جلسة، حمّل ملفاتك، وفعّل الأدوات مباشرة بعد التوصيات دون مغادرة المنصة."
+                  : "Book a session, upload your files, and activate tools right after the recommendations without leaving the platform."}
+              </p>
+              <div className="grid sm:grid-cols-2 gap-3">
+                {[
+                  {
+                    icon: ShieldCheck,
+                    title: isRTL ? "توافق 100% مع نظام العمل" : "100% labor law compliant",
+                    accent: "from-emerald-500 to-teal-500",
+                  },
+                  {
+                    icon: Clock,
+                    title: isRTL ? "رد خلال 24 ساعة" : "Response within 24h",
+                    accent: "from-amber-500 to-orange-500",
+                  },
+                  {
+                    icon: PhoneCall,
+                    title: isRTL ? "جلسات صوت/فيديو" : "Voice/Video sessions",
+                    accent: "from-indigo-500 to-blue-600",
+                  },
+                  {
+                    icon: Sparkles,
+                    title: isRTL ? "مخرجات جاهزة PDF/Word" : "Ready outputs PDF/Word",
+                    accent: "from-purple-500 to-pink-500",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.title}
+                    className="flex items-center gap-3 rounded-2xl border border-slate-200/70 dark:border-slate-800/70 bg-white/70 dark:bg-white/5 backdrop-blur-sm p-3"
+                  >
+                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${item.accent} text-white flex items-center justify-center`}>
+                      <item.icon className="w-5 h-5" />
+                    </div>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{item.title}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-3 pt-2">
+                <Button size="lg" asChild>
+                  <Link href="/consulting/book">
+                    {isRTL ? "احجز استشارة الآن" : "Book a consultation"}
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/consultants">
+                    {isRTL ? "تصفح الخبراء" : "Browse experts"}
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            <div className="p-8 lg:p-10 bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-600 text-white flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm">
+                  <Sparkles className="h-4 w-4" />
+                  {isRTL ? "رحلة متصلة" : "Connected journey"}
+                </div>
+                <div className="text-3xl font-semibold leading-tight">
+                  {isRTL ? "ابدأ بالاستشارة وانتقل للأدوات والباقات بسلاسة" : "Start with consulting, glide into tools and plans seamlessly"}
+                </div>
+                <p className="text-white/80 text-sm">
+                  {isRTL
+                    ? "احفظ الملاحظات، تتبع القرارات، وشارك التقارير مع فريقك من لوحة واحدة."
+                    : "Save notes, track decisions, and share reports with your team from one dashboard."}
+                </p>
+              </div>
+              <div className="grid grid-cols-3 gap-3 mt-6">
+                {[
+                  { label: isRTL ? "معدل رضا" : "CSAT", value: "4.9/5" },
+                  { label: isRTL ? "متوسط زمن الحل" : "Avg. turnaround", value: "24h" },
+                  { label: isRTL ? "جلسات ناجحة" : "Sessions delivered", value: "10k+" },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-2xl border border-white/20 bg-white/10 p-3 text-center">
+                    <div className="text-lg font-bold">{item.value}</div>
+                    <div className="text-xs text-white/80">{item.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+});
+
+const SupportStrip = memo(function SupportStrip() {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === "ar";
+
+  return (
+    <section className="bg-gradient-to-r from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-950 dark:to-indigo-900 border-y border-slate-200/60 dark:border-slate-800/60">
+      <div className="container py-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center justify-center">
+            <PhoneCall className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="text-sm text-muted-foreground">
+              {t("home.support.prompt")}
+            </div>
+            <div className="text-lg font-semibold text-slate-900 dark:text-white">
+              {t("home.support.headline")}
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button size="sm" asChild>
+            <Link href="/consulting/book">{t("home.support.book")}</Link>
+          </Button>
+          <Button size="sm" variant="outline" asChild>
+            <Link href="/contact">
+              <MessageSquare className="w-4 h-4 me-1" />
+              {t("home.support.contact")}
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+});
+
 /**
  * قسم CTA النهائي
  */
@@ -1478,6 +1736,9 @@ export default function HomeRedesigned() {
       {/* Quick Actions */}
       <QuickActionsBar />
 
+      {/* Support Strip */}
+      <SupportStrip />
+
       {/* Main Content */}
       <main>
         {/* Hero Section */}
@@ -1491,6 +1752,12 @@ export default function HomeRedesigned() {
 
         {/* Unified Journey */}
         <UnifiedJourneySection />
+
+        {/* Consulting Routes */}
+        <ConsultingRoutesSection isArabic={isArabic} />
+
+        {/* Consulting CTA */}
+        <ConsultingCTAHome />
 
         {/* Tools Section */}
         <ToolsSection />

@@ -10,7 +10,7 @@
 
 ### 1.1 اختيار نوع الحساب
 
-**المسار:** `/signup` → `AccountType.tsx`
+**المسار:** `/signup` → `AccountTypeRedesigned.tsx`
 
 **الخطوات:**
 
@@ -24,7 +24,7 @@
 
 - `/signup/employee` - تسجيل موظف
 - `/signup/consultant` - تسجيل مستشار
-- `/signup` (نموذج الشركة في نفس الصفحة)
+- `/signup/company` - تسجيل شركة
 
 ---
 
@@ -106,7 +106,7 @@
 
 ### 1.4 تسجيل شركة
 
-**المسار:** `/signup` → `Signup.tsx`
+**المسار:** `/signup/company` → `SignupCompany.tsx`
 
 **الحقول المطلوبة:**
 
@@ -131,7 +131,7 @@
 
 ### 2.1 تسجيل دخول عام
 
-**المسار:** `/login` → `Login.tsx`
+**المسار:** `/login` → `LoginRedesigned.tsx`
 
 **الحقول:**
 
@@ -194,7 +194,7 @@ if (data.user.userType === "consultant") {
 
 ### 3.1 استعراض الخدمات
 
-**المسار:** `/consulting` → `Consulting.tsx`
+**المسار:** `/consulting` → `ConsultingRedesigned.tsx`
 
 **المحتوى:**
 

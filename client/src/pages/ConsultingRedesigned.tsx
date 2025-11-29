@@ -29,6 +29,8 @@ import {
   Clock,
   MessageSquare,
   Phone,
+  PhoneCall,
+  FileText,
   Rocket,
   Shield,
   ShieldCheck,
@@ -89,6 +91,30 @@ interface FAQ {
 
 interface SectionProps {
   readonly isArabic: boolean;
+}
+
+interface Deliverable {
+  title: string;
+  titleEn: string;
+  description: string;
+  descriptionEn: string;
+  badge: string;
+  icon: LucideIcon;
+  eta: string;
+  etaEn: string;
+}
+
+interface SlaItem {
+  title: string;
+  detail: string;
+  icon: LucideIcon;
+  badge: string;
+  accent: string;
+}
+
+interface FaqItem {
+  q: string;
+  a: string;
 }
 
 // ============================================================================
@@ -705,6 +731,391 @@ function QuickActionsSection({ isArabic }: SectionProps) {
   );
 }
 
+function MobileCTASection({ isArabic }: SectionProps) {
+  return (
+    <div className="fixed bottom-4 inset-x-0 z-50 px-4 md:hidden">
+      <div className="rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-2xl border border-white/10 p-4 flex items-center justify-between gap-3">
+        <div>
+          <div className="text-sm opacity-80">
+            {isArabic ? "استشارة سريعة" : "Quick consultation"}
+          </div>
+          <div className="text-lg font-semibold">
+            {isArabic ? "احجز أو تحدث الآن" : "Book or talk now"}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="secondary" asChild className="text-indigo-700">
+            <Link href="/consulting/book">
+              <CalendarClock className="h-4 w-4 me-1" />
+              {isArabic ? "حجز" : "Book"}
+            </Link>
+          </Button>
+          <Button size="sm" variant="outline" className="border-white/50 text-white" asChild>
+            <Link href="/consulting/experts">
+              <PhoneCall className="h-4 w-4 me-1" />
+              {isArabic ? "تحدث مع خبير" : "Talk to expert"}
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DeliverablesSection({ isArabic }: SectionProps) {
+  const deliverables: Deliverable[] = [
+    {
+      title: "ملخص تنفيذي",
+      titleEn: "Executive summary",
+      description: "نقاط قرار واضحة + توصيات قابلة للتنفيذ.",
+      descriptionEn: "Clear decision points with actionable recommendations.",
+      badge: "PDF",
+      icon: FileText,
+      eta: "خلال 24 ساعة",
+      etaEn: "Within 24h",
+    },
+    {
+      title: "تقرير مفصل",
+      titleEn: "Detailed report",
+      description: "تحليل قانوني، مخاطر، وبدائل مع ملاحق.",
+      descriptionEn: "Legal analysis, risks, and alternatives with appendices.",
+      badge: "Doc / PDF",
+      icon: BadgeCheck,
+      eta: "خلال 48 ساعة",
+      etaEn: "Within 48h",
+    },
+    {
+      title: "قوالب وخطابات",
+      titleEn: "Templates & letters",
+      description: "خطابات HR جاهزة بالعربية والإنجليزية وفق السياق.",
+      descriptionEn: "HR letters tailored in Arabic & English for your case.",
+      badge: "Word",
+      icon: FileText,
+      eta: "خلال 24-48 ساعة",
+      etaEn: "Within 24-48h",
+    },
+  ];
+
+  return (
+    <section className="py-16 bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
+      <div className="container space-y-8">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <Badge variant="outline" className="border-dashed">
+              {isArabic ? "مخرجات وتسليمات" : "Outputs & Deliverables"}
+            </Badge>
+            <h2 className="text-2xl lg:text-3xl font-bold">
+              {isArabic ? "استلم ملفات جاهزة للتطبيق" : "Receive ready-to-use files"}
+            </h2>
+            <p className="text-muted-foreground max-w-2xl">
+              {isArabic
+                ? "ملفات قابلة للمشاركة مع الإدارة والفِرق، مع زمن تسليم واضح لكل خطوة."
+                : "Shareable files for leadership and teams with a clear turnaround time for each step."}
+            </p>
+          </div>
+          <Button asChild variant="outline">
+            <Link href="/consulting/book">
+              {isArabic ? "ابدأ الحجز" : "Start booking"}
+            </Link>
+          </Button>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {deliverables.map((item) => (
+            <Card key={item.title} className="border shadow-sm h-full">
+              <CardHeader className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/80 to-purple-600 text-white flex items-center justify-center">
+                    <item.icon className="h-5 w-5" />
+                  </div>
+                  <Badge variant="secondary">{item.badge}</Badge>
+                </div>
+                <CardTitle className="text-lg">
+                  {isArabic ? item.title : item.titleEn}
+                </CardTitle>
+                <CardDescription>
+                  {isArabic ? item.description : item.descriptionEn}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>{isArabic ? item.eta : item.etaEn}</span>
+                <ArrowRight className="h-4 w-4 text-primary" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SlaSection({ isArabic }: SectionProps) {
+  const { t } = useTranslation();
+  const items: SlaItem[] = [
+    {
+      title: t("consulting.sla.initial.title"),
+      detail: t("consulting.sla.initial.detail"),
+      icon: Clock,
+      badge: t("consulting.sla.initial.badge"),
+      accent: "from-amber-500 to-orange-600",
+    },
+    {
+      title: t("consulting.sla.session.title"),
+      detail: t("consulting.sla.session.detail"),
+      icon: PhoneCall,
+      badge: t("consulting.sla.session.badge"),
+      accent: "from-indigo-500 to-blue-600",
+    },
+    {
+      title: t("consulting.sla.channel.title"),
+      detail: t("consulting.sla.channel.detail"),
+      icon: MessageSquare,
+      badge: t("consulting.sla.channel.badge"),
+      accent: "from-emerald-500 to-teal-500",
+    },
+  ];
+
+  return (
+    <section className="py-16 bg-white dark:bg-gray-950">
+      <div className="container space-y-8">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <Badge variant="outline" className="border-dashed">
+              {t("consulting.sla.badge")}
+            </Badge>
+            <h2 className="text-2xl lg:text-3xl font-bold">
+              {t("consulting.sla.title")}
+            </h2>
+            <p className="text-muted-foreground max-w-2xl">
+              {t("consulting.sla.subtitle")}
+            </p>
+          </div>
+          <Button asChild>
+            <Link href="/consulting/book">
+              {isArabic ? "ابدأ الآن" : "Start now"}
+            </Link>
+          </Button>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {items.map((item) => (
+            <Card key={item.title} className="border shadow-sm h-full">
+              <CardHeader className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${item.accent} text-white flex items-center justify-center`}>
+                    <item.icon className="h-5 w-5" />
+                  </div>
+                  <Badge variant="secondary">{item.badge}</Badge>
+                </div>
+                <CardTitle className="text-lg">{item.title}</CardTitle>
+                <CardDescription>{item.detail}</CardDescription>
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ContactSection({ isArabic }: SectionProps) {
+  const { t } = useTranslation();
+  return (
+    <section className="py-14">
+      <div className="container">
+        <div className="overflow-hidden rounded-3xl border border-slate-200/60 dark:border-gray-800/60 bg-gradient-to-r from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-950 dark:to-indigo-900 shadow-lg">
+          <div className="grid md:grid-cols-3">
+            <div className="md:col-span-2 p-8 space-y-3">
+              <Badge variant="secondary" className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/60 dark:text-indigo-100">
+                {t("consulting.contact.badge")}
+              </Badge>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+                {t("consulting.contact.title")}
+              </h3>
+              <p className="text-muted-foreground max-w-2xl">
+                {t("consulting.contact.desc")}
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Button size="lg" asChild>
+                  <Link href="/consulting/book">{t("consulting.contact.cta_book")}</Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/contact">
+                    <PhoneCall className="h-4 w-4 me-2" />
+                    {t("consulting.contact.cta_talk")}
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            <div className="p-8 bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-600 text-white flex flex-col justify-center gap-3">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm">
+                <Sparkles className="h-4 w-4" />
+                {t("consulting.contact.side_badge")}
+              </div>
+              <div className="text-3xl font-semibold leading-tight">
+                {t("consulting.contact.side_title")}
+              </div>
+              <p className="text-white/80 text-sm">
+                {t("consulting.contact.side_desc")}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function RoutesMapSection({ isArabic }: SectionProps) {
+  const routes = [
+    {
+      title: isArabic ? "حجز فوري" : "Instant booking",
+      desc: isArabic
+        ? "جلسة صوتية/فيديو خلال 24 ساعة مع مستشار معتمد."
+        : "Voice/video session within 24h with a certified expert.",
+      href: "/consulting/book",
+      icon: CalendarClock,
+      badge: isArabic ? "الأسرع" : "Fastest",
+    },
+    {
+      title: isArabic ? "استعراض الخبراء" : "Browse experts",
+      desc: isArabic
+        ? "فلترة حسب التخصص واللغة والتقييم."
+        : "Filter by specialty, language, and rating.",
+      href: "/consultants",
+      icon: Users,
+      badge: isArabic ? "دليل الخبراء" : "Directory",
+    },
+    {
+      title: isArabic ? "خدمات جاهزة" : "Ready-made services",
+      desc: isArabic
+        ? "مراجعة عقود، تدقيق فصل، ولوائح داخلية."
+        : "Contract reviews, termination audits, internal policies.",
+      href: "/consulting/services",
+      icon: MessageSquare,
+      badge: isArabic ? "تنفيذ سريع" : "Fast-track",
+    },
+    {
+      title: isArabic ? "خطوات الرحلة" : "Journey steps",
+      desc: isArabic
+        ? "تعرف على مسار الحجز والتسليم وربط الأدوات والباقات."
+        : "See booking/delivery steps and how tools & plans connect.",
+      href: "/consulting/how-to-book",
+      icon: Rocket,
+      badge: isArabic ? "إرشاد" : "Guide",
+    },
+  ];
+
+  return (
+    <section className="py-12 bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
+      <div className="container">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-8">
+          <div>
+            <Badge variant="outline" className="border-dashed">
+              {isArabic ? "مسارات واضحة" : "Clear paths"}
+            </Badge>
+            <h2 className="text-2xl md:text-3xl font-bold mt-2">
+              {isArabic ? "اختر المسار المناسب لحاجتك" : "Choose the path that fits your need"}
+            </h2>
+            <p className="text-muted-foreground max-w-2xl">
+              {isArabic
+                ? "كل مسار يوصلك إلى الخطوة التالية بدون مغادرة تجربة الاستشارة."
+                : "Each path moves you to the next step without leaving the consulting journey."}
+            </p>
+          </div>
+          <Button asChild variant="outline" size="lg">
+            <Link href="/consulting/book">
+              {isArabic ? "ابدأ بالحجز" : "Start with booking"}
+            </Link>
+          </Button>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {routes.map((route) => (
+            <Card
+              key={route.href}
+              className="border shadow-sm hover:border-primary/40 transition-colors h-full"
+            >
+              <CardHeader className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/90 to-purple-600 text-white flex items-center justify-center">
+                    <route.icon className="h-5 w-5" />
+                  </div>
+                  <Badge variant="secondary">{route.badge}</Badge>
+                </div>
+                <CardTitle className="text-lg">{route.title}</CardTitle>
+                <CardDescription>{route.desc}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button asChild variant="ghost" className="px-0 text-primary">
+                  <Link href={route.href}>
+                    {isArabic ? "اذهب للمسار" : "Open path"}
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TrustSection({ isArabic }: SectionProps) {
+  const stats = [
+    {
+      label: isArabic ? "رضا العملاء" : "Client satisfaction",
+      value: "4.9/5",
+      desc: isArabic ? "متوسط تقييم بعد الجلسات" : "Average rating post-sessions",
+    },
+    {
+      label: isArabic ? "متوسط زمن الرد" : "Avg. response time",
+      value: "24h",
+      desc: isArabic ? "تسليم ملخص أولي خلال يوم" : "Initial summary within a day",
+    },
+    {
+      label: isArabic ? "التزام نظام العمل" : "Labor law compliance",
+      value: "100%",
+      desc: isArabic ? "متوافق مع التشريعات السعودية" : "Aligned with Saudi regulations",
+    },
+  ];
+
+  return (
+    <section className="py-14 bg-gradient-to-b from-white via-slate-50 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+      <div className="container">
+        <div className="grid lg:grid-cols-3 gap-6 items-center">
+          <div className="lg:col-span-1 space-y-4">
+            <Badge variant="outline" className="border-dashed">
+              {isArabic ? "ثقة واعتمادية" : "Trust & Reliability"}
+            </Badge>
+            <h2 className="text-2xl lg:text-3xl font-bold">
+              {isArabic ? "أرقام واضحة تدعم قراراتك" : "Clear numbers backing your decisions"}
+            </h2>
+            <p className="text-muted-foreground">
+              {isArabic
+                ? "تجربة متكاملة من الحجز إلى التسليم مع مؤشرات أداء وتقارير يمكن مشاركتها."
+                : "End-to-end experience from booking to delivery with KPIs and shareable reports."}
+            </p>
+          </div>
+          <div className="lg:col-span-2 grid sm:grid-cols-3 gap-4">
+            {stats.map((item) => (
+              <Card key={item.label} className="h-full border shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-3xl font-bold">{item.value}</CardTitle>
+                  <CardDescription>{item.label}</CardDescription>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground">
+                  {item.desc}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function ValueStacksSection({ isArabic }: SectionProps) {
   return (
     <section className="py-20 lg:py-28">
@@ -1025,6 +1436,60 @@ function CtaSection({ isArabic }: SectionProps) {
   );
 }
 
+function FAQCompact({ isArabic }: SectionProps) {
+  const { t } = useTranslation();
+  const items: FaqItem[] = [
+    {
+      q: t("consulting.faq.quick.q1"),
+      qEn: "",
+      a: t("consulting.faq.quick.a1"),
+      aEn: "",
+    },
+    {
+      q: t("consulting.faq.quick.q2"),
+      qEn: "",
+      a: t("consulting.faq.quick.a2"),
+      aEn: "",
+    },
+    {
+      q: t("consulting.faq.quick.q3"),
+      qEn: "",
+      a: t("consulting.faq.quick.a3"),
+      aEn: "",
+    },
+  ];
+
+  return (
+    <section className="py-14 bg-white dark:bg-gray-950">
+      <div className="container">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
+          <div>
+            <Badge variant="outline" className="border-dashed">
+              {t("consulting.faq.quick.badge")}
+            </Badge>
+            <h2 className="text-2xl lg:text-3xl font-bold">
+              {t("consulting.faq.quick.title")}
+            </h2>
+          </div>
+          <Button asChild variant="outline">
+            <Link href="/faq">{t("consulting.faq.quick.all")}</Link>
+          </Button>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {items.map((item) => (
+            <Card key={item.q} className="border shadow-sm h-full">
+              <CardHeader className="space-y-2">
+                <CardTitle className="text-lg">{item.q}</CardTitle>
+                <CardDescription>{item.a}</CardDescription>
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ============================================================================
 // Main Component
 // ============================================================================
@@ -1042,6 +1507,12 @@ export default function ConsultingRedesigned() {
     >
       <HeroSection isArabic={isArabic} />
       <QuickActionsSection isArabic={isArabic} />
+      <RoutesMapSection isArabic={isArabic} />
+      <TrustSection isArabic={isArabic} />
+      <DeliverablesSection isArabic={isArabic} />
+      <SlaSection isArabic={isArabic} />
+      <ContactSection isArabic={isArabic} />
+      <FAQCompact isArabic={isArabic} />
       <ValueStacksSection isArabic={isArabic} />
       <PackagesSection isArabic={isArabic} />
       <CommunicationChannelsSection isArabic={isArabic} />
@@ -1064,6 +1535,7 @@ export default function ConsultingRedesigned() {
       />
       <FaqSection isArabic={isArabic} />
       <CtaSection isArabic={isArabic} />
+      <MobileCTASection isArabic={isArabic} />
       <Footer />
     </div>
   );

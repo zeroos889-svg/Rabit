@@ -92,7 +92,7 @@ import { APP_LOGO } from "@/const";
    <img src={APP_LOGO} alt="Rabit" className="h-10 w-10" />
    ```
 
-3. **Login.tsx** ✅ تم التحديث
+3. **LoginRedesigned.tsx** ✅ تم التحديث
    ```tsx
    <img src={APP_LOGO} alt="رابِط | Rabit" className="h-20 w-auto" />
    ```
@@ -112,9 +112,9 @@ import { APP_LOGO } from "@/const";
    <img src={APP_LOGO} alt="Rabit" className="h-8" />
    ```
 
-7. **Signup.tsx**
+7. **AccountTypeRedesigned.tsx**
    ```tsx
-   <img src={APP_LOGO} alt="Rabit" className="h-10 w-10" />
+   <img src={APP_LOGO} alt="رابِط | Rabit" className="h-10 w-auto" />
    ```
 
 ---
@@ -330,7 +330,7 @@ sharp -i LOGO.svg -o logo-192.png resize 192 192
 ## 📝 Changelog
 
 ### v1.0.0 (25 نوفمبر 2025)
-- ✅ تطبيق الشعار في Login.tsx
+- ✅ تطبيق الشعار في LoginRedesigned.tsx
 - ✅ تطبيق الشعار في Register.tsx
 - ✅ تحديث .env.example
 - ✅ توثيق استخدام الشعار

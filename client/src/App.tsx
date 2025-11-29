@@ -96,7 +96,6 @@ const CompanyDashboardRedesigned = lazy(
 );
 const EnhancedCompanyDashboard = lazy(() => import("./pages/company/EnhancedCompanyDashboard"));
 const EmployeeDashboard = lazy(() => import("./pages/EmployeeDashboardNew"));
-const EnhancedEmployeeDashboard = lazy(() => import("./pages/employee/EnhancedEmployeeDashboard"));
 const ConsultantDashboard = lazy(() => import("./pages/ConsultantDashboard"));
 const AdminDashboardNew = lazy(() => import("./pages/admin/Dashboard"));
 const EnhancedAdminDashboard = lazy(() => import("./pages/admin/EnhancedAdminDashboard"));
@@ -137,7 +136,6 @@ const ReportsPage = lazy(() => import("./pages/dashboard/ReportsPage"));
 
 // Consulting pages
 const ConsultingRedesigned = lazy(() => import("./pages/ConsultingRedesigned"));
-const ConsultingBook = lazy(() => import("./pages/ConsultingBook"));
 const ConsultantsList = lazy(() => import("./pages/ConsultantsList"));
 const ConsultingServices = lazy(() => import("./pages/ConsultingServices"));
 const HowToBook = lazy(() => import("./pages/HowToBook"));
@@ -166,10 +164,8 @@ const CaseStudies = lazy(() => import("./pages/CaseStudies"));
 const SuccessStories = lazy(() => import("./pages/SuccessStories"));
 
 // Legal & Policy pages
-const Privacy = lazy(() => import("./pages/Privacy"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const Terms = lazy(() => import("./pages/Terms"));
-const Cookies = lazy(() => import("./pages/Cookies"));
 const CookiesPolicy = lazy(() => import("./pages/CookiesPolicy"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const MyData = lazy(() => import("./pages/MyData"));
@@ -198,7 +194,6 @@ const BrandPreview = lazy(() => import("./pages/BrandPreview"));
 const TrialAccounts = lazy(() => import("./pages/TrialAccounts"));
 const VerifyDecision = lazy(() => import("./pages/VerifyDecision"));
 const Payment = lazy(() => import("./pages/Payment"));
-const Checkout = lazy(() => import("./pages/Checkout"));
 const CheckoutNew = lazy(() => import("./pages/CheckoutNew"));
 const MoyasarCallback = lazy(() => import("./pages/MoyasarCallback"));
 const TapCallback = lazy(() => import("./pages/TapCallback"));
@@ -245,12 +240,6 @@ const ProtectedCheckoutNew = () => (
   </ProtectedRoute>
 );
 
-const ProtectedCheckout = () => (
-  <ProtectedRoute>
-    <Checkout />
-  </ProtectedRoute>
-);
-
 const ProtectedProfile = () => (
   <ProtectedRoute>
     <ProfileRedesigned />
@@ -276,12 +265,6 @@ const ProtectedAdminRoute = () => (
 );
 
 // Additional Protected Route Wrappers
-const ProtectedEnhancedEmployeeDashboard = () => (
-  <ProtectedRoute requiredRole="employee">
-    <EnhancedEmployeeDashboard />
-  </ProtectedRoute>
-);
-
 const ProtectedAdminDataRequests = () => (
   <ProtectedRoute requiredRole="admin">
     <AdminLayout>
@@ -557,7 +540,7 @@ function Router() {
         />
         <Route
           path={"/checkout-old"}
-          component={ProtectedCheckout}
+          component={() => <Redirect to="/checkout" />}
         />
         <Route path={"/payment/moyasar/callback"} component={MoyasarCallback} />
         <Route path={"/payment/tap/callback"} component={TapCallback} />
@@ -586,7 +569,7 @@ function Router() {
         <Route path="/blog" component={BlogRedesigned} />
         <Route path="/blog/:id" component={BlogPost} />
         <Route path="/success-stories" component={SuccessStories} />
-        <Route path="/privacy" component={Privacy} />
+        <Route path="/privacy" component={() => <Redirect to="/privacy-policy" />} />
         <Route path="/privacy-policy" component={PrivacyPolicy} />
         <Route path="/compliance" component={Compliance} />
         <Route path="/my-data" component={MyData} />
@@ -603,16 +586,16 @@ function Router() {
           component={ProtectedAdminSecurityIncidents}
         />
         <Route path="/terms" component={Terms} />
-        <Route path="/cookies" component={Cookies} />
+        <Route path="/cookies" component={() => <Redirect to="/cookies-policy" />} />
         <Route path="/cookies-policy" component={CookiesPolicy} />
         <Route
           path="/consultant/register"
           component={ProtectedConsultantRegister}
         />
-<Route path={"case-studies"} component={CaseStudies} />
+        <Route path={"/case-studies"} component={CaseStudies} />
         <Route path="/consulting" component={ConsultingRedesigned} />
-        <Route path="/consulting/book" component={ConsultingBook} />
-        <Route path="/consulting/book-new" component={ConsultingBookingNew} />
+        <Route path="/consulting/book" component={ConsultingBookingNew} />
+        <Route path="/consulting/book-new" component={() => <Redirect to="/consulting/book" />} />
         <Route path="/consultants" component={ConsultantsList} />
         <Route path="/consulting/services" component={ConsultingServices} />
         <Route path="/consulting/how-to-book" component={HowToBook} />
@@ -649,9 +632,9 @@ function Router() {
         />
         <Route path={"/tools/leave-calculator"} component={LeaveCalculator} />
         <Route path={"/tools/letter-generator"} component={LetterGenerator} />
-  <Route path="/pricing" component={PricingRedesigned} />
-  <Route path="/trial-accounts" component={TrialAccounts} />
-  <Route path="/trial" component={() => <Redirect to="/trial-accounts" />} />
+        <Route path="/pricing" component={PricingRedesigned} />
+        <Route path="/trial-accounts" component={TrialAccounts} />
+        <Route path="/trial" component={() => <Redirect to="/trial-accounts" />} />
         {AIChat && (
           <Route path="/ai/chat" component={AIChat} />
         )}

@@ -104,7 +104,10 @@ export function loadRegulation(regulationId: string): Regulation {
     regulationsCache.set(regulationId, regulation);
     return regulation;
   } catch (error) {
-    console.error(`خطأ في تحميل النظام ${regulationId}:`, error);
+    // في الاختبارات يتم توقع هذا الخطأ، لذا نتجنب طباعة سجل زائد
+    if (process.env.NODE_ENV !== 'test') {
+      console.error(`خطأ في تحميل النظام ${regulationId}:`, error);
+    }
     throw new Error(`النظام غير موجود: ${regulationId}`);
   }
 }

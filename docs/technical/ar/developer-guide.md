@@ -50,11 +50,11 @@ rabit-hr-platform/
 │   ├── public/            # الملفات الثابتة
 │   │   └── LOGO.svg       # شعار المنصة (الإصدار ثنائي اللغة)
 │   ├── src/
-│   │   ├── pages/         # صفحات التطبيق (49 صفحة)
-│   │   │   ├── Home.tsx
-│   │   │   ├── Login.tsx
-│   │   │   ├── Signup.tsx
-│   │   │   ├── About.tsx
+│   │   ├── pages/         # صفحات التطبيق (عشرات الصفحات)
+│   │   │   ├── HomeRedesigned.tsx
+│   │   │   ├── LoginRedesigned.tsx
+│   │   │   ├── AccountTypeRedesigned.tsx
+│   │   │   ├── AboutRedesigned.tsx
 │   │   │   ├── dashboard/  # لوحة تحكم الشركات
 │   │   │   ├── admin/      # لوحة تحكم المدير
 │   │   │   └── consultant-dashboard/ # لوحة المستشارين

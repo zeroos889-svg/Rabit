@@ -123,7 +123,7 @@ export function withAuth(Component, options?)
 // Dropdown menu: Profile, Dashboard, Settings, Logout
 ```
 
-#### 5. `client/src/pages/Login.tsx`
+#### 5. `client/src/pages/LoginRedesigned.tsx`
 ```typescript
 // Login page with:
 // - Email + Password form

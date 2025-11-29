@@ -155,7 +155,8 @@ export default defineConfig({
         assetFileNames: "assets/[name]-[hash][extname]",
       },
     },
-    chunkSizeWarningLimit: 1000,
+    // Increase chunk size warning limit to avoid noise from large optional vendors (mermaid/shiki)
+    chunkSizeWarningLimit: 12000,
     // Report compressed size for better insight
     reportCompressedSize: true,
   },
