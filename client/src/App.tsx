@@ -25,20 +25,51 @@ import { useAnalytics, usePageTracking } from "./hooks/useAnalytics";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { AIAssistant } from "./components/ai/AIAssistant";
 
+// Retry helper for lazy loading with cache busting
+const lazyRetry = <T extends ComponentType<unknown>>(
+  factory: () => Promise<{ default: T }>,
+  retries = 2
+): React.LazyExoticComponent<T> => {
+  return lazy(async () => {
+    for (let i = 0; i <= retries; i++) {
+      try {
+        return await factory();
+      } catch (error) {
+        if (i === retries) {
+          // Clear service worker cache and reload on final failure
+          if ("serviceWorker" in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for (const registration of registrations) {
+              await registration.unregister();
+            }
+            // Clear all caches
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
+          }
+          throw error;
+        }
+        // Wait a bit before retry
+        await new Promise(resolve => setTimeout(resolve, 500 * (i + 1)));
+      }
+    }
+    throw new Error("Failed to load module");
+  });
+};
+
 const ENABLE_DEMO_PAGES = import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEMOS === "true";
 const loadDemoPage = <T extends ComponentType<any>>(
   factory: () => Promise<{ default: T }>
-) => (ENABLE_DEMO_PAGES ? lazy(factory) : null);
+) => (ENABLE_DEMO_PAGES ? lazyRetry(factory) : null);
 
 // Loading component - Enhanced with better UX
 const PageLoader = () => <LoadingSpinner fullScreen text="جاري التحميل..." />;
 
-// Lazy load pages - Public pages (loaded first)
-const HomeRedesigned = lazy(() => import("./pages/HomeRedesigned"));
-const EnhancedHome = lazy(() => import("./pages/EnhancedHome"));
-const Home = lazy(() => import("./pages/Home"));
-const Login = lazy(() => import("./pages/Login"));
-const LoginRedesigned = lazy(() => import("./pages/LoginRedesigned"));
+// Lazy load pages - Public pages (loaded first) with retry logic
+const HomeRedesigned = lazyRetry(() => import("./pages/HomeRedesigned"));
+const EnhancedHome = lazyRetry(() => import("./pages/EnhancedHome"));
+const Home = lazyRetry(() => import("./pages/Home"));
+const Login = lazyRetry(() => import("./pages/Login"));
+const LoginRedesigned = lazyRetry(() => import("./pages/LoginRedesigned"));
 const EnhancedLogin = lazy(() => import("./pages/EnhancedLogin"));
 const Register = lazy(() => import("./pages/Register"));
 const AccountType = lazy(() => import("./pages/AccountType"));
