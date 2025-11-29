@@ -117,7 +117,7 @@
     "react-resizable-panels": "^3.0.6",
     "recharts": "^3.4.1",
     "redis": "^5.10.0",
-    "resend": "^4.0.0",
+    "resend": "^6.5.2",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "sonner": "^1.7.2",
