@@ -743,7 +743,7 @@ export interface CorsConfig {
  */
 export function cors(config: CorsConfig = {}): RequestHandler {
   const {
-    origins = ["http://localhost:3000", "http://localhost:5173", "https://rabit.sa", "https://www.rabit.sa"],
+    origins = ["http://localhost:3000", "http://localhost:5173", "https://rabit.sa", "https://www.rabit.sa", "https://rabit-app-production.up.railway.app"],
     methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders = ["Content-Type", "Authorization", "X-CSRF-Token", "X-Request-ID"],
     exposedHeaders = ["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"],

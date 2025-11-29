@@ -81,7 +81,9 @@ interface LiveUpdatePayload {
 const config = {
   enabled: process.env.WEBSOCKET_ENABLED === "true",
   cors: {
-    origin: process.env.APP_URL || "http://localhost:5173",
+    origin: process.env.APP_URL || process.env.NODE_ENV === "production" 
+      ? "https://rabit-app-production.up.railway.app" 
+      : "http://localhost:5173",
     credentials: true,
   },
   pingTimeout: 60000, // 60 seconds
