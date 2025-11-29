@@ -17,6 +17,7 @@ type FetchInit = NonNullable<Parameters<typeof fetch>[1]>;
 const API_BASE =
   import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") || "";
 const TRPC_URL = API_BASE ? `${API_BASE}/api/trpc` : "/api/trpc";
+const API_HEALTH = API_BASE ? `${API_BASE}/api/health` : "/api/health";
 
 installCsrfFetchInterceptor();
 
@@ -184,6 +185,30 @@ const trpcClient = trpc.createClient({
     }),
   ],
 });
+
+// Log a warning if API base is not configured (helps avoid silent spinners in prod)
+if (!API_BASE) {
+  errorLogger.warn(
+    "API base URL is empty. Set VITE_API_BASE_URL to your backend host to avoid 404s in production."
+  );
+} else {
+  // Lightweight health ping (non-blocking) to surface misconfigurations early
+  fetch(API_HEALTH, { method: "GET", credentials: "include" }).then(
+    (response) => {
+      if (!response.ok) {
+        errorLogger.warn("API health check failed", {
+          status: response.status,
+          url: API_HEALTH,
+        });
+      }
+    }
+  ).catch((error) => {
+    errorLogger.warn("API health ping error", {
+      error: error instanceof Error ? error.message : String(error),
+      url: API_HEALTH,
+    });
+  });
+}
 
 createRoot(document.getElementById("root")!).render(
   <trpc.Provider client={trpcClient} queryClient={queryClient}>
