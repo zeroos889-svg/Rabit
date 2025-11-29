@@ -75,7 +75,6 @@ const PageLoader = () => <LoadingSpinner fullScreen text="جاري التحمي�
 
 // Lazy load pages - Public pages (loaded first) with retry logic
 const HomeRedesigned = lazyRetry(() => import("./pages/HomeRedesigned"));
-const EnhancedHome = lazyRetry(() => import("./pages/EnhancedHome"));
 const LoginRedesigned = lazyRetry(() => import("./pages/LoginRedesigned"));
 const Register = lazy(() => import("./pages/Register"));
 const AccountTypeRedesigned = lazy(() => import("./pages/AccountTypeRedesigned"));
@@ -515,7 +514,7 @@ function Router() {
     <Suspense fallback={<PageLoader />}>
       <Switch>
         <Route path={"/"} component={HomeRedesigned} />
-        <Route path={"/home"} component={EnhancedHome} />
+        <Route path={"/home"} component={() => <Redirect to="/" />} />
         <Route path={"/signup"} component={withPublicOnly(AccountTypeRedesigned)} />
         <Route path={"/guided/:role"} component={GuidedTour} />
         <Route path={"/signup/employee"} component={SignupEmployee} />
@@ -538,11 +537,11 @@ function Router() {
         />
         <Route
           path={"/employee/dashboard"}
-          component={ProtectedEmployeeDashboard}
+          component={() => <Redirect to="/dashboard/employee" />}
         />
         <Route
           path={"/employee/dashboard-enhanced"}
-          component={ProtectedEnhancedEmployeeDashboard}
+          component={() => <Redirect to="/dashboard/employee" />}
         />
         <Route
           path={"/dashboard/employee"}
@@ -652,7 +651,7 @@ function Router() {
         <Route path={"/tools/letter-generator"} component={LetterGenerator} />
   <Route path="/pricing" component={PricingRedesigned} />
   <Route path="/trial-accounts" component={TrialAccounts} />
-  <Route path="/trial" component={TrialAccounts} />
+  <Route path="/trial" component={() => <Redirect to="/trial-accounts" />} />
         {AIChat && (
           <Route path="/ai/chat" component={AIChat} />
         )}
@@ -665,12 +664,12 @@ function Router() {
         
         {/* Saudi Regulations & AI Tools Routes */}
         <Route path="/ai" component={AIDashboard} />
-        <Route path="/ai/dashboard" component={AIDashboard} />
+        <Route path="/ai/dashboard" component={() => <Redirect to="/ai" />} />
         <Route path="/regulations" component={SaudiRegulations} />
         <Route path="/regulations/:id" component={SaudiRegulations} />
         <Route path="/calculators" component={FinancialCalculators} />
-        <Route path="/ai/regulations" component={SaudiRegulations} />
-        <Route path="/ai/calculators" component={FinancialCalculators} />
+        <Route path="/ai/regulations" component={() => <Redirect to="/regulations" />} />
+        <Route path="/ai/calculators" component={() => <Redirect to="/calculators" />} />
         
         <Route
           path="/dashboard"
@@ -754,7 +753,7 @@ function Router() {
         />
         <Route
           path="/dashboard/smart-form-generator"
-          component={ProtectedTemplates}
+          component={() => <Redirect to="/dashboard/templates" />}
         />
         <Route
           path="/dashboard/reminders"
