@@ -422,7 +422,7 @@ export function ComplianceCheckDialog({
                 ) : (
                   <>
                     <Shield className="h-4 w-4 me-2" />
-                    {isArabic ? "بدء الفحص" : "Start Check"}}
+                    {isArabic ? "بدء الفحص" : "Start Check"}
                   </>
                 )}
               </Button>

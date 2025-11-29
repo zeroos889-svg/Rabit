@@ -521,10 +521,10 @@ export default function ConsultationChat() {
                 ) : showRating ? (
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">
+                      <span className="block text-sm font-medium mb-2">
                         التقييم
-                      </label>
-                      <div className="flex gap-2">
+                      </span>
+                      <div className="flex gap-2" role="group" aria-label="تقييم الاستشارة">
                         {[1, 2, 3, 4, 5].map(star => (
                           <button
                             key={star}
@@ -653,32 +653,32 @@ export default function ConsultationChat() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">
+                  <span className="text-sm font-medium text-muted-foreground block">
                     نوع الاستشارة
-                  </label>
+                  </span>
                   <p className="font-medium">
                     {booking.consultationType?.nameAr || "غير محدد"}
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">
+                  <span className="text-sm font-medium text-muted-foreground block">
                     الموضوع
-                  </label>
+                  </span>
                   <p className="font-medium">
                     {booking.subject || "استشارة الموارد البشرية"}
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">
+                  <span className="text-sm font-medium text-muted-foreground block">
                     الوصف
-                  </label>
+                  </span>
                   <p className="text-sm">{booking.description}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">
+                    <span className="text-sm font-medium text-muted-foreground block">
                       التاريخ
-                    </label>
+                    </span>
                     <p className="text-sm">
                       {booking.scheduledDate
                         ? new Date(booking.scheduledDate).toLocaleDateString("ar-SA")
@@ -686,16 +686,16 @@ export default function ConsultationChat() {
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">
+                    <span className="text-sm font-medium text-muted-foreground block">
                       الوقت
-                    </label>
+                    </span>
                     <p className="text-sm">{booking.scheduledTime || "-"}</p>
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">
+                  <span className="text-sm font-medium text-muted-foreground block">
                     تاريخ الإنشاء
-                  </label>
+                  </span>
                   <p className="text-sm">
                     {(booking.createdAt
                       ? new Date(booking.createdAt)
@@ -705,9 +705,9 @@ export default function ConsultationChat() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">
+                    <span className="text-sm font-medium text-muted-foreground block">
                       SLA
-                    </label>
+                    </span>
                     <p className="text-sm font-semibold">
                       {booking.slaHours ||
                         booking.consultationType?.slaHours ||
@@ -716,9 +716,9 @@ export default function ConsultationChat() {
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">
+                    <span className="text-sm font-medium text-muted-foreground block">
                       السعر
-                    </label>
+                    </span>
                     <p className="text-sm font-semibold text-primary">
                       {booking.price ||
                         booking.consultationType?.price ||

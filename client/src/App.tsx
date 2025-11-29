@@ -1,4 +1,3 @@
-// Inline components are intentional for Wouter routing pattern
 import { lazy, Suspense, ComponentType } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,7 +9,7 @@ import { ChatWidget } from "./components/ChatWidget";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { PublicOnlyRoute } from "./components/PublicOnlyRoute";
 import { AdminLayout } from "./components/AdminLayout";
-import { Header } from "./components/Header";
+import { HeaderRedesigned } from "./components/HeaderRedesigned";
 import { SkipLink } from "./components/SkipLink";
 import { AccessibilityProvider } from "./contexts/AccessibilityContext";
 import { KeyboardShortcuts } from "./components/KeyboardShortcuts";
@@ -35,14 +34,16 @@ const loadDemoPage = <T extends ComponentType<any>>(
 const PageLoader = () => <LoadingSpinner fullScreen text="جاري التحميل..." />;
 
 // Lazy load pages - Public pages (loaded first)
+const HomeRedesigned = lazy(() => import("./pages/HomeRedesigned"));
 const EnhancedHome = lazy(() => import("./pages/EnhancedHome"));
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
+const LoginRedesigned = lazy(() => import("./pages/LoginRedesigned"));
 const EnhancedLogin = lazy(() => import("./pages/EnhancedLogin"));
 const Register = lazy(() => import("./pages/Register"));
 const AccountType = lazy(() => import("./pages/AccountType"));
+const AccountTypeRedesigned = lazy(() => import("./pages/AccountTypeRedesigned"));
 const GuidedTour = lazy(() => import("./pages/GuidedTour"));
-const NotFound = lazy(() => import("@/pages/NotFound"));
 
 // Auth pages
 const SignupEmployee = lazy(() => import("./pages/SignupEmployee"));
@@ -55,8 +56,8 @@ const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 // Dashboard pages (high priority - loaded on demand)
-const CompanyDashboard = lazy(
-  () => import("./pages/dashboard/CompanyDashboard")
+const CompanyDashboardRedesigned = lazy(
+  () => import("./pages/dashboard/CompanyDashboardRedesigned")
 );
 const EnhancedCompanyDashboard = lazy(() => import("./pages/company/EnhancedCompanyDashboard"));
 const EmployeeDashboard = lazy(() => import("./pages/EmployeeDashboardNew"));
@@ -64,7 +65,7 @@ const EnhancedEmployeeDashboard = lazy(() => import("./pages/employee/EnhancedEm
 const ConsultantDashboard = lazy(() => import("./pages/ConsultantDashboard"));
 const AdminDashboardNew = lazy(() => import("./pages/admin/Dashboard"));
 const EnhancedAdminDashboard = lazy(() => import("./pages/admin/EnhancedAdminDashboard"));
-const Profile = lazy(() => import("./pages/Profile"));
+const ProfileRedesigned = lazy(() => import("./pages/ProfileRedesigned"));
 
 // Document & Tools
 const DocumentGenerator = lazy(() => import("./pages/DocumentGenerator"));
@@ -75,6 +76,7 @@ const EndOfServiceCalculator = lazy(
 const LeaveCalculator = lazy(() => import("./pages/LeaveCalculator"));
 const LetterGenerator = lazy(() => import("./pages/LetterGenerator"));
 const ToolsPage = lazy(() => import("./pages/Tools"));
+const ToolsRedesigned = lazy(() => import("./pages/ToolsRedesigned"));
 const DashboardTools = lazy(() => import("./pages/dashboard/Tools"));
 
 // Dashboard sub-pages
@@ -100,7 +102,7 @@ const MessagingPage = lazy(() => import("./pages/dashboard/MessagingPage"));
 const ReportsPage = lazy(() => import("./pages/dashboard/ReportsPage"));
 
 // Consulting pages
-const Consulting = lazy(() => import("./pages/Consulting"));
+const ConsultingRedesigned = lazy(() => import("./pages/ConsultingRedesigned"));
 const ConsultingBook = lazy(() => import("./pages/ConsultingBook"));
 const ConsultantsList = lazy(() => import("./pages/ConsultantsList"));
 const ConsultingServices = lazy(() => import("./pages/ConsultingServices"));
@@ -116,9 +118,13 @@ const ConsultationChat = lazy(() => import("./pages/ConsultationChat"));
 
 // Content pages
 const About = lazy(() => import("./pages/About"));
-const Contact = lazy(() => import("./pages/Contact"));
+const AboutRedesigned = lazy(() => import("./pages/AboutRedesigned"));
+const ContactRedesigned = lazy(() => import("./pages/ContactRedesigned"));
 const FAQ = lazy(() => import("./pages/FAQ"));
+const FAQRedesigned = lazy(() => import("./pages/FAQRedesigned"));
 const Blog = lazy(() => import("./pages/Blog"));
+const BlogRedesigned = lazy(() => import("./pages/BlogRedesigned"));
+const NotFoundRedesigned = lazy(() => import("./pages/NotFoundRedesigned"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Courses = lazy(() => import("./pages/Courses"));
 const CourseDetail = lazy(() => import("./pages/CourseDetail"));
@@ -155,7 +161,7 @@ const AdminSecurityIncidents = lazy(
 );
 
 // Other pages
-const Pricing = lazy(() => import("./pages/Pricing"));
+const PricingRedesigned = lazy(() => import("./pages/PricingRedesigned"));
 const Services = lazy(() => import("./pages/Services"));
 const BrandPreview = lazy(() => import("./pages/BrandPreview"));
 const TrialAccounts = lazy(() => import("./pages/TrialAccounts"));
@@ -216,7 +222,7 @@ const ProtectedCheckout = () => (
 
 const ProtectedProfile = () => (
   <ProtectedRoute>
-    <Profile />
+    <ProfileRedesigned />
   </ProtectedRoute>
 );
 
@@ -238,21 +244,257 @@ const ProtectedAdminRoute = () => (
   </AdminLayout>
 );
 
+// Additional Protected Route Wrappers
+const ProtectedEnhancedEmployeeDashboard = () => (
+  <ProtectedRoute requiredRole="employee">
+    <EnhancedEmployeeDashboard />
+  </ProtectedRoute>
+);
+
+const ProtectedAdminDataRequests = () => (
+  <ProtectedRoute requiredRole="admin">
+    <AdminLayout>
+      <AdminDataRequests />
+    </AdminLayout>
+  </ProtectedRoute>
+);
+
+const ProtectedAdminSecurityIncidents = () => (
+  <ProtectedRoute requiredRole="admin">
+    <AdminLayout>
+      <AdminSecurityIncidents />
+    </AdminLayout>
+  </ProtectedRoute>
+);
+
+const ProtectedConsultantRegister = () => (
+  <ProtectedRoute>
+    <ConsultantRegister />
+  </ProtectedRoute>
+);
+
+const ProtectedMyConsultations = () => (
+  <ProtectedRoute>
+    <MyConsultations />
+  </ProtectedRoute>
+);
+
+const ProtectedConsultationDetail = () => (
+  <ProtectedRoute>
+    <ConsultationDetail />
+  </ProtectedRoute>
+);
+
+const ProtectedConsultationChat = () => (
+  <ProtectedRoute>
+    <ConsultationChat />
+  </ProtectedRoute>
+);
+
+const ProtectedConsultantDashboard = () => (
+  <ProtectedRoute requiredRole="consultant">
+    <ConsultantDashboard />
+  </ProtectedRoute>
+);
+
+const ProtectedCompanyDashboard = () => (
+  <ProtectedRoute requiredRole="company">
+    <CompanyDashboardRedesigned />
+  </ProtectedRoute>
+);
+
+const ProtectedEnhancedCompanyDashboard = () => (
+  <ProtectedRoute requiredRole="company">
+    <EnhancedCompanyDashboard />
+  </ProtectedRoute>
+);
+
+const ProtectedAdminDashboard = () => (
+  <ProtectedRoute requiredRole="admin">
+    <AdminLayout>
+      <AdminDashboardNew />
+    </AdminLayout>
+  </ProtectedRoute>
+);
+
+const ProtectedEnhancedAdminDashboard = () => (
+  <ProtectedRoute requiredRole="admin">
+    <EnhancedAdminDashboard />
+  </ProtectedRoute>
+);
+
+const ProtectedAdminUsers = () => (
+  <ProtectedRoute requiredRole="admin">
+    <AdminLayout>
+      <AdminUsers />
+    </AdminLayout>
+  </ProtectedRoute>
+);
+
+const ProtectedAdminSubscriptions = () => (
+  <ProtectedRoute requiredRole="admin">
+    <AdminLayout>
+      <AdminSubscriptions />
+    </AdminLayout>
+  </ProtectedRoute>
+);
+
+const ProtectedAdminBookings = () => (
+  <ProtectedRoute requiredRole="admin">
+    <AdminLayout>
+      <AdminBookings />
+    </AdminLayout>
+  </ProtectedRoute>
+);
+
+const ProtectedAdminAuditLogs = () => (
+  <ProtectedRoute requiredRole="admin">
+    <AdminLayout>
+      <AdminAuditLogs />
+    </AdminLayout>
+  </ProtectedRoute>
+);
+
+const ProtectedAdminChat = () => (
+  <ProtectedRoute requiredRole="admin">
+    <AdminLayout>
+      <AdminChat />
+    </AdminLayout>
+  </ProtectedRoute>
+);
+
+const ProtectedEmployees = () => (
+  <ProtectedRoute requiredRole="company">
+    <Employees />
+  </ProtectedRoute>
+);
+
+const ProtectedAtsManagement = () => (
+  <ProtectedRoute requiredRole="company">
+    <AtsManagement />
+  </ProtectedRoute>
+);
+
+const ProtectedTickets = () => (
+  <ProtectedRoute requiredRole="company">
+    <Tickets />
+  </ProtectedRoute>
+);
+
+const ProtectedTasks = () => (
+  <ProtectedRoute requiredRole="company">
+    <Tasks />
+  </ProtectedRoute>
+);
+
+const ProtectedReports = () => (
+  <ProtectedRoute requiredRole="company">
+    <Reports />
+  </ProtectedRoute>
+);
+
+const ProtectedExecutiveDashboard = () => (
+  <ProtectedRoute requiredRole="company">
+    <ExecutiveDashboard />
+  </ProtectedRoute>
+);
+
+const ProtectedSettings = () => (
+  <ProtectedRoute requiredRole="company">
+    <Settings />
+  </ProtectedRoute>
+);
+
+const ProtectedCertificates = () => (
+  <ProtectedRoute requiredRole="company">
+    <Certificates />
+  </ProtectedRoute>
+);
+
+const ProtectedLegalCheck = () => (
+  <ProtectedRoute requiredRole="company">
+    <LegalCheck />
+  </ProtectedRoute>
+);
+
+const ProtectedTemplates = () => (
+  <ProtectedRoute requiredRole="company">
+    <Templates />
+  </ProtectedRoute>
+);
+
+const ProtectedReminders = () => (
+  <ProtectedRoute requiredRole="company">
+    <Reminders />
+  </ProtectedRoute>
+);
+
+const ProtectedDashboardTools = () => (
+  <ProtectedRoute requiredRole="company">
+    <DashboardTools />
+  </ProtectedRoute>
+);
+
+const ProtectedNotifications = () => (
+  <ProtectedRoute requiredRole="company">
+    <Notifications />
+  </ProtectedRoute>
+);
+
+const ProtectedAnalyticsPage = () => (
+  <ProtectedRoute requiredRole="company">
+    <AnalyticsPage />
+  </ProtectedRoute>
+);
+
+const ProtectedTrainingPage = () => (
+  <ProtectedRoute requiredRole="company">
+    <TrainingPage />
+  </ProtectedRoute>
+);
+
+const ProtectedInterviewsPage = () => (
+  <ProtectedRoute requiredRole="company">
+    <InterviewsPage />
+  </ProtectedRoute>
+);
+
+const ProtectedPerformancePage = () => (
+  <ProtectedRoute requiredRole="company">
+    <PerformancePage />
+  </ProtectedRoute>
+);
+
+const ProtectedMessagingPage = () => (
+  <ProtectedRoute requiredRole="company">
+    <MessagingPage />
+  </ProtectedRoute>
+);
+
+const ProtectedReportsPage = () => (
+  <ProtectedRoute requiredRole="company">
+    <ReportsPage />
+  </ProtectedRoute>
+);
+
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Suspense fallback={<PageLoader />}>
       <Switch>
-        <Route path={"/"} component={EnhancedHome} />
-        <Route path={"/home"} component={Home} />
-        <Route path={"/signup"} component={withPublicOnly(AccountType)} />
+        <Route path={"/"} component={HomeRedesigned} />
+        <Route path={"/home"} component={EnhancedHome} />
+        <Route path={"/home-legacy"} component={Home} />
+        <Route path={"/signup"} component={withPublicOnly(AccountTypeRedesigned)} />
+        <Route path={"/signup-legacy"} component={withPublicOnly(AccountType)} />
         <Route path={"/guided/:role"} component={GuidedTour} />
         <Route path={"/signup/employee"} component={SignupEmployee} />
         <Route path={"/signup/consultant"} component={SignupConsultant} />
         <Route path={"/signup/company"} component={SignupCompany} />
         <Route path={"/complete-profile"} component={CompleteProfile} />
-        <Route path={"/login"} component={withPublicOnly(Login)} />
+        <Route path={"/login"} component={withPublicOnly(LoginRedesigned)} />
         <Route path={"/login-enhanced"} component={withPublicOnly(EnhancedLogin)} />
+        <Route path={"/login-legacy"} component={withPublicOnly(Login)} />
         <Route path={"/register"} component={withPublicOnly(Register)} />
         <Route
           path={"/forgot-password"}
@@ -272,11 +514,7 @@ function Router() {
         />
         <Route
           path={"/employee/dashboard-enhanced"}
-          component={() => (
-            <ProtectedRoute requiredRole="employee">
-              <EnhancedEmployeeDashboard />
-            </ProtectedRoute>
-          )}
+          component={ProtectedEnhancedEmployeeDashboard}
         />
         <Route
           path={"/dashboard/employee"}
@@ -314,11 +552,14 @@ function Router() {
           path={"/admin/discount-codes"}
           component={ProtectedAdminRoute}
         />
-        <Route path="/contact" component={Contact} />
-        <Route path="/faq" component={FAQ} />
-        <Route path={"/about"} component={About} />
+        <Route path="/contact" component={ContactRedesigned} />
+        <Route path="/faq" component={FAQRedesigned} />
+        <Route path="/faq-legacy" component={FAQ} />
+        <Route path={"/about"} component={AboutRedesigned} />
+        <Route path={"/about-legacy"} component={About} />
         <Route path={"/refund-policy"} component={RefundPolicy} />
-        <Route path="/blog" component={Blog} />
+        <Route path="/blog" component={BlogRedesigned} />
+        <Route path="/blog-legacy" component={Blog} />
         <Route path="/blog/:id" component={BlogPost} />
         <Route path="/success-stories" component={SuccessStories} />
         <Route path="/privacy" component={Privacy} />
@@ -331,37 +572,21 @@ function Router() {
         />
         <Route
           path="/admin/data-requests"
-          component={() => (
-            <ProtectedRoute requiredRole="admin">
-              <AdminLayout>
-                <AdminDataRequests />
-              </AdminLayout>
-            </ProtectedRoute>
-          )}
+          component={ProtectedAdminDataRequests}
         />
         <Route
           path="/admin/security-incidents"
-          component={() => (
-            <ProtectedRoute requiredRole="admin">
-              <AdminLayout>
-                <AdminSecurityIncidents />
-              </AdminLayout>
-            </ProtectedRoute>
-          )}
+          component={ProtectedAdminSecurityIncidents}
         />
         <Route path="/terms" component={Terms} />
         <Route path="/cookies" component={Cookies} />
         <Route path="/cookies-policy" component={CookiesPolicy} />
         <Route
           path="/consultant/register"
-          component={() => (
-            <ProtectedRoute>
-              <ConsultantRegister />
-            </ProtectedRoute>
-          )}
+          component={ProtectedConsultantRegister}
         />
-        <Route path={"/case-studies"} component={CaseStudies} />
-        <Route path="/consulting" component={Consulting} />
+<Route path={"case-studies"} component={CaseStudies} />
+        <Route path="/consulting" component={ConsultingRedesigned} />
         <Route path="/consulting/book" component={ConsultingBook} />
         <Route path="/consulting/book-new" component={ConsultingBookingNew} />
         <Route path="/consultants" component={ConsultantsList} />
@@ -374,40 +599,25 @@ function Router() {
         />
         <Route
           path="/my-consultations"
-          component={() => (
-            <ProtectedRoute>
-              <MyConsultations />
-            </ProtectedRoute>
-          )}
+          component={ProtectedMyConsultations}
         />
         <Route
           path="/consultation/:id"
-          component={() => (
-            <ProtectedRoute>
-              <ConsultationDetail />
-            </ProtectedRoute>
-          )}
+          component={ProtectedConsultationDetail}
         />
         <Route
           path="/consultation/:id/chat"
-          component={() => (
-            <ProtectedRoute>
-              <ConsultationChat />
-            </ProtectedRoute>
-          )}
+          component={ProtectedConsultationChat}
         />
         <Route
           path="/consultant-dashboard"
-          component={() => (
-            <ProtectedRoute requiredRole="consultant">
-              <ConsultantDashboard />
-            </ProtectedRoute>
-          )}
+          component={ProtectedConsultantDashboard}
         />
         <Route path={"/courses"} component={Courses} />
         <Route path={"/courses/:id"} component={CourseDetail} />
         <Route path={"/knowledge"} component={Knowledge} />
-        <Route path={"/tools"} component={ToolsPage} />
+        <Route path={"/tools"} component={ToolsRedesigned} />
+        <Route path={"/tools-legacy"} component={ToolsPage} />
         <Route path={"/knowledge-base"} component={KnowledgeBase} />
         <Route path={"/knowledge-base/:id"} component={KnowledgeBaseArticle} />
         <Route
@@ -416,7 +626,7 @@ function Router() {
         />
         <Route path={"/tools/leave-calculator"} component={LeaveCalculator} />
         <Route path={"/tools/letter-generator"} component={LetterGenerator} />
-  <Route path="/pricing" component={Pricing} />
+  <Route path="/pricing" component={PricingRedesigned} />
   <Route path="/trial-accounts" component={TrialAccounts} />
   <Route path="/trial" component={TrialAccounts} />
         {AIChat && (
@@ -444,248 +654,120 @@ function Router() {
         />
         <Route
           path="/company/dashboard"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <CompanyDashboard />
-            </ProtectedRoute>
-          )}
+          component={ProtectedCompanyDashboard}
         />
         <Route
           path="/company/dashboard-enhanced"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <EnhancedCompanyDashboard />
-            </ProtectedRoute>
-          )}
+          component={ProtectedEnhancedCompanyDashboard}
         />
         <Route
           path="/admin/dashboard"
-          component={() => (
-            <ProtectedRoute requiredRole="admin">
-              <AdminLayout>
-                <AdminDashboardNew />
-              </AdminLayout>
-            </ProtectedRoute>
-          )}
+          component={ProtectedAdminDashboard}
         />
         <Route
           path="/admin/dashboard-enhanced"
-          component={() => (
-            <ProtectedRoute requiredRole="admin">
-              <EnhancedAdminDashboard />
-            </ProtectedRoute>
-          )}
+          component={ProtectedEnhancedAdminDashboard}
         />
         <Route
           path="/admin/users"
-          component={() => (
-            <ProtectedRoute requiredRole="admin">
-              <AdminLayout>
-                <AdminUsers />
-              </AdminLayout>
-            </ProtectedRoute>
-          )}
+          component={ProtectedAdminUsers}
         />
         <Route
           path="/admin/subscriptions"
-          component={() => (
-            <ProtectedRoute requiredRole="admin">
-              <AdminLayout>
-                <AdminSubscriptions />
-              </AdminLayout>
-            </ProtectedRoute>
-          )}
+          component={ProtectedAdminSubscriptions}
         />
         <Route
           path="/admin/bookings"
-          component={() => (
-            <ProtectedRoute requiredRole="admin">
-              <AdminLayout>
-                <AdminBookings />
-              </AdminLayout>
-            </ProtectedRoute>
-          )}
+          component={ProtectedAdminBookings}
         />
         <Route
           path="/admin/audit-logs"
-          component={() => (
-            <ProtectedRoute requiredRole="admin">
-              <AdminLayout>
-                <AdminAuditLogs />
-              </AdminLayout>
-            </ProtectedRoute>
-          )}
+          component={ProtectedAdminAuditLogs}
         />
         <Route
           path="/admin/chat"
-          component={() => (
-            <ProtectedRoute requiredRole="admin">
-              <AdminLayout>
-                <AdminChat />
-              </AdminLayout>
-            </ProtectedRoute>
-          )}
+          component={ProtectedAdminChat}
         />
         <Route
           path="/dashboard/employees"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <Employees />
-            </ProtectedRoute>
-          )}
+          component={ProtectedEmployees}
         />
         <Route
           path="/dashboard/ats"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <AtsManagement />
-            </ProtectedRoute>
-          )}
+          component={ProtectedAtsManagement}
         />
         <Route
           path="/dashboard/tickets"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <Tickets />
-            </ProtectedRoute>
-          )}
+          component={ProtectedTickets}
         />
         <Route
           path="/dashboard/tasks"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <Tasks />
-            </ProtectedRoute>
-          )}
+          component={ProtectedTasks}
         />
         <Route
           path="/dashboard/reports"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <Reports />
-            </ProtectedRoute>
-          )}
+          component={ProtectedReports}
         />
         <Route
           path="/dashboard/executive"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <ExecutiveDashboard />
-            </ProtectedRoute>
-          )}
+          component={ProtectedExecutiveDashboard}
         />
         <Route
           path="/dashboard/settings"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <Settings />
-            </ProtectedRoute>
-          )}
+          component={ProtectedSettings}
         />
         <Route
           path="/dashboard/certificates"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <Certificates />
-            </ProtectedRoute>
-          )}
+          component={ProtectedCertificates}
         />
         <Route
           path="/dashboard/legal-check"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <LegalCheck />
-            </ProtectedRoute>
-          )}
+          component={ProtectedLegalCheck}
         />
         <Route
           path="/dashboard/templates"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <Templates />
-            </ProtectedRoute>
-          )}
+          component={ProtectedTemplates}
         />
         <Route
           path="/dashboard/smart-form-generator"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <Templates />
-            </ProtectedRoute>
-          )}
+          component={ProtectedTemplates}
         />
         <Route
           path="/dashboard/reminders"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <Reminders />
-            </ProtectedRoute>
-          )}
+          component={ProtectedReminders}
         />
         <Route
           path="/dashboard/tools"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <DashboardTools />
-            </ProtectedRoute>
-          )}
+          component={ProtectedDashboardTools}
         />
         <Route
           path="/dashboard/notifications"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <Notifications />
-            </ProtectedRoute>
-          )}
+          component={ProtectedNotifications}
         />
         {/* New Feature Routes */}
         <Route
           path="/dashboard/analytics"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <AnalyticsPage />
-            </ProtectedRoute>
-          )}
+          component={ProtectedAnalyticsPage}
         />
         <Route
           path="/dashboard/training"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <TrainingPage />
-            </ProtectedRoute>
-          )}
+          component={ProtectedTrainingPage}
         />
         <Route
           path="/dashboard/interviews"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <InterviewsPage />
-            </ProtectedRoute>
-          )}
+          component={ProtectedInterviewsPage}
         />
         <Route
           path="/dashboard/performance"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <PerformancePage />
-            </ProtectedRoute>
-          )}
+          component={ProtectedPerformancePage}
         />
         <Route
           path="/dashboard/messaging"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <MessagingPage />
-            </ProtectedRoute>
-          )}
+          component={ProtectedMessagingPage}
         />
         <Route
           path="/dashboard/reports-export"
-          component={() => (
-            <ProtectedRoute requiredRole="company">
-              <ReportsPage />
-            </ProtectedRoute>
-          )}
+          component={ProtectedReportsPage}
         />
         <Route path="/verify-decision" component={VerifyDecision} />
         <Route path="/services" component={Services} />
@@ -693,9 +775,9 @@ function Router() {
         {ComponentShowcase && (
           <Route path="/dev/showcase" component={ComponentShowcase} />
         )}
-        <Route path={"/404"} component={NotFound} />
+        <Route path={"/404"} component={NotFoundRedesigned} />
         {/* Final fallback route */}
-        <Route component={NotFound} />
+        <Route component={NotFoundRedesigned} />
       </Switch>
     </Suspense>
   );
@@ -738,7 +820,7 @@ function App() {
         <ThemeProvider defaultTheme="light" switchable>
           <TooltipProvider>
             <SkipLink />
-            <Header />
+            <HeaderRedesigned />
             <main
               id="main-content"
               className="min-h-[calc(100vh-4rem)]"

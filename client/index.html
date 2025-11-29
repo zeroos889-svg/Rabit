@@ -2,15 +2,24 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
-  <link rel="icon" type="image/svg+xml" href="/LOGO.svg" />
-  <link rel="apple-touch-icon" href="/LOGO.svg" />
-  <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="theme-color" content="#7C3AED" />
-  <title>رابِط - مساعد الموارد البشرية الذكي</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Performance: DNS Prefetch & Preconnect -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Performance: Preload critical resources -->
+    <link rel="preload" href="/LOGO.svg" as="image" type="image/svg+xml" />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" as="style" />
+    
+    <!-- App Icons & Manifest -->
+    <link rel="icon" type="image/svg+xml" href="/LOGO.svg" />
+    <link rel="apple-touch-icon" href="/LOGO.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#3b62ff" />
+    <title>رابِط - مساعد الموارد البشرية الذكي</title>
 
     <!-- SEO Meta Tags -->
     <meta
@@ -58,17 +67,32 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="رابِط" />
 
-    <!-- Google Fonts - Cairo for Arabic -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Google Fonts - Cairo for Arabic (async loading) -->
     <link
       href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
   </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Initial loading state for better perceived performance -->
+      <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f8fafc;">
+        <div style="text-align:center;">
+          <img src="/LOGO.svg" alt="رابِط" width="64" height="64" style="margin-bottom:16px;" />
+          <div style="width:40px;height:40px;border:3px solid #e2e8f0;border-top-color:#3b62ff;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto;"></div>
+        </div>
+      </div>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
     <!-- Analytics loaded via JS - will be initialized in main.tsx if configured -->
   </body>

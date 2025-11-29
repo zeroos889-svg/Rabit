@@ -204,6 +204,38 @@ body {
   }
 }
 
+/* Animation delay utilities (used to avoid inline styles) */
+.animate-delay-0 { transition-delay: 0ms !important; }
+.animate-delay-50 { transition-delay: 50ms !important; }
+.animate-delay-100 { transition-delay: 100ms !important; }
+.animate-delay-150 { transition-delay: 150ms !important; }
+.animate-delay-200 { transition-delay: 200ms !important; }
+.animate-delay-250 { transition-delay: 250ms !important; }
+.animate-delay-300 { transition-delay: 300ms !important; }
+.animate-delay-350 { transition-delay: 350ms !important; }
+.animate-delay-400 { transition-delay: 400ms !important; }
+.animate-delay-450 { transition-delay: 450ms !important; }
+.animate-delay-500 { transition-delay: 500ms !important; }
+.animate-delay-550 { transition-delay: 550ms !important; }
+.animate-delay-600 { transition-delay: 600ms !important; }
+.animate-delay-650 { transition-delay: 650ms !important; }
+.animate-delay-700 { transition-delay: 700ms !important; }
+
+.bg-grid-brand {
+  background-image:
+    linear-gradient(rgba(59, 98, 255, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 98, 255, 0.5) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.bg-grid-brand-tight {
+  background-image:
+    linear-gradient(rgba(59, 98, 255, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 98, 255, 0.5) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+
 /* Enhanced toast styles */
 .toast-success {
   animation: toast-slide-in 0.3s ease-out;

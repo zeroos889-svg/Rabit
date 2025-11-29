@@ -87,7 +87,26 @@ if (
   }
 }
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Cache data for 5 minutes
+      staleTime: 1000 * 60 * 5,
+      // Keep unused data in cache for 30 minutes
+      gcTime: 1000 * 60 * 30,
+      // Retry failed requests 2 times
+      retry: 2,
+      // Don't refetch on window focus in production
+      refetchOnWindowFocus: import.meta.env.MODE === 'development',
+      // Don't refetch on reconnect automatically
+      refetchOnReconnect: 'always',
+    },
+    mutations: {
+      // Retry mutations once
+      retry: 1,
+    },
+  },
+});
 
 const formatErrorDetail = (error: unknown): string => {
   if (error instanceof Error) return error.message;
