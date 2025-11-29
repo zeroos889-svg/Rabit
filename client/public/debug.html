@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تشخيص رابِط</title>
+    <style>
+        body { font-family: Cairo, Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .card { background: white; padding: 20px; border-radius: 8px; margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+        pre { background: #f0f0f0; padding: 10px; overflow-x: auto; font-size: 12px; }
+        button { background: #3b62ff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #2a4ecc; }
+        h1 { color: #3b62ff; }
+    </style>
+</head>
+<body>
+    <h1>🔧 تشخيص رابِط</h1>
+    
+    <div class="card">
+        <h3>حالة Service Worker</h3>
+        <div id="sw-status">جاري الفحص...</div>
+    </div>
+
+    <div class="card">
+        <h3>حالة الكاش</h3>
+        <div id="cache-status">جاري الفحص...</div>
+    </div>
+
+    <div class="card">
+        <h3>حالة API</h3>
+        <div id="api-status">جاري الفحص...</div>
+    </div>
+
+    <div class="card">
+        <h3>حالة JavaScript</h3>
+        <div id="js-status">جاري الفحص...</div>
+    </div>
+
+    <div class="card">
+        <h3>معلومات المتصفح</h3>
+        <div id="browser-info"></div>
+    </div>
+
+    <div class="card">
+        <h3>إجراءات الإصلاح</h3>
+        <button onclick="clearAllCaches()">🗑️ مسح جميع الكاش</button>
+        <button onclick="unregisterSW()">❌ إلغاء Service Worker</button>
+        <button onclick="hardReload()">🔄 إعادة تحميل قوية</button>
+        <button onclick="goToApp()">🏠 الذهاب للتطبيق</button>
+    </div>
+
+    <div class="card">
+        <h3>سجل التشخيص</h3>
+        <pre id="log"></pre>
+    </div>
+
+    <script>
+        const log = (msg, type = 'info') => {
+            const logEl = document.getElementById('log');
+            const time = new Date().toLocaleTimeString('ar-SA');
+            logEl.textContent += `[${time}] ${msg}\n`;
+            console.log(msg);
+        };
+
+        // Browser info
+        document.getElementById('browser-info').innerHTML = `
+            <p>المتصفح: ${navigator.userAgent}</p>
+            <p>اللغة: ${navigator.language}</p>
+            <p>Online: ${navigator.onLine ? '✅ متصل' : '❌ غير متصل'}</p>
+        `;
+
+        // Check Service Worker
+        async function checkSW() {
+            const statusEl = document.getElementById('sw-status');
+            if (!('serviceWorker' in navigator)) {
+                statusEl.innerHTML = '<span class="warning">⚠️ Service Worker غير مدعوم</span>';
+                return;
+            }
+
+            try {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                if (registrations.length === 0) {
+                    statusEl.innerHTML = '<span class="success">✅ لا يوجد Service Worker مسجل</span>';
+                } else {
+                    let html = `<span class="warning">⚠️ يوجد ${registrations.length} Service Worker(s):</span><ul>`;
+                    for (const reg of registrations) {
+                        html += `<li>Scope: ${reg.scope}, State: ${reg.active?.state || 'N/A'}</li>`;
+                    }
+                    html += '</ul>';
+                    statusEl.innerHTML = html;
+                }
+                log(`Found ${registrations.length} service worker(s)`);
+            } catch (err) {
+                statusEl.innerHTML = `<span class="error">❌ خطأ: ${err.message}</span>`;
+                log(`SW Error: ${err.message}`, 'error');
+            }
+        }
+
+        // Check Caches
+        async function checkCaches() {
+            const statusEl = document.getElementById('cache-status');
+            try {
+                const cacheNames = await caches.keys();
+                if (cacheNames.length === 0) {
+                    statusEl.innerHTML = '<span class="success">✅ لا يوجد كاش مخزن</span>';
+                } else {
+                    let html = `<span class="warning">⚠️ يوجد ${cacheNames.length} كاش:</span><ul>`;
+                    for (const name of cacheNames) {
+                        const cache = await caches.open(name);
+                        const keys = await cache.keys();
+                        html += `<li>${name}: ${keys.length} ملف</li>`;
+                    }
+                    html += '</ul>';
+                    statusEl.innerHTML = html;
+                }
+                log(`Found ${cacheNames.length} cache(s): ${cacheNames.join(', ')}`);
+            } catch (err) {
+                statusEl.innerHTML = `<span class="error">❌ خطأ: ${err.message}</span>`;
+                log(`Cache Error: ${err.message}`, 'error');
+            }
+        }
+
+        // Check API
+        async function checkAPI() {
+            const statusEl = document.getElementById('api-status');
+            try {
+                const healthRes = await fetch('/health');
+                const healthData = await healthRes.json();
+                
+                const trpcRes = await fetch('/api/trpc/auth.me');
+                const trpcData = await trpcRes.json();
+                
+                statusEl.innerHTML = `
+                    <p class="success">✅ Health: ${healthData.status}</p>
+                    <p class="success">✅ tRPC: يعمل</p>
+                `;
+                log('API is working correctly');
+            } catch (err) {
+                statusEl.innerHTML = `<span class="error">❌ خطأ API: ${err.message}</span>`;
+                log(`API Error: ${err.message}`, 'error');
+            }
+        }
+
+        // Check JS loading
+        async function checkJS() {
+            const statusEl = document.getElementById('js-status');
+            try {
+                // Get the current index file
+                const htmlRes = await fetch('/');
+                const html = await htmlRes.text();
+                const match = html.match(/index-([^"]+)\.js/);
+                
+                if (match) {
+                    const jsFile = `index-${match[1]}.js`;
+                    const jsRes = await fetch(`/assets/${jsFile}`);
+                    
+                    if (jsRes.ok) {
+                        const jsText = await jsRes.text();
+                        const hasNewCode = jsText.includes('rabithr:sw-version');
+                        statusEl.innerHTML = `
+                            <p class="success">✅ ملف JS: ${jsFile}</p>
+                            <p class="${hasNewCode ? 'success' : 'warning'}">${hasNewCode ? '✅' : '⚠️'} كود جديد: ${hasNewCode ? 'موجود' : 'غير موجود'}</p>
+                        `;
+                        log(`JS file: ${jsFile}, has new code: ${hasNewCode}`);
+                    } else {
+                        statusEl.innerHTML = `<span class="error">❌ فشل تحميل JS: ${jsRes.status}</span>`;
+                    }
+                } else {
+                    statusEl.innerHTML = '<span class="error">❌ لم يتم العثور على ملف JS</span>';
+                }
+            } catch (err) {
+                statusEl.innerHTML = `<span class="error">❌ خطأ: ${err.message}</span>`;
+                log(`JS Error: ${err.message}`, 'error');
+            }
+        }
+
+        // Clear all caches
+        async function clearAllCaches() {
+            log('Clearing all caches...');
+            try {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+                log(`Cleared ${cacheNames.length} cache(s)`);
+                alert(`تم مسح ${cacheNames.length} كاش بنجاح!`);
+                checkCaches();
+            } catch (err) {
+                log(`Error clearing caches: ${err.message}`, 'error');
+                alert(`خطأ: ${err.message}`);
+            }
+        }
+
+        // Unregister Service Worker
+        async function unregisterSW() {
+            log('Unregistering service workers...');
+            try {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (const reg of registrations) {
+                    await reg.unregister();
+                }
+                log(`Unregistered ${registrations.length} service worker(s)`);
+                alert(`تم إلغاء ${registrations.length} Service Worker بنجاح!`);
+                checkSW();
+            } catch (err) {
+                log(`Error unregistering SW: ${err.message}`, 'error');
+                alert(`خطأ: ${err.message}`);
+            }
+        }
+
+        // Hard reload
+        function hardReload() {
+            log('Performing hard reload...');
+            location.reload(true);
+        }
+
+        // Go to app
+        function goToApp() {
+            window.location.href = '/?debug_cleared=' + Date.now();
+        }
+
+        // Run all checks
+        log('Starting diagnostics...');
+        checkSW();
+        checkCaches();
+        checkAPI();
+        checkJS();
+    </script>
+</body>
+</html>
