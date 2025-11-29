@@ -14,6 +14,9 @@ import "./lib/i18n";
 
 const LOCALE_STORAGE_KEY = "rabithr:locale";
 type FetchInit = NonNullable<Parameters<typeof fetch>[1]>;
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") || "";
+const TRPC_URL = API_BASE ? `${API_BASE}/api/trpc` : "/api/trpc";
 
 installCsrfFetchInterceptor();
 
@@ -160,7 +163,7 @@ queryClient.getMutationCache().subscribe(event => {
 const trpcClient = trpc.createClient({
   links: [
     httpBatchLink({
-      url: "/api/trpc",
+      url: TRPC_URL,
       transformer: superjson,
       headers() {
         const token = localStorage.getItem("authToken");

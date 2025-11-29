@@ -47,6 +47,7 @@ import {
   Eye,
   Star,
   Award,
+  Calculator,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -56,6 +57,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ConnectedPagesSection } from "@/components/ConnectedPagesSection";
+import { QuickActionsBar } from "@/components/QuickActionsBar";
 
 // ============================================================================
 // Types
@@ -731,6 +733,33 @@ const FALLBACK_TASKS: TaskItem[] = [
   },
 ];
 
+const QUICK_NAV_ACTIONS = [
+  {
+    href: "/dashboard/employees",
+    icon: Users,
+    labelAr: "الموظفون",
+    labelEn: "Employees",
+  },
+  {
+    href: "/dashboard/ats",
+    icon: Briefcase,
+    labelAr: "نظام التوظيف",
+    labelEn: "ATS",
+  },
+  {
+    href: "/dashboard/tickets",
+    icon: Ticket,
+    labelAr: "التذاكر",
+    labelEn: "Tickets",
+  },
+  {
+    href: "/tools",
+    icon: Calculator,
+    labelAr: "الأدوات",
+    labelEn: "Tools",
+  },
+];
+
 // ============================================================================
 // Main Component
 // ============================================================================
@@ -872,6 +901,13 @@ export default function CompanyDashboardRedesigned() {
             )}
           </div>
         </AnimateOnScroll>
+
+        <QuickActionsBar
+          isArabic={isArabic}
+          actions={QUICK_NAV_ACTIONS}
+          sticky={false}
+          className="border-0 bg-transparent px-0 py-2"
+        />
 
         {/* Stats Grid */}
         <AnimateOnScroll delay={100}>

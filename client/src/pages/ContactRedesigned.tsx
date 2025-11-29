@@ -58,6 +58,7 @@ import {
   Zap,
   Star,
   Trophy,
+  HelpCircle,
   type LucideIcon,
 } from "lucide-react";
 
@@ -87,6 +88,33 @@ interface FAQ {
 type ContactFieldElement =
   | globalThis.HTMLInputElement
   | globalThis.HTMLTextAreaElement;
+
+const CONTACT_ACTIONS = [
+  {
+    href: "/consulting/book-new",
+    icon: Sparkles,
+    labelAr: "حجز استشارة فورية",
+    labelEn: "Book Instant Consultation",
+  },
+  {
+    href: "/pricing",
+    icon: Trophy,
+    labelAr: "عرض الأسعار",
+    labelEn: "View Pricing",
+  },
+  {
+    href: "/faq",
+    icon: HelpCircle,
+    labelAr: "الأسئلة الشائعة",
+    labelEn: "FAQ",
+  },
+  {
+    href: "/contact",
+    icon: Headphones,
+    labelAr: "دعم واتساب مباشر",
+    labelEn: "Direct WhatsApp Support",
+  },
+];
 
 // ============================================================================
 // Animation Component
@@ -514,7 +542,11 @@ export default function ContactRedesigned() {
           </div>
         </div>
       </section>
-      <QuickActionsBar isArabic={isArabic} className="border-0 bg-white/90 dark:bg-gray-950/90" />
+      <QuickActionsBar
+        isArabic={isArabic}
+        actions={CONTACT_ACTIONS}
+        className="border-0 bg-white/90 dark:bg-gray-950/90"
+      />
 
       {/* ============== Contact Form & Info Section ============== */}
       <section className="py-20 lg:py-28">

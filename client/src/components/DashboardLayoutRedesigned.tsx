@@ -62,6 +62,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { QuickActionsBar } from "@/components/QuickActionsBar";
 
 // ============================================================================
 // Types
