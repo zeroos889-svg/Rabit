@@ -167,7 +167,7 @@ export default function ConsultingExperts() {
                           <div className="flex items-center gap-2">
                             <div className="flex items-center">
                               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                              <span className="text-sm font-medium mr-1">
+                              <span className="text-sm font-medium ms-1">
                                 {expert.averageRating || 4.8}
                               </span>
                             </div>
@@ -228,7 +228,7 @@ export default function ConsultingExperts() {
                             <span className="text-2xl font-bold text-blue-600">
                               {expert.price || 299} ﷼
                             </span>
-                            <span className="text-sm text-gray-500 mr-2">
+                            <span className="text-sm text-gray-500 ms-2">
                               / جلسة
                             </span>
                           </div>

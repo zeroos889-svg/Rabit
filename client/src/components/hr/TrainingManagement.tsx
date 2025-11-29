@@ -257,12 +257,12 @@ function CourseCard({ course, isArabic, onEnroll, isEnrolled }: CourseCardProps)
         >
           {isEnrolled ? (
             <>
-              <Check className="h-4 w-4 mr-2" />
+              <Check className="h-4 w-4 ms-2" />
               {isArabic ? "مسجل" : "Enrolled"}
             </>
           ) : (
             <>
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4 ms-2" />
               {isArabic ? "التسجيل" : "Enroll"}
             </>
           )}
@@ -347,12 +347,12 @@ function EnrollmentCard({ enrollment, isArabic, onContinue }: EnrollmentCardProp
           >
             {enrollment.status === "not-started" ? (
               <>
-                <Play className="h-4 w-4 mr-2" />
+                <Play className="h-4 w-4 ms-2" />
                 {isArabic ? "ابدأ الآن" : "Start Now"}
               </>
             ) : (
               <>
-                <Play className="h-4 w-4 mr-2" />
+                <Play className="h-4 w-4 ms-2" />
                 {isArabic ? "متابعة" : "Continue"}
               </>
             )}
@@ -500,11 +500,11 @@ export function TrainingManagement() {
       <Tabs defaultValue="my-courses">
         <TabsList>
           <TabsTrigger value="my-courses">
-            <BookOpen className="h-4 w-4 mr-2" />
+            <BookOpen className="h-4 w-4 ms-2" />
             {isArabic ? "دوراتي" : "My Courses"}
           </TabsTrigger>
           <TabsTrigger value="catalog">
-            <GraduationCap className="h-4 w-4 mr-2" />
+            <GraduationCap className="h-4 w-4 ms-2" />
             {isArabic ? "كتالوج الدورات" : "Course Catalog"}
           </TabsTrigger>
         </TabsList>
@@ -553,7 +553,7 @@ export function TrainingManagement() {
             </div>
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger className="w-[180px]">
-                <Filter className="h-4 w-4 mr-2" />
+                <Filter className="h-4 w-4 ms-2" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

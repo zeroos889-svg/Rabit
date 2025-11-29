@@ -75,7 +75,7 @@ export default function Privacy() {
                 <h3 className="font-semibold text-foreground mb-2">
                   1. معلومات الحساب:
                 </h3>
-                <ul className="list-disc list-inside space-y-2 mr-4">
+                <ul className="list-disc list-inside space-y-2 me-4">
                   <li>الاسم الكامل</li>
                   <li>البريد الإلكتروني</li>
                   <li>رقم الهاتف</li>
@@ -88,7 +88,7 @@ export default function Privacy() {
                 <h3 className="font-semibold text-foreground mb-2">
                   2. بيانات الموظفين:
                 </h3>
-                <ul className="list-disc list-inside space-y-2 mr-4">
+                <ul className="list-disc list-inside space-y-2 me-4">
                   <li>
                     معلومات الموظفين (الأسماء، المسميات الوظيفية، الرواتب)
                   </li>
@@ -102,7 +102,7 @@ export default function Privacy() {
                 <h3 className="font-semibold text-foreground mb-2">
                   3. معلومات الاستخدام:
                 </h3>
-                <ul className="list-disc list-inside space-y-2 mr-4">
+                <ul className="list-disc list-inside space-y-2 me-4">
                   <li>عنوان IP والموقع الجغرافي</li>
                   <li>نوع المتصفح والجهاز</li>
                   <li>الصفحات التي تزورها والميزات التي تستخدمها</li>
@@ -114,7 +114,7 @@ export default function Privacy() {
                 <h3 className="font-semibold text-foreground mb-2">
                   4. معلومات الدفع:
                 </h3>
-                <ul className="list-disc list-inside space-y-2 mr-4">
+                <ul className="list-disc list-inside space-y-2 me-4">
                   <li>معلومات بطاقة الائتمان (مشفرة عبر بوابات دفع آمنة)</li>
                   <li>سجل المعاملات والفواتير</li>
                 </ul>
@@ -132,7 +132,7 @@ export default function Privacy() {
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
               <p>نستخدم المعلومات التي نجمعها للأغراض التالية:</p>
-              <ul className="list-disc list-inside space-y-2 mr-4">
+              <ul className="list-disc list-inside space-y-2 me-4">
                 <li>
                   <strong className="text-foreground">تقديم الخدمة:</strong>{" "}
                   تشغيل وصيانة منصة رابِط وتوفير الميزات المطلوبة
@@ -177,7 +177,7 @@ export default function Privacy() {
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
               <p>نتخذ إجراءات أمنية صارمة لحماية بياناتك:</p>
-              <ul className="list-disc list-inside space-y-2 mr-4">
+              <ul className="list-disc list-inside space-y-2 me-4">
                 <li>
                   <strong className="text-foreground">التشفير:</strong> نستخدم
                   تشفير SSL 256-bit لجميع البيانات المنقولة
@@ -230,7 +230,7 @@ export default function Privacy() {
                   <Database className="h-4 w-4 text-blue-600" />
                   تخزين المستندات:
                 </h3>
-                <ul className="list-disc list-inside space-y-2 mr-4 text-sm">
+                <ul className="list-disc list-inside space-y-2 me-4 text-sm">
                   <li>
                     جميع المستندات المولّدة بالذكاء الاصطناعي يتم حفظها{" "}
                     <strong className="text-foreground">
@@ -252,7 +252,7 @@ export default function Privacy() {
                   <UserCheck className="h-4 w-4 text-blue-600" />
                   Human-in-the-Loop (المراجعة البشرية):
                 </h3>
-                <ul className="list-disc list-inside space-y-2 mr-4 text-sm">
+                <ul className="list-disc list-inside space-y-2 me-4 text-sm">
                   <li>
                     <strong className="text-foreground">
                       جميع المستندات المولّدة تحمل تنبيهاً:
@@ -272,7 +272,7 @@ export default function Privacy() {
                   <Lock className="h-4 w-4 text-blue-600" />
                   الخصوصية والأمان:
                 </h3>
-                <ul className="list-disc list-inside space-y-2 mr-4 text-sm">
+                <ul className="list-disc list-inside space-y-2 me-4 text-sm">
                   <li>لا نستخدم بياناتك لتدريب نماذج الذكاء الاصطناعي</li>
                   <li>جميع الاتصالات مع نماذج AI مشفرة بالكامل</li>
                   <li>لا يتم تخزين المحادثات مع AI إلا في حسابك</li>
@@ -303,7 +303,7 @@ export default function Privacy() {
                 </strong>
                 قد نشارك معلوماتك في الحالات التالية فقط:
               </p>
-              <ul className="list-disc list-inside space-y-2 mr-4">
+              <ul className="list-disc list-inside space-y-2 me-4">
                 <li>
                   <strong className="text-foreground">مقدمو الخدمات:</strong>{" "}
                   شركات معالجة الدفع، استضافة الخوادم، والدعم الفني (مع اتفاقيات
@@ -337,7 +337,7 @@ export default function Privacy() {
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
               <p>لديك الحقوق التالية فيما يتعلق ببياناتك الشخصية:</p>
-              <ul className="list-disc list-inside space-y-2 mr-4">
+              <ul className="list-disc list-inside space-y-2 me-4">
                 <li>
                   <strong className="text-foreground">الوصول:</strong> طلب نسخة
                   من بياناتك الشخصية
@@ -367,7 +367,7 @@ export default function Privacy() {
                 لممارسة أي من هذه الحقوق، يرجى التواصل معنا عبر:
                 <a
                   href="mailto:info@rbithr.com"
-                  className="text-blue-600 hover:underline mr-1"
+                  className="text-blue-600 hover:underline me-1"
                 >
                   info@rbithr.com
                 </a>

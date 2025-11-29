@@ -868,7 +868,7 @@ ${letterData.additionalInfo ? `\n${letterData.additionalInfo}\n` : ""}
                     className="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700"
                     disabled={!customPrompt.trim() || isGenerating}
                   >
-                    <Sparkles className="h-4 w-4 ml-2" />
+                    <Sparkles className="h-4 w-4 me-2" />
                     {isGenerating
                       ? "جاري الإنشاء..."
                       : "إنشاء الخطاب بالذكاء الاصطناعي"}
@@ -1006,7 +1006,7 @@ ${letterData.additionalInfo ? `\n${letterData.additionalInfo}\n` : ""}
                           isGenerating
                         }
                       >
-                        <Sparkles className="h-4 w-4 ml-2" />
+                        <Sparkles className="h-4 w-4 me-2" />
                         {isGenerating ? "جاري الإنشاء..." : "إنشاء الخطاب"}
                       </Button>
                     </CardContent>
@@ -1030,7 +1030,7 @@ ${letterData.additionalInfo ? `\n${letterData.additionalInfo}\n` : ""}
                         size="sm"
                         onClick={handleCopyLetter}
                       >
-                        <Copy className="h-4 w-4 ml-2" />
+                        <Copy className="h-4 w-4 me-2" />
                         نسخ
                       </Button>
                       <Button
@@ -1038,7 +1038,7 @@ ${letterData.additionalInfo ? `\n${letterData.additionalInfo}\n` : ""}
                         size="sm"
                         onClick={handleDownloadPDF}
                       >
-                        <Download className="h-4 w-4 ml-2" />
+                        <Download className="h-4 w-4 me-2" />
                         تصدير PDF
                       </Button>
                     </div>
@@ -1091,9 +1091,9 @@ ${letterData.additionalInfo ? `\n${letterData.additionalInfo}\n` : ""}
                   disabled={isHistoryRefreshing}
                 >
                   {isHistoryRefreshing ? (
-                    <Loader2 className="h-4 w-4 ml-2 animate-spin" />
+                    <Loader2 className="h-4 w-4 me-2 animate-spin" />
                   ) : (
-                    <RefreshCw className="h-4 w-4 ml-2" />
+                    <RefreshCw className="h-4 w-4 me-2" />
                   )}
                   تحديث
                 </Button>
@@ -1156,7 +1156,7 @@ ${letterData.additionalInfo ? `\n${letterData.additionalInfo}\n` : ""}
                             size="sm"
                             onClick={() => handleLoadLetterFromHistory(entry)}
                           >
-                            <Eye className="h-4 w-4 ml-2" />
+                            <Eye className="h-4 w-4 me-2" />
                             عرض
                           </Button>
                           <Button
@@ -1164,7 +1164,7 @@ ${letterData.additionalInfo ? `\n${letterData.additionalInfo}\n` : ""}
                             size="sm"
                             onClick={() => handleCopyHistoryLetter(entry.content)}
                           >
-                            <Copy className="h-4 w-4 ml-2" />
+                            <Copy className="h-4 w-4 me-2" />
                             نسخ
                           </Button>
                           <Button
@@ -1175,9 +1175,9 @@ ${letterData.additionalInfo ? `\n${letterData.additionalInfo}\n` : ""}
                             disabled={deletingLetterId === entry.id && deleteLetterMutation.isPending}
                           >
                             {deletingLetterId === entry.id && deleteLetterMutation.isPending ? (
-                              <Loader2 className="h-4 w-4 ml-2 animate-spin" />
+                              <Loader2 className="h-4 w-4 me-2 animate-spin" />
                             ) : (
-                              <Trash2 className="h-4 w-4 ml-2" />
+                              <Trash2 className="h-4 w-4 me-2" />
                             )}
                             حذف
                           </Button>

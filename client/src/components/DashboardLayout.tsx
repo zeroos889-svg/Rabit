@@ -210,7 +210,7 @@ export default function DashboardLayout({ children, userType = "company", title 
         <button
           type="button"
           onClick={() => setIsMobileNavOpen(prev => !prev)}
-          aria-expanded={isMobileNavOpen ? "true" : "false"}
+          aria-expanded={isMobileNavOpen}
           aria-controls={navId}
           aria-label={mobileToggleLabel}
           className="inline-flex items-center justify-center rounded-full border border-border p-2 text-sm font-medium"

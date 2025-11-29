@@ -586,14 +586,14 @@ export default function DocumentGenerator() {
                   disabled={documentMutation.isPending}
                 >
                   {documentMutation.isPending ? (
-                    <Loader2 className="h-4 w-4 ml-2 animate-spin" />
+                    <Loader2 className="h-4 w-4 me-2 animate-spin" />
                   ) : (
-                    <Sparkles className="h-4 w-4 ml-2" />
+                    <Sparkles className="h-4 w-4 me-2" />
                   )}
                   {documentMutation.isPending ? "جاري التوليد" : "توليد المستند"}
                 </Button>
                 <Button variant="outline" onClick={askAI}>
-                  <Bot className="h-4 w-4 ml-2" />
+                  <Bot className="h-4 w-4 me-2" />
                   اقتراح من الذكاء الاصطناعي
                 </Button>
               </div>
@@ -636,11 +636,11 @@ export default function DocumentGenerator() {
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button variant="outline" onClick={handleCopy}>
-                  <Copy className="h-4 w-4 ml-2" />
+                  <Copy className="h-4 w-4 me-2" />
                   نسخ
                 </Button>
                 <Button variant="outline" onClick={handleDownload}>
-                  <Download className="h-4 w-4 ml-2" />
+                  <Download className="h-4 w-4 me-2" />
                   تحميل PDF/Word
                 </Button>
                 <Button
@@ -649,14 +649,14 @@ export default function DocumentGenerator() {
                   disabled={toggleSaveMutation.isPending}
                 >
                   {toggleSaveMutation.isPending ? (
-                    <Loader2 className="h-4 w-4 ml-2 animate-spin" />
+                    <Loader2 className="h-4 w-4 me-2 animate-spin" />
                   ) : (
-                    <Save className="h-4 w-4 ml-2" />
+                    <Save className="h-4 w-4 me-2" />
                   )}
                   {isLastDocumentSaved ? "تم الحفظ" : "حفظ في مكتبتي"}
                 </Button>
                 <Button variant="ghost">
-                  <CheckCircle2 className="h-4 w-4 ml-2" />
+                  <CheckCircle2 className="h-4 w-4 me-2" />
                   إرسال للمراجعة
                 </Button>
               </div>

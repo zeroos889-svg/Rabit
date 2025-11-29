@@ -844,13 +844,13 @@ export default function Signup() {
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="me-2 h-4 w-4 animate-spin" />
                   {t("signup.submit.loading")}
                 </>
               ) : (
                 <>
                   {t("signup.submit.cta")}
-                  <ArrowRight className="mr-2 h-4 w-4" />
+                  <ArrowRight className="me-2 h-4 w-4" />
                 </>
               )}
             </Button>
@@ -903,7 +903,7 @@ export default function Signup() {
                 <img
                   src="https://www.google.com/favicon.ico"
                   alt="Google"
-                  className="h-4 w-4 ml-2"
+                  className="h-4 w-4 me-2"
                 />{" "}
                 Google
               </Button>
@@ -915,7 +915,7 @@ export default function Signup() {
                 type="button"
               >
                 <svg
-                  className="h-4 w-4 ml-2"
+                  className="h-4 w-4 me-2"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                 >
@@ -931,7 +931,7 @@ export default function Signup() {
                 type="button"
               >
                 <svg
-                  className="h-4 w-4 ml-2"
+                  className="h-4 w-4 me-2"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                 >

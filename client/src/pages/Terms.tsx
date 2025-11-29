@@ -114,7 +114,7 @@ export default function Terms() {
                 <h3 className="font-semibold text-foreground mb-2">
                   1. شروط التسجيل:
                 </h3>
-                <ul className="list-disc list-inside space-y-2 mr-4">
+                <ul className="list-disc list-inside space-y-2 ms-4">
                   <li>يجب أن يكون عمرك 18 عاماً أو أكثر</li>
                   <li>تقديم معلومات صحيحة ودقيقة</li>
                   <li>الاحتفاظ بسرية كلمة المرور</li>
@@ -154,7 +154,7 @@ export default function Terms() {
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
               <p>يُسمح لك باستخدام المنصة للأغراض التالية:</p>
-              <ul className="list-disc list-inside space-y-2 mr-4">
+              <ul className="list-disc list-inside space-y-2 ms-4">
                 <li>إدارة الموارد البشرية لشركتك أو عملائك</li>
                 <li>استخدام الأدوات الذكية للحسابات والخطابات</li>
                 <li>تخزين ومعالجة بيانات الموظفين</li>
@@ -173,7 +173,7 @@ export default function Terms() {
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
               <p>يُحظر عليك القيام بما يلي:</p>
-              <ul className="list-disc list-inside space-y-2 mr-4">
+              <ul className="list-disc list-inside space-y-2 ms-4">
                 <li>انتهاك أي قوانين أو لوائح محلية أو دولية</li>
                 <li>رفع محتوى غير قانوني أو مسيء أو ضار</li>
                 <li>محاولة اختراق أو تعطيل المنصة</li>
@@ -209,7 +209,7 @@ export default function Terms() {
                 <h3 className="font-semibold text-foreground mb-2">
                   2. الدفع:
                 </h3>
-                <ul className="list-disc list-inside space-y-2 mr-4">
+                <ul className="list-disc list-inside space-y-2 ms-4">
                   <li>
                     جميع الأسعار بالريال السعودي وغير شاملة لضريبة القيمة
                     المضافة (15%)

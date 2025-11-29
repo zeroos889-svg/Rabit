@@ -973,7 +973,7 @@ export default function Consulting() {
                   <Button variant="ghost" className="text-white px-0" asChild>
                     <Link href={exp.href}>
                       جرّب الآن
-                      <ArrowRight className="mr-2 h-4 w-4" />
+                      <ArrowRight className="ms-2 h-4 w-4" />
                     </Link>
                   </Button>
                 </CardContent>

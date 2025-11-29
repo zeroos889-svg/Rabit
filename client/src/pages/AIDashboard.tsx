@@ -77,7 +77,7 @@ const FeatureCard = ({
         <CardContent>
           <Button variant="ghost" className="p-0 h-auto text-primary group-hover:gap-3 transition-all">
             {isArabic ? 'استكشف' : 'Explore'}
-            <ArrowRight className="w-4 h-4 mr-2 rtl:rotate-180" />
+            <ArrowRight className="w-4 h-4 ms-2 rtl:rotate-180" />
           </Button>
         </CardContent>
       </Card>
@@ -370,7 +370,7 @@ export default function AIDashboard() {
                 <Link href="/regulations">
                   <Button variant="outline">
                     {isArabic ? 'عرض الكل' : 'View All'}
-                    <ArrowRight className="w-4 h-4 mr-2 rtl:rotate-180" />
+                    <ArrowRight className="w-4 h-4 ms-2 rtl:rotate-180" />
                   </Button>
                 </Link>
               </div>

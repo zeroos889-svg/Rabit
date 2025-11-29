@@ -132,7 +132,7 @@ export default function Notifications() {
         <div className="flex items-center gap-3">
           {unreadCount > 0 && (
             <Button onClick={markAllAsRead} variant="outline">
-              <Check className="ml-2 h-4 w-4" />
+              <Check className="me-2 h-4 w-4" />
               تحديد الكل كمقروء
             </Button>
           )}

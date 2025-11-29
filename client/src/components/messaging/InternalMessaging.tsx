@@ -289,7 +289,7 @@ function ConversationItem({
           <div className="flex items-center justify-between mt-1">
             <p className="text-sm text-muted-foreground truncate max-w-[180px]">
               {conversation.lastMessage.senderId === CURRENT_USER_ID && (
-                <span className="inline-flex mr-1">
+                <span className="inline-flex ms-1">
                   {conversation.lastMessage.status === "read" ? (
                     <CheckCheck className="h-3 w-3 text-primary" />
                   ) : conversation.lastMessage.status === "delivered" ? (

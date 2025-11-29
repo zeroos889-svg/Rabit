@@ -91,7 +91,7 @@ export default function AdminAuditLogs() {
             </p>
           </div>
           <Button variant="outline">
-            <Download className="h-4 w-4 ml-2" />
+            <Download className="h-4 w-4 me-2" />
             تصدير CSV
           </Button>
         </div>

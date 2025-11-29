@@ -290,7 +290,7 @@ export default function Knowledge() {
             <Link href="/knowledge-base">
               <Button size="lg" variant="outline">
                 عرض جميع المقالات
-                <ArrowRight className="mr-2 h-4 w-4" />
+                <ArrowRight className="ms-2 h-4 w-4" />
               </Button>
             </Link>
           </div>
@@ -309,7 +309,7 @@ export default function Knowledge() {
           <Link href="/consulting">
             <Button size="lg" variant="secondary" className="text-lg px-8">
               احجز استشارة الآن
-              <ArrowRight className="mr-2 h-5 w-5" />
+              <ArrowRight className="ms-2 h-5 w-5" />
             </Button>
           </Link>
         </div>

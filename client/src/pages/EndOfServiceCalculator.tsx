@@ -619,7 +619,7 @@ export default function EndOfServiceCalculator() {
                       !endDate
                     }
                   >
-                    <Calculator className="h-5 w-5 ml-2" />
+                    <Calculator className="h-5 w-5 me-2" />
                     احسب المكافأة
                   </Button>
                   <Button onClick={handleReset} variant="outline" size="lg">
@@ -653,7 +653,7 @@ export default function EndOfServiceCalculator() {
                     className="w-full bg-purple-600 hover:bg-purple-700"
                     disabled={!aiQuestion.trim()}
                   >
-                    <Sparkles className="h-4 w-4 ml-2" />
+                    <Sparkles className="h-4 w-4 me-2" />
                     اسأل الذكاء الاصطناعي
                   </Button>
                 </div>
@@ -805,13 +805,13 @@ export default function EndOfServiceCalculator() {
                     onClick={handleExportPDF}
                     disabled={generatePDFMutation.isPending}
                   >
-                    <Download className="h-4 w-4 ml-2" />
+                    <Download className="h-4 w-4 me-2" />
                     {generatePDFMutation.isPending
                       ? "جاري الإنشاء..."
                       : "تصدير PDF"}
                   </Button>
                   <Button variant="outline" className="w-full">
-                    <Share2 className="h-4 w-4 ml-2" />
+                    <Share2 className="h-4 w-4 me-2" />
                     مشاركة
                   </Button>
                   <Button
@@ -825,14 +825,14 @@ export default function EndOfServiceCalculator() {
                     }
                   >
                     {saveCalculationMutation.isPending ? (
-                      <Loader2 className="h-4 w-4 ml-2 animate-spin" />
+                      <Loader2 className="h-4 w-4 me-2 animate-spin" />
                     ) : (
-                      <Save className="h-4 w-4 ml-2" />
+                      <Save className="h-4 w-4 me-2" />
                     )}
                     حفظ في السجل
                   </Button>
                   <Button variant="outline" className="w-full">
-                    <FileText className="h-4 w-4 ml-2" />
+                    <FileText className="h-4 w-4 me-2" />
                     Excel
                   </Button>
                 </div>
@@ -875,7 +875,7 @@ export default function EndOfServiceCalculator() {
               </div>
             ) : calculationHistoryQuery.isLoading ? (
               <div className="flex items-center justify-center py-6 text-muted-foreground">
-                <Loader2 className="h-5 w-5 animate-spin ml-2" />
+                <Loader2 className="h-5 w-5 animate-spin me-2" />
                 جاري تحميل السجل...
               </div>
             ) : calculationHistoryQuery.error ? (
@@ -919,7 +919,7 @@ export default function EndOfServiceCalculator() {
                         </div>
                         <div className="flex items-center gap-2">
                           <Button variant="outline" onClick={() => handleLoadCalculation(item)}>
-                            <ArrowRight className="h-4 w-4 ml-2" />
+                            <ArrowRight className="h-4 w-4 me-2" />
                             تحميل التفاصيل
                           </Button>
                           <Button

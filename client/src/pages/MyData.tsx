@@ -194,7 +194,7 @@ export default function MyData() {
                 onClick={() => handleRequest("access")}
                 className="w-full md:w-auto"
               >
-                <Download className="h-4 w-4 mr-2" />
+                <Download className="h-4 w-4 ms-2" />
                 تحميل بياناتي
               </Button>
             </CardContent>
@@ -246,7 +246,7 @@ export default function MyData() {
                   variant="outline"
                   className="w-full md:w-auto"
                 >
-                  <Edit className="h-4 w-4 mr-2" />
+                  <Edit className="h-4 w-4 ms-2" />
                   طلب تصحيح
                 </Button>
               )}
@@ -268,7 +268,7 @@ export default function MyData() {
               {activeRequest === "delete" ? (
                 <div className="space-y-3">
                   <div className="bg-red-50 border border-red-200 p-3 rounded-lg text-sm text-red-900">
-                    <AlertCircle className="h-4 w-4 inline mr-2" />
+                    <AlertCircle className="h-4 w-4 inline ms-2" />
                     تنبيه: حذف بياناتك سيؤدي لإغلاق حسابك بشكل دائم
                   </div>
                   <Textarea
@@ -302,7 +302,7 @@ export default function MyData() {
                   variant="destructive"
                   className="w-full md:w-auto"
                 >
-                  <Trash2 className="h-4 w-4 mr-2" />
+                  <Trash2 className="h-4 w-4 ms-2" />
                   طلب حذف البيانات
                 </Button>
               )}
@@ -353,7 +353,7 @@ export default function MyData() {
                   variant="outline"
                   className="w-full md:w-auto"
                 >
-                  <Ban className="h-4 w-4 mr-2" />
+                  <Ban className="h-4 w-4 ms-2" />
                   تقديم اعتراض
                 </Button>
               )}
@@ -381,7 +381,7 @@ export default function MyData() {
                   withdrawConsentMutation.isPending
                 }
               >
-                <Shield className="h-4 w-4 mr-2" />
+                <Shield className="h-4 w-4 ms-2" />
                 سحب الموافقة
               </Button>
             </CardContent>
@@ -395,7 +395,7 @@ export default function MyData() {
               <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div className="space-y-2 text-sm text-blue-900">
                 <p className="font-semibold">معلومات مهمة:</p>
-                <ul className="list-disc list-inside space-y-1 mr-4">
+                <ul className="list-disc list-inside space-y-1 ms-4">
                   <li>سنرد على طلبك خلال 30 يوم عمل</li>
                   <li>قد نطلب منك تأكيد هويتك قبل تنفيذ الطلب</li>
                   <li>بعض الطلبات قد تؤثر على قدرتك على استخدام الخدمة</li>

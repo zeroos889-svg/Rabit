@@ -127,7 +127,7 @@ export default function PaymentSuccess() {
               </div>
 
               <Badge variant="secondary" className="text-lg px-4 py-2">
-                <Sparkles className="w-4 h-4 ml-2" />
+                <Sparkles className="w-4 h-4 me-2" />
                 رقم العملية: {transaction.id}
               </Badge>
             </div>
@@ -265,15 +265,15 @@ export default function PaymentSuccess() {
             className="flex-1"
             size="lg"
           >
-            <Download className="ml-2 h-5 w-5" />
+            <Download className="me-2 h-5 w-5" />
             تحميل الإيصال
           </Button>
 
           <Link href="/dashboard" className="flex-1">
             <Button className="w-full" size="lg">
-              <Home className="ml-2 h-5 w-5" />
+              <Home className="me-2 h-5 w-5" />
               {isTrialExperience ? "العودة إلى الصفحة الرئيسية" : "الانتقال إلى لوحة التحكم"}
-              <ArrowRight className="mr-2 h-5 w-5" />
+              <ArrowRight className="ms-2 h-5 w-5" />
             </Button>
           </Link>
         </div>

@@ -90,7 +90,7 @@ export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps)
               className="flex-1"
               size="lg"
             >
-              <RefreshCw className="ml-2 h-4 w-4" />
+              <RefreshCw className="me-2 h-4 w-4" />
               إعادة المحاولة
             </Button>
             <Button
@@ -99,7 +99,7 @@ export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps)
               className="flex-1"
               size="lg"
             >
-              <Home className="ml-2 h-4 w-4" />
+              <Home className="me-2 h-4 w-4" />
               العودة للرئيسية
             </Button>
           </div>
@@ -143,7 +143,7 @@ export function ErrorMessage({ message, retry }: ErrorMessageProps) {
       </div>
       {retry && (
         <Button onClick={retry} variant="outline" size="sm">
-          <RefreshCw className="ml-2 h-4 w-4" />
+          <RefreshCw className="me-2 h-4 w-4" />
           إعادة المحاولة
         </Button>
       )}

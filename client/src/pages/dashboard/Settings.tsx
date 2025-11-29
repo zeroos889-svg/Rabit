@@ -157,7 +157,7 @@ export default function Settings() {
 
                 <div className="flex justify-end">
                   <Button className="bg-gradient-to-r from-blue-600 to-indigo-600">
-                    <Save className="h-4 w-4 ml-2" />
+                    <Save className="h-4 w-4 me-2" />
                     حفظ التغييرات
                   </Button>
                 </div>
@@ -182,7 +182,7 @@ export default function Settings() {
                   </div>
                   <div className="flex-1">
                     <Button variant="outline" size="sm">
-                      <Upload className="h-4 w-4 ml-2" />
+                      <Upload className="h-4 w-4 me-2" />
                       تحميل صورة
                     </Button>
                     <p className="text-xs text-muted-foreground mt-1">
@@ -241,7 +241,7 @@ export default function Settings() {
 
                 <div className="flex justify-end">
                   <Button className="bg-gradient-to-r from-green-600 to-emerald-600">
-                    <Save className="h-4 w-4 ml-2" />
+                    <Save className="h-4 w-4 me-2" />
                     حفظ التغييرات
                   </Button>
                 </div>
@@ -378,7 +378,7 @@ export default function Settings() {
 
                 <div className="flex justify-end">
                   <Button className="bg-gradient-to-r from-yellow-600 to-orange-600">
-                    <Save className="h-4 w-4 ml-2" />
+                    <Save className="h-4 w-4 me-2" />
                     حفظ التفضيلات
                   </Button>
                 </div>
@@ -535,7 +535,7 @@ export default function Settings() {
 
                 <div className="flex justify-end">
                   <Button className="bg-gradient-to-r from-purple-600 to-pink-600">
-                    <Save className="h-4 w-4 ml-2" />
+                    <Save className="h-4 w-4 me-2" />
                     حفظ التفضيلات
                   </Button>
                 </div>

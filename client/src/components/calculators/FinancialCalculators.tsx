@@ -330,9 +330,9 @@ export function GOSICalculatorCard() {
       <CardFooter className="flex gap-2">
         <Button onClick={handleCalculate} disabled={!salary || loading} className="flex-1">
           {loading ? (
-            <RefreshCw className="h-4 w-4 animate-spin ml-2" />
+            <RefreshCw className="h-4 w-4 animate-spin me-2" />
           ) : (
-            <Calculator className="h-4 w-4 ml-2" />
+            <Calculator className="h-4 w-4 me-2" />
           )}
           {isArabic ? "احسب" : "Calculate"}
         </Button>
@@ -600,7 +600,7 @@ export function EOSBCalculatorCard() {
 
       <CardFooter className="flex gap-2">
         <Button onClick={handleCalculate} disabled={!salary || !years} className="flex-1">
-          <Calculator className="h-4 w-4 ml-2" />
+          <Calculator className="h-4 w-4 me-2" />
           {isArabic ? "احسب" : "Calculate"}
         </Button>
         {result && (
@@ -772,7 +772,7 @@ export function AnnualLeaveCalculatorCard() {
 
       <CardFooter className="flex gap-2">
         <Button onClick={handleCalculate} disabled={!years} className="flex-1">
-          <Calculator className="h-4 w-4 ml-2" />
+          <Calculator className="h-4 w-4 me-2" />
           {isArabic ? "احسب" : "Calculate"}
         </Button>
         <Button variant="outline" onClick={handleReset}>

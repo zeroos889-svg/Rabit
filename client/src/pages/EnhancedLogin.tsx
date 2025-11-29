@@ -425,7 +425,7 @@ export default function EnhancedLogin() {
                 onClick={() => handleOAuthLogin("Google")}
                 disabled={isLoading}
               >
-                <Chrome className={cn("h-5 w-5", isArabic ? "ml-2" : "mr-2")} />
+                <Chrome className={cn("h-5 w-5", isArabic ? "me-2" : "ms-2")} />
                 Google
               </Button>
 
@@ -436,7 +436,7 @@ export default function EnhancedLogin() {
                 disabled={isLoading}
               >
                 <svg
-                  className={cn("h-5 w-5", isArabic ? "ml-2" : "mr-2")}
+                  className={cn("h-5 w-5", isArabic ? "me-2" : "ms-2")}
                   viewBox="0 0 23 23"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -456,7 +456,7 @@ export default function EnhancedLogin() {
               onClick={() => handleOAuthLogin("LinkedIn")}
               disabled={isLoading}
             >
-              <Linkedin className={cn("h-5 w-5", isArabic ? "ml-2" : "mr-2")} />
+              <Linkedin className={cn("h-5 w-5", isArabic ? "me-2" : "ms-2")} />
               LinkedIn
             </Button>
 

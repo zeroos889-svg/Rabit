@@ -479,7 +479,7 @@ export default function ComponentsShowcase() {
                           !datePickerDate && "text-muted-foreground"
                         }`}
                       >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        <CalendarIcon className="ms-2 h-4 w-4" />
                         {datePickerDate ? (
                           format(datePickerDate, "PPP HH:mm", { locale: zhCN })
                         ) : (
@@ -553,7 +553,7 @@ export default function ComponentsShowcase() {
                               { value: "remix", label: "Remix" },
                             ].find(fw => fw.value === selectedFramework)?.label
                           : "Select framework..."}
-                        <CalendarIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        <CalendarIcon className="me-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-full p-0">
@@ -584,7 +584,7 @@ export default function ComponentsShowcase() {
                                 }}
                               >
                                 <Check
-                                  className={`mr-2 h-4 w-4 ${
+                                  className={`ms-2 h-4 w-4 ${
                                     selectedFramework === framework.value
                                       ? "opacity-100"
                                       : "opacity-0"

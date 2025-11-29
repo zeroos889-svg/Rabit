@@ -166,7 +166,7 @@ function NotificationItem({
               className="h-7 text-xs"
               onClick={() => onMarkAsRead(notification.id)}
             >
-              <Check className="h-3 w-3 mr-1" />
+              <Check className="h-3 w-3 ms-1" />
               {isArabic ? "تحديد كمقروء" : "Mark as read"}
             </Button>
           )}
@@ -176,7 +176,7 @@ function NotificationItem({
             className="h-7 text-xs text-destructive hover:text-destructive"
             onClick={() => onDelete(notification.id)}
           >
-            <Trash2 className="h-3 w-3 mr-1" />
+            <Trash2 className="h-3 w-3 ms-1" />
             {isArabic ? "حذف" : "Delete"}
           </Button>
         </div>
@@ -259,7 +259,7 @@ export function AdvancedNotificationCenter({ trigger }: AdvancedNotificationCent
                 onClick={handleMarkAllAsRead}
                 disabled={unreadCount === 0}
               >
-                <CheckCheck className="h-4 w-4 mr-1" />
+                <CheckCheck className="h-4 w-4 ms-1" />
                 {isArabic ? "قراءة الكل" : "Read all"}
               </Button>
             </div>
@@ -283,7 +283,7 @@ export function AdvancedNotificationCenter({ trigger }: AdvancedNotificationCent
               >
                 {isArabic ? "غير مقروء" : "Unread"}
                 {unreadCount > 0 && (
-                  <Badge variant="secondary" className="ml-1 h-5 px-1.5">
+                  <Badge variant="secondary" className="me-1 h-5 px-1.5">
                     {unreadCount}
                   </Badge>
                 )}
@@ -341,7 +341,7 @@ export function AdvancedNotificationCenter({ trigger }: AdvancedNotificationCent
               className="w-full"
               onClick={handleClearAll}
             >
-              <Trash2 className="h-4 w-4 mr-2" />
+              <Trash2 className="h-4 w-4 ms-2" />
               {isArabic ? "مسح جميع الإشعارات" : "Clear all notifications"}
             </Button>
           </div>

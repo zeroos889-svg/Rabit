@@ -400,7 +400,7 @@ export default function LeaveCalculator() {
                   className="w-full gradient-primary"
                   disabled={!leaveType || !startDate || !endDate}
                 >
-                  <Plus className="h-4 w-4 ml-2" />
+                  <Plus className="h-4 w-4 me-2" />
                   إضافة الإجازة
                 </Button>
               </CardContent>
@@ -483,7 +483,7 @@ export default function LeaveCalculator() {
                     className="w-full bg-purple-600 hover:bg-purple-700"
                     disabled={!aiQuestion.trim() || isAILoading}
                   >
-                    <Sparkles className="h-4 w-4 ml-2" />
+                    <Sparkles className="h-4 w-4 me-2" />
                     {isAILoading ? "جاري المعالجة..." : "اسأل الذكاء الاصطناعي"}
                   </Button>
                 </div>
@@ -585,11 +585,11 @@ export default function LeaveCalculator() {
                 {/* Actions */}
                 <div className="space-y-2 pt-2">
                   <Button variant="outline" className="w-full">
-                    <Download className="h-4 w-4 ml-2" />
+                    <Download className="h-4 w-4 me-2" />
                     تصدير التقرير
                   </Button>
                   <Button variant="outline" className="w-full">
-                    <BarChart3 className="h-4 w-4 ml-2" />
+                    <BarChart3 className="h-4 w-4 me-2" />
                     عرض الإحصائيات
                   </Button>
                 </div>

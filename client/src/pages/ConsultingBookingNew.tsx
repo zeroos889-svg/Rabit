@@ -500,7 +500,7 @@ export default function ConsultingBookingNew() {
                   className="bg-purple-600 hover:bg-purple-700"
                 >
                   التالي
-                  <ArrowRight className="mr-2 h-4 w-4" />
+                  <ArrowRight className="ms-2 h-4 w-4" />
                 </Button>
               </div>
             </div>
@@ -591,7 +591,7 @@ export default function ConsultingBookingNew() {
 
               <div className="flex justify-between">
                 <Button onClick={() => setStep(1)} variant="outline">
-                  <ArrowLeft className="ml-2 h-4 w-4" />
+                  <ArrowLeft className="me-2 h-4 w-4" />
                   السابق
                 </Button>
                 <Button
@@ -600,7 +600,7 @@ export default function ConsultingBookingNew() {
                   className="bg-purple-600 hover:bg-purple-700"
                 >
                   التالي
-                  <ArrowRight className="mr-2 h-4 w-4" />
+                  <ArrowRight className="ms-2 h-4 w-4" />
                 </Button>
               </div>
             </div>
@@ -850,7 +850,7 @@ export default function ConsultingBookingNew() {
 
               <div className="flex justify-between">
                 <Button onClick={() => setStep(2)} variant="outline">
-                  <ArrowLeft className="ml-2 h-4 w-4" />
+                  <ArrowLeft className="me-2 h-4 w-4" />
                   السابق
                 </Button>
                 <Button
@@ -859,7 +859,7 @@ export default function ConsultingBookingNew() {
                   className="bg-purple-600 hover:bg-purple-700"
                 >
                   التالي
-                  <ArrowRight className="mr-2 h-4 w-4" />
+                  <ArrowRight className="ms-2 h-4 w-4" />
                 </Button>
               </div>
             </div>
@@ -1008,7 +1008,7 @@ export default function ConsultingBookingNew() {
 
               <div className="flex justify-between">
                 <Button onClick={() => setStep(3)} variant="outline">
-                  <ArrowLeft className="ml-2 h-4 w-4" />
+                  <ArrowLeft className="me-2 h-4 w-4" />
                   السابق
                 </Button>
                 <Button
@@ -1019,7 +1019,7 @@ export default function ConsultingBookingNew() {
                   {createBookingMutation.isPending
                     ? "جاري الحجز..."
                     : "تأكيد الحجز"}
-                  <CheckCircle2 className="mr-2 h-4 w-4" />
+                  <CheckCircle2 className="ms-2 h-4 w-4" />
                 </Button>
               </div>
             </div>

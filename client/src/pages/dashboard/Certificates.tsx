@@ -132,7 +132,7 @@ export default function Certificates() {
           >
             <DialogTrigger asChild>
               <Button className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700">
-                <FileText className="h-4 w-4 ml-2" />
+                <FileText className="h-4 w-4 me-2" />
                 إصدار شهادة جديدة
               </Button>
             </DialogTrigger>
@@ -253,11 +253,11 @@ export default function Certificates() {
                   variant="outline"
                   className="border-emerald-600 text-emerald-600 hover:bg-emerald-50"
                 >
-                  <FileText className="h-4 w-4 ml-2" />
+                  <FileText className="h-4 w-4 me-2" />
                   معاينة وتعديل
                 </Button>
                 <Button className="bg-gradient-to-r from-emerald-600 to-teal-600">
-                  <Download className="h-4 w-4 ml-2" />
+                  <Download className="h-4 w-4 me-2" />
                   إصدار مباشرة
                 </Button>
               </DialogFooter>
@@ -279,7 +279,7 @@ export default function Certificates() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                <Clock className="h-3 w-3 inline ml-1" />
+                <Clock className="h-3 w-3 inline me-1" />
                 جميع الأوقات
               </p>
             </CardContent>
@@ -296,7 +296,7 @@ export default function Certificates() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                <CheckCircle2 className="h-3 w-3 inline ml-1" />
+                <CheckCircle2 className="h-3 w-3 inline me-1" />
                 شهادة مصدرة
               </p>
             </CardContent>
@@ -368,7 +368,7 @@ export default function Certificates() {
                       setIsGenerateDialogOpen(true);
                     }}
                   >
-                    <FileText className="h-4 w-4 ml-2" />
+                    <FileText className="h-4 w-4 me-2" />
                     إصدار الآن
                   </Button>
                 </CardContent>
@@ -400,7 +400,7 @@ export default function Certificates() {
                       setIsGenerateDialogOpen(true);
                     }}
                   >
-                    <FileText className="h-4 w-4 ml-2" />
+                    <FileText className="h-4 w-4 me-2" />
                     إصدار الآن
                   </Button>
                 </CardContent>
@@ -432,7 +432,7 @@ export default function Certificates() {
                       setIsGenerateDialogOpen(true);
                     }}
                   >
-                    <FileText className="h-4 w-4 ml-2" />
+                    <FileText className="h-4 w-4 me-2" />
                     إصدار الآن
                   </Button>
                 </CardContent>
@@ -464,7 +464,7 @@ export default function Certificates() {
                       setIsGenerateDialogOpen(true);
                     }}
                   >
-                    <FileText className="h-4 w-4 ml-2" />
+                    <FileText className="h-4 w-4 me-2" />
                     إصدار الآن
                   </Button>
                 </CardContent>
@@ -485,15 +485,15 @@ export default function Certificates() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Button variant="outline" className="justify-start">
-                    <User className="h-4 w-4 ml-2" />
+                    <User className="h-4 w-4 me-2" />
                     إصدار لجميع الموظفين
                   </Button>
                   <Button variant="outline" className="justify-start">
-                    <Building2 className="h-4 w-4 ml-2" />
+                    <Building2 className="h-4 w-4 me-2" />
                     إصدار حسب القسم
                   </Button>
                   <Button variant="outline" className="justify-start">
-                    <Download className="h-4 w-4 ml-2" />
+                    <Download className="h-4 w-4 me-2" />
                     تحميل نماذج فارغة
                   </Button>
                 </div>
@@ -509,7 +509,7 @@ export default function Certificates() {
                 <Input placeholder="بحث في الشهادات..." className="pr-10" />
               </div>
               <Button variant="outline">
-                <Filter className="h-4 w-4 ml-2" />
+                <Filter className="h-4 w-4 me-2" />
                 فلترة
               </Button>
             </div>

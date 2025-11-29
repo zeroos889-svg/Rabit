@@ -111,7 +111,7 @@ export function AdminNotifications() {
                   <Link href="/admin/data-requests">
                     <Button size="sm" variant="destructive">
                       عرض
-                      <ChevronRight className="h-3 w-3 mr-1" />
+                      <ChevronRight className="h-3 w-3 ms-1" />
                     </Button>
                   </Link>
                 </div>
@@ -133,7 +133,7 @@ export function AdminNotifications() {
                       className="border-amber-300"
                     >
                       عرض
-                      <ChevronRight className="h-3 w-3 mr-1" />
+                      <ChevronRight className="h-3 w-3 ms-1" />
                     </Button>
                   </Link>
                 </div>
@@ -151,7 +151,7 @@ export function AdminNotifications() {
                   <Link href="/admin/security-incidents">
                     <Button size="sm" variant="destructive">
                       عرض
-                      <ChevronRight className="h-3 w-3 mr-1" />
+                      <ChevronRight className="h-3 w-3 ms-1" />
                     </Button>
                   </Link>
                 </div>
@@ -173,7 +173,7 @@ export function AdminNotifications() {
                       className="border-amber-300"
                     >
                       عرض
-                      <ChevronRight className="h-3 w-3 mr-1" />
+                      <ChevronRight className="h-3 w-3 ms-1" />
                     </Button>
                   </Link>
                 </div>

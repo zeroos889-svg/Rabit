@@ -214,7 +214,7 @@ function MetricCard({ metric, isArabic }: MetricCardProps) {
           <p className="text-2xl font-bold">
             {metric.value}
             {metric.unit && (
-              <span className="text-sm font-normal text-muted-foreground ml-1">
+              <span className="text-sm font-normal text-muted-foreground me-1">
                 {metric.unit}
               </span>
             )}
@@ -337,7 +337,7 @@ export function AnalyticsDashboard() {
         </div>
         <Select value={timePeriod} onValueChange={setTimePeriod}>
           <SelectTrigger className="w-[150px]">
-            <Calendar className="h-4 w-4 mr-2" />
+            <Calendar className="h-4 w-4 ms-2" />
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

@@ -140,7 +140,7 @@ export default function ConsultingServices() {
                 <Button size="lg" asChild>
                   <Link href="/consulting/book-new">
                     ابدأ الحجز الآن
-                    <Sparkles className="mr-2 h-5 w-5" />
+                    <Sparkles className="me-2 h-5 w-5" />
                   </Link>
                 </Button>
                 <Button variant="outline" size="lg" asChild>

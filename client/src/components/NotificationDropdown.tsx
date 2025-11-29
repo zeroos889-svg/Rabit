@@ -115,7 +115,7 @@ export function NotificationDropdown() {
               className="h-7 text-xs"
               onClick={markAllAsRead}
             >
-              <Check className="h-3 w-3 ml-1" />
+              <Check className="h-3 w-3 me-1" />
               تحديد الكل كمقروء
             </Button>
           )}

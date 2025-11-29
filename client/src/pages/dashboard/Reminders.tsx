@@ -179,7 +179,7 @@ export default function Reminders() {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-gradient-to-r from-purple-600 to-blue-600">
-              <Plus className="h-4 w-4 ml-2" />
+              <Plus className="h-4 w-4 me-2" />
               إنشاء تذكير
             </Button>
           </DialogTrigger>
@@ -476,7 +476,7 @@ export default function Reminders() {
                   <TableCell>
                     <div className="flex gap-2">
                       <Button size="sm" variant="outline">
-                        <Send className="h-4 w-4 ml-1" />
+                        <Send className="h-4 w-4 me-1" />
                         إرسال الآن
                       </Button>
                       {reminder.status !== "مكتملة" && (

@@ -159,7 +159,7 @@ export function ConsultingServicesSection() {
           <Link href="/consulting">
             <Button size="lg" className="gradient-primary text-white">
               عرض جميع الخدمات الاستشارية ({types?.types?.length || 10})
-              <ArrowRight className="mr-2 h-4 w-4" />
+              <ArrowRight className="ms-2 h-4 w-4" />
             </Button>
           </Link>
         </div>

@@ -66,7 +66,7 @@ export default function ReportsPage() {
                           <h4 className="font-medium">{template.title}</h4>
                           <p className="text-sm text-muted-foreground">جاهز للتصدير</p>
                         </div>
-                        <Download className="h-4 w-4 mr-auto text-muted-foreground" />
+                        <Download className="h-4 w-4 ms-auto text-muted-foreground" />
                       </CardContent>
                     </Card>
                   ))}

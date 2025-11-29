@@ -398,7 +398,7 @@ export function Section({
             "hover:text-primary transition-colors"
           )}
           onClick={() => setCollapsed(!collapsed)}
-          aria-expanded={collapsed ? "false" : "true"}
+          aria-expanded={!collapsed}
         >
           {title}
         </button>

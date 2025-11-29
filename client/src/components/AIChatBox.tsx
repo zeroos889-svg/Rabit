@@ -147,7 +147,7 @@ export function AIChatBox({
                 className="rounded-full"
                 onClick={() => handlePromptClick(prompt)}
               >
-                <Sparkles className="mr-2 h-3.5 w-3.5" />
+                <Sparkles className="ms-2 h-3.5 w-3.5" />
                 {prompt}
               </Button>
             )
@@ -230,7 +230,7 @@ export function AIChatBox({
           >
             {loadingState ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending
+                <Loader2 className="ms-2 h-4 w-4 animate-spin" /> Sending
               </>
             ) : (
               "Send"

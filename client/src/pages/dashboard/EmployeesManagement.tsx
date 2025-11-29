@@ -362,23 +362,23 @@ const EmployeesPageHeader = ({
         </div>
         <div className="flex flex-wrap items-center justify-end gap-3 text-slate-900">
           <Button variant="secondary" className="bg-white/10 text-white" onClick={onExport}>
-            <Download className="ml-2 h-4 w-4" />
+            <Download className="me-2 h-4 w-4" />
             {isArabic ? "تقرير ربع سنوي" : "Quarterly export"}
           </Button>
           <Button variant="outline" className="border-white/40 text-white" onClick={onImport}>
-            <Upload className="ml-2 h-4 w-4" />
+            <Upload className="me-2 h-4 w-4" />
             {isArabic ? "استيراد ملف" : "Import file"}
           </Button>
           <Button variant="ghost" className="text-emerald-300" asChild>
             <a href="https://wa.me/966500000000" target="_blank" rel="noopener noreferrer">
-              <MessageCircle className="ml-2 h-4 w-4" />
+              <MessageCircle className="me-2 h-4 w-4" />
               {isArabic ? "تحدث مع خبير" : "Talk to an expert"}
             </a>
           </Button>
           <Dialog open={isAddDialogOpen} onOpenChange={onDialogChange}>
             <DialogTrigger asChild>
               <Button className="bg-gradient-to-r from-emerald-400 to-sky-500 text-slate-900">
-                <Plus className="ml-2 h-4 w-4" />
+                <Plus className="me-2 h-4 w-4" />
                 {isArabic ? "إضافة موظف" : "Add employee"}
               </Button>
             </DialogTrigger>
@@ -554,7 +554,7 @@ const EmployeeSegmentChips = ({ segments, activeSegment, onSegmentSelect }: Empl
           <span className="font-semibold">{segment.label}</span>
           <span className="mx-2 text-xs text-slate-400">•</span>
           <span className="text-xs text-slate-500">{segment.count}</span>
-          <span className="ml-2 text-xs text-slate-400">{segment.helper}</span>
+          <span className="me-2 text-xs text-slate-400">{segment.helper}</span>
         </button>
       );
     })}
@@ -785,7 +785,7 @@ const OperationsFeed = ({ isArabic }: { isArabic: boolean }) => {
               <p className="font-semibold text-slate-900">{event.title}</p>
               <p className="text-sm text-slate-600">{event.detail}</p>
             </div>
-            <span className="ml-auto text-xs text-slate-400">{event.timestamp}</span>
+            <span className="me-auto text-xs text-slate-400">{event.timestamp}</span>
           </div>
         ))}
       </CardContent>
@@ -1132,20 +1132,20 @@ const EmployeesTableSection = ({
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>{labels.actions}</DropdownMenuLabel>
                         <DropdownMenuItem onClick={() => onEditEmployee(employee)}>
-                          <Edit className="ml-2 h-4 w-4" />
+                          <Edit className="me-2 h-4 w-4" />
                           {labels.edit}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => onViewProfile(employee)}>
-                          <Eye className="ml-2 h-4 w-4" />
+                          <Eye className="me-2 h-4 w-4" />
                           {labels.viewProfile}
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                          <FileText className="ml-2 h-4 w-4" />
+                          <FileText className="me-2 h-4 w-4" />
                           {labels.contract}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-red-600" onClick={() => onDeleteEmployee(employee)}>
-                          <Trash2 className="ml-2 h-4 w-4" />
+                          <Trash2 className="me-2 h-4 w-4" />
                           {labels.delete}
                         </DropdownMenuItem>
                       </DropdownMenuContent>

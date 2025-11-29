@@ -346,7 +346,7 @@ export default function AIChat() {
 
                       {/* Suggestions */}
                       {message.suggestions && message.suggestions.length > 0 && (
-                        <div className="mt-2 mr-14 flex flex-wrap gap-2">
+                        <div className="mt-2 me-14 flex flex-wrap gap-2">
                           {message.suggestions.map((suggestion, idx) => (
                             <Button
                               key={idx}

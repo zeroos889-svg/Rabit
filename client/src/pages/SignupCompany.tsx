@@ -669,7 +669,7 @@ const FormNavigation = ({
         <Button onClick={onSubmit} disabled={isLoading}>
           {isLoading ? (
             <>
-              <Sparkles className="h-4 w-4 mr-2 animate-spin" />
+              <Sparkles className="h-4 w-4 me-2 animate-spin" />
               {isArabic ? "جاري التسجيل..." : "Signing up..."}
             </>
           ) : (

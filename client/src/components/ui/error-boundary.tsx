@@ -156,7 +156,7 @@ export function ErrorFallback({ error, errorInfo, resetError }: ErrorFallbackPro
                 onClick={resetError}
                 className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
-                <RefreshCw className="h-4 w-4 ml-2" />
+                <RefreshCw className="h-4 w-4 me-2" />
                 إعادة المحاولة
               </Button>
               <Button
@@ -164,7 +164,7 @@ export function ErrorFallback({ error, errorInfo, resetError }: ErrorFallbackPro
                 onClick={() => globalThis.location.href = "/"}
                 className="flex-1"
               >
-                <Home className="h-4 w-4 ml-2" />
+                <Home className="h-4 w-4 me-2" />
                 الصفحة الرئيسية
               </Button>
             </div>
@@ -208,7 +208,7 @@ export function ErrorFallback({ error, errorInfo, resetError }: ErrorFallbackPro
             <div className="text-center text-sm text-muted-foreground">
               <p>إذا استمرت المشكلة، تواصل معنا:</p>
               <Button variant="link" className="text-blue-600 p-0 h-auto">
-                <Mail className="h-3 w-3 ml-1" />
+                <Mail className="h-3 w-3 me-1" />
                 support@rabt.sa
               </Button>
             </div>
@@ -276,7 +276,7 @@ export function PageError({
       </p>
       {onRetry && (
         <Button onClick={onRetry} className="bg-gradient-to-r from-blue-600 to-purple-600">
-          <RefreshCw className="h-4 w-4 ml-2" />
+          <RefreshCw className="h-4 w-4 me-2" />
           إعادة المحاولة
         </Button>
       )}

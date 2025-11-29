@@ -287,7 +287,7 @@ export function CalculationHistory() {
       <TableRow>
         <TableCell>
           <Badge className={typeColors[record.type]}>
-            <Icon className="w-3 h-3 mr-1" />
+            <Icon className="w-3 h-3 ms-1" />
             {getCalculationTypeName(record.type, isArabic ? 'ar' : 'en')}
           </Badge>
         </TableCell>
@@ -376,13 +376,13 @@ export function CalculationHistory() {
             </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={handleExport}>
-                <Download className="w-4 h-4 mr-2" />
+                <Download className="w-4 h-4 ms-2" />
                 {isArabic ? 'تصدير' : 'Export'}
               </Button>
               <Dialog open={showClearConfirm} onOpenChange={setShowClearConfirm}>
                 <DialogTrigger asChild>
                   <Button variant="destructive">
-                    <Trash2 className="w-4 h-4 mr-2" />
+                    <Trash2 className="w-4 h-4 ms-2" />
                     {isArabic ? 'مسح الكل' : 'Clear All'}
                   </Button>
                 </DialogTrigger>

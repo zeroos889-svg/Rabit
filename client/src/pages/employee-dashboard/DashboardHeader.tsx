@@ -29,7 +29,7 @@ export function DashboardHeader({ isArabic, hasError }: Readonly<DashboardHeader
       </div>
       <Link href="/jobs">
         <Button className="bg-gradient-to-r from-green-600 to-emerald-600">
-          <Briefcase className="w-4 h-4 ml-2" />
+          <Briefcase className="w-4 h-4 me-2" />
           {isArabic ? "تصفح الوظائف" : "Browse Jobs"}
         </Button>
       </Link>

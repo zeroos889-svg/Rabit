@@ -22,7 +22,7 @@ export function ConsultantHeader({ isArabic, welcomeName }: Readonly<ConsultantH
       </div>
       <Link href="/tools">
         <Button className="bg-gradient-to-r from-purple-600 to-pink-600">
-          <Plus className="w-4 h-4 ml-2" />
+          <Plus className="w-4 h-4 me-2" />
           {isArabic ? "استخدم أداة" : "Use Tool"}
         </Button>
       </Link>

@@ -197,23 +197,23 @@ export default function SettingsManagement() {
         <Tabs defaultValue="account" className="space-y-6">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="account">
-              <User className="w-4 h-4 ml-2" />
+              <User className="w-4 h-4 me-2" />
               {isArabic ? "الحساب" : "Account"}
             </TabsTrigger>
             <TabsTrigger value="company">
-              <Building2 className="w-4 h-4 ml-2" />
+              <Building2 className="w-4 h-4 me-2" />
               {isArabic ? "الشركة" : "Company"}
             </TabsTrigger>
             <TabsTrigger value="preferences">
-              <Palette className="w-4 h-4 ml-2" />
+              <Palette className="w-4 h-4 me-2" />
               {isArabic ? "التفضيلات" : "Preferences"}
             </TabsTrigger>
             <TabsTrigger value="notifications">
-              <Bell className="w-4 h-4 ml-2" />
+              <Bell className="w-4 h-4 me-2" />
               {isArabic ? "الإشعارات" : "Notifications"}
             </TabsTrigger>
             <TabsTrigger value="security">
-              <Shield className="w-4 h-4 ml-2" />
+              <Shield className="w-4 h-4 me-2" />
               {isArabic ? "الأمان" : "Security"}
             </TabsTrigger>
           </TabsList>
@@ -318,7 +318,7 @@ export default function SettingsManagement() {
                   <Dialog open={passwordDialog} onOpenChange={setPasswordDialog}>
                     <DialogTrigger asChild>
                       <Button variant="outline">
-                        <Key className="w-4 h-4 ml-2" />
+                        <Key className="w-4 h-4 me-2" />
                         {isArabic ? "تغيير كلمة المرور" : "Change Password"}
                       </Button>
                     </DialogTrigger>
@@ -455,7 +455,7 @@ export default function SettingsManagement() {
                 {/* Save Button */}
                 <div className="flex justify-end">
                   <Button onClick={handleSaveAccount} className="bg-gradient-to-r from-blue-600 to-purple-600">
-                    <Save className="w-4 h-4 ml-2" />
+                    <Save className="w-4 h-4 me-2" />
                     {isArabic ? "حفظ التغييرات" : "Save Changes"}
                   </Button>
                 </div>
@@ -615,7 +615,7 @@ export default function SettingsManagement() {
                 {/* Save Button */}
                 <div className="flex justify-end">
                   <Button onClick={handleSaveCompany} className="bg-gradient-to-r from-blue-600 to-purple-600">
-                    <Save className="w-4 h-4 ml-2" />
+                    <Save className="w-4 h-4 me-2" />
                     {isArabic ? "حفظ التغييرات" : "Save Changes"}
                   </Button>
                 </div>
@@ -740,7 +740,7 @@ export default function SettingsManagement() {
                 {/* Save Button */}
                 <div className="flex justify-end">
                   <Button onClick={handleSavePreferences} className="bg-gradient-to-r from-blue-600 to-purple-600">
-                    <Save className="w-4 h-4 ml-2" />
+                    <Save className="w-4 h-4 me-2" />
                     {isArabic ? "حفظ التغييرات" : "Save Changes"}
                   </Button>
                 </div>
@@ -909,7 +909,7 @@ export default function SettingsManagement() {
                 {/* Save Button */}
                 <div className="flex justify-end">
                   <Button onClick={handleSaveNotifications} className="bg-gradient-to-r from-blue-600 to-purple-600">
-                    <Save className="w-4 h-4 ml-2" />
+                    <Save className="w-4 h-4 me-2" />
                     {isArabic ? "حفظ التغييرات" : "Save Changes"}
                   </Button>
                 </div>
@@ -1032,7 +1032,7 @@ export default function SettingsManagement() {
                 {/* Save Button */}
                 <div className="flex justify-end">
                   <Button onClick={handleSaveSecurity} className="bg-gradient-to-r from-blue-600 to-purple-600">
-                    <Save className="w-4 h-4 ml-2" />
+                    <Save className="w-4 h-4 me-2" />
                     {isArabic ? "حفظ التغييرات" : "Save Changes"}
                   </Button>
                 </div>

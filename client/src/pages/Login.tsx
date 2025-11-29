@@ -228,7 +228,7 @@ export default function Login() {
                 onClick={() => handleOAuthLogin("Google")}
                 disabled={isLoading}
               >
-                <Chrome className="w-5 h-5 ml-2" />
+                <Chrome className="w-5 h-5 me-2" />
                 {t("login.continueWithGoogle")}
               </Button>
 
@@ -239,7 +239,7 @@ export default function Login() {
                 disabled={isLoading}
               >
                 <svg
-                  className="w-5 h-5 ml-2"
+                  className="w-5 h-5 me-2"
                   viewBox="0 0 23 23"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -258,7 +258,7 @@ export default function Login() {
                 onClick={() => handleOAuthLogin("LinkedIn")}
                 disabled={isLoading}
               >
-                <Linkedin className="w-5 h-5 ml-2" />
+                <Linkedin className="w-5 h-5 me-2" />
                 {t("login.continueWithLinkedIn")}
               </Button>
             </div>

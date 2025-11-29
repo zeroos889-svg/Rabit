@@ -19,12 +19,12 @@ function BackButton({ isArabic, onClick }: Readonly<{ isArabic: boolean; onClick
     <Button type="button" variant="outline" onClick={onClick}>
       {isArabic ? (
         <>
-          <ArrowRight className="w-4 h-4 ml-2" />
+          <ArrowRight className="w-4 h-4 me-2" />
           السابق
         </>
       ) : (
         <>
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="w-4 h-4 me-2" />
           Back
         </>
       )}
@@ -43,12 +43,12 @@ function NextButton({ isArabic, accentColor, onClick }: Readonly<{ isArabic: boo
       {isArabic ? (
         <>
           التالي
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="w-4 h-4 ms-2" />
         </>
       ) : (
         <>
           Next
-          <ArrowRight className="w-4 h-4 ml-2" />
+          <ArrowRight className="w-4 h-4 ms-2" />
         </>
       )}
     </Button>
@@ -81,7 +81,7 @@ function SubmitButton({
         </div>
       ) : (
         <>
-          <Sparkles className="w-4 h-4 ml-2" />
+          <Sparkles className="w-4 h-4 me-2" />
           {isArabic ? "حفظ وإكمال" : "Save & Complete"}
         </>
       )}

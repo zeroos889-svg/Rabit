@@ -38,7 +38,7 @@ export default function CookiesPolicy() {
                   <p className="text-muted-foreground">
                     هذه الكوكيز ضرورية لتشغيل الموقع بشكل صحيح. تتضمن:
                   </p>
-                  <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground mr-4">
+                  <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground me-4">
                     <li>كوكيز المصادقة وتسجيل الدخول</li>
                     <li>كوكيز الأمان والحماية</li>
                     <li>كوكيز الجلسة (Session Cookies)</li>
@@ -53,7 +53,7 @@ export default function CookiesPolicy() {
                     تساعدنا هذه الكوكيز على فهم كيفية تفاعل المستخدمين مع
                     الموقع:
                   </p>
-                  <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground mr-4">
+                  <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground me-4">
                     <li>عدد الزوار والصفحات المشاهدة</li>
                     <li>مدة الزيارة ومعدل الارتداد</li>
                     <li>مصادر الزيارات والإحالات</li>
@@ -67,7 +67,7 @@ export default function CookiesPolicy() {
                   <p className="text-muted-foreground">
                     تُستخدم لتذكر تفضيلاتك وتحسين تجربتك:
                   </p>
-                  <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground mr-4">
+                  <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground me-4">
                     <li>اللغة المفضلة</li>
                     <li>إعدادات العرض</li>
                     <li>المحتوى المخصص</li>
@@ -81,7 +81,7 @@ export default function CookiesPolicy() {
                   <p className="text-muted-foreground">
                     تُستخدم لعرض إعلانات ذات صلة بك:
                   </p>
-                  <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground mr-4">
+                  <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground me-4">
                     <li>تتبع سلوك التصفح</li>
                     <li>عرض إعلانات مخصصة</li>
                     <li>قياس فعالية الحملات التسويقية</li>
@@ -102,7 +102,7 @@ export default function CookiesPolicy() {
                 <h3 className="font-semibold mb-2">
                   إدارة الكوكيز في المتصفحات الشائعة:
                 </h3>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground mr-4">
+                <ul className="list-disc list-inside space-y-1 text-muted-foreground me-4">
                   <li>
                     Google Chrome: الإعدادات → الخصوصية والأمان → ملفات تعريف
                     الارتباط
@@ -121,7 +121,7 @@ export default function CookiesPolicy() {
               <p className="text-muted-foreground leading-relaxed">
                 تختلف مدة تخزين الكوكيز حسب نوعها:
               </p>
-              <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground mr-4">
+              <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground me-4">
                 <li>
                   <strong>كوكيز الجلسة:</strong> تُحذف تلقائياً عند إغلاق
                   المتصفح
@@ -144,7 +144,7 @@ export default function CookiesPolicy() {
               <p className="text-muted-foreground leading-relaxed">
                 قد نستخدم خدمات من جهات خارجية موثوقة تضع كوكيز على جهازك، مثل:
               </p>
-              <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground mr-4">
+              <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground me-4">
                 <li>Google Analytics - لتحليل حركة المرور</li>
                 <li>خدمات الدفع الإلكتروني - لمعالجة المدفوعات بشكل آمن</li>
                 <li>منصات التواصل الاجتماعي - لمشاركة المحتوى</li>
@@ -156,7 +156,7 @@ export default function CookiesPolicy() {
               <p className="text-muted-foreground leading-relaxed">
                 لديك الحق في:
               </p>
-              <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground mr-4">
+              <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground me-4">
                 <li>معرفة أنواع الكوكيز المستخدمة</li>
                 <li>قبول أو رفض الكوكيز غير الضرورية</li>
                 <li>حذف الكوكيز المخزنة في أي وقت</li>
@@ -172,7 +172,7 @@ export default function CookiesPolicy() {
                 نلتزم بالقوانين واللوائح السعودية المتعلقة بحماية البيانات
                 والخصوصية، بما في ذلك:
               </p>
-              <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground mr-4">
+              <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground me-4">
                 <li>نظام حماية البيانات الشخصية السعودي</li>
                 <li>لوائح هيئة الاتصالات وتقنية المعلومات</li>
                 <li>سياسات الأمن السيبراني الوطنية</li>

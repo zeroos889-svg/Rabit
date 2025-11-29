@@ -315,19 +315,19 @@ export default function EnhancedAdminDashboard() {
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">
-            <BarChart3 className={cn("h-4 w-4", isArabic ? "ml-2" : "mr-2")} />
+            <BarChart3 className={cn("h-4 w-4", isArabic ? "me-2" : "ms-2")} />
             {isArabic ? "نظرة عامة" : "Overview"}
           </TabsTrigger>
           <TabsTrigger value="users">
-            <Users className={cn("h-4 w-4", isArabic ? "ml-2" : "mr-2")} />
+            <Users className={cn("h-4 w-4", isArabic ? "me-2" : "ms-2")} />
             {isArabic ? "المستخدمون" : "Users"}
           </TabsTrigger>
           <TabsTrigger value="security">
-            <Shield className={cn("h-4 w-4", isArabic ? "ml-2" : "mr-2")} />
+            <Shield className={cn("h-4 w-4", isArabic ? "me-2" : "ms-2")} />
             {isArabic ? "الأمان" : "Security"}
           </TabsTrigger>
           <TabsTrigger value="settings">
-            <Settings className={cn("h-4 w-4", isArabic ? "ml-2" : "mr-2")} />
+            <Settings className={cn("h-4 w-4", isArabic ? "me-2" : "ms-2")} />
             {isArabic ? "الإعدادات" : "Settings"}
           </TabsTrigger>
         </TabsList>
@@ -545,7 +545,7 @@ export default function EnhancedAdminDashboard() {
             <p className="text-sm text-muted-foreground">
               {isArabic ? "مركز القيادة الداخلي يوفر:" : "Internal command center provides:"}
             </p>
-            <ul className={cn("text-sm space-y-2", isArabic ? "mr-4" : "ml-4")}>
+            <ul className={cn("text-sm space-y-2", isArabic ? "ms-4" : "me-4")}>
               <li className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-purple-600" />
                 {isArabic ? "Dashboard المالي (Burn runway, Monthly trends)" : "Financial Dashboard (Burn runway, Monthly trends)"}

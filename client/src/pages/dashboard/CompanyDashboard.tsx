@@ -297,7 +297,7 @@ export default function CompanyDashboard() {
                 </Select>
                 <Button variant="ghost" size="sm">
                   عرض الكل
-                  <ArrowUpRight className="h-4 w-4 mr-1" />
+                  <ArrowUpRight className="h-4 w-4 ms-1" />
                 </Button>
               </div>
             </CardHeader>
@@ -372,7 +372,7 @@ export default function CompanyDashboard() {
                   className="max-w-xs"
                 />
                 <Button variant="ghost" size="sm">
-                  <Plus className="h-4 w-4 mr-1" />
+                  <Plus className="h-4 w-4 ms-1" />
                   إضافة مهمة
                 </Button>
               </div>

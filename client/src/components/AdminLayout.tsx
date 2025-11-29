@@ -202,7 +202,7 @@ export function AdminLayout({ children }: Readonly<AdminLayoutProps>) {
               className="w-full justify-start"
               onClick={() => logout()}
             >
-              <LogOut className="h-5 w-5 ml-2" />
+              <LogOut className="h-5 w-5 me-2" />
               {sidebarOpen && <span>تسجيل الخروج</span>}
             </Button>
           </div>
@@ -216,7 +216,7 @@ export function AdminLayout({ children }: Readonly<AdminLayoutProps>) {
         aria-label={mainLabel}
         className={cn(
           "transition-all duration-200 bg-gray-50/50 dark:bg-gray-950/50",
-          sidebarOpen ? "md:mr-64" : "md:mr-20",
+          sidebarOpen ? "md:ms-64" : "md:ms-20",
           "pt-16 md:pt-0"
         )}
       >

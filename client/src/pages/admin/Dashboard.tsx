@@ -189,7 +189,7 @@ export default function AdminDashboard() {
             <p className="text-sm text-muted-foreground">
               مركز القيادة الداخلي يوفر:
             </p>
-            <ul className="text-sm space-y-2 mr-4">
+            <ul className="text-sm space-y-2 me-4">
               <li className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-purple-600" />{" "}
                 Dashboard المالي (Burn runway, Monthly trends)

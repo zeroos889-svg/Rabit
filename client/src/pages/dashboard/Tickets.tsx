@@ -151,7 +151,7 @@ export default function Tickets() {
           >
             <DialogTrigger asChild>
               <Button className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700">
-                <Plus className="h-4 w-4 ml-2" />
+                <Plus className="h-4 w-4 me-2" />
                 إنشاء تذكرة جديدة
               </Button>
             </DialogTrigger>
@@ -253,7 +253,7 @@ export default function Tickets() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                <TrendingUp className="h-3 w-3 inline ml-1" />
+                <TrendingUp className="h-3 w-3 inline me-1" />
                 +12 هذا الأسبوع
               </p>
             </CardContent>
@@ -270,7 +270,7 @@ export default function Tickets() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                <Clock className="h-3 w-3 inline ml-1" />
+                <Clock className="h-3 w-3 inline me-1" />
                 تحتاج متابعة
               </p>
             </CardContent>
@@ -287,7 +287,7 @@ export default function Tickets() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                <Users className="h-3 w-3 inline ml-1" />
+                <Users className="h-3 w-3 inline me-1" />
                 يتم العمل عليها
               </p>
             </CardContent>
@@ -304,7 +304,7 @@ export default function Tickets() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                <CheckCircle2 className="h-3 w-3 inline ml-1" />
+                <CheckCircle2 className="h-3 w-3 inline me-1" />
                 هذا الشهر
               </p>
             </CardContent>

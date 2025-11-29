@@ -257,7 +257,7 @@ export default function TasksManagement() {
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-gradient-to-r from-blue-600 to-purple-600">
-                  <Plus className="w-4 h-4 ml-2" />
+                  <Plus className="w-4 h-4 me-2" />
                   {isArabic ? "إضافة مهمة" : "Add Task"}
                 </Button>
               </DialogTrigger>
@@ -615,11 +615,11 @@ export default function TasksManagement() {
                         </div>
                         <div className="flex gap-2">
                           <Button variant="outline" size="sm">
-                            <Eye className="w-4 h-4 ml-2" />
+                            <Eye className="w-4 h-4 me-2" />
                             {isArabic ? "عرض" : "View"}
                           </Button>
                           <Button variant="outline" size="sm">
-                            <Edit className="w-4 h-4 ml-2" />
+                            <Edit className="w-4 h-4 me-2" />
                             {isArabic ? "تعديل" : "Edit"}
                           </Button>
                           <Button
@@ -628,7 +628,7 @@ export default function TasksManagement() {
                             className="text-red-600"
                             onClick={() => handleDeleteTask(task)}
                           >
-                            <Trash2 className="w-4 h-4 ml-2" />
+                            <Trash2 className="w-4 h-4 me-2" />
                             {isArabic ? "حذف" : "Delete"}
                           </Button>
                         </div>

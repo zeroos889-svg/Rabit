@@ -116,7 +116,7 @@ export function NotificationBell() {
               onClick={handleMarkAllAsRead}
               disabled={markAllAsReadMutation.isPending}
             >
-              <CheckCheck className="h-4 w-4 ml-1" />
+              <CheckCheck className="h-4 w-4 me-1" />
               تحديد الكل كمقروء
             </Button>
           )}

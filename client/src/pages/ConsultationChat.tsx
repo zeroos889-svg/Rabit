@@ -424,9 +424,9 @@ export default function ConsultationChat() {
                     }
                   >
                     {escalateMutation.isPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                      <Loader2 className="h-4 w-4 animate-spin ms-1" />
                     ) : (
-                      <AlertTriangle className="h-4 w-4 mr-1" />
+                      <AlertTriangle className="h-4 w-4 ms-1" />
                     )}
                     تصعيد الدعم
                   </Button>
@@ -515,7 +515,7 @@ export default function ConsultationChat() {
                     className="w-full"
                     onClick={() => setShowRating(true)}
                   >
-                    <Star className="mr-2 h-4 w-4" />
+                    <Star className="ms-2 h-4 w-4" />
                     قيّم الاستشارة
                   </Button>
                 ) : showRating ? (
@@ -530,6 +530,8 @@ export default function ConsultationChat() {
                             key={star}
                             onClick={() => setRating(star)}
                             className="focus:outline-none"
+                            title={`تقييم ${star} نجوم`}
+                            aria-label={`تقييم ${star} نجوم`}
                           >
                             <Star
                               className={`h-8 w-8 ${
@@ -555,9 +557,9 @@ export default function ConsultationChat() {
                         className="flex-1"
                       >
                         {rateConsultationMutation.isPending ? (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <Loader2 className="ms-2 h-4 w-4 animate-spin" />
                         ) : (
-                          <CheckCircle2 className="mr-2 h-4 w-4" />
+                          <CheckCircle2 className="ms-2 h-4 w-4" />
                         )}
                         إرسال التقييم
                       </Button>
@@ -596,9 +598,9 @@ export default function ConsultationChat() {
                         className="w-full mb-2"
                       >
                         {isLoadingAi ? (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <Loader2 className="ms-2 h-4 w-4 animate-spin" />
                         ) : (
-                          <Sparkles className="mr-2 h-4 w-4" />
+                          <Sparkles className="ms-2 h-4 w-4" />
                         )}
                         مساعدة AI - اقتراح رد ذكي
                       </Button>
@@ -742,7 +744,7 @@ export default function ConsultationChat() {
                         onClick={() => handleUpdateStatus("in-progress")}
                         disabled={updateStatusMutation.isPending}
                       >
-                        <Clock className="mr-2 h-4 w-4" />
+                        <Clock className="ms-2 h-4 w-4" />
                         بدء الاستشارة
                       </Button>
                     )}
@@ -752,7 +754,7 @@ export default function ConsultationChat() {
                         onClick={() => handleUpdateStatus("completed")}
                         disabled={updateStatusMutation.isPending}
                       >
-                        <CheckCircle2 className="mr-2 h-4 w-4" />
+                        <CheckCircle2 className="ms-2 h-4 w-4" />
                         إنهاء الاستشارة
                       </Button>
                     )}

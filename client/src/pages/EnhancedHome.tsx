@@ -917,16 +917,16 @@ export default function EnhancedHome() {
                 >
                   <Link href="/signup">
                     جرّب لوحة التحكم الآن
-                    <ArrowRight className="mr-2 h-5 w-5" />
+                    <ArrowRight className="ms-2 h-5 w-5" />
                   </Link>
                 </Button>
                 <Button size="lg" variant="outline" className="text-lg">
-                  <Play className="ml-2 h-5 w-5" />
+                  <Play className="me-2 h-5 w-5" />
                   شاهد الجولة التفاعلية
                 </Button>
                 <Button size="lg" variant="ghost" className="text-lg text-emerald-600" asChild>
                   <Link href="https://wa.me/966500000000" target="_blank" rel="noreferrer">
-                    <MessageCircle className="ml-2 h-5 w-5" />
+                    <MessageCircle className="me-2 h-5 w-5" />
                     تحدث مع خبير عبر واتساب
                   </Link>
                 </Button>
@@ -1075,12 +1075,12 @@ export default function EnhancedHome() {
                   {isGuidedDemoPlaying ? (
                     <>
                       {t("enhancedHome.guidedDemo.pause")}
-                      <PauseCircle className="mr-2 h-5 w-5" />
+                      <PauseCircle className="ms-2 h-5 w-5" />
                     </>
                   ) : (
                     <>
                       {t("enhancedHome.guidedDemo.play")}
-                      <Play className="mr-2 h-5 w-5" />
+                      <Play className="ms-2 h-5 w-5" />
                     </>
                   )}
                 </Button>
@@ -1213,7 +1213,7 @@ export default function EnhancedHome() {
                         {formatNumber(metric.value, metric.decimals ?? 0, resolvedLocale)}
                       </p>
                       {metric.unit && (
-                        <span className="ml-2 text-lg font-semibold text-white/70">{metric.unit}</span>
+                        <span className="ms-2 text-lg font-semibold text-white/70">{metric.unit}</span>
                       )}
                     </div>
                     <div className="flex items-center justify-between text-xs text-white/70">
@@ -1358,7 +1358,7 @@ export default function EnhancedHome() {
                           </div>
                           <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{moment.description}</p>
                           <div className="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 dark:bg-slate-900/70 dark:text-white">
-                            {moment.metricLabel}: <span className="text-2xl font-bold text-primary ml-2">{moment.metricValue}</span>
+                            {moment.metricLabel}: <span className="text-2xl font-bold text-primary ms-2">{moment.metricValue}</span>
                           </div>
                         </div>
                       );
@@ -1393,7 +1393,7 @@ export default function EnhancedHome() {
                 <Button size="lg" variant="outline" asChild>
                   <Link href="/consulting">
                     منصة الاستشارات
-                    <ArrowUpRight className="mr-2 h-4 w-4" />
+                    <ArrowUpRight className="ms-2 h-4 w-4" />
                   </Link>
                 </Button>
               </div>
@@ -1639,7 +1639,7 @@ export default function EnhancedHome() {
                   >
                     <Link href="/signup">
                       {category.buttonText}
-                      <ArrowRight className="mr-2 h-4 w-4" />
+                      <ArrowRight className="ms-2 h-4 w-4" />
                     </Link>
                   </Button>
                 </CardContent>
@@ -1888,7 +1888,7 @@ export default function EnhancedHome() {
                 >
                   <Link href="/signup">
                     ابدأ الآن مجاناً
-                    <ArrowRight className="mr-2 h-5 w-5" />
+                    <ArrowRight className="ms-2 h-5 w-5" />
                   </Link>
                 </Button>
                 <Button

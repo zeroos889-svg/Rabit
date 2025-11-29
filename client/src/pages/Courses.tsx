@@ -213,7 +213,7 @@ export default function Courses() {
         <div className="container">
           <div className="max-w-3xl mx-auto text-center">
             <Badge className="mb-4" variant="secondary">
-              <Award className="ml-1 h-3 w-3" />
+              <Award className="me-1 h-3 w-3" />
               منصة التعلم الإلكتروني
             </Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
@@ -269,7 +269,7 @@ export default function Courses() {
                 className="flex-shrink-0"
                 onClick={() => setSelectedCategory(category.id)}
               >
-                <category.icon className="ml-2 h-4 w-4" />
+                <category.icon className="me-2 h-4 w-4" />
                 {category.name}
               </Button>
             ))}

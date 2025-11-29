@@ -303,7 +303,7 @@ export default function AdminDataRequests() {
 
         <div className="flex gap-2">
           <Button variant="outline">
-            <Download className="h-4 w-4 ml-2" />
+            <Download className="h-4 w-4 me-2" />
             تصدير التقرير
           </Button>
         </div>
@@ -528,19 +528,19 @@ export default function AdminDataRequests() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem onClick={() => handleViewRequest(request)}>
-                                <Eye className="h-4 w-4 ml-2" />
+                                <Eye className="h-4 w-4 me-2" />
                                 عرض التفاصيل
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               {request.status === "pending" && (
                                 <DropdownMenuItem onClick={() => handleStartProcessing(request.id)}>
-                                  <Clock className="h-4 w-4 ml-2" />
+                                  <Clock className="h-4 w-4 me-2" />
                                   بدء المعالجة
                                 </DropdownMenuItem>
                               )}
                               {(request.status === "pending" || request.status === "in_progress") && (
                                   <DropdownMenuItem onClick={() => handleOpenResponse(request)}>
-                                    <Check className="h-4 w-4 ml-2" />
+                                    <Check className="h-4 w-4 me-2" />
                                     الرد على الطلب
                                   </DropdownMenuItem>
                               )}
@@ -660,7 +660,7 @@ export default function AdminDataRequests() {
                   handleOpenResponse(selectedRequest);
                 }}
               >
-                <Check className="h-4 w-4 ml-2" />
+                <Check className="h-4 w-4 me-2" />
                 الرد على الطلب
               </Button>
             )}
@@ -701,14 +701,14 @@ export default function AdminDataRequests() {
               variant="destructive"
               onClick={handleRejectRequest}
             >
-              <X className="h-4 w-4 ml-2" />
+              <X className="h-4 w-4 me-2" />
               رفض الطلب
             </Button>
             <Button 
               className="bg-teal-600 hover:bg-teal-700"
               onClick={handleCompleteRequest}
             >
-              <Check className="h-4 w-4 ml-2" />
+              <Check className="h-4 w-4 me-2" />
               إكمال الطلب
             </Button>
           </DialogFooter>

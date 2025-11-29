@@ -261,7 +261,7 @@ export default function AccountType() {
                     }}
                   >
                     {isArabic ? "ابدأ الآن" : "Get Started"}
-                    <ArrowRight className="w-4 h-4 mr-2" />
+                    <ArrowRight className="w-4 h-4 ms-2" />
                   </Button>
                 </CardContent>
 

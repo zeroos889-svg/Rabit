@@ -427,7 +427,7 @@ export default function BlogPost() {
                   </Button>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground ml-2">
+                  <span className="text-sm text-muted-foreground ms-2">
                     مشاركة:
                   </span>
                   <Button variant="outline" size="icon" aria-label="مشاركة على فيسبوك">

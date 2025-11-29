@@ -252,7 +252,7 @@ export default function AdminDashboard() {
             </div>
             <Select value={timeRange} onValueChange={setTimeRange}>
               <SelectTrigger className="w-40">
-                <Calendar className="h-4 w-4 ml-2" />
+                <Calendar className="h-4 w-4 me-2" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -327,7 +327,7 @@ export default function AdminDashboard() {
                 <CardDescription>حالة الخوادم والأداء</CardDescription>
               </div>
               <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                <CheckCircle2 className="h-3 w-3 ml-1" />
+                <CheckCircle2 className="h-3 w-3 me-1" />
                 جميع الأنظمة تعمل
               </Badge>
             </CardHeader>
@@ -393,7 +393,7 @@ export default function AdminDashboard() {
                 <div className="flex items-center gap-2">
                   <Select value={activityFilter} onValueChange={setActivityFilter}>
                     <SelectTrigger className="w-32">
-                      <Filter className="h-4 w-4 ml-2" />
+                      <Filter className="h-4 w-4 me-2" />
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -406,7 +406,7 @@ export default function AdminDashboard() {
                   </Select>
                   <Button variant="ghost" size="sm">
                     عرض الكل
-                    <ArrowUpRight className="h-4 w-4 mr-1" />
+                    <ArrowUpRight className="h-4 w-4 ms-1" />
                   </Button>
                 </div>
               </CardHeader>

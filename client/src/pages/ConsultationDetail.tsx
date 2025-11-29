@@ -205,15 +205,15 @@ export default function ConsultationDetail() {
                     }
                   >
                     {escalateMutation.isPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                      <Loader2 className="h-4 w-4 animate-spin me-1" />
                     ) : (
-                      <AlertTriangle className="h-4 w-4 mr-1" />
+                      <AlertTriangle className="h-4 w-4 me-1" />
                     )}
                     تصعيد الدعم
                   </Button>
                   <Button size="sm" asChild variant="secondary">
                     <Link href={`/consultation/${bookingId}/chat`}>
-                      <Send className="h-4 w-4 mr-1" />
+                      <Send className="h-4 w-4 ms-1" />
                       فتح المحادثة الآن
                     </Link>
                   </Button>
@@ -284,7 +284,7 @@ export default function ConsultationDetail() {
             <CardContent className="space-y-2">
               <Button className="w-full" asChild>
                 <Link href={`/consultation/${bookingId}/chat`}>
-                  <MessageCircle className="h-4 w-4 mr-2" />
+                  <MessageCircle className="h-4 w-4 ms-2" />
                   الانتقال للمحادثة
                 </Link>
               </Button>

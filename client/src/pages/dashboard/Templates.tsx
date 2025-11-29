@@ -468,7 +468,7 @@ export default function Templates() {
           </p>
         </div>
         <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90">
-          <Plus className="h-4 w-4 ml-2" />
+          <Plus className="h-4 w-4 me-2" />
           قالب جديد
         </Button>
       </div>
@@ -628,7 +628,7 @@ export default function Templates() {
                         setSelectedTemplate(template);
                       }}
                     >
-                      <Eye className="h-4 w-4 ml-2" />
+                      <Eye className="h-4 w-4 me-2" />
                       معاينة
                     </Button>
                     <Button
@@ -636,7 +636,7 @@ export default function Templates() {
                       size="sm"
                       onClick={() => handleCopy(template.content)}
                     >
-                      <Copy className="h-4 w-4 ml-2" />
+                      <Copy className="h-4 w-4 me-2" />
                       نسخ
                     </Button>
                     <Button
@@ -644,7 +644,7 @@ export default function Templates() {
                       size="sm"
                       onClick={() => handleEdit(template)}
                     >
-                      <Edit className="h-4 w-4 ml-2" />
+                      <Edit className="h-4 w-4 me-2" />
                       تعديل
                     </Button>
                     <Button
@@ -652,7 +652,7 @@ export default function Templates() {
                       size="sm"
                       onClick={() => handleDownload(template)}
                     >
-                      <Download className="h-4 w-4 ml-2" />
+                      <Download className="h-4 w-4 me-2" />
                       تحميل
                     </Button>
                   </div>
@@ -698,7 +698,7 @@ export default function Templates() {
                         setSelectedTemplate(template);
                       }}
                     >
-                      <Eye className="h-4 w-4 ml-2" />
+                      <Eye className="h-4 w-4 me-2" />
                       معاينة
                     </Button>
                     <Button
@@ -706,7 +706,7 @@ export default function Templates() {
                       size="sm"
                       onClick={() => handleCopy(template.content)}
                     >
-                      <Copy className="h-4 w-4 ml-2" />
+                      <Copy className="h-4 w-4 me-2" />
                       نسخ
                     </Button>
                     <Button
@@ -714,7 +714,7 @@ export default function Templates() {
                       size="sm"
                       onClick={() => handleEdit(template)}
                     >
-                      <Edit className="h-4 w-4 ml-2" />
+                      <Edit className="h-4 w-4 me-2" />
                       تعديل
                     </Button>
                     <Button
@@ -722,7 +722,7 @@ export default function Templates() {
                       size="sm"
                       onClick={() => handleDownload(template)}
                     >
-                      <Download className="h-4 w-4 ml-2" />
+                      <Download className="h-4 w-4 me-2" />
                       تحميل
                     </Button>
                   </div>
@@ -768,7 +768,7 @@ export default function Templates() {
                         setSelectedTemplate(template);
                       }}
                     >
-                      <Eye className="h-4 w-4 ml-2" />
+                      <Eye className="h-4 w-4 me-2" />
                       معاينة
                     </Button>
                     <Button
@@ -776,7 +776,7 @@ export default function Templates() {
                       size="sm"
                       onClick={() => handleCopy(template.content)}
                     >
-                      <Copy className="h-4 w-4 ml-2" />
+                      <Copy className="h-4 w-4 me-2" />
                       نسخ
                     </Button>
                     <Button
@@ -784,7 +784,7 @@ export default function Templates() {
                       size="sm"
                       onClick={() => handleEdit(template)}
                     >
-                      <Edit className="h-4 w-4 ml-2" />
+                      <Edit className="h-4 w-4 me-2" />
                       تعديل
                     </Button>
                     <Button
@@ -792,7 +792,7 @@ export default function Templates() {
                       size="sm"
                       onClick={() => handleDownload(template)}
                     >
-                      <Download className="h-4 w-4 ml-2" />
+                      <Download className="h-4 w-4 me-2" />
                       تحميل
                     </Button>
                   </div>
@@ -835,21 +835,21 @@ export default function Templates() {
               </div>
               <div className="flex gap-2">
                 <Button onClick={() => handleCopy(selectedTemplate.content)}>
-                  <Copy className="h-4 w-4 ml-2" />
+                  <Copy className="h-4 w-4 me-2" />
                   نسخ
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => handleEdit(selectedTemplate)}
                 >
-                  <Edit className="h-4 w-4 ml-2" />
+                  <Edit className="h-4 w-4 me-2" />
                   تعديل
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => handleDownload(selectedTemplate)}
                 >
-                  <Download className="h-4 w-4 ml-2" />
+                  <Download className="h-4 w-4 me-2" />
                   تحميل
                 </Button>
               </div>
@@ -900,14 +900,14 @@ export default function Templates() {
               </div>
               <div className="flex gap-2">
                 <Button onClick={handleSave} className="flex-1">
-                  <Save className="h-4 w-4 ml-2" />
+                  <Save className="h-4 w-4 me-2" />
                   حفظ كقالب مخصص
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => setIsEditorOpen(false)}
                 >
-                  <X className="h-4 w-4 ml-2" />
+                  <X className="h-4 w-4 me-2" />
                   إلغاء
                 </Button>
               </div>

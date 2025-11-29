@@ -222,13 +222,13 @@ export default function AdminUsers() {
 
         <div className="flex gap-2">
           <Button variant="outline">
-            <Download className="h-4 w-4 ml-2" />
+            <Download className="h-4 w-4 me-2" />
             تصدير
           </Button>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button className="bg-gradient-to-r from-blue-600 to-purple-600">
-                <Plus className="h-4 w-4 ml-2" />
+                <Plus className="h-4 w-4 me-2" />
                 إضافة مستخدم
               </Button>
             </DialogTrigger>
@@ -478,29 +478,29 @@ export default function AdminUsers() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem onClick={() => handleViewUser(user)}>
-                                <Eye className="h-4 w-4 ml-2" />
+                                <Eye className="h-4 w-4 me-2" />
                                 عرض التفاصيل
                               </DropdownMenuItem>
                               <DropdownMenuItem>
-                                <Edit className="h-4 w-4 ml-2" />
+                                <Edit className="h-4 w-4 me-2" />
                                 تعديل
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               {user.status === "pending" && (
                                 <DropdownMenuItem onClick={() => handleActivateUser(user.id)}>
-                                  <CheckCircle2 className="h-4 w-4 ml-2" />
+                                  <CheckCircle2 className="h-4 w-4 me-2" />
                                   تفعيل
                                 </DropdownMenuItem>
                               )}
                               {user.status === "active" && (
                                 <DropdownMenuItem onClick={() => handleSuspendUser(user.id)}>
-                                  <Ban className="h-4 w-4 ml-2" />
+                                  <Ban className="h-4 w-4 me-2" />
                                   إيقاف
                                 </DropdownMenuItem>
                               )}
                               {user.status === "suspended" && (
                                 <DropdownMenuItem onClick={() => handleActivateUser(user.id)}>
-                                  <CheckCircle2 className="h-4 w-4 ml-2" />
+                                  <CheckCircle2 className="h-4 w-4 me-2" />
                                   إعادة التفعيل
                                 </DropdownMenuItem>
                               )}
@@ -509,7 +509,7 @@ export default function AdminUsers() {
                                 className="text-red-600"
                                 onClick={() => handleDeleteUser(user.id)}
                               >
-                                <Trash2 className="h-4 w-4 ml-2" />
+                                <Trash2 className="h-4 w-4 me-2" />
                                 حذف
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -581,8 +581,8 @@ export default function AdminUsers() {
                   <Mail className="h-4 w-4 text-muted-foreground" />
                   <span>{selectedUser.email}</span>
                   {selectedUser.emailVerified && (
-                    <Badge variant="outline" className="mr-auto text-green-600">
-                      <CheckCircle2 className="h-3 w-3 ml-1" />
+                    <Badge variant="outline" className="me-auto text-green-600">
+                      <CheckCircle2 className="h-3 w-3 me-1" />
                       مُفعّل
                     </Badge>
                   )}
@@ -613,7 +613,7 @@ export default function AdminUsers() {
               إغلاق
             </Button>
             <Button>
-              <Edit className="h-4 w-4 ml-2" />
+              <Edit className="h-4 w-4 me-2" />
               تعديل
             </Button>
           </DialogFooter>

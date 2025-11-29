@@ -142,7 +142,7 @@ export default function Employees() {
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
               <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                <Plus className="h-4 w-4 ml-2" />
+                <Plus className="h-4 w-4 me-2" />
                 إضافة موظف جديد
               </Button>
             </DialogTrigger>
@@ -254,7 +254,7 @@ export default function Employees() {
                 onValueChange={setFilterDepartment}
               >
                 <SelectTrigger className="w-full sm:w-[200px]">
-                  <Filter className="h-4 w-4 ml-2" />
+                  <Filter className="h-4 w-4 me-2" />
                   <SelectValue placeholder="القسم" />
                 </SelectTrigger>
                 <SelectContent>
@@ -282,7 +282,7 @@ export default function Employees() {
                 </SelectContent>
               </Select>
               <Button variant="outline">
-                <Download className="h-4 w-4 ml-2" />
+                <Download className="h-4 w-4 me-2" />
                 تصدير
               </Button>
             </div>

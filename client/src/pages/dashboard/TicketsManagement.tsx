@@ -216,7 +216,7 @@ export default function TicketsManagement() {
     const Icon = config.icon;
     return (
       <Badge className={config.className}>
-        <Icon className="w-3 h-3 ml-1" />
+        <Icon className="w-3 h-3 me-1" />
         {config.label}
       </Badge>
     );
@@ -277,7 +277,7 @@ export default function TicketsManagement() {
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
               <Button className="bg-gradient-to-r from-blue-600 to-purple-600">
-                <Plus className="w-4 h-4 ml-2" />
+                <Plus className="w-4 h-4 me-2" />
                 {isArabic ? "إنشاء تذكرة" : "Create Ticket"}
               </Button>
             </DialogTrigger>
@@ -397,7 +397,7 @@ export default function TicketsManagement() {
                   className="bg-gradient-to-r from-blue-600 to-purple-600"
                   onClick={handleAddTicket}
                 >
-                  <Send className="w-4 h-4 ml-2" />
+                  <Send className="w-4 h-4 me-2" />
                   {isArabic ? "إرسال" : "Submit"}
                 </Button>
               </DialogFooter>
@@ -492,7 +492,7 @@ export default function TicketsManagement() {
               <div>
                 <Select value={filterStatus} onValueChange={setFilterStatus}>
                   <SelectTrigger>
-                    <Filter className="w-4 h-4 ml-2" />
+                    <Filter className="w-4 h-4 me-2" />
                     <SelectValue placeholder={isArabic ? "الحالة" : "Status"} />
                   </SelectTrigger>
                   <SelectContent>
@@ -612,7 +612,7 @@ export default function TicketsManagement() {
                             </span>
                             {ticket.attachments > 0 && (
                               <>
-                                <Paperclip className="w-4 h-4 mr-2" />
+                                <Paperclip className="w-4 h-4 ms-2" />
                                 <span>
                                   {ticket.attachments} {isArabic ? "مرفق" : "attachments"}
                                 </span>
@@ -628,7 +628,7 @@ export default function TicketsManagement() {
                           size="sm"
                           onClick={() => handleViewTicket(ticket)}
                         >
-                          <Eye className="w-4 h-4 ml-2" />
+                          <Eye className="w-4 h-4 me-2" />
                           {isArabic ? "عرض" : "View"}
                         </Button>
                         <DropdownMenu>
@@ -643,11 +643,11 @@ export default function TicketsManagement() {
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>
-                              <Edit className="w-4 h-4 ml-2" />
+                              <Edit className="w-4 h-4 me-2" />
                               {isArabic ? "تعديل" : "Edit"}
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                              <MessageSquare className="w-4 h-4 ml-2" />
+                              <MessageSquare className="w-4 h-4 me-2" />
                               {isArabic ? "إضافة تعليق" : "Add Comment"}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
@@ -655,7 +655,7 @@ export default function TicketsManagement() {
                               className="text-red-600"
                               onClick={() => handleDeleteTicket(ticket)}
                             >
-                              <Trash2 className="w-4 h-4 ml-2" />
+                              <Trash2 className="w-4 h-4 me-2" />
                               {isArabic ? "حذف" : "Delete"}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -746,7 +746,7 @@ export default function TicketsManagement() {
                       }
                     />
                     <Button>
-                      <Send className="w-4 h-4 ml-2" />
+                      <Send className="w-4 h-4 me-2" />
                       {isArabic ? "إرسال" : "Send"}
                     </Button>
                   </div>

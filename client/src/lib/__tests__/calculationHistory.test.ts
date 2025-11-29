@@ -372,7 +372,8 @@ describe('calculationHistory', () => {
 
       const records = getAllRecords();
       expect(records).toHaveLength(1);
-      expect(records[0].inputs.basicSalary).toBe(10000); // Original value
+      expect(records[0].type).toBe('gosi');
+      expect((records[0] as GOSIRecord).inputs.basicSalary).toBe(10000); // Original value
     });
   });
 

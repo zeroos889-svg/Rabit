@@ -579,15 +579,15 @@ export default function ATSManagement() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger value="jobs">
-              <Briefcase className="w-4 h-4 ml-2" />
+              <Briefcase className="w-4 h-4 me-2" />
               {isArabic ? "الوظائف" : "Jobs"}
             </TabsTrigger>
             <TabsTrigger value="applicants">
-              <Users className="w-4 h-4 ml-2" />
+              <Users className="w-4 h-4 me-2" />
               {isArabic ? "المتقدمين" : "Applicants"}
             </TabsTrigger>
             <TabsTrigger value="pipeline">
-              <BarChart3 className="w-4 h-4 ml-2" />
+              <BarChart3 className="w-4 h-4 me-2" />
               {isArabic ? "مسار التوظيف" : "Pipeline"}
             </TabsTrigger>
           </TabsList>
@@ -608,7 +608,7 @@ export default function ATSManagement() {
                   <Dialog open={isAddJobDialogOpen} onOpenChange={setIsAddJobDialogOpen}>
                     <DialogTrigger asChild>
                       <Button className="bg-gradient-to-r from-blue-600 to-purple-600">
-                        <Plus className="w-4 h-4 ml-2" />
+                        <Plus className="w-4 h-4 me-2" />
                         {isArabic ? "نشر وظيفة" : "Post Job"}
                       </Button>
                     </DialogTrigger>
@@ -756,7 +756,7 @@ export default function ATSManagement() {
                   <div>
                     <Select value={filterStatus} onValueChange={setFilterStatus}>
                       <SelectTrigger>
-                        <Filter className="w-4 h-4 ml-2" />
+                        <Filter className="w-4 h-4 me-2" />
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -820,11 +820,11 @@ export default function ATSManagement() {
                               </div>
                               <div className="flex gap-2">
                                 <Button variant="outline" size="sm">
-                                  <Eye className="w-4 h-4 ml-2" />
+                                  <Eye className="w-4 h-4 me-2" />
                                   {isArabic ? "عرض" : "View"}
                                 </Button>
                                 <Button variant="outline" size="sm">
-                                  <Edit className="w-4 h-4 ml-2" />
+                                  <Edit className="w-4 h-4 me-2" />
                                   {isArabic ? "تعديل" : "Edit"}
                                 </Button>
                                 <Button
@@ -833,7 +833,7 @@ export default function ATSManagement() {
                                   className="text-red-600"
                                   onClick={() => handleDeleteJob(job)}
                                 >
-                                  <Trash2 className="w-4 h-4 ml-2" />
+                                  <Trash2 className="w-4 h-4 me-2" />
                                   {isArabic ? "حذف" : "Delete"}
                                 </Button>
                               </div>
@@ -901,11 +901,11 @@ export default function ATSManagement() {
 
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 pt-2">
                           <Button variant="outline" size="sm">
-                            <Eye className="w-4 h-4 ml-2" />
+                            <Eye className="w-4 h-4 me-2" />
                             {isArabic ? "عرض" : "View"}
                           </Button>
                           <Button variant="outline" size="sm">
-                            <Download className="w-4 h-4 ml-2" />
+                            <Download className="w-4 h-4 me-2" />
                             {isArabic ? "السيرة" : "Resume"}
                           </Button>
                           <Button
@@ -913,7 +913,7 @@ export default function ATSManagement() {
                             size="sm"
                             onClick={() => handleScheduleInterview(applicant.id)}
                           >
-                            <CalendarClock className="w-4 h-4 ml-2" />
+                            <CalendarClock className="w-4 h-4 me-2" />
                             {isArabic ? "جدولة" : "Schedule"}
                           </Button>
                           <Button
@@ -921,7 +921,7 @@ export default function ATSManagement() {
                             size="sm"
                             onClick={() => runAiScreening(applicant)}
                           >
-                            <Sparkles className="w-4 h-4 ml-2" />
+                            <Sparkles className="w-4 h-4 me-2" />
                             {isArabic ? "تحليل AI" : "AI Screen"}
                           </Button>
                         </div>
@@ -1114,7 +1114,7 @@ export default function ATSManagement() {
                     onClick={() => setScheduleMode("video")}
                     className="w-full"
                   >
-                    <Video className="w-4 h-4 ml-1" />
+                    <Video className="w-4 h-4 me-1" />
                     {isArabic ? "فيديو" : "Video"}
                   </Button>
                   <Button
@@ -1123,7 +1123,7 @@ export default function ATSManagement() {
                     onClick={() => setScheduleMode("phone")}
                     className="w-full"
                   >
-                    <Phone className="w-4 h-4 ml-1" />
+                    <Phone className="w-4 h-4 me-1" />
                     {isArabic ? "هاتف" : "Phone"}
                   </Button>
                   <Button
@@ -1132,7 +1132,7 @@ export default function ATSManagement() {
                     onClick={() => setScheduleMode("onsite")}
                     className="w-full"
                   >
-                    <MessageSquareMore className="w-4 h-4 ml-1" />
+                    <MessageSquareMore className="w-4 h-4 me-1" />
                     {isArabic ? "حضوري" : "On-site"}
                   </Button>
                 </div>

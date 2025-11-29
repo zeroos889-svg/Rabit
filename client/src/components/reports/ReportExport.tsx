@@ -342,9 +342,9 @@ export function ReportExport({
         <DropdownMenuTrigger asChild>
           <Button variant="outline" disabled={isExporting}>
             {isExporting ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              <Loader2 className="h-4 w-4 ms-2 animate-spin" />
             ) : (
-              <FileDown className="h-4 w-4 mr-2" />
+              <FileDown className="h-4 w-4 ms-2" />
             )}
             {isArabic ? "تصدير" : "Export"}
           </Button>
@@ -354,24 +354,24 @@ export function ReportExport({
             {isArabic ? "تصدير سريع" : "Quick Export"}
           </DropdownMenuLabel>
           <DropdownMenuItem onClick={() => handleQuickExport("pdf")}>
-            <FileText className="h-4 w-4 mr-2" />
+            <FileText className="h-4 w-4 ms-2" />
             {isArabic ? "تصدير PDF" : "Export as PDF"}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleQuickExport("excel")}>
-            <FileSpreadsheet className="h-4 w-4 mr-2" />
+            <FileSpreadsheet className="h-4 w-4 ms-2" />
             {isArabic ? "تصدير Excel" : "Export as Excel"}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleQuickExport("csv")}>
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="h-4 w-4 ms-2" />
             {isArabic ? "تصدير CSV" : "Export as CSV"}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleQuickExport("print")}>
-            <Printer className="h-4 w-4 mr-2" />
+            <Printer className="h-4 w-4 ms-2" />
             {isArabic ? "طباعة" : "Print"}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
-            <Filter className="h-4 w-4 mr-2" />
+            <Filter className="h-4 w-4 ms-2" />
             {isArabic ? "تصدير متقدم" : "Advanced Export"}
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -546,9 +546,9 @@ export function ReportExport({
             </Button>
             <Button onClick={handleAdvancedExport} disabled={isExporting}>
               {isExporting ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <Loader2 className="h-4 w-4 ms-2 animate-spin" />
               ) : (
-                <Download className="h-4 w-4 mr-2" />
+                <Download className="h-4 w-4 ms-2" />
               )}
               {isArabic ? "تصدير" : "Export"}
             </Button>

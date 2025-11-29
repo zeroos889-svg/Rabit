@@ -459,7 +459,7 @@ export function ChatWidget() {
                             : `Quick question: ${action.labelEn}`
                         }
                       >
-                        <Icon className="h-3 w-3 ml-1" />
+                        <Icon className="h-3 w-3 me-1" />
                         {isArabic ? action.label : action.labelEn}
                       </Button>
                     );

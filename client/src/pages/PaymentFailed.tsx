@@ -119,7 +119,7 @@ export default function PaymentFailed() {
               </div>
 
               <Badge variant="destructive" className="text-lg px-4 py-2">
-                <AlertCircle className="w-4 h-4 ml-2" />
+                <AlertCircle className="w-4 h-4 me-2" />
                 رقم العملية: {error.transactionId}
               </Badge>
             </div>
@@ -222,14 +222,14 @@ export default function PaymentFailed() {
         <div className="flex flex-col sm:flex-row gap-3">
           <Link href="/checkout" className="flex-1">
             <Button className="w-full" size="lg" disabled={isTrialExperience}>
-              <RefreshCcw className="ml-2 h-5 w-5" />
+              <RefreshCcw className="me-2 h-5 w-5" />
               {isTrialExperience ? "سيتم تفعيل الدفع قريباً" : "المحاولة مرة أخرى"}
             </Button>
           </Link>
 
           <Link href="/pricing" className="flex-1">
             <Button variant="outline" className="w-full" size="lg">
-              <ArrowLeft className="ml-2 h-5 w-5" />
+              <ArrowLeft className="me-2 h-5 w-5" />
               العودة إلى الباقات
             </Button>
           </Link>

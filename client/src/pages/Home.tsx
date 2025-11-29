@@ -260,7 +260,7 @@ function ConsultingServicesSection() {
                 <Link href="/consulting/book-new">
                   <Button className="w-full gradient-primary text-white">
                     احجز الآن
-                    <ArrowRight className="mr-2 h-4 w-4" />
+                    <ArrowRight className="ms-2 h-4 w-4" />
                   </Button>
                 </Link>
               </Card>
@@ -272,7 +272,7 @@ function ConsultingServicesSection() {
           <Link href="/consulting">
             <Button size="lg" variant="outline" className="text-lg px-8">
               عرض جميع الاستشارات
-              <ArrowRight className="mr-2 h-5 w-5" />
+              <ArrowRight className="ms-2 h-5 w-5" />
             </Button>
           </Link>
         </div>
@@ -630,7 +630,7 @@ export default function Home() {
                   onClick={redirectToLogin}
                 >
                   {t("btn.start_free")}
-                  <ArrowRight className="mr-2 h-5 w-5" />
+                  <ArrowRight className="ms-2 h-5 w-5" />
                 </Button>
                 <Button
                   size="lg"
@@ -638,7 +638,7 @@ export default function Home() {
                   className="text-lg px-8"
                   onClick={() => setVideoModalOpen(true)}
                 >
-                  <Play className="ml-2 h-5 w-5" />
+                  <Play className="me-2 h-5 w-5" />
                   {t("hero.watch_demo")}
                 </Button>
               </div>
@@ -780,7 +780,7 @@ export default function Home() {
                     className={`w-full ${category.gradientClass} text-white`}
                   >
                     {t(category.buttonTextKey)}
-                    <ArrowRight className="mr-2 h-4 w-4" />
+                    <ArrowRight className="ms-2 h-4 w-4" />
                   </Button>
                 </Card>
               );
@@ -831,7 +831,7 @@ export default function Home() {
               onClick={redirectToLogin}
             >
               {t("btn.start_free")}
-              <ArrowRight className="mr-2 h-5 w-5" />
+              <ArrowRight className="ms-2 h-5 w-5" />
             </Button>
           </div>
         </div>
@@ -867,7 +867,7 @@ export default function Home() {
                   className="w-full group-hover:bg-blue-50"
                 >
                   {t("tools.try_now")}
-                  <ArrowRight className="mr-2 h-4 w-4" />
+                  <ArrowRight className="ms-2 h-4 w-4" />
                 </Button>
               </Card>
             </Link>
@@ -889,7 +889,7 @@ export default function Home() {
                   className="w-full group-hover:bg-purple-50"
                 >
                   {t("tools.try_now")}
-                  <ArrowRight className="mr-2 h-4 w-4" />
+                  <ArrowRight className="ms-2 h-4 w-4" />
                 </Button>
               </Card>
             </Link>
@@ -911,7 +911,7 @@ export default function Home() {
                   className="w-full group-hover:bg-green-50"
                 >
                   {t("tools.try_now")}
-                  <ArrowRight className="mr-2 h-4 w-4" />
+                  <ArrowRight className="ms-2 h-4 w-4" />
                 </Button>
               </Card>
             </Link>
@@ -936,7 +936,7 @@ export default function Home() {
                   className="w-full group-hover:bg-orange-50"
                 >
                   {t("tools.try_now")}
-                  <ArrowRight className="mr-2 h-4 w-4" />
+                  <ArrowRight className="ms-2 h-4 w-4" />
                 </Button>
               </Card>
             </Link>
@@ -961,7 +961,7 @@ export default function Home() {
                   className="w-full group-hover:bg-indigo-50"
                 >
                   {t("tools.try_now")}
-                  <ArrowRight className="mr-2 h-4 w-4" />
+                  <ArrowRight className="ms-2 h-4 w-4" />
                 </Button>
               </Card>
             </Link>
@@ -983,7 +983,7 @@ export default function Home() {
                   className="w-full group-hover:bg-pink-50"
                 >
                   {t("tools.try_now")}
-                  <ArrowRight className="mr-2 h-4 w-4" />
+                  <ArrowRight className="ms-2 h-4 w-4" />
                 </Button>
               </Card>
             </Link>
@@ -993,7 +993,7 @@ export default function Home() {
             <Link href="/tools">
               <Button size="lg" variant="outline" className="text-lg px-8">
                 {t("tools.all_tools")}
-                <ArrowRight className="mr-2 h-5 w-5" />
+                <ArrowRight className="ms-2 h-5 w-5" />
               </Button>
             </Link>
           </div>
@@ -1272,7 +1272,7 @@ export default function Home() {
               <Link href="/courses">
                 <Button size="lg" className="w-full">
                   {t("learning.courses.cta")}
-                  <ArrowRight className="mr-2 h-4 w-4" />
+                  <ArrowRight className="ms-2 h-4 w-4" />
                 </Button>
               </Link>
             </Card>
@@ -1304,7 +1304,7 @@ export default function Home() {
               <Link href="/knowledge-base">
                 <Button size="lg" variant="outline" className="w-full">
                   {t("learning.knowledge.cta")}
-                  <ArrowRight className="mr-2 h-4 w-4" />
+                  <ArrowRight className="ms-2 h-4 w-4" />
                 </Button>
               </Link>
             </Card>
@@ -1333,7 +1333,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="default" className="text-lg px-8">
                   {t("cta.final.start")}
-                  <ArrowRight className="mr-2 h-5 w-5" />
+                  <ArrowRight className="ms-2 h-5 w-5" />
                 </Button>
                 <Button
                   size="lg"

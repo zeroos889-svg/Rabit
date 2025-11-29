@@ -231,7 +231,7 @@ export default function ConsultantLogin() {
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="h-5 w-5 ml-2 animate-spin" />
+                    <Loader2 className="h-5 w-5 me-2 animate-spin" />
                     جاري تسجيل الدخول...
                   </>
                 ) : (
@@ -261,7 +261,7 @@ export default function ConsultantLogin() {
               disabled={isLoading}
             >
               <svg
-                className="h-5 w-5 ml-2"
+                className="h-5 w-5 me-2"
                 viewBox="0 0 24 24"
                 fill="currentColor"
               >

@@ -322,7 +322,7 @@ export function AIAssistant() {
                             )
                           }
                         >
-                          <Lightbulb className="h-3 w-3 mr-2 shrink-0" />
+                          <Lightbulb className="h-3 w-3 ms-2 shrink-0" />
                           <span className="truncate">
                             {isArabic ? suggestion.textAr : suggestion.text}
                           </span>

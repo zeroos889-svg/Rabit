@@ -196,7 +196,7 @@ export default function AdminDiscountCodes() {
             <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
               <DialogTrigger asChild>
                 <Button>
-                  <Plus className="ml-2 h-4 w-4" />
+                  <Plus className="me-2 h-4 w-4" />
                   كود جديد
                 </Button>
               </DialogTrigger>
@@ -370,7 +370,7 @@ export default function AdminDiscountCodes() {
                 ابدأ بإنشاء كود خصم جديد
               </p>
               <Button onClick={() => setCreateDialogOpen(true)}>
-                <Plus className="ml-2 h-4 w-4" />
+                <Plus className="me-2 h-4 w-4" />
                 إنشاء كود جديد
               </Button>
             </CardContent>

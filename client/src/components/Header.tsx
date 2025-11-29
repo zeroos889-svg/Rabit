@@ -157,19 +157,19 @@ export function Header() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/profile" className="cursor-pointer">
-                    <User className="ml-2 h-4 w-4" />
+                    <User className="me-2 h-4 w-4" />
                     <span>الملف الشخصي</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/dashboard" className="cursor-pointer">
-                    <LayoutDashboard className="ml-2 h-4 w-4" />
+                    <LayoutDashboard className="me-2 h-4 w-4" />
                     <span>لوحة التحكم</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/dashboard/settings" className="cursor-pointer">
-                    <Settings className="ml-2 h-4 w-4" />
+                    <Settings className="me-2 h-4 w-4" />
                     <span>الإعدادات</span>
                   </Link>
                 </DropdownMenuItem>
@@ -178,7 +178,7 @@ export function Header() {
                   className="cursor-pointer text-red-600"
                   onClick={() => logout()}
                 >
-                  <LogOut className="ml-2 h-4 w-4" />
+                  <LogOut className="me-2 h-4 w-4" />
                   <span>تسجيل الخروج</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

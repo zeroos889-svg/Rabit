@@ -260,7 +260,7 @@ export default function SaudiRegulations() {
         <div className="container max-w-6xl mx-auto px-4">
           <div className="text-center space-y-4 max-w-3xl mx-auto">
             <Badge className="bg-primary/10 text-primary hover:bg-primary/20">
-              <BookOpen className="w-4 h-4 ml-2" />
+              <BookOpen className="w-4 h-4 me-2" />
               {isArabic ? "قاعدة المعرفة" : "Knowledge Base"}
             </Badge>
             <h1 className="text-4xl md:text-5xl font-bold text-slate-900">

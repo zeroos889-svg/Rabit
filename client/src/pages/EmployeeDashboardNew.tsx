@@ -233,28 +233,28 @@ export default function EmployeeDashboardNew() {
             <CardContent className="space-y-3">
               <Button asChild className="w-full justify-start" variant="outline" size="lg">
                 <Link href="/employee/leave-request">
-                  <Calendar className="ml-2 h-5 w-5" />
+                  <Calendar className="me-2 h-5 w-5" />
                   {t("dashboard.requestLeave", "طلب إجازة")}
                 </Link>
               </Button>
 
               <Button asChild className="w-full justify-start" variant="outline" size="lg">
                 <Link href="/eosb">
-                  <Calculator className="ml-2 h-5 w-5" />
+                  <Calculator className="me-2 h-5 w-5" />
                   {t("dashboard.calculateEOSB", "حساب نهاية الخدمة")}
                 </Link>
               </Button>
 
               <Button asChild className="w-full justify-start" variant="outline" size="lg">
                 <Link href="/letters">
-                  <FileText className="ml-2 h-5 w-5" />
+                  <FileText className="me-2 h-5 w-5" />
                   {t("dashboard.generateDocument", "إنشاء مستند")}
                 </Link>
               </Button>
 
               <Button asChild className="w-full justify-start" variant="outline" size="lg">
                 <Link href="/profile">
-                  <User className="ml-2 h-5 w-5" />
+                  <User className="me-2 h-5 w-5" />
                   {t("dashboard.viewProfile", "عرض الملف الشخصي")}
                 </Link>
               </Button>

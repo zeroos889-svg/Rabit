@@ -277,7 +277,7 @@ export default function MyDocuments() {
               onClick={() => setTab("saved")}
               className={tab === "saved" ? "border-blue-500 text-blue-600" : undefined}
             >
-              <Bookmark className="h-4 w-4 ml-2" />
+              <Bookmark className="h-4 w-4 me-2" />
               المفضلة
             </Button>
             <Button
@@ -314,7 +314,7 @@ export default function MyDocuments() {
                   <CardDescription>فلترة، بحث، وتنزيل المستندات</CardDescription>
                 </div>
                 <Button variant="ghost" size="sm" onClick={handleRefresh} disabled={isFetching}>
-                  {isFetching ? <Loader2 className="h-4 w-4 ml-2 animate-spin" /> : <RefreshCw className="h-4 w-4 ml-2" />}
+                  {isFetching ? <Loader2 className="h-4 w-4 me-2 animate-spin" /> : <RefreshCw className="h-4 w-4 me-2" />}
                   تحديث
                 </Button>
               </CardHeader>
@@ -378,11 +378,11 @@ export default function MyDocuments() {
                             <TableCell>
                               <div className="flex flex-wrap gap-2">
                                 <Button variant="outline" size="sm" onClick={() => setPreviewDoc(doc)}>
-                                  <Eye className="h-4 w-4 ml-1" />
+                                  <Eye className="h-4 w-4 me-1" />
                                   عرض
                                 </Button>
                                 <Button variant="outline" size="sm" onClick={() => handleDownload(doc)}>
-                                  <Download className="h-4 w-4 ml-1" />
+                                  <Download className="h-4 w-4 me-1" />
                                   تحميل
                                 </Button>
                                 <Button
@@ -392,10 +392,10 @@ export default function MyDocuments() {
                                   disabled={pendingFavoriteId === doc.id && toggleSaveMutation.isPending}
                                 >
                                   {pendingFavoriteId === doc.id && toggleSaveMutation.isPending ? (
-                                    <Loader2 className="h-4 w-4 ml-1 animate-spin" />
+                                    <Loader2 className="h-4 w-4 me-1 animate-spin" />
                                   ) : (
                                     <Bookmark
-                                      className="h-4 w-4 ml-1"
+                                      className="h-4 w-4 me-1"
                                       fill={saved ? "currentColor" : "none"}
                                     />
                                   )}
@@ -409,9 +409,9 @@ export default function MyDocuments() {
                                   disabled={pendingDeleteId === doc.id && deleteDocumentMutation.isPending}
                                 >
                                   {pendingDeleteId === doc.id && deleteDocumentMutation.isPending ? (
-                                    <Loader2 className="h-4 w-4 ml-1 animate-spin" />
+                                    <Loader2 className="h-4 w-4 me-1 animate-spin" />
                                   ) : (
-                                    <Trash2 className="h-4 w-4 ml-1" />
+                                    <Trash2 className="h-4 w-4 me-1" />
                                   )}
                                   حذف
                                 </Button>

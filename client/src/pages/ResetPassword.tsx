@@ -149,7 +149,7 @@ export default function ResetPassword() {
               <Link href="/login">
                 <Button className="w-full group">
                   تسجيل الدخول الآن
-                  <ArrowRight className="mr-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="me-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
             </div>
@@ -299,13 +299,13 @@ export default function ResetPassword() {
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="me-2 h-4 w-4 animate-spin" />
                     جاري التحديث...
                   </>
                 ) : (
                   <>
                     تحديث كلمة المرور
-                    <ArrowRight className="mr-2 h-4 w-4" />
+                    <ArrowRight className="me-2 h-4 w-4" />
                   </>
                 )}
               </Button>

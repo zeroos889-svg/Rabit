@@ -138,7 +138,7 @@ export default function CheckoutNew() {
                         {"popular" in plan && plan.popular && (
                           <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                             <Badge className="bg-primary text-white">
-                              <Sparkles className="w-3 h-3 ml-1" />
+                              <Sparkles className="w-3 h-3 me-1" />
                               الأكثر شعبية
                             </Badge>
                           </div>
@@ -225,12 +225,12 @@ export default function CheckoutNew() {
                 >
                   {isActivating ? (
                     <>
-                      <Loader2 className="ml-2 h-5 w-5 animate-spin" />
+                      <Loader2 className="me-2 h-5 w-5 animate-spin" />
                       جاري التفعيل المجاني...
                     </>
                   ) : (
                     <>
-                      <Sparkles className="ml-2 h-5 w-5" />
+                      <Sparkles className="me-2 h-5 w-5" />
                       تفعيل الباقة الآن
                     </>
                   )}

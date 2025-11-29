@@ -214,6 +214,8 @@ function RatingStars({
           type="button"
           disabled={readonly}
           onClick={() => onChange?.(i + 1)}
+          title={`تقييم ${i + 1} نجوم`}
+          aria-label={`تقييم ${i + 1} نجوم`}
           className={cn(
             "transition-colors",
             !readonly && "cursor-pointer hover:scale-110"
@@ -493,7 +495,7 @@ export function PerformanceEvaluation({ employeeId: _employeeId }: PerformanceEv
               <Dialog open={isAddGoalOpen} onOpenChange={setIsAddGoalOpen}>
                 <DialogTrigger asChild>
                   <Button>
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="h-4 w-4 ms-2" />
                     {isArabic ? "إضافة هدف" : "Add Goal"}
                   </Button>
                 </DialogTrigger>
@@ -549,7 +551,7 @@ export function PerformanceEvaluation({ employeeId: _employeeId }: PerformanceEv
                       {isArabic ? "إلغاء" : "Cancel"}
                     </Button>
                     <Button onClick={handleAddGoal}>
-                      <Save className="h-4 w-4 mr-2" />
+                      <Save className="h-4 w-4 ms-2" />
                       {isArabic ? "حفظ" : "Save"}
                     </Button>
                   </DialogFooter>
@@ -671,7 +673,7 @@ export function PerformanceEvaluation({ employeeId: _employeeId }: PerformanceEv
                   {isArabic ? "حفظ كمسودة" : "Save Draft"}
                 </Button>
                 <Button>
-                  <Save className="h-4 w-4 mr-2" />
+                  <Save className="h-4 w-4 ms-2" />
                   {isArabic ? "إرسال التقييم" : "Submit Review"}
                 </Button>
               </div>

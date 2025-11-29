@@ -180,7 +180,7 @@ export default function Tasks() {
           >
             <DialogTrigger asChild>
               <Button className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700">
-                <Plus className="h-4 w-4 ml-2" />
+                <Plus className="h-4 w-4 me-2" />
                 إنشاء مهمة جديدة
               </Button>
             </DialogTrigger>
@@ -294,7 +294,7 @@ export default function Tasks() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                <TrendingUp className="h-3 w-3 inline ml-1" />
+                <TrendingUp className="h-3 w-3 inline me-1" />
                 +8 هذا الأسبوع
               </p>
             </CardContent>
@@ -311,7 +311,7 @@ export default function Tasks() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                <Clock className="h-3 w-3 inline ml-1" />
+                <Clock className="h-3 w-3 inline me-1" />
                 في انتظار البدء
               </p>
             </CardContent>
@@ -328,7 +328,7 @@ export default function Tasks() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                <User className="h-3 w-3 inline ml-1" />
+                <User className="h-3 w-3 inline me-1" />
                 يتم العمل عليها
               </p>
             </CardContent>
@@ -345,7 +345,7 @@ export default function Tasks() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                <CheckCircle2 className="h-3 w-3 inline ml-1" />
+                <CheckCircle2 className="h-3 w-3 inline me-1" />
                 هذا الشهر
               </p>
             </CardContent>

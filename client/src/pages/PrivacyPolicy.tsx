@@ -118,7 +118,7 @@ export default function PrivacyPolicy() {
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
               <p>نقوم بمعالجة بياناتك الشخصية للأغراض التالية:</p>
-              <ul className="list-disc list-inside space-y-2 mr-4">
+              <ul className="list-disc list-inside space-y-2 ms-4">
                 <li>
                   <strong className="text-foreground">
                     إنشاء وإدارة الحساب:
@@ -161,7 +161,7 @@ export default function PrivacyPolicy() {
                   <h4 className="font-semibold text-foreground mb-2">
                     بيانات أساسية:
                   </h4>
-                  <ul className="list-disc list-inside space-y-1 mr-4">
+                  <ul className="list-disc list-inside space-y-1 ms-4">
                     <li>الاسم الكامل</li>
                     <li>البريد الإلكتروني</li>
                     <li>رقم الجوال (اختياري)</li>
@@ -172,7 +172,7 @@ export default function PrivacyPolicy() {
                   <h4 className="font-semibold text-foreground mb-2">
                     بيانات الاستخدام:
                   </h4>
-                  <ul className="list-disc list-inside space-y-1 mr-4">
+                  <ul className="list-disc list-inside space-y-1 ms-4">
                     <li>عنوان IP</li>
                     <li>نوع المتصفح</li>
                     <li>تاريخ ووقت الزيارة</li>
@@ -183,7 +183,7 @@ export default function PrivacyPolicy() {
                   <h4 className="font-semibold text-foreground mb-2">
                     بيانات الخدمة (حسب الاستخدام):
                   </h4>
-                  <ul className="list-disc list-inside space-y-1 mr-4">
+                  <ul className="list-disc list-inside space-y-1 ms-4">
                     <li>بيانات الموظفين (للشركات)</li>
                     <li>المستندات المرفوعة</li>
                     <li>سجلات الاستشارات</li>
@@ -209,7 +209,7 @@ export default function PrivacyPolicy() {
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
               <p>نعالج بياناتك بناءً على:</p>
-              <ul className="list-disc list-inside space-y-2 mr-4">
+              <ul className="list-disc list-inside space-y-2 ms-4">
                 <li>
                   <strong className="text-foreground">موافقتك الصريحة:</strong>{" "}
                   عند التسجيل في المنصة
@@ -343,7 +343,7 @@ export default function PrivacyPolicy() {
                 المملكة العربية السعودية
               </p>
               <p>في حال الحاجة لنقل بياناتك خارج المملكة، سنقوم بـ:</p>
-              <ul className="list-disc list-inside space-y-2 mr-4">
+              <ul className="list-disc list-inside space-y-2 ms-4">
                 <li>إخطارك مسبقاً</li>
                 <li>الحصول على موافقتك الصريحة</li>
                 <li>
@@ -364,7 +364,7 @@ export default function PrivacyPolicy() {
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
               <p>نطبق تدابير أمنية صارمة لحماية بياناتك:</p>
-              <ul className="list-disc list-inside space-y-2 mr-4">
+              <ul className="list-disc list-inside space-y-2 ms-4">
                 <li>تشفير البيانات أثناء النقل والتخزين (TLS/SSL)</li>
                 <li>التحكم في الوصول بناءً على الأدوار (RBAC)</li>
                 <li>مراقبة الأنشطة المشبوهة</li>
@@ -453,7 +453,7 @@ export default function PrivacyPolicy() {
                 قد نقوم بتحديث هذه السياسة من وقت لآخر. سنخطرك بأي تغييرات
                 جوهرية عبر:
               </p>
-              <ul className="list-disc list-inside space-y-2 mr-4">
+              <ul className="list-disc list-inside space-y-2 ms-4">
                 <li>إشعار على المنصة</li>
                 <li>بريد إلكتروني</li>
                 <li>تحديث تاريخ "آخر تحديث" أعلى الصفحة</li>

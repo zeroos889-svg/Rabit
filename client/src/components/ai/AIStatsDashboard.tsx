@@ -120,7 +120,7 @@ const StatCard = ({ title, value, change, icon, description }: StatCardProps) =>
       <div className="text-2xl font-bold">{value}</div>
       {change !== undefined && (
         <div className={`flex items-center text-xs mt-1 ${change >= 0 ? "text-green-600" : "text-red-600"}`}>
-          {change >= 0 ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
+          {change >= 0 ? <TrendingUp className="w-3 h-3 ms-1" /> : <TrendingDown className="w-3 h-3 ms-1" />}
           {Math.abs(change)}% {change >= 0 ? "زيادة" : "انخفاض"}
         </div>
       )}

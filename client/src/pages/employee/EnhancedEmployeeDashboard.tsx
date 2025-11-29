@@ -404,19 +404,19 @@ export default function EnhancedEmployeeDashboard() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Button className="w-full justify-start" variant="outline">
-                    <Calendar className="h-4 w-4 mr-2" />
+                    <Calendar className="h-4 w-4 me-2" />
                     {isArabic ? "طلب إجازة" : "Request Leave"}
                   </Button>
                   <Button className="w-full justify-start" variant="outline">
-                    <FileText className="h-4 w-4 mr-2" />
+                    <FileText className="h-4 w-4 me-2" />
                     {isArabic ? "عرض كشف الراتب" : "View Payslip"}
                   </Button>
                   <Button className="w-full justify-start" variant="outline">
-                    <Upload className="h-4 w-4 mr-2" />
+                    <Upload className="h-4 w-4 me-2" />
                     {isArabic ? "رفع مستند" : "Upload Document"}
                   </Button>
                   <Button className="w-full justify-start" variant="outline">
-                    <MessageSquare className="h-4 w-4 mr-2" />
+                    <MessageSquare className="h-4 w-4 me-2" />
                     {isArabic ? "تواصل مع الموارد البشرية" : "Contact HR"}
                   </Button>
                 </CardContent>
@@ -498,7 +498,7 @@ export default function EnhancedEmployeeDashboard() {
                         </div>
                         <Progress value={task.progress} className="mt-2" />
                       </div>
-                      <div className="flex gap-1 ml-4">
+                      <div className="flex gap-1 ms-4">
                         <Button variant="ghost" size="sm">
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -520,7 +520,7 @@ export default function EnhancedEmployeeDashboard() {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <CardTitle>{isArabic ? "طلبات الإجازة" : "Leave Requests"}</CardTitle>
                   <Button size="sm">
-                    <Calendar className="h-4 w-4 mr-2" />
+                    <Calendar className="h-4 w-4 me-2" />
                     {isArabic ? "طلب جديد" : "New Request"}
                   </Button>
                 </div>
@@ -561,7 +561,7 @@ export default function EnhancedEmployeeDashboard() {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <CardTitle>{isArabic ? "مستنداتي" : "My Documents"}</CardTitle>
                   <Button size="sm">
-                    <Upload className="h-4 w-4 mr-2" />
+                    <Upload className="h-4 w-4 me-2" />
                     {isArabic ? "رفع مستند" : "Upload"}
                   </Button>
                 </div>

@@ -435,24 +435,24 @@ export default function EnhancedCompanyDashboard() {
                 <CardContent className="space-y-3">
                   <PermissionGuard permission="employees.create">
                     <Button className="w-full justify-start" variant="outline">
-                      <UserPlus className="h-4 w-4 mr-2" />
+                      <UserPlus className="h-4 w-4 me-2" />
                       {isArabic ? "إضافة موظف" : "Add Employee"}
                     </Button>
                   </PermissionGuard>
                   <PermissionGuard permission="jobs.create">
                     <Button className="w-full justify-start" variant="outline">
-                      <Plus className="h-4 w-4 mr-2" />
+                      <Plus className="h-4 w-4 me-2" />
                       {isArabic ? "نشر وظيفة" : "Post Job"}
                     </Button>
                   </PermissionGuard>
                   <PermissionGuard permission="reports.view">
                     <Button className="w-full justify-start" variant="outline">
-                      <BarChart3 className="h-4 w-4 mr-2" />
+                      <BarChart3 className="h-4 w-4 me-2" />
                       {isArabic ? "عرض التقارير" : "View Reports"}
                     </Button>
                   </PermissionGuard>
                   <Button className="w-full justify-start" variant="outline">
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="h-4 w-4 me-2" />
                     {isArabic ? "تصدير البيانات" : "Export Data"}
                   </Button>
                 </CardContent>
@@ -468,16 +468,16 @@ export default function EnhancedCompanyDashboard() {
                   <CardTitle>{isArabic ? "إدارة الموظفين" : "Employee Management"}</CardTitle>
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm">
-                      <Filter className="h-4 w-4 mr-2" />
+                      <Filter className="h-4 w-4 me-2" />
                       {isArabic ? "تصفية" : "Filter"}
                     </Button>
                     <Button variant="outline" size="sm">
-                      <Search className="h-4 w-4 mr-2" />
+                      <Search className="h-4 w-4 me-2" />
                       {isArabic ? "بحث" : "Search"}
                     </Button>
                     <PermissionGuard permission="employees.create">
                       <Button size="sm">
-                        <Plus className="h-4 w-4 mr-2" />
+                        <Plus className="h-4 w-4 me-2" />
                         {isArabic ? "إضافة موظف" : "Add Employee"}
                       </Button>
                     </PermissionGuard>
@@ -534,12 +534,12 @@ export default function EnhancedCompanyDashboard() {
                   <CardTitle>{isArabic ? "إدارة الوظائف" : "Job Management"}</CardTitle>
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm">
-                      <Filter className="h-4 w-4 mr-2" />
+                      <Filter className="h-4 w-4 me-2" />
                       {isArabic ? "تصفية" : "Filter"}
                     </Button>
                     <PermissionGuard permission="jobs.create">
                       <Button size="sm">
-                        <Plus className="h-4 w-4 mr-2" />
+                        <Plus className="h-4 w-4 me-2" />
                         {isArabic ? "نشر وظيفة" : "Post Job"}
                       </Button>
                     </PermissionGuard>
@@ -609,15 +609,15 @@ export default function EnhancedCompanyDashboard() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Button className="w-full justify-start" variant="outline">
-                    <FileText className="h-4 w-4 mr-2" />
+                    <FileText className="h-4 w-4 me-2" />
                     {isArabic ? "تقرير الموظفين الشهري" : "Monthly Employee Report"}
                   </Button>
                   <Button className="w-full justify-start" variant="outline">
-                    <FileText className="h-4 w-4 mr-2" />
+                    <FileText className="h-4 w-4 me-2" />
                     {isArabic ? "تقرير التوظيف" : "Recruitment Report"}
                   </Button>
                   <Button className="w-full justify-start" variant="outline">
-                    <FileText className="h-4 w-4 mr-2" />
+                    <FileText className="h-4 w-4 me-2" />
                     {isArabic ? "تقرير الحضور" : "Attendance Report"}
                   </Button>
                 </CardContent>
@@ -632,15 +632,15 @@ export default function EnhancedCompanyDashboard() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Button className="w-full justify-start" variant="outline">
-                    <FileText className="h-4 w-4 mr-2" />
+                    <FileText className="h-4 w-4 me-2" />
                     {isArabic ? "تقرير الرواتب" : "Payroll Report"}
                   </Button>
                   <Button className="w-full justify-start" variant="outline">
-                    <FileText className="h-4 w-4 mr-2" />
+                    <FileText className="h-4 w-4 me-2" />
                     {isArabic ? "تقرير التكاليف" : "Cost Report"}
                   </Button>
                   <Button className="w-full justify-start" variant="outline">
-                    <FileText className="h-4 w-4 mr-2" />
+                    <FileText className="h-4 w-4 me-2" />
                     {isArabic ? "تقرير الميزانية" : "Budget Report"}
                   </Button>
                 </CardContent>

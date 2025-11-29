@@ -183,11 +183,11 @@ export default function TrialAccounts() {
                   <div className="flex flex-wrap gap-3">
                     <Button className="flex-1" onClick={() => handleLaunch(profile, "login")}>
                       املأ تسجيل الدخول تلقائياً
-                      <ArrowRight className="mr-2 h-4 w-4" />
+                      <ArrowRight className="ms-2 h-4 w-4" />
                     </Button>
                     <Button variant="outline" onClick={() => handleLaunch(profile, "signup")}>
                       متابعة التسجيل
-                      <ArrowUpRight className="mr-2 h-4 w-4" />
+                      <ArrowUpRight className="ms-2 h-4 w-4" />
                     </Button>
                   </div>
                 </CardContent>
@@ -289,7 +289,7 @@ export default function TrialAccounts() {
                   <Button variant="ghost" className="px-0" asChild>
                     <Link href={title === "تسجيل ذكي" ? "/register" : "/login-enhanced"}>
                       المزيد
-                      <ArrowRight className="mr-2 h-4 w-4" />
+                      <ArrowRight className="ms-2 h-4 w-4" />
                     </Link>
                   </Button>
                 </CardContent>

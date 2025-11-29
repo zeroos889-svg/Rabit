@@ -106,7 +106,7 @@ export default function Reports() {
               </SelectContent>
             </Select>
             <Button className="bg-gradient-to-r from-blue-600 to-indigo-600">
-              <Download className="h-4 w-4 ml-2" />
+              <Download className="h-4 w-4 me-2" />
               تصدير جميع التقارير
             </Button>
           </div>
@@ -375,7 +375,7 @@ export default function Reports() {
 
             <div className="flex justify-end">
               <Button variant="outline">
-                <Download className="h-4 w-4 ml-2" />
+                <Download className="h-4 w-4 me-2" />
                 تصدير تقرير الموظفين
               </Button>
             </div>
@@ -470,7 +470,7 @@ export default function Reports() {
 
             <div className="flex justify-end">
               <Button variant="outline">
-                <Download className="h-4 w-4 ml-2" />
+                <Download className="h-4 w-4 me-2" />
                 تصدير تقرير الرواتب
               </Button>
             </div>
@@ -562,7 +562,7 @@ export default function Reports() {
 
             <div className="flex justify-end">
               <Button variant="outline">
-                <Download className="h-4 w-4 ml-2" />
+                <Download className="h-4 w-4 me-2" />
                 تصدير تقرير الإجازات
               </Button>
             </div>
@@ -654,7 +654,7 @@ export default function Reports() {
 
             <div className="flex justify-end">
               <Button variant="outline">
-                <Download className="h-4 w-4 ml-2" />
+                <Download className="h-4 w-4 me-2" />
                 تصدير تقرير التوظيف
               </Button>
             </div>
@@ -748,7 +748,7 @@ export default function Reports() {
 
             <div className="flex justify-end">
               <Button variant="outline">
-                <Download className="h-4 w-4 ml-2" />
+                <Download className="h-4 w-4 me-2" />
                 تصدير تقرير التذاكر
               </Button>
             </div>
@@ -769,15 +769,15 @@ export default function Reports() {
           <CardContent>
             <div className="flex gap-4">
               <Button variant="outline" className="flex-1">
-                <Download className="h-4 w-4 ml-2" />
+                <Download className="h-4 w-4 me-2" />
                 تصدير PDF
               </Button>
               <Button variant="outline" className="flex-1">
-                <Download className="h-4 w-4 ml-2" />
+                <Download className="h-4 w-4 me-2" />
                 تصدير Excel
               </Button>
               <Button variant="outline" className="flex-1">
-                <Download className="h-4 w-4 ml-2" />
+                <Download className="h-4 w-4 me-2" />
                 تصدير CSV
               </Button>
             </div>

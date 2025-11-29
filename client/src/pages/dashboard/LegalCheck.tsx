@@ -360,7 +360,7 @@ export default function LegalCheck() {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => toast.success("تم تحميل التقرير")}>
-              <Download className="h-4 w-4 ml-2" />
+              <Download className="h-4 w-4 me-2" />
               تصدير التقرير
             </Button>
             <Button
@@ -368,7 +368,7 @@ export default function LegalCheck() {
               disabled={isScanning}
               className="bg-gradient-to-r from-purple-600 to-blue-600"
             >
-              <RefreshCw className={`h-4 w-4 ml-2 ${isScanning ? "animate-spin" : ""}`} />
+              <RefreshCw className={`h-4 w-4 me-2 ${isScanning ? "animate-spin" : ""}`} />
               {isScanning ? "جاري الفحص..." : "فحص الآن"}
             </Button>
           </div>
@@ -556,7 +556,7 @@ export default function LegalCheck() {
                               variant="outline"
                               onClick={() => setSelectedItem(item)}
                             >
-                              <Eye className="h-4 w-4 ml-1" />
+                              <Eye className="h-4 w-4 me-1" />
                               تفاصيل
                             </Button>
                           </TableCell>

@@ -267,7 +267,7 @@ export function GlobalSearch({ open: controlledOpen, onOpenChange: controlledOnO
         className="relative h-9 w-full justify-start rounded-md bg-background text-sm text-muted-foreground sm:pr-12 md:w-40 lg:w-64"
         onClick={() => onOpenChange(true)}
       >
-        <Search className="ml-2 h-4 w-4 shrink-0" />
+        <Search className="me-2 h-4 w-4 shrink-0" />
         <span className="hidden lg:inline-flex">
           {isArabic ? "بحث..." : "Search..."}
         </span>

@@ -177,7 +177,7 @@ export default function ATS() {
           >
             <DialogTrigger asChild>
               <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                <Plus className="h-4 w-4 ml-2" />
+                <Plus className="h-4 w-4 me-2" />
                 نشر وظيفة جديدة
               </Button>
             </DialogTrigger>
@@ -275,7 +275,7 @@ export default function ATS() {
                     rows={4}
                   />
                   <Button variant="outline" size="sm" className="mt-2">
-                    <Sparkles className="h-4 w-4 ml-2" />
+                    <Sparkles className="h-4 w-4 me-2" />
                     تحسين بالذكاء الاصطناعي
                   </Button>
                 </div>
@@ -315,7 +315,7 @@ export default function ATS() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                <TrendingUp className="h-3 w-3 inline ml-1" />
+                <TrendingUp className="h-3 w-3 inline me-1" />
                 +3 هذا الشهر
               </p>
             </CardContent>
@@ -330,7 +330,7 @@ export default function ATS() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                <Clock className="h-3 w-3 inline ml-1" />
+                <Clock className="h-3 w-3 inline me-1" />
                 25 جديد اليوم
               </p>
             </CardContent>
@@ -345,7 +345,7 @@ export default function ATS() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                <Calendar className="h-3 w-3 inline ml-1" />3 هذا الأسبوع
+                <Calendar className="h-3 w-3 inline me-1" />3 هذا الأسبوع
               </p>
             </CardContent>
           </Card>
@@ -359,7 +359,7 @@ export default function ATS() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                <Star className="h-3 w-3 inline ml-1" />
+                <Star className="h-3 w-3 inline me-1" />
                 هذا الشهر
               </p>
             </CardContent>
@@ -377,7 +377,7 @@ export default function ATS() {
                 : ""
             }
           >
-            <Briefcase className="h-4 w-4 ml-2" />
+            <Briefcase className="h-4 w-4 me-2" />
             الوظائف ({jobsData.length})
           </Button>
           <Button
@@ -389,7 +389,7 @@ export default function ATS() {
                 : ""
             }
           >
-            <Users className="h-4 w-4 ml-2" />
+            <Users className="h-4 w-4 me-2" />
             المتقدمين ({applicantsData.length})
           </Button>
         </div>
@@ -499,7 +499,7 @@ export default function ATS() {
                   <CardTitle className="flex items-center gap-2">
                     المتقدمين
                     <Badge className="bg-gradient-to-r from-purple-600 to-pink-600">
-                      <Sparkles className="h-3 w-3 ml-1" />
+                      <Sparkles className="h-3 w-3 me-1" />
                       فرز ذكي
                     </Badge>
                   </CardTitle>
@@ -508,7 +508,7 @@ export default function ATS() {
                   </CardDescription>
                 </div>
                 <Button variant="outline">
-                  <Sparkles className="h-4 w-4 ml-2" />
+                  <Sparkles className="h-4 w-4 me-2" />
                   فرز بالذكاء الاصطناعي
                 </Button>
               </div>
@@ -580,10 +580,10 @@ export default function ATS() {
                             }
                           >
                             {applicant.status === "مقبول" && (
-                              <CheckCircle2 className="h-3 w-3 ml-1" />
+                              <CheckCircle2 className="h-3 w-3 me-1" />
                             )}
                             {applicant.status === "مرفوض" && (
-                              <XCircle className="h-3 w-3 ml-1" />
+                              <XCircle className="h-3 w-3 me-1" />
                             )}
                             {applicant.status}
                           </Badge>

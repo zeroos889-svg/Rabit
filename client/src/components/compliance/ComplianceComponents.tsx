@@ -189,7 +189,7 @@ export function ComplianceIssueItem({ issue, index }: ComplianceIssueItemProps) 
             variant="ghost"
             size="sm"
             onClick={() => setExpanded(!expanded)}
-            className="ml-2"
+            className="me-2"
           >
             {expanded ? (
               <ChevronUp className="h-4 w-4" />
@@ -213,7 +213,7 @@ export function ComplianceIssueItem({ issue, index }: ComplianceIssueItemProps) 
           </div>
           {issue.regulationRef && (
             <Button variant="link" size="sm" className="mt-2 p-0 h-auto">
-              <ExternalLink className="h-3 w-3 ml-1" />
+              <ExternalLink className="h-3 w-3 me-1" />
               {isArabic ? "مرجع النظام" : "Regulation Reference"}
             </Button>
           )}
@@ -416,13 +416,13 @@ export function ComplianceCheckDialog({
               <Button onClick={handleCheck} disabled={loading}>
                 {loading ? (
                   <>
-                    <span className="animate-spin mr-2">⟳</span>
+                    <span className="animate-spin ms-2">⟳</span>
                     {isArabic ? "جاري الفحص..." : "Checking..."}
                   </>
                 ) : (
                   <>
-                    <Shield className="h-4 w-4 ml-2" />
-                    {isArabic ? "بدء الفحص" : "Start Check"}
+                    <Shield className="h-4 w-4 me-2" />
+                    {isArabic ? "بدء الفحص" : "Start Check"}}
                   </>
                 )}
               </Button>

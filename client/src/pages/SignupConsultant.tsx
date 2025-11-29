@@ -463,7 +463,7 @@ export default function SignupConsultant() {
                   ) : (
                     <>
                       {isArabic ? "ابدأ التجربة المجانية" : "Start Free Trial"}
-                      <Sparkles className="w-4 h-4 mr-2" />
+                      <Sparkles className="w-4 h-4 ms-2" />
                     </>
                   )}
                 </Button>
@@ -485,7 +485,7 @@ export default function SignupConsultant() {
                 onClick={() => handleOAuthSignup("Google")}
                 disabled={isLoading}
               >
-                <Chrome className="w-5 h-5 ml-2" />
+                <Chrome className="w-5 h-5 me-2" />
                 {isArabic ? "التسجيل عبر Google" : "Sign up with Google"}
               </Button>
 

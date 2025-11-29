@@ -394,7 +394,7 @@ export default function Blog() {
                         className="mt-4 w-full group-hover:bg-blue-50"
                       >
                         اقرأ المزيد
-                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        <ArrowLeft className="me-2 h-4 w-4" />
                       </Button>
                     </CardContent>
                   </Card>

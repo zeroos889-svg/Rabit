@@ -239,7 +239,7 @@ export default function Tools() {
               </div>
 
               <Button onClick={calculateNetSalary} className="w-full">
-                <Calculator className="h-4 w-4 ml-2" />
+                <Calculator className="h-4 w-4 me-2" />
                 احسب الراتب الصافي
               </Button>
 
@@ -310,7 +310,7 @@ export default function Tools() {
                 onClick={calculateInsurance}
                 className="w-full gradient-employee text-white"
               >
-                <Calculator className="h-4 w-4 ml-2" />
+                <Calculator className="h-4 w-4 me-2" />
                 احسب التأمينات
               </Button>
 
@@ -394,7 +394,7 @@ export default function Tools() {
                 onClick={calculateBonus}
                 className="w-full gradient-individual text-white"
               >
-                <Calculator className="h-4 w-4 ml-2" />
+                <Calculator className="h-4 w-4 me-2" />
                 احسب المكافأة
               </Button>
 
@@ -469,7 +469,7 @@ export default function Tools() {
                 onClick={generateEmployeeId}
                 className="w-full gradient-company text-white"
               >
-                <Hash className="h-4 w-4 ml-2" />
+                <Hash className="h-4 w-4 me-2" />
                 توليد رقم الموظف
               </Button>
 

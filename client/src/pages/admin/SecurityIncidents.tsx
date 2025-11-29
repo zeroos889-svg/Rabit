@@ -214,7 +214,7 @@ export default function AdminSecurityIncidents() {
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button className="bg-red-600 hover:bg-red-700">
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="h-4 w-4 me-2" />
                 تسجيل حادث جديد
               </Button>
             </DialogTrigger>
@@ -438,7 +438,7 @@ export default function AdminSecurityIncidents() {
                               onClick={() => handleReportToSdaia(incident.id)}
                               className="bg-red-600 hover:bg-red-700"
                             >
-                              <Send className="h-3 w-3 mr-1" />
+                              <Send className="h-3 w-3 me-1" />
                               إبلاغ سدايا
                             </Button>
                           )}
@@ -449,7 +449,7 @@ export default function AdminSecurityIncidents() {
                                 variant="outline"
                                 onClick={() => handleReportToUsers(incident.id)}
                               >
-                                <Send className="h-3 w-3 mr-1" />
+                                <Send className="h-3 w-3 me-1" />
                                 إخطار المستخدمين
                               </Button>
                             )}
@@ -488,7 +488,7 @@ export default function AdminSecurityIncidents() {
               <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
               <div className="space-y-2 text-sm text-red-900">
                 <p className="font-semibold">تحذير هام - متطلبات PDPL:</p>
-                <ul className="list-disc list-inside space-y-1 mr-4">
+                <ul className="list-disc list-inside space-y-1 me-4">
                   <li>
                     <strong>72 ساعة:</strong> يجب إبلاغ سدايا عن أي خرق خلال 72
                     ساعة من اكتشافه

@@ -92,7 +92,7 @@ export default function ForgotPassword() {
                 <Link href="/login">
                   <Button variant="default" className="w-full group">
                     العودة لتسجيل الدخول
-                    <ArrowRight className="mr-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="ms-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
               </div>
@@ -130,13 +130,13 @@ export default function ForgotPassword() {
               >
                 {resetMutation.isPending ? (
                   <>
-                    <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="me-2 h-4 w-4 animate-spin" />
                     جاري الإرسال...
                   </>
                 ) : (
                   <>
                     إرسال رابط الاسترجاع
-                    <ArrowRight className="mr-2 h-4 w-4" />
+                    <ArrowRight className="ms-2 h-4 w-4" />
                   </>
                 )}
               </Button>

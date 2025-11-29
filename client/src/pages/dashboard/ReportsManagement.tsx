@@ -242,14 +242,14 @@ export default function ReportsManagement() {
               variant="outline"
               onClick={() => handleExportReport("PDF")}
             >
-              <Download className="w-4 h-4 ml-2" />
+              <Download className="w-4 h-4 me-2" />
               PDF
             </Button>
             <Button
               variant="outline"
               onClick={() => handleExportReport("Excel")}
             >
-              <Download className="w-4 h-4 ml-2" />
+              <Download className="w-4 h-4 me-2" />
               Excel
             </Button>
           </div>
@@ -338,23 +338,23 @@ export default function ReportsManagement() {
         <Tabs value={reportType} onValueChange={setReportType}>
           <TabsList>
             <TabsTrigger value="overview">
-              <FileText className="w-4 h-4 ml-2" />
+              <FileText className="w-4 h-4 me-2" />
               {isArabic ? "نظرة عامة" : "Overview"}
             </TabsTrigger>
             <TabsTrigger value="employees">
-              <Users className="w-4 h-4 ml-2" />
+              <Users className="w-4 h-4 me-2" />
               {isArabic ? "الموظفين" : "Employees"}
             </TabsTrigger>
             <TabsTrigger value="attendance">
-              <Clock className="w-4 h-4 ml-2" />
+              <Clock className="w-4 h-4 me-2" />
               {isArabic ? "الحضور" : "Attendance"}
             </TabsTrigger>
             <TabsTrigger value="recruitment">
-              <Briefcase className="w-4 h-4 ml-2" />
+              <Briefcase className="w-4 h-4 me-2" />
               {isArabic ? "التوظيف" : "Recruitment"}
             </TabsTrigger>
             <TabsTrigger value="payroll">
-              <DollarSign className="w-4 h-4 ml-2" />
+              <DollarSign className="w-4 h-4 me-2" />
               {isArabic ? "الرواتب" : "Payroll"}
             </TabsTrigger>
           </TabsList>

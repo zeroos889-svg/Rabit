@@ -475,18 +475,18 @@ export default function Checkout() {
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="ml-2 h-5 w-5 animate-spin" />
+                      <Loader2 className="me-2 h-5 w-5 animate-spin" />
                       جاري معالجة الطلب...
                     </>
                   ) : isTrialMode ? (
                     <>
                       تأكيد الاشتراك التجريبي
-                      <Sparkles className="mr-2 h-5 w-5" />
+                      <Sparkles className="ms-2 h-5 w-5" />
                     </>
                   ) : (
                     <>
                       إتمام الدفع - {totalAmount.toFixed(2)} ﷼
-                      <ArrowRight className="mr-2 h-5 w-5" />
+                      <ArrowRight className="ms-2 h-5 w-5" />
                     </>
                   )}
                 </Button>
@@ -542,7 +542,7 @@ export default function Checkout() {
                       variant="secondary"
                       className="bg-green-100 text-green-800"
                     >
-                      <Sparkles className="w-3 h-3 ml-1" />
+                      <Sparkles className="w-3 h-3 me-1" />
                       خصم {selectedPackage.discount}%
                     </Badge>
                   )}

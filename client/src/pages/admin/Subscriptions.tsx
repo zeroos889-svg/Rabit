@@ -258,7 +258,7 @@ export default function AdminSubscriptions() {
 
         <div className="flex gap-2">
           <Button variant="outline">
-            <Download className="h-4 w-4 ml-2" />
+            <Download className="h-4 w-4 me-2" />
             تصدير التقرير
           </Button>
         </div>
@@ -463,25 +463,25 @@ export default function AdminSubscriptions() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem onClick={() => handleViewSubscription(sub)}>
-                                <Eye className="h-4 w-4 ml-2" />
+                                <Eye className="h-4 w-4 me-2" />
                                 عرض التفاصيل
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               {sub.status === "expired" && (
                                 <DropdownMenuItem onClick={() => handleRenewSubscription(sub.id)}>
-                                  <RefreshCw className="h-4 w-4 ml-2" />
+                                  <RefreshCw className="h-4 w-4 me-2" />
                                   تجديد الاشتراك
                                 </DropdownMenuItem>
                               )}
                               {sub.status === "active" && (
                                 <DropdownMenuItem onClick={() => handlePauseSubscription(sub.id)}>
-                                  <Pause className="h-4 w-4 ml-2" />
+                                  <Pause className="h-4 w-4 me-2" />
                                   إيقاف مؤقت
                                 </DropdownMenuItem>
                               )}
                               {sub.status === "paused" && (
                                 <DropdownMenuItem onClick={() => handleResumeSubscription(sub.id)}>
-                                  <Play className="h-4 w-4 ml-2" />
+                                  <Play className="h-4 w-4 me-2" />
                                   استئناف
                                 </DropdownMenuItem>
                               )}
@@ -490,7 +490,7 @@ export default function AdminSubscriptions() {
                                 className="text-red-600"
                                 onClick={() => handleCancelSubscription(sub.id)}
                               >
-                                <XCircle className="h-4 w-4 ml-2" />
+                                <XCircle className="h-4 w-4 me-2" />
                                 إلغاء الاشتراك
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -626,7 +626,7 @@ export default function AdminSubscriptions() {
                   setIsViewDialogOpen(false);
                 }}
               >
-                <RefreshCw className="h-4 w-4 ml-2" />
+                <RefreshCw className="h-4 w-4 me-2" />
                 تجديد الاشتراك
               </Button>
             )}

@@ -197,7 +197,7 @@ export default function CaseStudies() {
                           variant="secondary"
                           className="bg-white/20 text-white border-0"
                         >
-                          <Users className="h-3 w-3 ml-1" />
+                          <Users className="h-3 w-3 me-1" />
                           {study.size}
                         </Badge>
                       </div>
@@ -205,7 +205,7 @@ export default function CaseStudies() {
                   </div>
                   {study.featured && (
                     <Badge className="bg-yellow-400 text-yellow-900 border-0">
-                      <Award className="h-3 w-3 ml-1" />
+                      <Award className="h-3 w-3 me-1" />
                       قصة مميزة
                     </Badge>
                   )}
@@ -221,7 +221,7 @@ export default function CaseStudies() {
                     </div>
                     <h3 className="text-xl font-bold">التحدي</h3>
                   </div>
-                  <p className="text-muted-foreground leading-relaxed mr-12">
+                  <p className="text-muted-foreground leading-relaxed me-12">
                     {study.challenge}
                   </p>
                 </div>
@@ -234,7 +234,7 @@ export default function CaseStudies() {
                     </div>
                     <h3 className="text-xl font-bold">الحل</h3>
                   </div>
-                  <p className="text-muted-foreground leading-relaxed mr-12">
+                  <p className="text-muted-foreground leading-relaxed me-12">
                     {study.solution}
                   </p>
                 </div>
@@ -247,7 +247,7 @@ export default function CaseStudies() {
                     </div>
                     <h3 className="text-xl font-bold">النتائج</h3>
                   </div>
-                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mr-12">
+                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 me-12">
                     {study.results.map((result, idx) => (
                       <Card
                         key={idx}

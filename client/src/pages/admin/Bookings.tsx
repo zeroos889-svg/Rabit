@@ -242,11 +242,11 @@ export default function AdminBookings() {
 
         <div className="flex gap-2">
           <Button variant="outline">
-            <Download className="h-4 w-4 ml-2" />
+            <Download className="h-4 w-4 me-2" />
             تصدير
           </Button>
           <Button variant="outline">
-            <CalendarDays className="h-4 w-4 ml-2" />
+            <CalendarDays className="h-4 w-4 me-2" />
             عرض التقويم
           </Button>
         </div>
@@ -438,7 +438,7 @@ export default function AdminBookings() {
                           <div className="flex items-center gap-1 text-sm">
                             <Calendar className="h-3 w-3 text-muted-foreground" />
                             {booking.date}
-                            <Clock className="h-3 w-3 text-muted-foreground mr-2" />
+                            <Clock className="h-3 w-3 text-muted-foreground me-2" />
                             {booking.time}
                           </div>
                         </TableCell>
@@ -453,21 +453,21 @@ export default function AdminBookings() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem onClick={() => handleViewBooking(booking)}>
-                                <Eye className="h-4 w-4 ml-2" />
+                                <Eye className="h-4 w-4 me-2" />
                                 عرض التفاصيل
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               {booking.status === "pending" && (
                                 <>
                                   <DropdownMenuItem onClick={() => handleConfirmBooking(booking.id)}>
-                                    <Check className="h-4 w-4 ml-2" />
+                                    <Check className="h-4 w-4 me-2" />
                                     تأكيد الحجز
                                   </DropdownMenuItem>
                                   <DropdownMenuItem 
                                     className="text-red-600"
                                     onClick={() => handleCancelBooking(booking.id)}
                                   >
-                                    <X className="h-4 w-4 ml-2" />
+                                    <X className="h-4 w-4 me-2" />
                                     إلغاء الحجز
                                   </DropdownMenuItem>
                                 </>
@@ -475,14 +475,14 @@ export default function AdminBookings() {
                               {booking.status === "confirmed" && (
                                 <>
                                   <DropdownMenuItem onClick={() => handleCompleteBooking(booking.id)}>
-                                    <CheckCircle2 className="h-4 w-4 ml-2" />
+                                    <CheckCircle2 className="h-4 w-4 me-2" />
                                     تحديد كمكتمل
                                   </DropdownMenuItem>
                                   <DropdownMenuItem 
                                     className="text-red-600"
                                     onClick={() => handleCancelBooking(booking.id)}
                                   >
-                                    <X className="h-4 w-4 ml-2" />
+                                    <X className="h-4 w-4 me-2" />
                                     إلغاء الحجز
                                   </DropdownMenuItem>
                                 </>
@@ -615,7 +615,7 @@ export default function AdminBookings() {
                   setIsViewDialogOpen(false);
                 }}
               >
-                <Check className="h-4 w-4 ml-2" />
+                <Check className="h-4 w-4 me-2" />
                 تأكيد الحجز
               </Button>
             )}

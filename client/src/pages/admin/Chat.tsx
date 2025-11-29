@@ -256,7 +256,7 @@ export default function AdminChat() {
                           handleCloseConversation(selectedConversation.id)
                         }
                       >
-                        <CheckCircle2 className="h-4 w-4 ml-2" />
+                        <CheckCircle2 className="h-4 w-4 me-2" />
                         إغلاق المحادثة
                       </Button>
                     ) : (
@@ -267,7 +267,7 @@ export default function AdminChat() {
                           handleReopenConversation(selectedConversation.id)
                         }
                       >
-                        <Clock className="h-4 w-4 ml-2" />
+                        <Clock className="h-4 w-4 me-2" />
                         إعادة فتح
                       </Button>
                     )}

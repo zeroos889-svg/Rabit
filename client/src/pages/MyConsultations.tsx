@@ -54,7 +54,7 @@ export default function MyConsultations() {
           </p>
         </div>
         <Button variant="outline" onClick={() => refetch()} disabled={isFetching}>
-          <RefreshCw className="h-4 w-4 mr-2" />
+          <RefreshCw className="h-4 w-4 me-2" />
           تحديث
         </Button>
       </div>
@@ -96,7 +96,7 @@ export default function MyConsultations() {
                       ? new Date(booking.scheduledDate).toLocaleDateString("ar-SA")
                       : "لم يحدد"}
                   </span>
-                  <Clock className="h-4 w-4 ml-3" />
+                  <Clock className="h-4 w-4 ms-3" />
                   <span>{booking.scheduledTime || "—"}</span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -119,7 +119,7 @@ export default function MyConsultations() {
                     size="sm"
                     onClick={() => navigate(`/consultation/${booking.id}/chat`)}
                   >
-                    <MessageCircle className="h-4 w-4 mr-1" />
+                    <MessageCircle className="h-4 w-4 me-1" />
                     المحادثة
                   </Button>
                 </div>

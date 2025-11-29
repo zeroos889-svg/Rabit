@@ -431,7 +431,7 @@ function InterviewCard({
                 className="flex-1"
                 onClick={onComplete}
               >
-                <Check className="h-3 w-3 mr-1" />
+                <Check className="h-3 w-3 ms-1" />
                 {isArabic ? "اكتمل" : "Complete"}
               </Button>
               <Button
@@ -440,7 +440,7 @@ function InterviewCard({
                 className="flex-1"
                 onClick={onCancel}
               >
-                <X className="h-3 w-3 mr-1" />
+                <X className="h-3 w-3 ms-1" />
                 {isArabic ? "إلغاء" : "Cancel"}
               </Button>
             </>
@@ -551,7 +551,7 @@ export function InterviewScheduler() {
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button>
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4 ms-2" />
               {isArabic ? "جدولة مقابلة" : "Schedule Interview"}
             </Button>
           </DialogTrigger>
@@ -712,7 +712,7 @@ export function InterviewScheduler() {
                 {isArabic ? "إلغاء" : "Cancel"}
               </Button>
               <Button onClick={handleAddInterview}>
-                <CalendarDays className="h-4 w-4 mr-2" />
+                <CalendarDays className="h-4 w-4 ms-2" />
                 {isArabic ? "جدولة" : "Schedule"}
               </Button>
             </DialogFooter>
@@ -733,7 +733,7 @@ export function InterviewScheduler() {
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[180px]">
-            <Filter className="h-4 w-4 mr-2" />
+            <Filter className="h-4 w-4 ms-2" />
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -849,7 +849,7 @@ export function InterviewScheduler() {
                     className="mt-4"
                     onClick={() => setIsAddDialogOpen(true)}
                   >
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="h-4 w-4 ms-2" />
                     {isArabic ? "جدولة مقابلة" : "Schedule Interview"}
                   </Button>
                 </CardContent>
