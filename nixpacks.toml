@@ -14,14 +14,14 @@ cmds = [
 cacheDirectories = ["node_modules", ".npm"]
 
 [phases.build]
-# Build the application
+# Build the application (frontend + backend)
 cmds = [
   "npm run build"
 ]
 
 [start]
-# Start command
-cmd = "npm run start"
+# Start command using tsx for TypeScript execution
+cmd = "npx tsx server/_core/index.ts"
 
 [variables]
 # Node.js optimization
