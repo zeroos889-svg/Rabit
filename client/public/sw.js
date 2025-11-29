@@ -3,7 +3,7 @@
  * Implements advanced caching strategies and offline support
  */
 
-const CACHE_VERSION = "v2.0.0";
+const CACHE_VERSION = "v3.0.0";
 const CACHE_NAME = `rabit-cache-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `rabit-runtime-${CACHE_VERSION}`;
 const IMAGE_CACHE = `rabit-images-${CACHE_VERSION}`;
