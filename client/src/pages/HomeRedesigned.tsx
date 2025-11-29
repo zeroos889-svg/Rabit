@@ -58,6 +58,13 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const CTA_LINKS = [
+  { href: "/consulting/book-new", labelAr: "حجز استشارة", labelEn: "Book Consultation" },
+  { href: "/tools", labelAr: "تجربة الأدوات", labelEn: "Try Tools" },
+  { href: "/pricing", labelAr: "عرض الباقات", labelEn: "View Plans" },
+  { href: "/contact", labelAr: "تواصل معنا", labelEn: "Contact Us" },
+];
+
 // ============================================================================
 // Types & Interfaces
 // ============================================================================
@@ -678,14 +685,20 @@ const HeroSection = memo(function HeroSection() {
                     <ArrowRight className="w-5 h-5" />
                   )}
                 </GradientButton>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="group border-2"
-                >
-                  <Play className="w-5 h-5 me-2 group-hover:scale-110 transition-transform" />
-                  {t("hero.watch_demo", "شاهد العرض")}
-                </Button>
+                {CTA_LINKS.map((cta) => (
+                  <Button
+                    key={cta.href}
+                    size="lg"
+                    variant="outline"
+                    className="group border-2"
+                    asChild
+                  >
+                    <Link href={cta.href}>
+                      <Play className="w-5 h-5 me-2 group-hover:scale-110 transition-transform" />
+                      {isRTL ? cta.labelAr : cta.labelEn}
+                    </Link>
+                  </Button>
+                ))}
               </div>
             </AnimateOnScroll>
 
