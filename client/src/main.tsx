@@ -1,3 +1,9 @@
+/**
+ * Application Entry Point - Rabit HR Platform
+ * Build timestamp: 2025-01-13T08:00:00Z
+ * This file initializes the React application with tRPC, React Query,
+ * Service Worker management, and error tracking.
+ */
 import { trpc } from "@/lib/trpc";
 import { installCsrfFetchInterceptor, withCsrfHeader } from "@/lib/csrf";
 import { errorLogger } from "@/lib/errorLogger";

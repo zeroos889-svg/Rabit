@@ -1,4 +1,9 @@
-import { lazy, Suspense, ComponentType } from "react";
+/**
+ * Main Application Component - Rabit HR Platform
+ * Version: 3.0.1
+ * This component sets up the routing, providers, and global UI components.
+ */
+import { lazy, Suspense, ComponentType, useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Redirect, Route, Switch } from "wouter";
@@ -24,6 +29,10 @@ import { useARIAEnhancer, useARIAValidation } from "./lib/ariaUtils";
 import { useAnalytics, usePageTracking } from "./hooks/useAnalytics";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { AIAssistant } from "./components/ai/AIAssistant";
+
+// Debug logging for app initialization
+const APP_VERSION = "3.0.1";
+console.log(`[Rabit] App.tsx loading... (v${APP_VERSION})`);
 
 // Retry helper for lazy loading with cache busting
 const lazyRetry = <T extends ComponentType<unknown>>(
@@ -820,6 +829,12 @@ function Router() {
 // - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
 
 function App() {
+  // Log app initialization
+  useEffect(() => {
+    console.log(`[Rabit] App component mounted (v${APP_VERSION})`);
+    return () => console.log(`[Rabit] App component unmounted`);
+  }, []);
+
   // Initialize Analytics (GA4)
   useAnalytics(import.meta.env.VITE_GA_MEASUREMENT_ID);
   usePageTracking();
@@ -844,6 +859,8 @@ function App() {
   useFocusVisible();
   useARIAEnhancer();
   useARIAValidation();
+
+  console.log(`[Rabit] App rendering...`);
 
   return (
     <ErrorBoundary>
