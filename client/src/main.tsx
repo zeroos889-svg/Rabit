@@ -22,16 +22,62 @@ const API_HEALTH = API_BASE ? `${API_BASE}/health` : "/health";
 
 installCsrfFetchInterceptor();
 
+// Force clear old service worker cache on app load
+const CURRENT_SW_VERSION = "v3.0.0";
+const SW_VERSION_KEY = "rabithr:sw-version";
+
+async function clearOldCaches() {
+  try {
+    const storedVersion = localStorage.getItem(SW_VERSION_KEY);
+    if (storedVersion !== CURRENT_SW_VERSION) {
+      console.log(`[SW] Cache version mismatch: ${storedVersion} -> ${CURRENT_SW_VERSION}`);
+      // Clear all caches
+      const cacheNames = await caches.keys();
+      await Promise.all(cacheNames.map(name => caches.delete(name)));
+      console.log(`[SW] Cleared ${cacheNames.length} old caches`);
+      
+      // Unregister old service workers
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      for (const registration of registrations) {
+        await registration.unregister();
+        console.log("[SW] Unregistered old service worker");
+      }
+      
+      // Store new version
+      localStorage.setItem(SW_VERSION_KEY, CURRENT_SW_VERSION);
+      
+      // Force reload if caches were cleared (only once)
+      if (storedVersion && cacheNames.length > 0) {
+        console.log("[SW] Reloading page to apply clean state...");
+        window.location.reload();
+        return;
+      }
+    }
+  } catch (err) {
+    console.warn("[SW] Cache cleanup error:", err);
+  }
+}
+
 // Register Service Worker for PWA support
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-          .register("/sw.js")
-          .catch(err =>
-            errorLogger.warn("Service worker registration failed", {
-              error: err instanceof Error ? err.message : String(err),
-            })
-          );
+  // First clear old caches, then register
+  clearOldCaches().then(() => {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then(registration => {
+          console.log("[SW] Service worker registered successfully");
+          // Check for updates
+          registration.addEventListener("updatefound", () => {
+            console.log("[SW] New service worker found, updating...");
+          });
+        })
+        .catch(err =>
+          errorLogger.warn("Service worker registration failed", {
+            error: err instanceof Error ? err.message : String(err),
+          })
+        );
+    });
   });
 }
 
@@ -211,10 +257,21 @@ if (!API_BASE) {
   });
 }
 
-createRoot(document.getElementById("root")!).render(
-  <trpc.Provider client={trpcClient} queryClient={queryClient}>
-    <QueryClientProvider client={queryClient}>
-      <App />
-    </QueryClientProvider>
-  </trpc.Provider>
-);
+console.log("[Rabit] Starting app render...");
+console.log("[Rabit] API_BASE:", API_BASE);
+console.log("[Rabit] TRPC_URL:", TRPC_URL);
+
+const rootElement = document.getElementById("root");
+if (!rootElement) {
+  console.error("[Rabit] Root element not found!");
+} else {
+  console.log("[Rabit] Root element found, rendering React app...");
+  createRoot(rootElement).render(
+    <trpc.Provider client={trpcClient} queryClient={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
+    </trpc.Provider>
+  );
+  console.log("[Rabit] React app rendered successfully");
+}
