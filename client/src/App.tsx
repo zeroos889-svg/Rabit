@@ -76,12 +76,8 @@ const PageLoader = () => <LoadingSpinner fullScreen text="جاري التحمي�
 // Lazy load pages - Public pages (loaded first) with retry logic
 const HomeRedesigned = lazyRetry(() => import("./pages/HomeRedesigned"));
 const EnhancedHome = lazyRetry(() => import("./pages/EnhancedHome"));
-const Home = lazyRetry(() => import("./pages/Home"));
-const Login = lazyRetry(() => import("./pages/Login"));
 const LoginRedesigned = lazyRetry(() => import("./pages/LoginRedesigned"));
-const EnhancedLogin = lazy(() => import("./pages/EnhancedLogin"));
 const Register = lazy(() => import("./pages/Register"));
-const AccountType = lazy(() => import("./pages/AccountType"));
 const AccountTypeRedesigned = lazy(() => import("./pages/AccountTypeRedesigned"));
 const GuidedTour = lazy(() => import("./pages/GuidedTour"));
 
@@ -115,7 +111,6 @@ const EndOfServiceCalculator = lazy(
 );
 const LeaveCalculator = lazy(() => import("./pages/LeaveCalculator"));
 const LetterGenerator = lazy(() => import("./pages/LetterGenerator"));
-const ToolsPage = lazy(() => import("./pages/Tools"));
 const ToolsRedesigned = lazy(() => import("./pages/ToolsRedesigned"));
 const DashboardTools = lazy(() => import("./pages/dashboard/Tools"));
 
@@ -157,12 +152,9 @@ const ConsultationDetail = lazy(() => import("./pages/ConsultationDetail"));
 const ConsultationChat = lazy(() => import("./pages/ConsultationChat"));
 
 // Content pages
-const About = lazy(() => import("./pages/About"));
 const AboutRedesigned = lazy(() => import("./pages/AboutRedesigned"));
 const ContactRedesigned = lazy(() => import("./pages/ContactRedesigned"));
-const FAQ = lazy(() => import("./pages/FAQ"));
 const FAQRedesigned = lazy(() => import("./pages/FAQRedesigned"));
-const Blog = lazy(() => import("./pages/Blog"));
 const BlogRedesigned = lazy(() => import("./pages/BlogRedesigned"));
 const NotFoundRedesigned = lazy(() => import("./pages/NotFoundRedesigned"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
@@ -524,17 +516,13 @@ function Router() {
       <Switch>
         <Route path={"/"} component={HomeRedesigned} />
         <Route path={"/home"} component={EnhancedHome} />
-        <Route path={"/home-legacy"} component={Home} />
         <Route path={"/signup"} component={withPublicOnly(AccountTypeRedesigned)} />
-        <Route path={"/signup-legacy"} component={withPublicOnly(AccountType)} />
         <Route path={"/guided/:role"} component={GuidedTour} />
         <Route path={"/signup/employee"} component={SignupEmployee} />
         <Route path={"/signup/consultant"} component={SignupConsultant} />
         <Route path={"/signup/company"} component={SignupCompany} />
         <Route path={"/complete-profile"} component={CompleteProfile} />
         <Route path={"/login"} component={withPublicOnly(LoginRedesigned)} />
-        <Route path={"/login-enhanced"} component={withPublicOnly(EnhancedLogin)} />
-        <Route path={"/login-legacy"} component={withPublicOnly(Login)} />
         <Route path={"/register"} component={withPublicOnly(Register)} />
         <Route
           path={"/forgot-password"}
@@ -594,12 +582,9 @@ function Router() {
         />
         <Route path="/contact" component={ContactRedesigned} />
         <Route path="/faq" component={FAQRedesigned} />
-        <Route path="/faq-legacy" component={FAQ} />
         <Route path={"/about"} component={AboutRedesigned} />
-        <Route path={"/about-legacy"} component={About} />
         <Route path={"/refund-policy"} component={RefundPolicy} />
         <Route path="/blog" component={BlogRedesigned} />
-        <Route path="/blog-legacy" component={Blog} />
         <Route path="/blog/:id" component={BlogPost} />
         <Route path="/success-stories" component={SuccessStories} />
         <Route path="/privacy" component={Privacy} />
@@ -657,7 +642,6 @@ function Router() {
         <Route path={"/courses/:id"} component={CourseDetail} />
         <Route path={"/knowledge"} component={Knowledge} />
         <Route path={"/tools"} component={ToolsRedesigned} />
-        <Route path={"/tools-legacy"} component={ToolsPage} />
         <Route path={"/knowledge-base"} component={KnowledgeBase} />
         <Route path={"/knowledge-base/:id"} component={KnowledgeBaseArticle} />
         <Route
