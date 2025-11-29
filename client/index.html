@@ -83,17 +83,7 @@
   </head>
 
   <body>
-    <div id="root">
-      <!-- Initial loading state for better perceived performance -->
-      <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f8fafc;">
-        <div style="text-align:center;">
-          <img src="/LOGO.svg" alt="رابِط" width="64" height="64" style="margin-bottom:16px;" />
-          <div style="width:40px;height:40px;border:3px solid #e2e8f0;border-top-color:#3b62ff;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto;"></div>
-        </div>
-      </div>
-      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
-    </div>
+    <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <!-- Analytics loaded via JS - will be initialized in main.tsx if configured -->
   </body>
 </html>
