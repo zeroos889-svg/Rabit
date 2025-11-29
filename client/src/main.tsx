@@ -14,10 +14,14 @@ import "./lib/i18n";
 
 const LOCALE_STORAGE_KEY = "rabithr:locale";
 type FetchInit = NonNullable<Parameters<typeof fetch>[1]>;
+
+// Production API URL - fallback when VITE_API_BASE_URL is not set
+const PRODUCTION_API_URL = "https://rabit-app-production.up.railway.app";
 const API_BASE =
-  import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") || "";
+  import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") || 
+  (import.meta.env.PROD ? PRODUCTION_API_URL : "");
 const TRPC_URL = API_BASE ? `${API_BASE}/api/trpc` : "/api/trpc";
-const API_HEALTH = API_BASE ? `${API_BASE}/api/health` : "/api/health";
+const API_HEALTH = API_BASE ? `${API_BASE}/health` : "/health";
 
 installCsrfFetchInterceptor();
 
