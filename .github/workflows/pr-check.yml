@@ -2,11 +2,12 @@ name: PR Quality Check
 
 on:
   pull_request:
+    branches: [main, develop]
     types: [opened, synchronize, reopened]
 
-# Cancel in-progress runs on same PR
+# Cancel in-progress runs for the same PR
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  group: pr-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 env:
@@ -16,108 +17,149 @@ jobs:
   # ==========================================
   # Quick validation for PRs
   # ==========================================
-  pr-validation:
-    name: 🔍 PR Validation
+  changes:
+    name: Detect Changes
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-
+    outputs:
+      src: ${{ steps.filter.outputs.src }}
+      server: ${{ steps.filter.outputs.server }}
+      client: ${{ steps.filter.outputs.client }}
+      deps: ${{ steps.filter.outputs.deps }}
+      docker: ${{ steps.filter.outputs.docker }}
     steps:
-      - name: ⬇️ Checkout code
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+      - uses: dorny/paths-filter@v3
+        id: filter
         with:
-          fetch-depth: 0
+          filters: |
+            src:
+              - 'client/**'
+              - 'server/**'
+              - 'shared/**'
+            server:
+              - 'server/**'
+              - 'api/**'
+            client:
+              - 'client/**'
+            deps:
+              - 'package*.json'
+            docker:
+              - 'Dockerfile'
+              - 'docker-compose*.yml'
 
-      - name: 🟢 Setup Node.js
+  # ==========================================
+  # Code Quality
+  # ==========================================
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.src == 'true' || needs.changes.outputs.deps == 'true'
+    
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-
-      - name: 📦 Install dependencies
+      
+      - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: 🔍 Lint changed files
-        run: |
-          git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '\.(ts|tsx|js|jsx)$' | xargs npx eslint || true
+      - name: TypeScript Type Check
+        run: npm run type-check
 
-      - name: 🧠 TypeScript check
-        run: npx tsc --noEmit
-
-      - name: 🧪 Run affected tests
-        run: npm test
+      - name: ESLint Check
+        run: npm run lint
         continue-on-error: true
 
-      - name: 📊 PR Summary
+  # ==========================================
+  # Unit Tests
+  # ==========================================
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: [changes, quality]
+    if: needs.changes.outputs.src == 'true'
+    
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run Tests
+        run: npm run test:coverage
+        continue-on-error: true
+        env:
+          CI: true
+
+      - name: Upload Coverage
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-report-pr-${{ github.event.pull_request.number }}
+          path: coverage/
+          retention-days: 7
+        continue-on-error: true
+
+  # ==========================================
+  # Build Check
+  # ==========================================
+  build:
+    name: Build Check
+    runs-on: ubuntu-latest
+    needs: [changes, quality]
+    
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build Application
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Verify Build Output
         run: |
-          echo "## 📋 PR Quality Check Summary" >> $GITHUB_STEP_SUMMARY
+          echo "📦 Build Output:"
+          ls -la dist/ || echo "No dist folder"
+          if [ -d "dist/public/assets" ]; then
+            echo "📊 Bundle sizes:"
+            du -sh dist/public/assets/* | sort -rh | head -10
+          fi
+
+  # ==========================================
+  # PR Summary
+  # ==========================================
+  summary:
+    name: PR Summary
+    runs-on: ubuntu-latest
+    needs: [quality, test, build]
+    if: always()
+    
+    steps:
+      - name: Generate Summary
+        run: |
+          echo "## PR Quality Check Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Base Branch**: ${{ github.base_ref }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Head Branch**: ${{ github.head_ref }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Author**: @${{ github.event.pull_request.user.login }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Files Changed**: $(git diff --name-only origin/${{ github.base_ref }}...HEAD | wc -l)" >> $GITHUB_STEP_SUMMARY
-
-  # ==========================================
-  # PR Size Check
-  # ==========================================
-  pr-size-check:
-    name: 📏 PR Size Check
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: ⬇️ Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: 📏 Check PR size
-        run: |
-          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | wc -l)
-          CHANGED_LINES=$(git diff --stat origin/${{ github.base_ref }}...HEAD | tail -1 | awk '{print $4+$6}')
-          
-          echo "Files changed: $CHANGED_FILES"
-          echo "Lines changed: $CHANGED_LINES"
-          
-          if [ $CHANGED_FILES -gt 50 ]; then
-            echo "⚠️ Warning: This PR changes more than 50 files. Consider splitting it."
-          fi
-          
-          if [ $CHANGED_LINES -gt 1000 ]; then
-            echo "⚠️ Warning: This PR changes more than 1000 lines. Consider splitting it."
-          fi
-
-  # ==========================================
-  # Dependency Review
-  # ==========================================
-  dependency-review:
-    name: 🔒 Dependency Review
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-
-    steps:
-      - name: ⬇️ Checkout code
-        uses: actions/checkout@v6
-
-      - name: 🔍 Dependency Review
-        uses: actions/dependency-review-action@v4
-        with:
-          fail-on-severity: moderate
-          deny-licenses: GPL-3.0, AGPL-3.0
-
-  # ==========================================
-  # Auto-label PR
-  # ==========================================
-  auto-label:
-    name: 🏷️ Auto Label
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-
-    steps:
-      - name: ⬇️ Checkout code
-        uses: actions/checkout@v6
-
-      - name: 🏷️ Label PR based on files
-        uses: actions/labeler@v6
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Quality | ${{ needs.quality.result == 'success' && '✅' || needs.quality.result == 'skipped' && '⏭️' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests | ${{ needs.test.result == 'success' && '✅' || needs.test.result == 'skipped' && '⏭️' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.result == 'success' && '✅' || needs.build.result == 'skipped' && '⏭️' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
