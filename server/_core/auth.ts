@@ -401,6 +401,182 @@ export function registerAuthRoutes(app: Express, authLimiter?: any) {
       res.status(500).json({ error: "Failed to get user" });
     }
   });
+
+  // Get authentication status (lightweight check)
+  app.get("/api/auth/status", async (req: Request, res: Response) => {
+    try {
+      const token = req.cookies[COOKIE_NAME];
+      if (!token) {
+        res.json({
+          authenticated: false,
+          user: null,
+        });
+        return;
+      }
+
+      const payload = await verifySessionToken(token);
+      if (!payload) {
+        res.json({
+          authenticated: false,
+          user: null,
+        });
+        return;
+      }
+
+      res.json({
+        authenticated: true,
+        user: {
+          id: payload.userId,
+          email: payload.email,
+          role: payload.role,
+        },
+      });
+    } catch (error) {
+      logger.error("Auth status check failed", {
+        context: "Auth",
+        error: error instanceof Error ? error.message : String(error),
+      });
+      res.json({
+        authenticated: false,
+        user: null,
+      });
+    }
+  });
+
+  // Request password reset
+  app.post(
+    "/api/auth/forgot-password",
+    ...loginMiddleware,
+    async (req: Request, res: Response) => {
+      try {
+        const { email } = req.body;
+
+        if (!email) {
+          res.status(400).json({
+            success: false,
+            error: "البريد الإلكتروني مطلوب",
+          });
+          return;
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          res.status(400).json({
+            success: false,
+            error: "صيغة البريد الإلكتروني غير صالحة",
+          });
+          return;
+        }
+
+        // Always return success to prevent email enumeration
+        const user = await db.getUserByEmail(email);
+        
+        if (user) {
+          // Generate reset token
+          const crypto = await import("crypto");
+          const resetToken = crypto.randomBytes(32).toString("hex");
+          const resetExpiry = new Date();
+          resetExpiry.setHours(resetExpiry.getHours() + 1); // 1 hour expiry
+
+          // Save token to database
+          await db.setPasswordResetToken(user.id, resetToken, resetExpiry);
+
+          logSecurityEvent("Password reset requested", req, {
+            email,
+            userId: user.id,
+          });
+
+          // Note: Email sending should be done via a background job
+          // For now, we just save the token
+        }
+
+        res.json({
+          success: true,
+          message: "إذا كان البريد مسجلاً، ستصلك رسالة لإعادة تعيين كلمة المرور",
+        });
+      } catch (error) {
+        logger.error("Password reset request failed", {
+          context: "Auth",
+          error: error instanceof Error ? error.message : String(error),
+        });
+        res.status(500).json({
+          success: false,
+          error: "حدث خطأ. يرجى المحاولة مرة أخرى",
+        });
+      }
+    }
+  );
+
+  // Reset password with token
+  app.post(
+    "/api/auth/reset-password",
+    ...loginMiddleware,
+    async (req: Request, res: Response) => {
+      try {
+        const { token, password } = req.body;
+
+        if (!token || !password) {
+          res.status(400).json({
+            success: false,
+            error: "الرمز وكلمة المرور مطلوبان",
+          });
+          return;
+        }
+
+        // Validate password strength
+        const passwordValidation = isPasswordStrong(password);
+        if (!passwordValidation.valid) {
+          res.status(400).json({
+            success: false,
+            error: passwordValidation.message,
+          });
+          return;
+        }
+
+        // Find user by reset token
+        const user = await db.findUserByResetToken(token);
+        
+        if (!user) {
+          res.status(400).json({
+            success: false,
+            error: "رابط إعادة التعيين غير صالح أو منتهي الصلاحية",
+          });
+          return;
+        }
+
+        // Hash new password
+        const hashedPassword = await hashPassword(password);
+        
+        // Update password
+        await db.updateUserPassword(user.id, hashedPassword);
+
+        // Clear reset token
+        await db.clearPasswordResetToken(user.id);
+
+        // Clear any login attempts
+        loginAttempts.delete(user.email || "");
+
+        logSecurityEvent("Password reset completed", req, {
+          userId: user.id,
+        });
+
+        res.json({
+          success: true,
+          message: "تم تغيير كلمة المرور بنجاح",
+        });
+      } catch (error) {
+        logger.error("Password reset failed", {
+          context: "Auth",
+          error: error instanceof Error ? error.message : String(error),
+        });
+        res.status(500).json({
+          success: false,
+          error: "فشل في تغيير كلمة المرور",
+        });
+      }
+    }
+  );
 }
 
 /**
