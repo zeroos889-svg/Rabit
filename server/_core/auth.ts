@@ -9,6 +9,7 @@
  * - Security event logging
  */
 
+import crypto from "crypto";
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import type { Express, Request, Response } from "express";
 import * as db from "../db";
@@ -474,7 +475,6 @@ export function registerAuthRoutes(app: Express, authLimiter?: any) {
         
         if (user) {
           // Generate reset token
-          const crypto = await import("crypto");
           const resetToken = crypto.randomBytes(32).toString("hex");
           const resetExpiry = new Date();
           resetExpiry.setHours(resetExpiry.getHours() + 1); // 1 hour expiry
